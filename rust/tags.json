@@ -1,1 +1,19 @@
-{"version": "Rust 1.70.0", "chapters": "29 глав", "projects": ["Discord — мессенджер", "Servo — браузерный движок", "Redox — операционная система"]}
+{
+    "version": "Rust 1.70.0",
+    "url": "https://www.rust-lang.org/",
+    "chapters": "29 глав", 
+    "projects": [
+        {
+            "name": "Discord — мессенджер", 
+            "url": "https://discord.com/"
+        },
+        {
+            "name": "Servo — браузерный движок", 
+            "url": "https://servo.org/"
+        },
+        {
+            "name": "Redox — операционная система",
+            "url": "https://www.redox-os.org/"
+        }
+    ]
+}

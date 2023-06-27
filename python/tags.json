@@ -1,1 +1,19 @@
-{"version": "Python 3.11.4", "chapters": "23 главы", "projects": ["Celery — распределенная очередь задач", "OpenStack — платформа для организации облачной инфраструктуры", "Ansible — система управления конфигурациями"]}
+{
+    "version": "Python 3.11.4",
+    "url": "https://www.python.org/",
+    "chapters": "23 главы", 
+    "projects": [
+        {
+            "name": "Celery — распределенная очередь задач",
+            "url": "https://docs.celeryq.dev/en/stable/"
+        }, 
+        {
+            "name": "OpenStack — платформа для организации облачной инфраструктуры",
+            "url": "https://www.openstack.org/"
+        }, 
+        {
+            "name": "Ansible — система управления конфигурациями",
+            "url": "https://www.ansible.com/"
+        }
+    ]
+}
