@@ -1,7 +1,7 @@
 {
     "version": "Python 3.11.4",
     "url": "https://www.python.org/",
-    "chapters": "23 главы", 
+    "chapters": "29 глав", 
     "projects": [
         {
             "name": "Celery — распределенная очередь задач",
