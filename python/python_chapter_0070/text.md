@@ -219,7 +219,7 @@ print(safe_get_int("20"))
 print(safe_get_int("here we get none"))
 ```
 
-Для проверки на `None` используется ключевое слово `is`:
+Для проверки на `None` используется ключевое слово `is`:{#block-compare}
 ```python
 if x is None:
     print("Got None for x")
