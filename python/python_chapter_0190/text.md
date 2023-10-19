@@ -20,6 +20,7 @@ f.fileno()
 `fileno()` возвращает целое число — файловый дескриптор. Все операции с открытым файлом через функции объекта файла (`write()`, `read()` и т.д.) инкапсулируют работу с этим дескриптором. А как известно, ОС выставляет лимит на количество дескрипторов, которые процессу разрешено единовременно держать открытыми.
 
 Поэтому отсутствие `close()` при активной работе с файлами рано или поздно приведет к ошибке:
+
 ```
 OSError: [Errno 24] Too many open files: 'useful_urls.txt'
 ```
@@ -27,6 +28,7 @@ OSError: [Errno 24] Too many open files: 'useful_urls.txt'
 Помимо нехватки дескрипторов есть и вторая причина вовремя закрывать файлы: риск потери или повреждения их содержимого. В случае креша программы или экстренного выключения компьютера данные не успеют записаться на жесткий диск.
 
 Чтобы всего этого избежать, достаточно обернуть код в `try/finally`. Тогда `close()` отработает при любом сценарии:
+
 ```python
 try:
     f = open("/mnt/data/urls.txt", "a")
@@ -49,6 +51,7 @@ finally:
 **Контекстные менеджеры** — это конструкции, выделяющие и освобождающие ресурсы строго по необходимости. Используются они при помощи выражения `with ... as ...`, которое выглядит более удобным, чем оборачивание кода в `try/finally`.
 
 Вернемся к нашему примеру. Откажемся от ловли исключений в пользу контекстного менеджера:
+
 ```python
 with open("/mnt/data/urls.txt", "a") as f:
     f.write("https://senjun.ru/courses")
@@ -68,13 +71,13 @@ file.close()
 file = open(FILEPATH, "r")
 for i, line in enumerate(file):
     print(f"{i}: {line.strip()}")
-
 ```
-```python {.task_hint}
+```{.task_hint}
 with open(FILEPATH, "w") as file: ...
 ```
 
 А как быть, если требуется открыть сразу несколько файлов? В принципе никто не запрещает добавить вложенных блоков `with`. Но иногда проще их скомбинировать:
+
 ```python
 with open(path_a) as f_a, open(path_b) as f_b, open(path_c) as f_c:
     handle(f_a, f_b, f_c)
@@ -91,8 +94,9 @@ with open("messages.txt", "w") as f_out:
             f_out.write(f"{msg}\n")
             f_out_upper.write(f"{msg.upper()}\n")
 ```
-```python {.task_hint}
-with open("messages.txt", "w") as f_out, open("messages_uppercase.txt", "w") as f_out_upper: ...
+```{.task_hint}
+with open("messages.txt", "w") as f_out, open("messages_uppercase.txt", "w") as f_out_upper:
+    ...
 ```
 
 ## Протокол контекстного менеджера
@@ -173,7 +177,7 @@ print("---> stdout again")
 
 ```python {.task_source #python_chapter_0190_task_0030}
 ```
-```python {.task_hint}
+```{.task_hint}
 ```
 
 Кстати, в контекстный менеджер можно превратить не только класс, но и функцию. Но для этого нужно понимать, что такое генераторы и декораторы. Их мы рассмотрим в следующих главах.

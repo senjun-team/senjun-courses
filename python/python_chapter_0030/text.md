@@ -4,13 +4,16 @@
 
 ## Комментарии
 Комментарии в питоне могут быть однострочными. Они начинаются с символа `#`:
+
 ```python
 # TODO: refactor coords calculation
 x = x_offset()  # get x offset
 ```
+
 ...И многострочными. Такие комментарии обрамляются тройными кавычками. Если многострочный комментарий следует сразу за объявлением модуля, функции, класса или метода, то он называется docstring. Большинство современных IDE умеют делать подсказки на основе docstring. 
 
 Пример docstring для функции:
+
 ```python
 def get_coords():
     """Here we calculate x, y and transform
@@ -58,15 +61,17 @@ def analyze_string(s):
 
 analyze_string("Hint")
 ```
-```python {.task_hint}
+```{.task_hint}
 Должно получиться условие, состоящее из одного if, двух elif и одного else.
 ```
 
 ## Тернарный if
 Условие `if/else` можно записать более компактно, используя тернарный опертор:
+
 ```python
 res = "OK" if code == 200 else "Error"
 ```
+
 Этот пример трактуется так: присвоить переменной `res` значение `"OK"`, если `code` равен 200. Иначе присвоить `res` значение `"Error"`.
 
 
@@ -76,7 +81,7 @@ res = "OK" if code == 200 else "Error"
 s = "Explicit is better than implicit."
 
 ```
-```python {.task_hint}
+```{.task_hint}
 s_descr = "long string" if len(s) > 79 else "short string"
 ```
 
@@ -91,7 +96,7 @@ for val in [8, 3, 16]:
 
     print(val, res)
 ```
-```python {.task_hint}
+```{.task_hint}
 res = "even" if val % 2 == 0 else "odd"
 ```
 
@@ -99,6 +104,7 @@ res = "even" if val % 2 == 0 else "odd"
 В питоне 3.10 появилась новая фича: pattern matching (сопоставление с образцом). Звучит сложно, но под капотом это всего лишь синтаксический сахар над старым-добрым `if/elif/else`. Он позволяет более гибко сравнивать и обрабатывать значения. 
 
 Начнем с простого:
+
 ```python
 match val:
     case -1:
@@ -126,16 +132,18 @@ def parse_option(option):
 	else:
 		return "Unsupported option"
 ```
-```python {.task_hint}
+```{.task_hint}
 match option
 ```
 
 Рассмотрим еще один пример. Для его цельного восприятия важно знать, что в питоне есть тип данных [список](/courses/python/chapters/python_chapter_0090/) (динамический массив). Список из нескольких элементов выглядит как перечисленные в квадратных скобках объекты. Вот список строк: 
+
 ```python
 lst = ["exit", "copy", "delete"]
 ```
 
 Допустим, консольное приложение ожидает команду и дополнительные опции от пользователя.
+
 ```python
 # Читаем консольный ввод:
 input = parse_input()
@@ -162,6 +170,7 @@ match commands:
 
 ## Циклы for и while
 Цикл `while` — это всем известный классический `while` из JavaScript, C++, Java:
+
 ```python
 x = 100
 
@@ -171,24 +180,28 @@ while x > 0:
 ```
 
 Вариация вечного цикла:
+
 ```python
 while True:
     rotate_spinner()
 ```
 
 Этот цикл тоже является вечным, потому что 1 интерпретируется как «истина»:
+
 ```python
 while 1:
     run()
 ```
 
 Цикл `for` последовательно перебирает элементы коллекции:
+
 ```python
 for resp in responses:
     parse(resp)
 ```
 
 Пример прохода в цикле `for` по последовательности чисел, которую генерирует функция `range()`:
+
 ```python
 for x in range(10):
     print(x * x)
@@ -202,12 +215,13 @@ for x in range(10):
 def get_words_count(s):
     # Your code here
 ```
-```python {.task_hint}
+```{.task_hint}
 Можно пройтись циклом по строке и посчитать в ней количество символов '_'. На основании этого сделать вывод о количестве слов, которые '_' разделяет.
 ```
 
 В питоне есть оператор `continue` для перехода на следующую итерацию цикла.
 В этом цикле выведутся все согласные буквы:
+
 ```python
 s = "Now is better than never."
 
@@ -219,6 +233,7 @@ for letter in s:
 ```
 
 Также в питоне есть оператор `break` для выхода из цикла. Этот цикл завершится на первом встреченном пробеле:
+
 ```python
 s = "Although never is often better than right now."
 
@@ -242,6 +257,7 @@ for letter in s:
 else:
     print("There is no letter 'y' in string")
 ```
+
 В данном примере в консоль будет выведен текст из блока `else`. Потому что из цикла `for` не было выхода по `break`.
 
 Имплементируйте функцию `print_letters()`. На вход она принимает строку. Функция анализирует каждую букву строки:{.task_text}
@@ -250,11 +266,12 @@ else:
 - Если найден пробел, то все следующие за ним символы пропускаются.
 - Если в строке не было ни одного пробела, функция печатает `"no spaces"`.
  {.task_text}
+ 
 ```python {.task_source #python_chapter_0030_task_0060}
 def print_letters(s):
     # Your code here
 ```
-```python {.task_hint}
+```{.task_hint}
 Для выхода из цикла используйте 'break', для перехода на новую итерацию — 'continue', а для обработки условия не выхода по 'break' — 'else'.
 ```
 

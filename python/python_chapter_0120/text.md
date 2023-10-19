@@ -10,10 +10,12 @@
 - К объекту применим оператор сравнения `==`.
 
 Как же узнать, какой объект хешируемый, а какой — нет? Для проверки достаточно применить к нему встроенную функцию `hash()`:
+
 ```python
 print(hash("some string"))
 print(hash(["some", "list"]))
 ```
+
 ```
 -8951052346672417576
 TypeError: unhashable type: 'list'
@@ -26,11 +28,12 @@ TypeError: unhashable type: 'list'
 Пользовательские классы по умолчанию считаются хешируемыми: хеш для них вычисляется по id объекта, а оператор `==` сравнивает ссылки на области в памяти (то есть работает по принципу оператора `is`). Это поведение можно переопределить: работу с пользовательскими типами мы обсудим в следующих главах.
 
 Уберите из кортежа все не хешируемые элементы, чтобы функция `hash()` отработала без ошибки. {.task_text}
+
 ```python {.task_source #python_chapter_0120_task_0010}
 tpl = (None, -2, False, 145.5, (2, 4, 8), [2, 4, 8], "wednesday", set("set constructor"), dict())
 print(hash(tpl))
 ```
-```python {.task_hint}
+```{.task_hint}
 tpl = (None, -2, False, 145.5, (2, 4, 8), "wednesday")
 ```
 
@@ -44,10 +47,12 @@ tpl = (None, -2, False, 145.5, (2, 4, 8), "wednesday")
 
 ## Создание множества
 Для инициализации множества используется литерал фигурных скобок `{}` либо конструктор `set()`. Так выглядит инициализация через литерал:
+
 ```python
 web_frameworks = {"Django", "Flask", "FastAPI", "Flask"}
 print(web_frameworks)
 ```
+
 ```
 {'FastAPI', 'Flask', 'Django'}
 ```
@@ -55,27 +60,33 @@ print(web_frameworks)
 В конструктор было передано 4 строки, но только 3 из них уникальны. Поэтому результирующее множество состоит из 3-х элементов.
 
 Конструктор `set()` принимает на вход итерируемый объект. С его помощью легко получить множество из списка:
+
 ```python
 web_frameworks = set(["Django", "Flask", "FastAPI", "Flask"])
 print(web_frameworks)
 ```
+
 ```
 {'FastAPI', 'Flask', 'Django'}
 ```
 
 ...Из кортежа:
+
 ```python
 ml_libraries = set(("Pandas", "Pandas", "NumPy", "Keras", "TensorFlow"))
 print(ml_libraries)
 ```
+
 ```
 {'Pandas', 'Keras', 'NumPy', 'TensorFlow'}
 ```
 ...И из строки:
+
 ```python
 letters = set("AABBC")
 print(letters)
 ```
+
 ```
 {'A', 'C', 'B'}
 ```
@@ -83,24 +94,29 @@ print(letters)
 Обратите внимание на элементы созданных в этих примерах множеств: они хранятся в произвольном порядке и среди них отсутствуют дубликаты.
 
 Что насчет заведения пустого множества? С этой целью используйте **только** конструктор `set()`:
+
 ```python
 vals = set()
 ```
 
 Дело в том, что литерал `{}` также применяется и для создания [словарей](/courses/python/chapters/python_chapter_0130/) (контейнеров пар ключ-значение). Мы получаем некоторую двусмысленность при использовании **пустых** фигурных скобок: какой тип закрепится за объектом — множество или словарь? В соответствии с правилами языка будет создан словарь:
+
 ```python
 x = {}
 print(type(x))
 ```
+
 ```
 <class 'dict'>
 ```
 
 Немного забегая вперед, посмотрим, как же выглядит инициализация не пустого словаря:
+
 ```python
 kv = {"key1": "val1", "key2": "val2"}
 print(kv)
 ```
+
 ```
 {'key1': 'val1', 'key2': 'val2'}
 ```
@@ -115,9 +131,8 @@ print(kv)
 
 Имплементируйте функцию `print_set(obj)`. В качестве аргумента она принимает любой итерируемый объект: список, кортеж, строку и т.д. Функция на двух разных строках должна вывести в консоль множество, полученное из этого объекта, и размер множества.{.task_text}
 ```python {.task_source #python_chapter_0120_task_0020}
-
 ```
-```python {.task_hint}
+```{.task_hint}
 Размер множества `x`: `len(x)`.
 ```
 
@@ -132,6 +147,7 @@ print(kv)
 **Симметричная разность:** возвращает элементы, которые содержатся в любом из множеств, но не в их пересечении. Например, симметричная разность множеств `{1, 2, 3, 4}` и `{0, 4, 7}` — это `{0, 1, 2, 3, 7}`. В отличие от пересечения, объединения и разности, симметричная разность вычисляется только для пары множеств, но не большего их количества. Делается это с помощью метода `a.symmetric_difference(b)` и оператора `a ^ b`.
 
 Замените комментарии на реальный код, задействующий операции над множествами.{.task_text}
+
 ```python {.task_source #python_chapter_0120_task_0030}
 books_available = {"Fluent Python", "Python Cookbook", "Python crash course"}
 books_purchased = {"Learning python", "Python in a nutshell", "Fluent Python"}
@@ -140,7 +156,8 @@ books_total = # all available or purchased books
 books_popular = # books which are still available and which were purchased
 books_sold_out = # purchased and not available anymore books
 ```
-```python {.task_hint}
+
+```{.task_hint}
 Воспользуйтесь операциями объединения, пересечения и разности.
 ```
 
@@ -155,10 +172,11 @@ books_sold_out = # purchased and not available anymore books
 Реализуйте [вариативную функцию](/courses/python/chapters/python_chapter_0050#block-variadic) `avg_unique(*args)`, принимающую произвольное количество позиционных параметров - строк. Функция считает среднее арифметическое длин строк, причем каждая уникальная строка должна учитываться однократно. Для определения уникальности используйте множество. {.task_text}
 
 Например, для строк `"Y", "Y", "TTT"` среднее арифметическое рассчитывается как (1 + 3) / 2, и функция возвращает результат 2.{.task_text}
+
 ```python {.task_source #python_chapter_0120_task_0040}
 
 ```
-```python {.task_hint}
+```{.task_hint}
 Создайте множество из входного списка. Проитерируйтесь по нему для расчета среднего арифметического.
 ```
 
@@ -176,9 +194,8 @@ books_sold_out = # purchased and not available anymore books
 `a is b's superset: False. Count of common elements: 2.` {.task_text}
 
 ```python {.task_source #python_chapter_0120_task_0050}
-
 ```
-```python {.task_hint}
+```{.task_hint}
 Для определения, является ли `a` супермножеством `b`, воспользуйтесь оператором `>=`. Для определения количества общих элементов используйте `len(a & b)`.
 ```
 
@@ -186,20 +203,25 @@ books_sold_out = # purchased and not available anymore books
 При работе с множествами программист сам выбирает, как выразить ту или иную идею: через метод или через оператор. Но не во всех случаях метод и оператор поведут себя одинаково. В чем разница?
 
 Методы, например `union()`, `difference()` и `issuperset()`, принимают в качестве аргумента любой итерабельный объект. А операторы ожидают только объекты типа `set`. Многие начинающие питонисты об этом забывают и надеются на автоматическое преобразование:
+
 ```python
 common_letters = set("abc") & "bcd"
 ```
+
 В данном примере попытка найти пересечение между объектом-множеством и объектом-строкой закономерно завершится исключением:
+
 ```
 TypeError: unsupported operand type(s) for &: 'set' and 'str'
 ```
 
 Исправьте этот код, заменив оператор на вызов метода.{.task_text}
+
 ```python {.task_source #python_chapter_0120_task_0060}
 common_letters = set("abc") & "bcd"
 print(common_letters)
 ```
-```python {.task_hint}
+
+```{.task_hint}
 common_letters = set("abc").intersection("bcd")
 ```
 
@@ -213,6 +235,7 @@ intersection = a & b
 
 print(intersection)
 ```
+
 ```
 frozenset({'c', 'b'})
 ```
@@ -224,10 +247,11 @@ frozenset({'c', 'b'})
 Объекты типа `frozenset` создаются только с помощью одноименного конструктора `frozenset()`, принимающего итерируемый объект. 
 
 Создайте переменную типа `frozenset` с именем `x` из списка `hashable_types`. Выведите ее в консоль.{.task_text}
+
 ```python {.task_source #python_chapter_0120_task_0070}
 hashable_types = ["int", "frozenset", "bool", "int"]
 ```
-```python {.task_hint}
+```{.task_hint}
 print(frozenset(hashable_types))
 ```
 
@@ -244,7 +268,7 @@ import typing
 
 objects = ["M", 7.8, True, [9, 9], {1, 2, 2}, None, frozenset([5]), (True, False)]
 ```
-```python {.task_hint}
+```{.task_hint}
 isinstance(x, typing.Hashable)
 ```
 

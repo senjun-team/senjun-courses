@@ -1,7 +1,7 @@
 {
-    "version": "Rust 1.70.0",
+    "version": "Rust 1.73.0",
     "url": "https://www.rust-lang.org/",
-    "chapters": "29 глав", 
+    "chapters": "30 глав", 
     "projects": [
         {
             "name": "Discord — мессенджер", 
@@ -15,5 +15,6 @@
             "name": "Redox — операционная система",
             "url": "https://www.redox-os.org/"
         }
-    ]
+    ],
+    "in_development": true
 }
