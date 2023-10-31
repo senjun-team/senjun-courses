@@ -106,13 +106,18 @@ res = "even" if val % 2 == 0 else "odd"
 Начнем с простого:
 
 ```python
+val = 1
+
 match val:
     case -1:
         print('Negative number')
     case 1:
         print('Positive number')
     case unknown_val:
-    	print('Unexpected value:', unknown_val)
+        print('Unexpected value:', unknown_val)
+```
+```
+Positive number
 ```
 
 Этот пример проясняет два момента. Во-первых, при использовании `match/case` оператор `break` в конце `case` для прерывания прохода по всему `match` не нужен. Выход произойдет автоматом.
@@ -142,22 +147,20 @@ match option
 lst = ["exit", "copy", "delete"]
 ```
 
-Допустим, консольное приложение ожидает команду и дополнительные опции от пользователя.
+Допустим, консольное приложение ожидает команду и дополнительные опции от пользователя. В строку `user_input` мы читаем пользовательский ввод с помощью встроенной функции `input()`. Затем через метод строки `split()` разбиваем ее по пробелам и получаем список слов. К которому и применяем `match/case`:
 
 ```python
-# Читаем консольный ввод:
-input = parse_input()
-# Разбиваем полученную строку по пробелам
-# и получаем список строк:
-commands = input.split()
+user_input = input("Please enter command: ")
+
+commands = user_input.split()
 
 match commands:
     case ["exit"]:
-        quit_app()
+        exit(0)
     case ["copy", path_src, path_dst]:
-        copy_file(path_src, path_dst)
+        print(f"Copying file from {path_src} to {path_dst}...")
     case ["delete", path]:
-        erase_file(path)
+        print(f"Deleting file {path}...")
     case _:
         print ("Unsupported command", input)
 ```
@@ -264,7 +267,7 @@ else:
 - Если в строке содержится заглавная буква, то печатает ее. Для определения, что буква заглавная, используйте метод `isupper()`.
 - Если строчная — пропускает.
 - Если найден пробел, то все следующие за ним символы пропускаются.
-- Если в строке не было ни одного пробела, функция печатает `"no spaces"`.
+- Если в строке не было ни одного пробела (в том числе если строка пустая), функция печатает `"no spaces"`.
  {.task_text}
  
 ```python {.task_source #python_chapter_0030_task_0060}
@@ -272,7 +275,18 @@ def print_letters(s):
     # Your code here
 ```
 ```{.task_hint}
-Для выхода из цикла используйте 'break', для перехода на новую итерацию — 'continue', а для обработки условия не выхода по 'break' — 'else'.
+Для выхода из цикла используйте break, для перехода на новую итерацию — continue, а для обработки условия не выхода по break — else.
+
+def print_letters(s):
+    for i in s:
+        if i.isupper():
+            print(i)
+        if i.islower():
+            continue
+        if i == ' ':
+            break            
+    else:
+        print("no spaces")
 ```
 
 ## Резюмируем
