@@ -138,7 +138,15 @@ def parse_option(option):
 		return "Unsupported option"
 ```
 ```{.task_hint}
-match option
+match option:
+    case "save_to_file":
+        return "Saving data to file..."
+    case "log_statistics":
+        return "Dumping stats to logs..."
+    case "quit":
+        return "Quitting..."
+    case _:
+        return "Unsupported option"
 ```
 
 Рассмотрим еще один пример. Для его цельного восприятия важно знать, что в питоне есть тип данных [список](/courses/python/chapters/python_chapter_0090/) (динамический массив). Список из нескольких элементов выглядит как перечисленные в квадратных скобках объекты. Вот список строк: 
