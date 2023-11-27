@@ -1,0 +1,20 @@
+{
+    "version": "Go 1.21.4",
+    "url": "https://go.dev/",
+    "chapters": "30 глав", 
+    "projects": [
+        {
+            "name": "Docker — платформа для контейнеризации приложений", 
+            "url": "https://www.docker.com/"
+        },
+        {
+            "name": "Kubernetes — оркестратор контейнеров", 
+            "url": "https://kubernetes.io/"
+        },
+        {
+            "name": "Prometheus — система мониторинга",
+            "url": "https://prometheus.io/"
+        }
+    ],
+    "in_development": true
+}
