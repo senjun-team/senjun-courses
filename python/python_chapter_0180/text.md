@@ -352,7 +352,11 @@ import utils.fs.filetypes.bin
 ```python {.task_source #python_chapter_0180_task_0090}
 ```
 ```{.task_hint}
-Нужно проитерироваться по sys.stdlib_module_names и работать только с именами, не начинающимися с `_`.
+from sys import stdlib_module_names
+
+for m in sorted(stdlib_module_names):
+    if not m.startswith("_"):
+        print(m)
 ```
 
 В питоне есть встроенная функция `help()`, которая в интерактивном режиме выдает справку по переданному в нее объекту. С ее помощью вы можете без доступа в интернет узнать, для чего предназначен тот или иной модуль и какие он содержит определения.

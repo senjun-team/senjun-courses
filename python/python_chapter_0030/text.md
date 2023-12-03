@@ -85,7 +85,7 @@ s = "Explicit is better than implicit."
 s_descr = "long string" if len(s) > 79 else "short string"
 ```
 
-Замените `if/else` на тернарный оператор:  {.task_text}
+Замените `if/else` на тернарный оператор. {.task_text}
 
 ```python {.task_source #python_chapter_0030_task_0030}
 for val in [8, 3, 16]:
@@ -97,7 +97,10 @@ for val in [8, 3, 16]:
     print(val, res)
 ```
 ```{.task_hint}
-res = "even" if val % 2 == 0 else "odd"
+for val in [8, 3, 16]:
+    res = "even" if val % 2 == 0 else "odd"
+
+    print(val, res)
 ```
 
 ## pattern matching: когда if/else становится мало
@@ -227,7 +230,17 @@ def get_words_count(s):
     # Your code here
 ```
 ```{.task_hint}
-Можно пройтись циклом по строке и посчитать в ней количество символов '_'. На основании этого сделать вывод о количестве слов, которые '_' разделяет.
+def get_words_count(s):
+    if s == "":
+        return 0
+        
+    count = 0
+    
+    for c in s:
+        if c == "_":
+            count += 1
+
+    return count + 1
 ```
 
 В питоне есть оператор `continue` для перехода на следующую итерацию цикла.

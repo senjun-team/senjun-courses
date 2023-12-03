@@ -22,25 +22,40 @@ inner_f()
 NameError: name 'inner_f' is not defined
 ```
 
-Пример показывает, что вложенные функции скрыты от от внешнего доступа. Таким образом достигается инкапсуляция вспомогательного кода: он исключается из глобальной области видимости.
+Пример показывает, что вложенные функции скрыты от доступа откуда-либо, кроме функции-обертки. Таким образом достигается инкапсуляция вспомогательного кода: он исключается из внешней области видимости.
 
 Итак, вложенные функции нельзя вызывать извне. Но сами они имеют доступ к аргументам и локальным переменным функции-обертки!
 
+Рассмотрим функцию `has_permissions()`, которая принимает путь к директории. Внутри нее есть вложенная функция `get_permissions_str()`, которая принимает имя пользователя и проверяет, имеет ли пользователь доступ к директории. 
+
 ```python
-def count_vowels(s, n = None):
-    def is_vowel():
-        return s[n - 1].lower() in ['a', 'e', 'i', 'o', 'u']
+def has_permissions(directory):
+    def get_permissions_str(user):
+        if user == "root":
+            return f"Permission to {directory} granted for {user}"
 
-    if n is None:
-        n = len(s)
-    
-    if n == 1:
-        return is_vowel()
+        # Maybe add additional checks here
+        return f"Permission to {directory} declined for {user}"
 
-    return count_vowels(s, n - 1) + is_vowel()
+    return get_permissions_str
+
+
+has_permissions_tmp = has_permissions("/tmp")
+print(has_permissions_tmp("sandbox_user"))
+
+has_permissions_logs = has_permissions("/var/logs")
+print(has_permissions_logs("root"))
+```
+```
+Permission to /tmp declined for sandbox_user
+Permission to /var/logs granted for root
 ```
 
-В этом примере вложенная функция `is_vowel()` работает с параметрами `s` и `n`. Мы видим, что вложенная функция имеет доступ к параметрам и переменным внешней функции. 
+В этом примере вложенная функция `get_permissions_str()` работает с параметрами `directory` и `user`. Мы видим, что она имеет доступ к параметрам и переменным внешней функции.
+
+Функция `has_permissions()` возвращает свою внутреннюю функцию. Ее можно присвоить переменной, чтобы затем пользоваться переменной как вызываемым объектом.
+
+Это и происходит в последних 4-х строках кода примера: мы вызвали функцию `has_permissions()` с аргументом `"/tmp"`. Она вернула свою внутреннюю функцию, и мы присвоили ее переменной `has_permissions_tmp`. Теперь эту переменную можно использовать как функцию: в ней хранится вложенная функция `get_permissions_str()`. Поэтому если вызвать `has_permissions_tmp` с аргументом `"sandbox_user"`, то отработает код вложенной функции, в котором запомнено значение `"/tmp"` параметра внешней функции.
 
 Это знание нам пригодится, когда в [главе про декораторы](/courses/python/chapters/python_chapter_0250/) мы будем обсуждать **замыкания** (closures) — вложенные функции, которые ссылаются на переменные, объявленные в теле внешней функции.
 

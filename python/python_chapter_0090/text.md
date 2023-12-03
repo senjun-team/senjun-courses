@@ -168,6 +168,7 @@ print(lst[::-1])
 ```python
 l = ["A", "B", "C", "D", "E", "F", "G", "H"]
 l[2:5] = [10, 20, 30, 40, 50, 60]
+
 print(l)
 ```
 
@@ -215,7 +216,7 @@ sl2 [2, 3]
 
 ```python {.task_source #python_chapter_0090_task_0050}
 lst = [1, 2, 4, 8, 'N', 'M', 128, 256, 512]
-#Your code here
+# Your code here
 print(lst)
 ```
 ```{.task_hint}
@@ -226,7 +227,7 @@ lst[4:6] = [16, 32, 64]
 
 ```python {.task_source #python_chapter_0090_task_0060}
 lst = ["A", "B", [], [], [], "D", "E", "F", "G", "H"]
-#Your code here
+# Your code here
 print(lst)
 ```
 ```{.task_hint}
@@ -239,7 +240,7 @@ lst[2:5] = ["C"]
 
 ```python {.task_source #python_chapter_0090_task_0070}
 lst = ["A", None, 0, "B", "C", "D", "E"]
-#Your code here
+# Your code here
 print(lst)
 ```
 ```{.task_hint}
@@ -372,7 +373,7 @@ print(res)
 res.append("silently")
 ```
 
-Составьте из элементов списка `words` строку `citation`. Слова в строке должны быть разделены пробелом. Для этого воспользуйтесь методом строки `join()`, рассмотренным в прошлой главе. Выведите строку в консоль. {.task_text}
+Составьте из элементов списка `words` строку. Назовите ее `citation`. Слова в строке должны быть разделены пробелом. Для этого воспользуйтесь методом строки `join()`, рассмотренным в прошлой главе. Выведите строку в консоль. {.task_text}
 
 ```python {.task_source #python_chapter_0090_task_0120}
 words = ["simple", "is", "better", "than", "complex"]

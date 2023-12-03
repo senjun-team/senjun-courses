@@ -42,7 +42,7 @@ def fetch_records(table, ids):
     """Selects records from the table which correspond to ids.
 
     Args:
-        table: name of the table in th database.
+        table: name of the table in the database.
         ids: A sequence of integers representing the id of each record
             to fetch.
 
@@ -142,14 +142,14 @@ f(a = 1, 2, c = 3, d = 4)
 def print_last_item(s, delimiter):
     print(s.split(delimiter)[-1])
 
-# File extension
+# Нужно вывести расширение файла
 print_last_item(s="/var/log/msg.log")
 
-# The last word in the sentence
+# Нужно вывести последнее слово в предложении
 print_last_item("Complex is better than complicated", " ")
 
-# Child directory
-print_last_item("/home/george/Documents/2023/August", delimiter="/")
+# Нужно вывести имя последней директории в пути (August)
+print_last_item("/home/george/Documents/2023/August")
 ```
 ```{.task_hint}
 Обратите внимание на комментарии в коде.

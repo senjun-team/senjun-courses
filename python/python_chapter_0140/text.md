@@ -90,7 +90,30 @@ b value: 10
 ```python {.task_source #python_chapter_0140_task_0010}
 ```
 ```{.task_hint}
-Для хранения статистики по кодам ошибок в методе `__init__()` заведите поле типа `dict`. Ключами в нем будут HTTP коды, значениями — их количество.
+class ResponseStats:
+    def __init__(self):
+        self._resp = {}
+
+    def add_response(self, code):
+        if code not in self._resp:
+            self._resp[code] = 0
+        self._resp[code] += 1
+
+    def response_count(self, code):
+        return self._resp.get(code, 0)
+
+    def http_err_pct(self):
+        errors = 0
+        total = 0
+        for code, count in self._resp.items():
+            if code >= 400:
+                errors += count
+            total += count
+
+        if total == 0:
+            return 0
+            
+        return errors / total * 100.0
 ```
 
 ## Атрибуты объекта и атрибуты класса

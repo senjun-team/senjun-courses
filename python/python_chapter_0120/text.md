@@ -149,12 +149,14 @@ print(kv)
 Замените комментарии на реальный код, задействующий операции над множествами.{.task_text}
 
 ```python {.task_source #python_chapter_0120_task_0030}
+# Все доступные книги (находящиеся в продаже)
 books_available = {"Fluent Python", "Python Cookbook", "Python crash course"}
+# Уже купленные книги
 books_purchased = {"Learning python", "Python in a nutshell", "Fluent Python"}
 
-books_total = # all available or purchased books
-books_popular = # books which are still available and which were purchased
-books_sold_out = # purchased and not available anymore books
+books_total = # Все доступные и приобретенные книги
+books_popular = # Доступные книги, которые были куплены
+books_sold_out = # Раскупленные книги, которых уже нет в продаже
 ```
 
 ```{.task_hint}
