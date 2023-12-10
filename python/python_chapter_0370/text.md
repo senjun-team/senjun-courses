@@ -1,321 +1,357 @@
-# Глава 37. Еще раз про pythonic way
-> Readability counts.  
-Дзен питона
+# Глава 37. Метаклассы
+> Метаклассы — потаенная магия питона, о которой 99% разработчиков не должны даже задумываться.
+Тим Питерс, core-контрибьютор питона и автор сортировки Timsort
+
+Как сказал Тим Питерс, если вы задумываетесь, нужно ли вам использовать метаклассы, то нет, не нужно. И это правило железно работает... За исключением того, что о метаклассах нет-нет да спрашивают на собеседованиях. А в дебрях сложных проектов, с которыми приходится сталкиваться, проскальзывает таинственное слово `metaclass`.
+
+Метакласс — мощный инструмент метапрограммирования. Метакласс — это фабрика классов. С ее помощью классы создаются и кастомизируются прямо в рантайме. Метаклассами пронизана подкапотная работа с классами. Если хотите знать больше, то эта глава для вас.
 
 
-Для того, чтобы по-максимуму использовать преимущества языка, недостаточно знать его синтаксис. Приемы, считающиеся хорошей практикой в одном языке, назовут анти-паттернами, если они встретятся в коде на другом языке. 
-
-В мире Java геттеры и сеттеры для полей класса — это норма, но переносить их в питон [не имеет смысла.](/courses/python/chapters/python_chapter_0140#block-fields) Невозможно представить код на go без возврата и проверки кодов ошибок функций. А для питона подобный подход слишком многословный: проще придерживаться [принципа EAFP](/courses/python/chapters/python_chapter_0170#block-eafp) и обрабатывать исключения. Подобных примеров сотни.
-
-Иными словами, важно не просто уметь написать рабочий код, а сделать это *идиоматично.* В этой главе мы пойдем от обратного: рассмотрим популярные анти-паттерны питона. И варианты их рефакторинга.
-
-## Работа со словарями
-### Поиск элемента: if vs метод get()
-Допустим, нам нужно найти в словаре `d` значение по ключу `k` и присвоить его переменной `x`. Если ключ не найден, то присвоить значение по умолчанию 1. Вот как выглядит громоздкое и неэффективное решение этой задачи:
+## Что такое метакласс
+Как мы [выяснили](/courses/python/chapters/python_chapter_0180/) в главе про модель данных, все в питоне — это объект. Класс — это объект с типом `type`.
 
 ```python
-x = 1
+class Dummy:
+    ...
 
-if k in d:
-    x = d[k]
+d = Dummy()
+print(type(d))
+print(type(Dummy))
+print(type(type))
+```
+```
+<class '__main__.Dummy'>
+<class 'type'>
+<class 'type'>
 ```
 
-`k in d` и `d[k]` — двойная работа по поиску элемента в словаре. А вместо трех строчек то же самое выражается одной:
+Из примера видно, что тип объекта `d` — его класс `Dummy`. Тип класса `Dummy` — `type`. А тип `type` — это `type`. То есть `type` сконструирован так, чтобы являться классом для себя самого. Мы получили зацикленную цепочку из классов.
+
+Вообще `type` относится к классу также, как класс — к своему объекту. Класс нужен, чтобы создавать объекты, а `type` — классы. А все потому, что `type` является метаклассом.
+
+**Метакласс** — сущность, которая создает классы. И это не уникальная для питона концепция. Метаклассы поддерживаются в Ruby, Objective-C, Perl и других языках.
+
+`type` — это **встроенный метакласс.** Он используется по умолчанию для создания классов. Чтобы понять, как это работает, вспомним, как выглядит работа с классами в питоне.
+
+По месту объявления класса интерпретатор заводит переменную с именем класса. С которой можно работать, как и с любой другой переменной. Но эта переменная (класс) сама может создавать переменные (инстансы). Поэтому она называется классом. 
+
+Класс можно присваивать переменной:
 
 ```python
-x = d.get(k, 1)
+class C:
+    ...
+
+x = C
+print(type(x))
+print(id(x))
+print(id(C))
+```
+```
+<class 'type'>
+94038844921552
+94038844921552
 ```
 
-Мы воспользовались [методом словаря](/courses/python/chapters/python_chapter_0130#block-methods) `get(key, default_val=None)`.
+Можно добавлять и удалять атрибуты класса.
 
-Проведите рефакторинг поиска записи `"blog"` в словаре `clicks`. {.task_text}
+Что выведет этот код?  {.task_text}
 
-```python {.task_source #python_chapter_0370_task_0010}
-clicks = {"news": 15, "home": 102, "faq": 8}
+```python
+class C:
+    ...
 
-count = 0
+C.field = 8
 
-if "blog" in clicks:
-    count = clicks["blog"]
+print("field" in C.__dict__)
+```
 
-print(f"{count=}")
+```consoleoutput {.task_source #python_chapter_0370_task_0010}
 ```
 ```{.task_hint}
-count = clicks.get("blog", 0)
+True. Пояснение: мы завели пустой класс C. Затем добавили в него поле field со значением 8. В консоль мы вывели результат проверки, содержится ли поле field в словаре с атрибутами.
 ```
 
-### Обновление элемента: if vs класс defaultdict
-Распространенная задача: изменить значение в словаре по ключу. При этом обработать ситуацию, если значение еще не было добавлено.
+Класс можно передавать в функцию и возвращать из функции:
 
 ```python
-d = {}
+def factory(title):
+    if title == "pancake":
+        class Pancake:
+            ...
 
-if k not in d:
-    d[k] = []
+        return Pancake
 
-d[k].append("some value")
+    if title == "brownie":
+        class Brownie:
+            ...
+
+        return Brownie
+
+    raise ValueError("Unexpected title")
+
+x = factory("brownie")
+print(type(x))
+print(x.__name__)
+```
+```
+<class 'type'>
+Brownie
 ```
 
-Внутри `if` происходит повторное обращение по ключу, что не эффективно. То же самое легко выразить лаконичнее и без участия `if`. Достаточно заменить встроенный тип `dict` на `defaultdict` из [модуля](https://docs.python.org/3/library/collections.html#collections.defaultdict) `collections`:
+В этом примере мы создаем различные классы прямо внутри функции `factory()` и возвращаем их наружу. Выглядит это странновато. Такой код не очень гибкий, в нем легко запутаться.
+
+Добиться того же самого результата, то есть динамического создания классов, можно с помощью встроенной функции `type()`.
+
+## type и динамическое создание классов
+В прошлых главах мы неоднократно пользовались функцией `type()`. Она принимает объект и возвращает его тип.
 
 ```python
-from collections import defaultdict
-
-d = defaultdict(list)
-
-d[k].append("some value")
+obj_type = type(obj)
 ```
 
-Класс `defaultdict` отнаследован от `dict` и отличается от него только обработкой значений по умолчанию. Его конструктор `defaultdict(default_factory=None, /[, ...])` соответствует конструктору `dict` с добавлением аргумента `default_factory` для заполнения значений по умолчанию. 
-
-В качестве `default_factory` может выступать `None` или вызываемый объект. В том числе лямбда или конструктор встроенных типов:
+В таком варианте использования `type()` фактически возвращает значение dunder-поля `__class__`. Например:
 
 ```python
-from collections import defaultdict
-
-d1 = defaultdict(lambda: 255)
-d2 = defaultdict(str)
+val = 104
+print(type(val))
+print(val.__class__)
+```
+```
+<class 'int'>
+<class 'int'>
 ```
 
-Откажитесь от стандартного словаря в пользу `defaultdict`. {.task_text}
+У `type()` есть и другое применение — динамическое создание классов! В таком случае функция принимает 3 аргумента: имя класса, кортеж его родителей и словарь с атрибутами класса. А возвращает сам класс:
 
-```python {.task_source #python_chapter_0370_task_0020}
-clicks = {}
+```python
+class_obj = type(class_name, parents, attrs)
+```
 
-if "news" not in clicks:
-    clicks["news"] = 0
+`class_name` превращается в dunder-поле `__name__` нового класса, список родительских классов `parents` становится полем `__bases__`, а словарь `attrs` — не что иное как `__dict__`.
 
-clicks["news"] += 1
+Пусть вас не смущает, что в зависимости от количества передаваемых аргументов `type()` ведет себя совершенно по-разному: для единственного аргумента возвращает его тип, а для трех аргументов создает объект-класс. Так сложилось по историческим причинам.
 
-print(clicks["news"])
+Заменим классическое объявление пустого класса на его создание через `type()`.
+
+При заведении класса через `class` объект класса создается автоматически.
+
+```python
+class Dummy:
+    ...
+```
+
+А при заведении класса через `type()` ответственность за создание объекта лежит на разработчике:
+
+```python
+Dummy = type("Dummy", (), {})
+```
+
+Обратите внимание: здесь имя класса, переданное строкой в `type()`, совпадает с именем переменной, в которую присваивается созданные класс. В принципе они могут и различаться, но зачем усложнять!
+
+Что выведет этот код?  {.task_text}
+
+```python
+Dummy = type("Dummy", (), {})
+print(len(Dummy.__bases__))
+```
+
+```consoleoutput {.task_source #python_chapter_0370_task_0020}
 ```
 ```{.task_hint}
-from collections import defaultdict
-
-clicks = defaultdict(lambda : 0)
-
-clicks["news"] += 1
+1. Пояснение: если у класса явно не указан родитель, класс наследуется от object. Поэтому кортеж __bases__ состоит из единственного элемента: <class 'object'>.
 ```
 
-### Обновление элемента: if vs метод setdefault()
-Вернемся к неудачному коду из предыдущего пункта главы.
+Атрибутами класса могут быть, разумеется, и поля, и методы. И вот как свободная функция превращается в метод:
 
 ```python
-d = {}
+def show_summary(self):
+    print(f"object type: {type(self)}")
+    print(f"class parents: {type(self).__bases__}")
 
-if k not in d:
-    d[k] = []
 
-d[k].append("some value")
+SimpleClass = type("SimpleClass", (), {"summary": show_summary})
+obj = SimpleClass()
+obj.summary()
+```
+```
+object type: <class '__main__.SimpleClass'>
+class parents: (<class 'object'>,)
 ```
 
-Как мы разобрались, его можно отрефакторить заменой `dict` на `collections.defaultdict`. Второй вариант — воспользоваться [методом словаря](/courses/python/chapters/python_chapter_0130#block-methods) `setdefault()`:
+В этом примере мы завели функцию `show_summary()`. С помощью вызова `type()` создали класс `SimpleClass`, в атрибут `summary` которого превращена функция. Затем мы инстанцировали `obj` от класса `SimpleClass` и вызвали у него данный метод. 
 
-```python
-d = {}
-
-d.setdefault(k, []).append("some value")
-```
-
-`setdefault()` удобен, если значение по умолчанию в процессе работы со словарем может поменяться. Например, оно разное для разных ключей.
-
-Проведите рефакторинг этого кода с помощью метода `setdefault()`. {.task_text}
+Проведите рефакторинг кода: замените объявления `Parent` и `Child` на создание классов через `type()`. {.task_text}
 
 ```python {.task_source #python_chapter_0370_task_0030}
-subscriptions = {}
+class Parent:
+    def __init__(self):
+        self.x = 5
 
-if "user_1" not in subscriptions:
-    subscriptions["user_1"] = set()
+    def f(self, val):
+        print(f"Parent f({val})")
+        return self.x * val
 
-subscriptions["user_1"].add("monthly")
+class Child(Parent):
+    def __init__(self):
+        self.y = 6
 
-print(subscriptions)
+    def f(self, val):
+        print(f"Child f({val})")
+        return self.x * self.y * val
+
+
+parent = Parent()
+res = parent.f(3)
+print(f"Result: {res}\n")
+
+child = Child()
+res = child.f(3)
+print(f"Result: {res}\n")
 ```
 ```{.task_hint}
-subscriptions.setdefault("user_1", set()).add("monthly")
+def f_parent(self, val):
+    print(f"Parent f({val})")
+    return self.x * val
+
+def f_child(self, val):
+    print(f"Child f({val})")
+    return self.x * self.y * val
+
+Parent = type("Parent", (), {"x": 5, "f": f_parent})
+
+Child = type("Child", (Parent,), {"y": 6, "f": f_child})
+
+parent = Parent()
+res = parent.f(3)
+print(f"Result: {res}\n")
+
+child = Child()
+res = child.f(3)
+print(f"Result: {res}\n")
 ```
 
-### Циклы: обращение по ключу vs метод items()
-Так выглядит типичный проход по словарю у новичка в мире питона:
+Каждый раз, когда в коде мы пишем `class`, срабатывает подкапотная магия питона. Она превращает блок `class` в вызов `type()`. Тело класса исполняется в свежесозданном пространстве имен; имя класса связывается с результатом вызова `type()`.
+
+`type` — метакласс, по умолчанию используемый при создании классов. Но можно написать и свой собственный метакласс.
+
+## Кастомные метаклассы
+Рассмотрим основные шаги, исполняемые при инстанцировании объекта класса:
 
 ```python
-for k in d:
-    print(k, d[k])
+class Dummy:
+    ...
+
+d = Dummy()
 ```
 
-Этот код не оптимален: в нем есть лишнее обращение по ключу. Правильнее проитерироваться по парам ключ-значение, которые возвращает [метод](/courses/python/chapters/python_chapter_0130#block-basic-ops) `items()`:
+Для того, чтобы создать инстанс класса, у класса нужно вызвать оператор `()`: он вернет новый объект. Вызов `()` определяется с помощью dunder-метода `__call__()`. Который в свою очередь вызывает конструктор `__new__()` и инициализатор `__init__()`. Если эти методы не объявлены в самом классе, интерпретатор ищет их в родительских классах. 
+
+Метод `__new__()` всегда вызывается перед `__init__()`. Он создает объект и возвращает его. А `__init__()` — инициализирует, донастривает переданный в него уже существующий объект. В случае, если создаваемый объект — класс, то для его настройки правильнее использовать `__new__()`.
+
+Если поведение при создании объекта класса вдруг захотелось переопределить, этого можно добиться, присвоив классу новый метод:
 
 ```python
-for k, v in d.items():
-    print(k, v)
+class Dummy:
+    ...
+
+def new(cls):
+    obj = object.__new__(cls)
+    print(f"Creating object {obj}...")
+    return obj
+
+Dummy.__new__ = new
+
+d = Dummy()
+```
+```
+Creating object <__main__.Dummy object at 0x7f3fbbf8bad0>...
 ```
 
-А точнее, `items()` возвращает [генератор,](/courses/python/chapters/python_chapter_0210#block-generators) который при каждом обращении отдает кортеж из двух элементов. Поэтому `items()` безопасно использовать даже для очень больших словарей.
+В данном примере мы переписали поведение класса `Dummy` при создании своих инстансов. Но как быть, если мы хотим переопределить поведение при создании **классов?** Как мы уже знаем, `type` — метакласс, по умолчанию создающий классы в питоне. Но вот так просто переопределить его методы  `__new__()` и `__init__()` не получится. Любая попытка перезаписи атрибутов `type` завершится исключением:
 
-Проведите рефакторинг цикла по словарю. {.task_text}
+```
+TypeError: can't set attributes of built-in/extension type 'type'
+```
+
+Для переопределения действий по созданию класса и нужны кастомные метаклассы.
+
+Для начала определим новый метакласс. Чтобы класс превратился в метакласс, он должен быть отнаследован от `type` или его потомка. 
+
+Затем в определении класса, поведение при создании которого хочется переопределить, укажем кастомный метакласс после ключевого слова `metaclass`.
+
+И вот как это выглядит на примере:
+
+```python
+class Meta(type):
+    def __new__(cls, name, bases, attrs):
+        obj = super().__new__(cls, name, bases, attrs)
+        print(f"Creating class {obj}...")
+        return obj
+
+class Dummy(metaclass=Meta):
+    ...
+```
+```
+Creating class <class '__main__.Dummy'>...
+```
+
+Метод `__new__()` метакласса принимает класс, его имя, кортеж родителей и словарь атрибутов.
+
+Реализуйте метакласс `UpperAttrMeta`, который бы переводил все атрибуты класса, не являющиеся dunder-атрибутами, в верхний регистр. {.task_text}
+
+Примените этот метакласс к `SimpleClass`. {.task_text}
 
 ```python {.task_source #python_chapter_0370_task_0040}
-numbers = {i: i * 2 for i in range(5)}
+# Your code here
 
-for num in numbers:
-    if num % 2 == 0:
-        print(f"{num} -> {numbers[num]}")
+class SimpleClass:
+    attr1 = "val1"
+    attr2 = "val2"
+
+print(hasattr(SimpleClass, "attr1"))
+print(hasattr(SimpleClass, "ATTR1"))
 ```
 ```{.task_hint}
-for k, v in numbers.items():
-    if k % 2 == 0:
-        print(f"{k} -> {v}")
+class UpperAttrMeta(type): 
+    def __new__(cls, name, bases, attrs):
+
+        attrs = [(name, value) for name, value in attrs.items() if not name.startswith("__")]
+        uppercase_attrs = dict((name.upper(), value) for name, value in attrs)
+
+        return type.__new__(cls, name, bases, uppercase_attrs)
+
+
+class SimpleClass(metaclass=UpperAttrMeta):
+    attr1 = "val1"
+    attr2 = "val2"
+
+
+print(hasattr(SimpleClass, "attr1"))
+print(hasattr(SimpleClass, "ATTR1"))
 ```
 
-## Работа со списками
-### Поиск по списку vs поиск по множеству
-Проверим, содержит ли список `lst` элемент `x`:
+Метаклассы выполняют довольно простую работу: перехватывают создание класса; модифицируют класс; возвращают уже модифицированный. Вот собственно и все, что нужно знать о метаклассах.
+
+## Применение метаклассов
+И примеры, и задачи в этой главе выглядят притянутыми за уши. Чтобы добиться аналогичного результата, не стоит прибегать к тяжелой артиллерии в виде метаклассов. Сгодятся и декораторы классов. Метаклассы существуют отнюдь не для тривиального изменения поведения классов. Они оказываются действительно незаменимы для решения более сложных задач. Например, когда речь заходит о разработке API, таких как Django ORM.
+
+Django — это веб-фреймворк. Django ORM (Object Relational Mapping) — это API, который позволяет взаимодействовать с базой данных, используя код на питоне вместо SQL-запросов. Он описывает записи в SQL-таблицах обычными классами:
 
 ```python
-if x in lst:
-    print(f"Found {x} in list!")
+class Course(models.Model):
+    title = models.CharField(max_length=200, unique=True)
+    chapters_count = models.IntegerField()
+
+course = Course(title="python", chapters_count=37)
+print(course.chapters_count)
 ```
 
-В такой проверке нет ничего плохого, но ровно до тех пор, пока длина списка удерживается в рамках разумного. Как мы [обсуждали](/courses/python/chapters/python_chapter_0090#block-lst-inner) в главе про списки, сложность поиска элемента в объекте типа `list` — O(n). И если количество элементов списка переваливает за тысячи, а то и миллионы, то поиск становится ужасно не эффективным.
-
-В таком случае появляется веский повод отказаться от списка в пользу другой структуры данных, например множества `set` или словаря `dict`. Поиск в этих коллекциях [занимает](/courses/python/chapters/python_chapter_0120#block-complexity) O(1).
-
-```python
-s = set(lst)
-
-if x in s:
-    print(f"Found {x} in set!")
-```
-
-
-Напишите [декоратор](/courses/python/chapters/python_chapter_0250/) `measure_time()` для измерения времени выполнения функции. Он должен логировать, сколько секунд она выполнялась: `"2.03 seconds"`. {.task_text}
-
-Декорируйте им функции `search_in_list()` и `search_in_set()`. Визуально сравните, сколько времени занимает их выполнение. {.task_text}
-
-Пример измерения времени выполнения [приведен](/courses/python/chapters/python_chapter_0280#block-measure-time) в главе про процессы и потоки. {.task_text}
-
-```python {.task_source #python_chapter_0370_task_0050}
-def search_in_list(lst, vals):
-    for val in vals:
-        x = val in lst
-
-def search_in_set(lst, vals):
-    s = set(lst)
-    for val in vals:
-        x = val in s
-
-
-large_lst = [n for n in range(25000)]
-vals = [n for n in range(15000, 30000)]
-
-search_in_list(large_lst, vals)
-
-search_in_set(large_lst, vals)
-```
-```{.task_hint}
-import time
-
-def measure_time(func):
-    def wrapper(*args, **kwargs):
-        start = time.perf_counter()
-        func(*args, **kwargs)
-        finish = time.perf_counter()
-        print(f"{finish - start:.2f} seconds")
-
-    return wrapper
-
-
-@measure_time
-def search_in_list(lst, vals):
-    for val in vals:
-        x = val in lst
-
-
-@measure_time
-def search_in_set(lst, vals):
-    s = set(lst)
-    for val in vals:
-        x = val in s
-
-
-large_lst = [n for n in range(25000)]
-vals = [n for n in range(15000, 30000)]
-
-search_in_list(large_lst, vals)
-
-search_in_set(large_lst, vals)
-```
-
-### Циклы: len() + range() vs enumerate()
-Этот анти-паттерн касается не только списков, но и строк, кортежей. Просто применительно к спискам он встречается особенно часто. И заключается он в организации цикла по коллекции через индексы:
-
-```python
-lst = ["a", "b", "c"]
-
-for i in range(0,len(lst)):
-    elem = lst[i]
-    print(i, elem)
-```
-
-Связку `len()` + `range()` для получения индекса и обращения к элементам коллекции по этому индексу следует заменить на вызов [встроенной функции](/courses/python/chapters/python_chapter_0370#block-enumerate) `enumerate()`:
-
-```python
-lst = ["a", "b", "c"]
-
-for i, elem in enumerate(lst):
-    print(i, elem)
-```
-
-Проведите рефакторинг этого кода. {.task_text}
-
-```python {.task_source #python_chapter_0370_task_0060}
-langs = ["go", "rust", "ruby", "c++", "c"]
-
-i = 0
-
-while i < len(langs):
-    print(i + 1, langs[i]) # Numeration must start from 1!
-    i += 1
-```
-```{.task_hint}
-langs = ["go", "rust", "ruby", "c++", "c"]
-
-for i, lang in enumerate(langs, 1):
-    print(i, lang)
-```
-
-### List comprehensions vs generator expressions
-Многие обходят [list comprehension](/courses/python/chapters/python_chapter_0220/) стороной из-за необычного синтаксиса. Но стоит его освоить, и зачастую новички в мире питона бросаются в другую крайность: злоупотребление.
-
-```python
-comma_seperated_words = ','.join([word for word in words])
-```
-
-В этом примере кода, как и во многих других случаях, нет нужды создавать целый список и расходовать на него оперативную память. Достаточно применить [генераторное выражение:](/courses/python/chapters/python_chapter_0220#generator-expressions)
-
-```python
-comma_seperated_words = ','.join(word for word in words)
-```
-
-Большинство встроенных и библиотечных функций могут работать с генераторными выражениями: `all()`, `any()`, `enumerate()`, `iter()`, `itertools.cycle()`, `itertools.accumulate()` и т.д.
-
-Проведите рефакторинг этого кода, чтобы вместо заведения списка `lst` через list comprehension сразу использовать генераторное выражение. {.task_text}
-
-```python {.task_source #python_chapter_0370_task_0070}
-lst = [i*i for i in range(10)]
-s = sum(lst)
-
-print(s)
-```
-```{.task_hint}
-s = sum(i*i for i in range(10))
-```
+В данном случае мы обратились к полю `chapters_count`, которое в бд имеет тип `IntegerField`. Но в коде мы работаем с ним как с обычным `int`, хотя значение `chapters_count` извлекается из таблицы. Это возможно благодаря определенному для `models.Model` метаклассу, который позволяет в стиле питона работать с сущностями из бд и избегать сложных запросов.
 
 ## Резюмируем
-- Для получения из словаря значения по ключу (либо значения по умолчанию, если ключ не найден), используйте метод `get()`.
-- Когда требуется задавать одно и то же значение по умолчанию для несуществующих ключей словаря, вместо класса `dict` используйте `collections.defaultdict`.
-- Если же необходимо задавать различные умолчания для несуществующих ключей словаря, используйте метод `setdefault()`.
-- Для итерации по словарю используйте метод `items()`.
-- Во множестве или словаре поиск элементов осуществляется гораздо быстрее, чем в списках, строках и кортежах. Помните об этом, если перед вами встает задача частых поисков в большой коллекции.
-- Используйте метод `enumerate()` для получения индексов элементов при итерации по коллекции.
-- Везде, где вместо list comprehension подойдет генераторное выражение, отдавайте предпочтение генераторному выражению.
+- Класс — это объект, который создает другие объекты. А метакласс — это объект, который создает классы.
+- Метакласс — это фабрика для создания классов в рантайме.
+- `type` — это встроенный метакласс, порождающий в питоне все классы.
+- От `type` можно отнаследоваться и таким образом определить кастомный метакласс.
+- Для указания, какой метакласс использовать при создании класса, есть ключевое слово `metaclass`.
+- Чаще всего метаклассы используются для реализации API, таких как Django ORM.

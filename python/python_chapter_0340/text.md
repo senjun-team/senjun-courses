@@ -1,312 +1,252 @@
-# Глава 34. Свойства
+# Глава 34. Дескрипторы
 
-Свойства (properties) в питоне — это инструмент для создания управляемых атрибутов (managed attributes). То есть таких, при доступе к которым может быть выполнен дополнительный код: валидация, форматирование, дополнительные проверки...
+[Дескрипторы](https://docs.python.org/3/howto/descriptor.html) позволяют реализовывать произвольную логику при обращении к атрибутам объекта для чтения, модификации и удаления. 
 
-Можно переопределить поведение атрибута при чтении, записи и удалении. Для этого создаются специальные методы, называемые геттерами (getters), сеттерами (setters) и делитерами (deleters). Их общее название — **свойства.**
+## Что такое дескриптор
+Дескриптор — это атрибут класса, поведение при работе с которым переопределяется dunder-методами `__get__()`, `__set__()` и `__delete__()`. Эти три метода реализуют протокол дескриптора. 
 
-## Геттеры, сеттеры, делитеры
-Для того, чтобы превратить метод в **геттер,** метод оборачивается декоратором `@property`. После этого пользователь класса работает с методом как с обычным полем. 
+Если для атрибута имплементирован хотя бы один, то атрибут становится дескриптором. Поведение при работе с ним называется связанным. **Связанное поведение** (binding behavior) означает привязку к данному объекту способа, которым он изменяется, читается или удаляется.
 
-Заведем класс `User`, а в нем — геттер `data`.
-
-```python
-class User:
-	def __init__(self, user_id, name, email):
-		self._id = user_id
-		self._name = name
-		self._email = email
-
-	@property
-	def data(self):
-		return f"User {self._id}: name={self._name}, email={self._email}"
-
-u = User(147, "kotiko", "kotiko@gmail.com")
-print(u.data)
-```
-```
-User 147: name=kotiko, email=kotiko@gmail.com
-```
-
-При работе с объектом `u` мы обратились к `data` не как к вызываемому объекту `data()`, а как к полю. Можно сказать, что `data` — это динамически вычисляемое поле.
-
-Итак, с помощью декоратора `@property` задается поведение при чтении поля. Метод, обернутый этим декоратором, называется геттером.
-
-Для создания **сеттера,** то есть для переопределения поведения при записи поля, используется декоратор `@field_name.setter`. Здесь `field_name` должен совпадать с названием метода, задекорированного `@property`. Например, если в классе объявлен геттер `data`, сеттер для него должен быть задекорирован через `@data.setter`.
-
-Для заведения **делитера,** то есть для переопределения поведения при удалении поля, используется декоратор `@field_name.deleter`. Например, `@data.deleter`. Конечно, контроль над процессом удаления поля в реальной жизни требуется довольно редко. Поэтому в большинстве случаев делитеры не используются. Они нужны, если требуется запретить удаление поля. Тогда в делитере генерируется соответствующее исключение. Или если при удалении поля требуется провести некую очистку связанных ресурсов.
-
-Напишем класс `Coordinate` для хранения координат точки. В сеттерах `@lat.setter` и `@lon.setter` организуем проверку, что в качестве 
-широты (latitude) и долготы (longitude) переданы адекватные значения.
+Дескрипторы — это именно **поля класса,** а не объекта. Рассмотрим это на примере.
 
 ```python
-class Coordinate:
-	def __init__(self, lat, lon):
-		self.lat = lat
-		self.lon = lon
+class MinMeasurement:
+    def __get__(self, obj, objtype=None):
+        return min(obj.measurements, default=0)
 
-	@property
-	def lat(self):
-		return self._lat
+class Measurements:
+    # Descriptor:
+    min_measurement = MinMeasurement()
 
-	@lat.setter
-	def lat(self, val):
-		if val > 90 or val < -90:
-			raise ValueError("Invalid latitude")
-		self._lat = val
+    def __init__(self, measurements):
+        self.measurements = measurements
 
-	@property
-	def lon(self):
-		return self._lon
 
-	@lon.setter
-	def lon(self, val):
-		if val > 180 or val < -180:
-			raise ValueError("Invalid longitude")
-		self._lon = val
+m1 = Measurements([2, -9, 4])
+print(m1.min_measurement)
 
-pos = Coordinate(34.0, -1004.5)
+m2 = Measurements([100, 55, 50, 80])
+print(m2.min_measurement)
 ```
 ```
-Traceback (most recent call last):
-  File "example.py", line 26, in <module>
-    pos = Coordinate(34.0, -1004.5)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "example.py", line 4, in __init__
-    self.lon = lon
-    ^^^^^^^^
-  File "example.py", line 23, in lon
-    raise ValueError("Invalid longitude")
-ValueError: Invalid longitude
+-9
+50
 ```
 
-При выполнении кода произошла ошибка: проверка на некорректное значение долготы внутри `@lon.setter` сработала даже при присваивании полю внутри инициализатора `__init__()`.
+Мы завели класс `MinMeasurement`, реализующий dunder-метод `__get__()`: значит, `MinMeasurement` поддержал протокол дескриптора. Мы назначили его инстанс полем `min_measurement` класса `Measurements` (то есть сделали дескриптором). Затем создали два инстанса класса `Measurements`: `m1` и `m2`. 
 
-Имплементируйте класс `Color`, который принимает в инициализаторе 3 значения: `r`, `g`, `b`. {.task_text}
+При обращении к дескриптору `min_measurement` через инстансы `m1` и `m2` происходит магия: вызывается метод `__get__()`, в который передается соответствующий инстанс в качестве аргумента `obj`.
 
-Добавьте в класс свойство `hex`, которое бы возвращало шестнадцатеричное представление цвета. Можете воспользоваться вспомогательной функцией `rgb_to_hex()`. {.task_text}
+Итак, класс, который реализует протокол дескриптора, позволяет делать управляемыми атрибуты в другом классе! Сигнатуры методов, составляющих протокол дескриптора, выглядят так:
+```python
+__get__(self, obj, obj_type=None)
 
-Запретите удалять свойство `hex`: при попытке удаления должно генерироваться исключение `AttributeError` с текстом `"Hex attribute can not be deleted"`. {.task_text}
+__set__(self, obj, value)
+
+__delete__(self, obj)
+```
+
+`__get__()` возвращает произвольное значение, `__set__()` и `__delete__()` возвращают `None`. 
+
+Все три метода принимают параметры `self` и `obj`. `self` — объект дескриптора. В примере выше это поле `min_measurement`. `obj` — инстанс класса, в который дескриптор добавлен в качестве поля. В нашем примере это `m1` и `m2`.
+
+Параметр `obj_type` метода `__get__()` — это класс, в который добавлено поле-дескриптор. В нашем примере это класс `Measurements`.
+
+Рассмотрим еще один пример. Дескриптор для класса, описывающего аптайм сервера.
+
+```python
+import time
+from datetime import datetime, timedelta
+
+
+class Uptime:
+    def __init__(self):
+        self._ts_start = 0
+
+    def __get__(self, obj, obj_type=None):
+        now = time.time()
+        sec = timedelta(seconds=int(now - self._ts_start))
+        dt = datetime(1, 1, 1) + sec
+
+        return (
+            f"{dt.day-1} days, {dt.hour} hours, {dt.minute} minutes {dt.second} seconds"
+        )
+
+    def __set__(self, obj, ts_start):
+        if ts_start <= 0:
+            raise ValueError("Timestamp must be > 0")
+
+        if ts_start > time.time():
+            raise ValueError("Timestamp can't be in the future")
+
+        self._ts_start = int(ts_start)
+
+    def __delete__(self, obj):
+        del self._ts_start
+
+
+class Server:
+    uptime = Uptime()
+
+    def __init__(self, name, ts_start):
+        self.name = name
+        self.uptime = ts_start
+
+
+server = Server("Sandbox", time.time())
+time.sleep(2)
+print(server.uptime)
+```
+```
+0 days, 0 hours, 0 minutes 2 seconds
+```
+
+`uptime` — дескриптор класса `Server`. В методе `__init__()`, вызываемом при создании объектов `Server`, при присваивании `uptime` аргумента `ts_start` вызывается метод `__set__()`. При записи в поле `uptime` инстанса `server` вызывается `__set__()`. В него встроена валидация: временная метка не должна быть меньше нуля или старше текущего времени.
+
+
+Замените поле `name` из класса `Server` на дескриптор: {.task_text}
+- Заведите класс `Name`, реализующий все три метода протокола дескриптора.
+- С их помощью логируйте в консоль факт чтения и записи поля `name` объектов `Server`: выводите сообщения `"Getting name"` и `"Seting name"`.
+- Запретите удаление поля `name`: генерируйте исключение типа `AttributeError`.
 
 ```python {.task_source #python_chapter_0340_task_0010}
-def rgb_to_hex(r, g, b):
-    return f"#{r:02x}{g:02x}{b:02x}"
+import logging
+import time
 
-class Color:
-	# Your code
+logging.basicConfig(level=logging.INFO)
 
-c = Color(169, 3, 252)
-print(c.hex)
 
-try:
-	del c.hex
-except AttributeError as e:
-	print(f"Deleting hex: {e}")
-```
-```{.task_hint}
-def rgb_to_hex(r, g, b):
-    return f"#{r:02x}{g:02x}{b:02x}"
+class Server:
+    def __init__(self, name, ts_start):
+        self.name = name
+        self.uptime = ts_start
 
-class Color:
-    def __init__(self, r, g, b):
-        self._r, self._g, self._b = r, g, b
 
-    @property
-    def hex(self):
-        return rgb_to_hex(self._r, self._g, self._b)
-    
-    @hex.deleter
-    def hex(self):
-        raise AttributeError("Hex attribute can not be deleted")
-
-c = Color(169, 3, 252)
-print(c.hex)
+logging.info("Before server instantiation...")
+server = Server("Sandbox", time.time())
+logging.info(server.name)
+server.name = "Prod"
+logging.info(server.name)
 
 try:
-    del c.hex
+    del server.name
 except AttributeError as e:
-    print(f"Deleting hex: {e}")
-```
+    logging.exception(f"Couldn't delete readonly field: {e}")
 
-## Основные сценарии работы со свойствами
-Мы разобрались, что `@property`, `@field_name.setter` и `@field_name.deleter` позволяют реализовать произвольную логику при обращении к полю: валидацию, логирование, форматирование и т.д. Перечислим наиболее популярные сценарии использования свойств.
-
-Реализация **read-only полей.** В классе заводится поле, имя которого начинается с подчеркивания `_`: это подсказка, что поле приватное и пользователю класса напрямую к нему обращаться не следует. Для чтения этого поля создается метод, декорируемый `@property`. Он и превращается в read-only поле. Также возможна реализация write-only полей. Тогда метод, декорируемый `@property`, бросает исключение `AttributeError`. Оно сообщает, что поле доступно только для записи.
-
-Рефакторинг поведения класса **без изменения его интерфейса.** Например, если в классе есть публичное поле, и внезапно появилась необходимость организовать проверку при записи поля, не меняя интерфейс класса. В таком случае поле делается приватным. А вместо него вводится свойство со всеми необходимыми проверками.
-
-**Ленивое вычисление** атрибутов. В декорируемом через `@property` методе осуществляются вычисления, результат которых сохраняется в приватное поле. При обращении к полю происходит проверка: нужно ли запускать вычисления или можно отдать запомненный ранее результат.
-
-Реализация динамически **вычисляемых полей.** То есть полей, значения которых вычисляются заново при каждом обращении.
-
-Реализуйте класс `Circle`, в инициализатор которого передаются координаты `x`,`y` и радиус. {.task_text}
-
-Напишите свойство `r` для радиуса с проверкой, он не может быть отрицательным. В таком случае генерируйте `ValueError`. {.task_text}
-
-Добавьте в класс свойства `area` и `circumference` для расчета площади круга и длины окружности. {.task_text}
-
-```python {.task_source #python_chapter_0340_task_0020}
-from math import pi
-
-class Circle:
-	# Your code here
-
-c = Circle(5, 2.01, 6)
-print(c.area)
-print(c.circumference)
 ```
 ```{.task_hint}
-from math import pi
+import logging
+import time
 
-class Circle:
-    def __init__(self, x, y, r):
-        self.r = r
-        self.x, self.y = x, y
+logging.basicConfig(level=logging.INFO)
 
-    @property
-    def r(self):
-        return self._r
 
-    @r.setter
-    def r(self, value):
-        if value < 0:
-            raise ValueError("Negative radius")
-        self._r = value
-    
-    @property
-    def area(self):
-        return pi * self.r * self. r
+class Name:
+    def __get__(self, obj, obj_type=None):
+        name = obj._name
+        logging.info("Getting name")
+        return name
 
-    @property
-    def circumference(self):
-        return 2 * pi * self.r
-    
+    def __set__(self, obj, name):
+        logging.info("Setting name")
+        obj._name = name
 
-c = Circle(5, 2.01, 6)
-print(c.area)
-print(c.circumference)
+    def __delete__(self, obj):
+        raise AttributeError("Can't delete attribute")
+
+
+class Server:
+    name = Name()
+
+    def __init__(self, name, ts_start):
+        self.name = name
+        self.uptime = ts_start
+
+
+logging.info("Before server instantiation...")
+server = Server("Sandbox", time.time())
+logging.info(server.name)
+server.name = "Prod"
+logging.info(server.name)
+
+try:
+    del server.name
+except AttributeError as e:
+    logging.exception(f"Couldn't delete readonly field: {e}")
 ```
 
-## Свойства и наследование
-В классе-потомке можно переопределять свойства класса-родителя. Но если переопределено одно свойство, необходимо переопределить и остальные, которые планируется использовать в классе-потомке. Иначе при попытке их использования будет брошено исключение `AttributeError`.
+## Виды дескрипторов
+Дескрипторы можно разбить на два типа:
+- Дескрипторы данных (data descriptors). Они реализуют хотя бы один из методов `__set__()` или `__delete__()`.
+- Дескрипторы не-данных (non-data descriptors). Они реализуют только метод `__get__()`.
 
-Если запустить этот код, будет сгенерировано исключение `"AttributeError: property 'field' of 'Child' object has no setter"`. Исправьте это. {.task_text}
-
-```python {.task_source #python_chapter_0340_task_0030}
-class Parent:
-	@property
-	def field(self):
-		print("Parent field")
-
-	@field.setter
-	def field(self, val):
-		print("Parent setter")
+От типа дескриптора зависит **приоритет при разрешении имен** в инстансе класса с дескриптором:
+- Если в объекте есть поле, имя которого совпадает с именем дескриптора данных, то приоритет отдается дескриптору данных. 
+- Если же имя поля совпадает с именем дескриптора не-данных, то приоритет отдается полю.
 
 
-class Child(Parent):
-	@property
-	def field(self):
-		print("Child field")
+Что выведет этот код?  {.task_text}
 
-c = Child()
-c.field
-c.field = 1
+В случае не обработанного исключения напишите `error`. {.task_text}
+
+```python
+class X2:
+    def __get__(self, obj, obj_type=None):
+        return obj.x * 2
+
+
+class Data:
+    x2 = X2()
+
+    def __init__(self, val):
+        self.x2 = val
+
+
+d = Data(5)
+print(d.x2)
+```
+
+```consoleoutput {.task_source #python_chapter_0340_task_0020}
 ```
 ```{.task_hint}
-class Parent:
-	@property
-	def field(self):
-		print("Parent field")
-
-	@field.setter
-	def field(self, val):
-		print("Parent setter")
-
-
-class Child(Parent):
-	@property
-	def field(self):
-		print("Child field")
-
-	@field.setter
-	def field(self, val):
-		print("Child setter")
-
-c = Child()
-c.field
-c.field = 1
+5. Пояснение: x2 — это дескриптор не-данных, потому что он реализует только метод __get__(). Следовательно, при разрешении имен атрибутов объекта d приоритет отдается полю объекта, а не дескриптора. Умножения на 2, реализованного в методе __get__(), не происходит. И в консоль выводится значение обычного целочисленного поля, равное 5.
 ```
 
-## Использование свойств без декораторов
-Декораторы — наиболее лаконичный и удобный способ добавления в класс свойств. Есть и альтернатива: функция `property()`. Она принимает на вход функции, которыми требуется обернуть управляемый атрибут, а также строку документации.
+
+Что выведет этот код?  {.task_text}
+
+В случае не обработанного исключения напишите `error`. {.task_text}
 
 ```python
-property(fget=None, fset=None, fdel=None, doc=None)
+class Length:
+    def __get__(self, obj, obj_type=None):
+        return len(obj.lst)
+
+    def __set__(self, obj, value):
+        obj.lst = value
+
+
+class Arr:
+    l = Length()
+
+    def __init__(self, data):
+        self.l = data
+
+
+a = Arr([1, 2, 3])
+print(a.l)
 ```
 
-Функция `property()` возвращает сам управляемый атрибут.
-
-Перепишем класс `Circle` из задачи выше на использование `property()`.
-
-```python
-from math import pi
-
-class Circle:
-    def __init__(self, x, y, r):
-        self.r = r
-        self.x, self.y = x, y
-
-    def _get_r(self):
-        return self._r
-
-    def _set_r(self, value):
-        if value < 0:
-            raise ValueError("Negative radius")
-        self._r = value
-    
-	def _get_area(self):
-		return pi * self.r * self. r
-
-	def _get_circumference(self):
-		return 2 * pi * self.r
-	
-	r = property(
-        fget=_get_r,
-        fset=_set_r,
-        doc="Circle radius"
-    )
-
-	area = property(fget=_get_area)
-
-	circumference = property(fget=_get_circumference)
-    
-
-c = Circle(5, 2.01, 6)
-print(c.area)
-print(c.circumference)
+```consoleoutput {.task_source #python_chapter_0340_task_0030}
+```
+```{.task_hint}
+3. Пояснение: l — это дескриптор данных, потому что он реализует метод __set__(). Следовательно, при разрешении имен атрибутов объекта a приоритет отдается дескриптору, а не полю объекта. В консоль выводится результат работы __get__(), то есть длина списка [1, 2, 3], равная 3.
 ```
 
-Относительно кода с декораторами код с функцией `property()` выглядит более многословным. 
-
-## Как устроены свойства
-Как мы [обсуждали](/courses/python/chapters/python_chapter_0250/) в главе про декораторы, декоратор — всего лишь синтаксический сахар для оборачивания функции в замыкание. Это справедливо и для декораторов свойств. Под капотом они превращаются в вызов функции `property()`. Например, эти два блока кода эквивалентны:
-
-```python
-@property
-def r(self):
-	return self._r
-```
-
-```python
-def r(self):
-	return self._r
-
-r = property(r)
-```
-
-Если заглядывать еще глубже в реализацию, то свойства строятся на [дескрипторах.](/courses/python/chapters/python_chapter_0320/) Ведь управляемый атрибут, возвращаемый `property()`, является дескриптором.
+## Использование дескрипторов
+Под капотом языка дескрипторы применяются сплошь и рядом. Именно они определяют, каким образом функции трансформируются в методы. Декораторы `@classmethod`, `@staticmethod`, `@property`, `@functools.cached_property` и многие другие реализованы за счет дескрипторов. [Слоты](/courses/python/chapters/python_chapter_0350/) тоже строятся на базе дескрипторов. О них мы поговорим в следующей главе.
 
 ## Резюмируем
-- Управляемый атрибут — это атрибут, для чтения, изменения или удаления которого реализована дополнительная логика.
-- Свойства — механизм, позволяющий создавать управляемые атрибуты: геттеры, сеттеры и делитеры.
-- Свойства можно создавать с помощью декораторов `@property`, `@field_name.setter` и `@field_name.deleter`. Либо с помощью функции `property()`.
-- При переопределении в классе-потомке хотя бы одного свойства родителя необходимо переопределить и остальные, которые планируется использовать в потомке.
+- Дескрипторы — это атрибуты класса, имплементирующие один из методов `__get__()`, `__set__()` и `__delete__()`. Эти методы составляют протокол дескриптора.
+- Дескрипторы нужны, чтобы реализовывать специфичную логику при чтении, изменении и удалении атрибутов объекта.
+- Дескрипторы делятся на два типа: дескрипторы данных и дескрипторы не-данных. От типа зависит приоритет при разрешении имен.
