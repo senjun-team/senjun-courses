@@ -1,382 +1,404 @@
-# Глава 28. Потоки, процессы
+# Глава 28. Функции высших порядков
 
-Как мы [выяснили](/courses/python/chapters/python_chapter_0270#block-cpu-bound) в главе про GIL, CPU-bound задачи лучше распараллеливать на процессы, а IO-bound — на потоки. Для высокоуровневого выполнения задач на пуле процессов или потоков предназначен модуль `concurrent.futures`. Низкоуровневые примитивы для работы с процессами и потоками реализованы в модулях `multiprocessing` и `threading`. Об этих трех модулях мы сегодня и поговорим.
+В питоне приемы из функционального программирования гармонично сочетаются с привычным ООП. Они позволяют создавать выразительный,  легко модифицируемый и тестируемый код. Для этого в языке есть все необходимое: замыкания, ленивые вычисления, рекурсия, функции высших порядков. 
 
-## Процессы
-Рассмотрим два способа работы с процессами:
-- Класс `ProcessPoolExecutor` из модуля `concurrent.futures` — самый простой способ распределить задачи по процессам.
-- Модуль `multiprocessing` — низкоуровневый интерфейс для более тонкого управления процессами.
+Функции высших порядков — это функции, которые возвращают или принимают в качестве аргументов другие функции.
+О них и поговорим.
 
-### Модуль concurrent.futures
-Модуль `concurrent.futures` предоставляет простой способ асинхронного запуска задач буквально парой строк кода. 
+## Встроенные функции и модули functools, itertools
+В языке есть две встроенные функции высшего порядка:
+- `map()` применяет функцию поэлементно к одному или нескольким итерабельным объектам.
+- `filter()` фильтрует элементы итерабельного объекта с помощью функции.
 
-Задачи могут выполняться как в отдельных процессах с помощью класса `ProcessPoolExecutor`, так и в потоках с помощью `ThreadPoolExecutor`. У этих классов одинаковый интерфейс, определенный в абстрактном классе `Executor` и состоящий из 3-х методов: `submit()`, `map()`, `shutdown()`.
+Модуль `functools` содержит функции высших порядков, в том числе для [мемоизации](https://wiki5.ru/wiki/Memoization) (кэширования результатов работы других функций) и [частичного применения.](https://ru.wikipedia.org/wiki/%D0%A7%D0%B0%D1%81%D1%82%D0%B8%D1%87%D0%BD%D0%BE%D0%B5_%D0%BF%D1%80%D0%B8%D0%BC%D0%B5%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5) Мы же рассмотрим функцию из этого модуля для обработки последовательностей:
+- `reduce()` кумулятивно применяет функцию к элементам итерабельного объекта, чтобы в результате осталось только одно значение.
 
-```python
-submit(fn, /, *args, **kwargs)
-```
+В комбинации с функциями высших порядков часто используются вспомогательные функции для итерирования:
+- `zip()` — встроенная функция. Принимает несколько итерируемых объектов, из которых поэлементно создает кортежи. Возвращает итератор, который останавливается, когда исчерпывается один из итерируемых объектов.
+- `zip_longest()` — функция из модуля `itertools`, богатого на разнообразные виды итераторов. Она схожа со встроенной функцией `zip()`, но продолжает обход до исчерпания всех итерируемых объектов. Когда объекты исчерпываются, вместо их элементов функция подставляет заданное значение (по умолчанию `None`).
+- `chain()` — функция из модуля `itertools`. Позволяет бесшовно итерироваться по нескольким коллекциям.
 
-`submit()` отправляет функцию с аргументами `fn(*args, **kwargs)` на выполнение в пул процессов и возвращает объект `Future`. Сущность [future](https://en.wikipedia.org/wiki/Futures_and_promises) встречается во многих языках программирования и представляет собой объект, ждущий результатов выполнения задачи.
+Рассмотрим перечисленные функции подробнее.
 
-Рассмотрим пример запуска задач на пуле процессов. Так выглядит выполнение задачи `calc_and_sleep()` в пуле, состоящем из единственного процесса. {#block-measure-time}
-
-```python
-import time
-from concurrent.futures import ProcessPoolExecutor
-
-
-def calc_and_sleep(a, b):
-    time.sleep(1)
-    return pow(a, b)
-
-
-start = time.perf_counter()
-
-with ProcessPoolExecutor(max_workers=1) as executor:
-    future = executor.submit(calc_and_sleep, 128, 256)
-    print(future.result())
-
-finish = time.perf_counter()
-print(f"Finished in {finish - start:.2f} seconds")
-```
-```
-279095111627852376407822673918065072905887935345660252615989519488029661278604994789701101367875859521849524793382568057369148405837577299984720398976429790087982805274893437406788716103454867635208144157749912668657006085226160261808841484862703257771979713923863820038729637520989894984676774385364934677289947762340313157123529922421738738162392233756507666339799675257002539356619747080176786496732679854783185583233878234270370065954615221443190595445898747930123678952192875629172092437548194134594886873249778512829119416327938768896
-Finished in 1.01 seconds
-```
-
-Для получения результата выполнения функции `calc_and_sleep()` мы вызвали метод `result()` объекта типа `Future`. С помощью `perf_counter()` было замерено время выполнения кода. 
+## map() {#block-map}
+Встроенная функция `map()` принимает функцию и один или несколько итерабельных объектов, применяет эту функцию к каждому их элементу:
 
 ```python
-map(fn, *iterables, timeout=None, chunksize=1)
+map(function, *iterables)
 ```
 
-`map()` применяет функцию к каждому элементу итерабельного объекта. По принципу работы она похожа на [встроенную функцию](/courses/python/chapters/python_chapter_0260#block-map) `map()`, только исполняет задачи асинхронно в пуле процессов. `map()` возвращает итератор на результаты применения функции. Если указан параметр `timeout` (в секундах), а функция не успела выполниться за это время, итератор бросает исключение `TimeoutError`.
+Количество принимаемых функцией `function` аргументов должно совпадать с количеством переданных в `map()` итерабельных объектов. `map()` возвращает итератор, при каждом обращении к  которому `function` применяется к элементам итерабельных объектов. Итератор истощается, как только будет завершена итерация по одному из объектов.
 
-Параметр `chunksize` определяет размер чанков, на которые распределяется итерабельный объект по процессам из пула. Для больших коллекций имеет смысл увеличить значение `chunksize` и таким образом ускорить обработку.
+Применим `map()`, чтобы конвертировать числа в шестнадцатеричную систему счисления:
 
 ```python
-shutdown(wait=True, *, cancel_futures=False)
+numbers = [32, 51, 3]
+
+for n in map(hex, numbers):
+    print(n)
 ```
-`shutdown()` завершает пул процессов. Этот метод не нужно вызывать, если `ProcessPoolExecutor` создается через контекстный менеджер `with ... as`.  
+```
+0x20
+0x33
+0x3
+```
 
-Если аргумент `wait` равен `True`, метод блокируется до тех пор, пока все задачи не завершатся. 
+Обработаем через `map()` сразу три коллекции. Чтобы не заводить отдельную вспомогательную функцию, воспользуемся лямбдой:
 
-Если `cancel_futures` равен `True`, то все запланированные, но не начавшие исполнятся в пуле задачи будут отменены.
+```python
+l1 = [-2, 3, 1]
+l2 = [0, 5, 8]
+l3 = [1, 2, 0]
 
+for res in map(lambda a, b, c: a + b + c, l1, l2, l3):
+    print(res)
+```
+```
+-1
+10
+9
+```
 
-Дан массив чисел `nums` и функция `is_prime()`, определяющая, является ли число простым. {.task_text}
-
-Через `ProcessPoolExecutor` нужно распараллелить применение `is_prime()` к элементам `nums`. Для каждого из чисел в том порядке, в котором они идут в `nums`, вывести в консоль строку вида `"112272535095293 is prime: True"`. {.task_text}
-
-Для итерации по числам и результатам метода `map()` объекта `ProcessPoolExecutor` используйте [встроенную функцию](/courses/python/chapters/python_chapter_0260#block-zip) `zip()`. {.task_text}
+Создайте переменную `s` типа `set`. Сохраните в нее числа из списка `lst`, сконвертированные в строки с префиксом `"s"`. Примеры таких строк: `"s-1"`, `"s4"`. {.task_text}
 
 ```python {.task_source #python_chapter_0280_task_0010}
-import math
+lst = [45, 9, -1, 0, 9, 1024, -1]
 
-nums = [
-    112272535095293,
-    112582705942171,
-    102272535065492,
-    115280095190773,
-    115797848077099,
-    1099726899285419]
-
-def is_prime(n):
-    if n < 2:
-        return False
-    if n == 2:
-        return True
-    if n % 2 == 0:
-        return False
-
-    sqrt_n = int(math.floor(math.sqrt(n)))
-    for i in range(3, sqrt_n + 1, 2):
-        if n % i == 0:
-            return False
-    return True
-
-# Your code here
+s = # your code here
+print(s)
 ```
 ```{.task_hint}
-from concurrent.futures import ProcessPoolExecutor
-
-if __name__ == "__main__":
-    with ProcessPoolExecutor() as executor:
-        for number, prime in zip(nums, executor.map(is_prime, nums)):
-            print(f"{number} is prime: {prime}")
+s = set(map(lambda n: "s" + str(n), lst))
 ```
 
-На самом деле под капотом `ProcessPoolExecutor` работает с абстракциями над POSIX и Windows процессами из модуля `multiprocessing`.
+Некоторые разработчики предпочитают вместо list comprehension использовать связку `map()` и `list()`: `map()` возвращает генератор, `list()` принимает его на вход и формирует результирующий список.
 
-### Модуль multiprocessing
-Модуль `multiprocessing` содержит [все необходимое](https://docs.python.org/3/library/multiprocessing.html) для управления процессами, создания пулов, синхронизации и передачи данных между процессами.
-
-Прежде чем переходить к примерам, обговорим, что в скриптах, порождающих новые процессы через `multiprocessing`, **должен присутствовать** блок `if __name__ == "__main__"`. Для чего в принципе нужен этот блок, мы [разбирали](/courses/python/chapters/python_chapter_0180#block-if-main) в главе про модули. 
-
-Применительно к `multiprocessing` корректный импорт `__main__` модуля нужен, чтобы при старте нового экземпляра интерпретатора не возникало побочных эффектов, таких как порождение лишних процессов. Точка входа `if __name__ == "__main__"` позволяет этого избежать.
-
-Итак, работа с пулом процессов в модуле `multiprocessing` выглядит следующим образом:
+Рассмотрим классический list comprehension:
 
 ```python
-from multiprocessing import Pool
+squares = [n*n for n in range(0, 5)]
 
-if __name__ == '__main__':
-    with Pool(3) as p:
-        print(p.map(abs, [-2, 8, -3, 0]))
+print(squares)
 ```
 ```
-[2, 8, 3, 0]
+[0, 1, 4, 9, 16]
 ```
 
-Запуск и ожидание завершения отдельного процесса:
+Перепишем его с использованием `map()`:
 
 ```python
-from multiprocessing import Process
+squares = list(map(lambda n : n*n, range(0, 5)))
 
-if __name__ == '__main__':
-    p = Process(target=print, args=("text",))
-    p.start()
-    p.join()
+print(squares)
 ```
 ```
-text
+[0, 1, 4, 9, 16]
 ```
 
-Передача данных между двумя процессами через очередь, которую безопасно использовать из разных потоков и процессов:
-
-```python
-from multiprocessing import Process, Queue
-
-def f(q, x):
-    q.put([x*2, x*3])
-
-if __name__ == '__main__':
-    q = Queue()
-    p = Process(target=f, args=(q, 3))
-    p.start()
-    print(q.get())
-    p.join()
-```
-```
-[6, 9]
-```
-
-Передача данных между процессами через пайп (дуплексный канал, читать и писать в который могут оба процесса):
-
-```python
-from multiprocessing import Process, Pipe
-
-def f(conn):
-    while True:
-        x = conn.recv()
-        if x is None:
-            return
-
-        conn.send(x*2)
-
-if __name__ == '__main__':
-    conn_parent, conn_child = Pipe()
-    p = Process(target=f, args=(conn_child, ))
-    p.start()
-
-    for val in [3, 4, 5]:
-        conn_parent.send(val)
-        print(conn_parent.recv())
-    
-    conn_parent.send(None)
-    p.join()
-```
-```
-6
-8
-10
-```
-
-Примитив синхронизации `Lock` нужен для блокирования какого-либо ресурса, чтобы в любой момент времени с ним работал только один процесс. Пример использования `Lock` для блокирования консольного вывода:
-
-```python
-import random
-import time
-from multiprocessing import Process, Lock
-
-def f(lock, i):
-    time.sleep(random.randint(0, 6))
-
-    lock.acquire()
-
-    try:
-        print("Process #", i)
-    finally:
-        lock.release()
-
-if __name__ == '__main__':
-    lock = Lock()
-
-    for i in range(1, 6):
-        Process(target=f, args=(lock, i)).start()
-```
-```
-Process # 2
-Process # 4
-Process # 5
-Process # 3
-Process # 1
-```
-
-Вместо вызова методов `acquire()` и `release()` удобнее использовать блокировку через контекстный менеджер `with ... as`.
-
-Функции `f()` и `g()` захватывают блокировку, чтобы под ней выводить текст в консоль. Но в коде допущена ошибка, которая приводит к [взаимной блокировке](https://ru.wikipedia.org/wiki/%D0%92%D0%B7%D0%B0%D0%B8%D0%BC%D0%BD%D0%B0%D1%8F_%D0%B1%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0) (deadlock). Нужно ее исправить. {.task_text}
+Сохраните в словарь `discounted` товары из `products` с применением скидки в 3%. Используйте для этого `map()`. {.task_text}
 
 ```python {.task_source #python_chapter_0280_task_0020}
-from multiprocessing import Process, Lock
- 
-def f(lock):
-    with lock:
-        print("f() acquired lock")
- 
-def g(lock):
-    with lock:
-        print("g() acquired lock")
-        f(lock)
- 
-if __name__ == '__main__':
-    lock = Lock()
-    p = Process(target=g, args=(lock, ))
-    p.start()
-    p.join()
+products = {"corn": 5.2, "noodle": 6.5, "mayonnaise": 1.0}
 ```
 ```{.task_hint}
-def g(lock):
-    with lock:
-        print("g() acquired lock")
-    f(lock)
+def apply_discount(product, discount=3.0):
+    return product[0], product[1] * (1.0 - discount / 100.0)
+
+discounted = dict(map(apply_discount, products.items()))
 ```
 
-Для обмена данными между процессами можно использовать разделяемую память (shared memory). Поверх нее в модуле `multiprocessing` реализованы классы `Value` и `Array`. Останавливаться на них мы не будем, потому что в промышленной разработке их почти не используют. Авторы библиотеки `multiprocessing` по этому поводу [дают рекомендации:](https://docs.python.org/3/library/multiprocessing.html#multiprocessing-programming)
-- Для обмена данными между процессами предпочтительно использовать пайпы и очереди.
-- Более низкоуровневых примитивов лучше избегать. 
+## filter() {#block-filter}
+Встроенная функция `filter()` принимает функцию и итерабельный объект:
 
-Более того, существует негласное правило. Если какая-то задача требует сложной логики синхронизации между процессами, долгих CPU-bound вычислений и обмена между процессами большими объемов данных, то использовать питон для нее попросту не идиоматично. 
+```python
+filter(function, iterable)
+```
 
-## Потоки
-Классы для работы с потоками почти во всем схожи с соответствующими классами для процессов:
-- Класс `ThreadPoolExecutor` из модуля `concurrent.futures` предназначен для асинхронного запуска задач на пуле потоков.
-- Модуль `threading` имеет более низкоуровневый интерфейс аналогично модулю `multiprocessing` для процессов.
+`filter()` возвращает итератор из тех элементов `iterable`, для которых `function` вернула `True` или приводимое к нему значение. Пропускаются элементы, для которых `function` вернула `False` либо 0, `None`, пустую строку и т.д.
 
-`ThreadPoolExecutor`, как и `ProcessPoolExecutor`, отнаследован от абстрактного класса `Executor` и имплементирует его методы: `submit()`, `map()`, `shutdown()`. Не будем останавливаться на них повторно.
+```python
+passwords = ["*****", "**", "*******", "*"]
 
-В модуле `threading` среди прочего определен класс `Thread` с интерфейсом, схожим с интерфейсом класса `multiprocessing.Process`, а также примитив `Lock` с интерфейсом, эквивалентным `multiprocessing.Lock`.
+safe_passwords = list(filter(lambda p: len(p) >= 3, passwords))
+print(safe_passwords)
+```
+```
+['*****', '*******']
+```
 
-В данном коде допущена ошибка, которая привела к взаимной блокировке. Нужно ее исправить, чтобы в консоль вывелись все сообщения из функции `f()`, запущенной на двух потоках. {.task_text}
+Сохраните в словарь `expensive` товары из `products`, которые дороже 4$. {.task_text}
 
 ```python {.task_source #python_chapter_0280_task_0030}
-from time import sleep
-from threading import Thread, Lock
-
-
-def f(n, lock1, lock2):
-    print(f"Thread {n} acquiring lock 1...")
-
-    with lock1:
-        sleep(1)
-        print(f"Thread {n} acquiring lock 2...")
-        
-        with lock2:
-            print(f"Thread {n} acquired 2 locks!")
-
-
-lock_a = Lock()
-lock_b = Lock()
-
-t1 = Thread(target=f, args=(1, lock_a, lock_b))
-t2 = Thread(target=f, args=(2, lock_b, lock_a))
-
-t1.start()
-t2.start()
-
-t1.join()
-t2.join()
-
+products = {"corn": 5.2, "noodle": 6.5, "mayonnaise": 1.0}
 ```
 ```{.task_hint}
-В конструктор Thread() для объекта t2 блокировки передаются в неправильном порядке.
+def is_expensive(product):
+    return product[1] > 4
 
-t2 = Thread(target=f, args=(2, lock_a, lock_b))
+expensive = dict(filter(is_expensive, products.items()))
 ```
 
-Кроме того, модуль `threading` содержит:
-- Класс `RLock` для реентерабельных блокировок.
-- Условные переменные `Condition` для ожидания наступления какого-то события и уведомления о его наступлении.
-- Семафоры `Semaphore` для захвата и освобождения блокировки со счетчиком.
-- События `Event` для ожидания сигнала о наступлении события и триггера этого сигнала.
-- Таймеры `Timer` для отложенного выполнения кода.
-- Барьерные секции `Barrier` для синхронизации выполнения блоков кода.
+Если вместо функции в `filter()` передать `None`, то в отфильтрованном объекте окажутся те значения, которые сами по себе приводимы к  `True`:
 
-Как правило, эти примитивы используются в библиотеках для реализации потоко-безопасных структур данных: защищенных очередей, брокеров сообщений и т.д. В промышленной разработке чаще всего в связке с потоками используются только блокировки и защищенные очереди. Если требуется организовать совместную работу с данными, в игру вступают внешние по отношению к проекту сущности. Например, [Redis,](https://redis.io/) [Celery,](https://docs.celeryq.dev/en/stable/) [Memcached.](https://memcached.org/)
+```python
+temperatures = (5, 0, -1, 6)
 
-В данном коде присутствует ошибка, приводящая к [состоянию гонки](https://en.wikipedia.org/wiki/Race_condition) (race condition). Чтобы ее исправить, защитите данные с помощью блокировки. {.task_text}
+print(tuple(filter(None, temperatures)))
+```
+```
+(5, -1, 6)
+```
+
+Сохраните в множество `valid_keys` не пустые элементы из `keys`. {.task_text}
 
 ```python {.task_source #python_chapter_0280_task_0040}
-from threading import Thread
-from time import sleep
-
-counter = 0
-
-
-def increment(val):
-    global counter
-
-    local_counter = counter
-    local_counter += val
-
-    sleep(1)
-
-    counter = local_counter
-    print(f"{counter=}")
-
-
-t1 = Thread(target=increment, args=(1,))
-t2 = Thread(target=increment, args=(2,))
-
-t1.start()
-t2.start()
-
-t1.join()
-t2.join()
+keys = ['u', 'u', '', 'd', 'h', '', '', 'r']
 ```
 ```{.task_hint}
-from threading import Thread, Lock
-from time import sleep
+valid_keys = set(filter(None, keys))
+```
 
-counter = 0
+Перепишите этот list comprehension на связку вызовов функций высших порядков. {.task_text}
+
+```python {.task_source #python_chapter_0280_task_0050}
+velocities = {60, 65, 90, 100, 120, 20, 40}
+
+res = [f"{v} km/h" for v in velocities if v > 60]
+
+print(res)
+```
+```{.task_hint}
+res = list(map(lambda v : f"{v} km/h", filter(lambda v : v > 60, velocities)))
+```
+
+## functools.reduce()
+Функция `reduce()` из модуля `functools` производит цепочечные вычисления, многократно применяя `function` к каждому элементу коллекции и подставляя `initializer` в качестве первого параметра, а сам элемент в качестве второго. 
+
+```python
+functools.reduce(function, iterable, initializer=None)
+```
+
+`initializer` — это аккумулятор (стартовое значение), с которого начинаются расчеты. Он возвращается, если последовательность пуста. Если `initializer` не указан, а итерабельный объект состоит из единственного элемента, то `reduce()` возвращает этот элемент.
+
+```python
+from functools import reduce
+
+def f(prev, cur):
+    return prev * cur
+
+res = reduce(f, [1, 2, 3, 4])
+print(res)
+```
+```
+24
+```
+
+Кстати, в данном примере вместо самописной функции для умножения мы могли бы воспользоваться функцией `mul()` из модуля `operator`. В нем также есть функции `add()` для сложения.
+
+Напишите функцию `get_total_clicks()`. Она принимает на вход список словарей, содержащих 2 поля: `"clicks"` (количество кликов посетителя на странице), `"is_bot"` (маркер, является ли посетитель ботом). {.task_text}
+
+Функция должна вернуть суммарное количество кликов, совершенных не ботами. Для пустого списка она должна вернуть 0. {.task_text}
+
+Например, для списка `page_stats` функция вернет 4. {.task_text}
+
+```python {.task_source #python_chapter_0280_task_0060}
+def get_total_clicks(stats):
+    # Your code here
+    ...
+
+page_stats = [
+    {
+        "is_bot": True,
+        "clicks": 2,
+    },
+    {
+        "is_bot": False,
+        "clicks": 3,
+    },
+    {
+        "is_bot": False,
+        "clicks": 1,
+    }
+]
+
+print(get_total_clicks(page_stats))
+```
+```{.task_hint}
+from functools import reduce
 
 
-def increment(val, lock):
-    with lock:
-        global counter
+def get_total_clicks(stats):
+    return reduce(
+        lambda a, b: a + b["clicks"],
+        filter(lambda p: not p["is_bot"], stats),
+        0,
+    )
+```
 
-        local_counter = counter
-        local_counter += val
+## zip() {#block-zip}
+Встроенная функция `zip()` нужна для итерирования параллельно по нескольким коллекциям. На каждой итерации она возвращает кортеж из элементов этих коллекций:
 
-        sleep(1)
+```python
+zip(*iterables, strict=False)
+```
 
-        counter = local_counter
-        print(f"{counter=}")
+Если значение аргумента `strict` равно `False` (то есть совпадает со значением по умолчанию), то по достижению самой короткой последовательности `zip()` завершает работу. Если же `strict` выставлен в `True`, а переданные в `zip()` коллекции имеют различное количество элементов, функция сгенерирует исключение `ValueError`.
 
+```python
+cities = ["Podolsk", "Tver"]
+locations = [(55.43, 37.54), (56.85, 35.90)]
 
-lock = Lock()
-t1 = Thread(target=increment, args=(1, lock, ))
-t2 = Thread(target=increment, args=(2, lock, ))
+places = tuple(zip(cities, locations))
+print(places)
+```
+```
+(('Podolsk', (55.43, 37.54)), ('Tver', (56.85, 35.9)))
+```
 
-t1.start()
-t2.start()
+Добавим в список `cities` еще один город и «забудем» внести его координаты в список `locations`. Выставим при этом `strict` в `True`: 
 
-t1.join()
-t2.join()
+```python
+cities = ["Podolsk", "Tver", "Voronej"]
+locations = [(55.43, 37.54), (56.85, 35.90)]
 
+places = tuple(zip(cities, locations, strict=True))
+```
+```
+(('Podolsk', (55.43, 37.54)), ('Tver', (56.85, 35.9)))
+```
+```
+Traceback (most recent call last):
+  File "example.py", line 4, in <module>
+    places = tuple(zip(cities, locations, strict=True))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: zip() argument 2 is shorter than argument 1
+```
+
+Как видите, установка `strict=False` помогает удостовериться, что переданные в `zip()` коллекции имеют одинаковую длину.
+
+Напишите вариативную функцию `match()`, которая принимает произвольное количество позиционных аргументов — итерабельных объектов.  {.task_text}
+
+Пусть она вернет список кортежей элементов тех объектов, которые не являются пустыми. Если переданные в функцию объекты имеют разную длину, она должна сгенерировать исключение `ValueError`. {.task_text}
+
+Например, `match([1, 2, 3], [], [9, 2, 0])` вернет `[(1, 9), (2, 2), (3, 0)]`. {.task_text}
+
+```python {.task_source #python_chapter_0280_task_0070}
+```
+```{.task_hint}
+def match(*args):
+    return list(zip(*filter(len, args), strict=True))
+```
+
+Распакуйте в переменные `a2`, `b2` такое выражение над `paired`, чтобы успешно пройти проверку `assert`. {.task_text}
+
+Небольшая подсказка: в этом выражении участвует вызов `zip()` и оператор `*`. {.task_text}
+
+```python {.task_source #python_chapter_0280_task_0080}
+a = ["A", "B", "C"]
+b = ["D", "E", "F"]
+paired = list(zip(a, b)) # [("A", "D"), ("B", "E"), ("C", "F")]
+
+a2, b2 = # Your code here
+
+assert a == list(a2) and b == list(b2)
+```
+```{.task_hint}
+a2, b2 = zip(*paired)
+```
+
+## itertools.zip_longest()
+Функция `zip_longest()` из модуля `itertools` составляет поэлементные кортежи из переданных в нее итерабельных объектов, пока все они не исчерпаются. Если одни объекты исчерпались раньше других, вместо их элементов подставляется значение `fillvalue`:
+
+```python
+itertools.zip_longest(*iterables, fillvalue=None)
+```
+
+Таким образом, `zip_longest()` отличается от встроенной функции `zip()` только обработкой ситуации, когда в нее переданы коллекции разной длины. 
+
+```python
+from itertools import zip_longest
+
+short = range(3)
+long = range(5)
+
+pairs = list(zip_longest(short, long, fillvalue="X"))
+print(pairs)
+```
+```
+[(0, 0), (1, 1), (2, 2), ('X', 3), ('X', 4)]
+```
+
+# itertools.chain()
+Функция `chain()` из модуля `itertools` возвращает итератор, который поочередно проходится по элементам переданных коллекций.
+
+```python
+itertools.chain(*iterables)
+```
+
+С помощью `chain()` можно бесшовно итерироваться по нескольким итерабельным объектам:
+
+```python
+from itertools import chain
+
+for x in chain("ABC", "DEF"):
+    print(x)
+```
+```
+A
+B
+C
+D
+E
+F
+```
+
+Напишите вариативную функцию `get_best_genres()`, которая принимает на вход произвольное количество списков, содержащих словари. В словарях есть поля: `title` (название жанра игры), `avg_rating` (средняя оценка). {.task_text}
+
+Функция должна вернуть множество названий жанров в lower-case, для которых средняя оценка игр выше 3.5. {.task_text}
+
+Используйте в решении `itertools.chain()`, `filter()`, `map()`. {.task_text}
+
+```python {.task_source #python_chapter_0280_task_0090}
+games_shop_stats_april = [{
+    "title": "Tower defense",
+    "avg_rating": 3.4
+},
+{
+    "title": "Hack and Slash RPG",
+    "avg_rating": 3.6
+}]
+
+games_shop_stats_june = [
+{
+    "title": "Hack and Slash RPG",
+    "avg_rating": 3.7
+},
+{
+    "title": "Rouelike",
+    "avg_rating": 4.1
+}]
+
+def get_best_genres(*stats):
+    # Your code here
+    ...
+
+print(get_best_genres(games_shop_stats_april, games_shop_stats_june))
+```
+```{.task_hint}
+from itertools import chain
+
+def get_best_genres(*stats):
+    return set(
+        map(
+            lambda g: g["title"].lower(),
+            filter(lambda g: g["avg_rating"] > 3.5, chain(*stats)),
+        )
+    )
 ```
 
 ## Резюмируем
-- Модуль `concurrent.futures` предназначен для высокоуровневого распределения задач по пулам процессов и потоков.
-- Модуль `multiprocessing` предоставляет более низкоуровневый интерфейс для работы с процессами.
-- В модуле `threading` есть все необходимое для низкоуровневой работы с потоками.
+- Встроенная функция `map()` применяет функцию к элементам коллекций.
+- Встроенная функция `filter()` фильтрует элементы коллекции с помощью переданной в нее функции.
+- Функция `reduce()` из модуля `functools` применяет функцию к элементам итерабельного объекта, сводя их к единственному значению.
+- Встроенная функция `zip()` и функция `zip_longest()` из модуля `itertools` генерируют поэлементные кортежи из нескольких коллекций.
+- Функция `chain()` из модуля `itertools` позволяет обрабатывать несколько последовательностей как одну, бесшовно итерируясь по элементам всех последовательностей.
