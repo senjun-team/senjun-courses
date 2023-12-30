@@ -1,6 +1,8 @@
 # Глава 2
 ## Условия 
-В языке `Go` используются следующие операции сравнения.
+В `Go`, аналогично другим языкам, в условиях используются условные выражения. Условные выражения должны быть типа `bool`. 
+
+В условных выражениях используются следующие операции сравнения.
 
 - Меньше: `<`
 - Больше: `>`
@@ -15,6 +17,28 @@ var b bool
 b = 4 < 5
 ```
 
+Объявите переменную типа `bool`, присвойте ей результат логического выражения, когда 4 не равно 5. Выведите эту переменную на экран. {.task_text}
+
+```golang {.task_source #golang_chapter_0020_task_0010}
+package main
+import "fmt"
+
+func main() {
+	// ваш код здесь
+}
+```  
+``` {.task_hint}
+package main
+
+import "fmt"
+
+func main() {
+	var b bool
+	b = 4 != 5
+	fmt.Println(b)
+}
+```
+
 Существуют также логические операции, которые объединяют несколько условий.
 
 - Отрицание: `!`
@@ -22,6 +46,62 @@ b = 4 < 5
 - Дизъюнкция (логическое ИЛИ): `||`
 
 Отрицание инвертирует результат условия. Конъюнкция возвращает `true`, когда оба операнда равны `true`. В противном случае конъюнкция возвращает `false`. Дизъюнкция возвращает `true`, когда хотя бы один из операндов равен `true`. В противном случае дизъюнкция возвращает `false`. 
+
+Даны две переменные типа `bool`: `a` и `b`. Импликацией называется логическая связка "если..., то...". Если `a` и `b` истинны, то их импликация — истина. Если `a` и `b` ложны, то их импликация — истина. Если `a` — истина, а `b` — ложь, то их ипликация — ложь. Если `a` — ложь, а `b` — истина, то их импликация — истина. Допишите тело функции `implic` так, чтобы она выполняла импликацию. Данная функция принимает два значения типа `bool` и возвращает значение типа `bool`. Для возврата результата используйте ключевое слово `return`. Более подробно функции рассматриваются в последующих главах.
+ {.task_text}
+
+```golang {.task_source #golang_chapter_0020_task_0020}
+package main
+
+import (
+	"fmt"
+)
+
+func implic(a bool, b bool) bool {
+	// ваш код здесь 
+}
+
+func main() {
+	a := true
+	b := true
+	fmt.Println(implic(a, b))
+	a = false
+	b = false
+	fmt.Println(implic(a, b))
+	a = true
+	b = false
+	fmt.Println(implic(a, b))
+	a = false
+	b = true
+	fmt.Println(implic(a, b))
+}
+```  
+``` {.task_hint}
+package main
+
+import (
+	"fmt"
+)
+
+func implic(a bool, b bool) bool {
+	return !a || b
+}
+
+func main() {
+	a := true
+	b := true
+	fmt.Println(implic(a, b))
+	a = false
+	b = false
+	fmt.Println(implic(a, b))
+	a = true
+	b = false
+	fmt.Println(implic(a, b))
+	a = false
+	b = true
+	fmt.Println(implic(a, b))
+}
+```
 
 Условные конструкции могут быть выражены следующими приемами: 
 - `if`
@@ -35,7 +115,7 @@ b = 4 < 5
 a := 7
 b := 8
 
-if a != b{
+if a != b {
     fmt.Println("a не равно b")
 }
 ```
@@ -43,9 +123,10 @@ if a != b{
 Перед проверкой условия можно выполнить присвоение. Например:
 ```golang
 if a := 7; a < 8 {
-	fmt.Println("a < 8")
+    fmt.Println("a < 8")
 } 
 ```
+Такая переменная видна только в рамках условия. 
 
 `if-else` проверяет условие и выполняет блок кода внутри `if`, если условие истинно. В противном случае выполняется код внутри `else`.
 
@@ -54,7 +135,7 @@ if a := 7; a < 8 {
 a := 7
 b := 8
 
-if a == b{
+if a == b {
     fmt.Println("a равно b")
 }else{
     fmt.Println("a не равно b")
@@ -99,196 +180,153 @@ name := "Ivan"
 
 switch {
 case country == "Russia" && name == "Ivan":
-    fmt.Println("Привет!")
+    fmt.Println("Привет, Иван!")
 case country == "England" || name == "Jack":
-    fmt.Println("Hello!")
+    fmt.Println("Hello Jack!")
 case country == "China":
     fmt.Println("你 好")
 default:
     fmt.Println("Unknown language")
 }
 ```
-
-## Циклы
-В языке `Go` существует один единственный вид циклов — это цикл `for`. С использованием данного цикла реализуются и другие классические циклы (например, `while` и `do-while`).
-
-Цикл `for` позволяет выполнить код заранее заданное число раз, пока действительно некоторое условие. Цикл `for` в языке Go может быть написан очень по-разному. В целом, однако, цикл `for` соответствует следующей схеме:
-
-```
-for [инициализация счетчика]; [условие]; [изменение счетчика]{
-    // действия
-}
-```
-
-Вот, как выглядит простейший цикл `for`:
-
-```golang
-for i := 0; i < 100; i++{
-
-}
-```
-
-Важно! Символ `{` в Go обязательно должен стоять в конце данной строчки кода, а не вначале следующей строки. В противном случае вы получите ошибку компиляции.
-Это касается любых предложений на языке Go. Например, следующее выражение ошибочно:
-
-```golang
-for i := 0; i < 100; i++
-{
-
-}
-```
-
-Оно не будет скомпилировано.
-
-Вот, как можно написать бесконечный цикл: 
-```golang
-for{
-
-}
-```
-Данный цикл аналогичен циклу `while(true)` в других языках программирования, он выполняется бесконечное число раз. 
-
-Напишите программу с использованием цикла, которая выведет на экран сообщение `Hello, gophers!` 5 раз. {.task_text}
-
-```golang {.task_source #golang_chapter_0020_task_0010}
-package main
-import "fmt"
-
-func main() {
-	// ваш код здесь
-}
-```  
-``` {.task_hint}
-package main
-
-import "fmt"
-
-func main() {
-	for i := 0; i < 5; i++ {
-		fmt.Println("Hello, gophers!")
-	}
-}
-```
-
-Ни инициализация счетчика, ни условие, ни изменение счетчика не являются обязательной частью цикла `for`. Так, опустив инициализацию счетчика и его изменение, можно получить аналог цикла `while`:
-
-```golang
-for i < 100{
-
-}
-```
-
-
-В Go отсутствует цикл `do-while`. Однако его можно реализовать с использованием цикла `for`. Смысл такого цикла состоит в том, чтобы тело цикла выполнилось хотя бы один раз, независимо от условия. В приведенном ниже примере цикл не выполнится ни разу, поскольку условие `anExpression` ложно. Измените цикл таким образом, чтобы его тело выполнилось один раз, независимо от условия. Программа должна вывести сообщение `Hello, gophers!` {.task_text}
-
-```golang {.task_source #golang_chapter_0020_task_0020}
-package main
-
-import "fmt"
-
-func main() {
-	var anExpression = false
-
-	for anExpression { // измените цикл 
-		fmt.Println("Hello, gophers!")
-	}
-}
-```  
-``` {.task_hint}
-package main
-
-import "fmt"
-
-func main() {
-	var anExpression = false
-
-	for ok := true; ok; ok = anExpression {
-		fmt.Println("Hello, gophers!")
-	}
-}
-```
-
-Оператор `break` позволяет досрочно прервать выполнение цикла. 
-Например: 
-```golang
-for i := 0; i < 100; i++{
-    fmt.Println(i)
-    if i > 10{
-        break 
-    }
-}
-```
-
-Оператор `continue` позволяет досрочно перейти на выполнение следующей итерации цикла.
-Например:
-```golang
-for i := 0; i < 100; i++{
-    if i == 10{
-        continue 
-    }
-    fmt.Println(i)
-}
-```
-В данном случае число 10 не будет выведено на экран.  
-
-Числа Фибоначчи - элементы числовой последовательности, в которой первые два числа равны `0` и `1`, а каждое последующее число равно сумме двух предыдущих. Напишите программу, которая вычисляет 25 первых чисел Фибоначчи и выводит их на экран. Выведите числа, разделенные символами `;` и пробел. После последнего числа данные символы вставлять не нужно. Формат вывода:
-`a1; a2; a3; ... a25` {.task_text}
+Функцией голосования называется функция, которая принимает на вход три аргумента типа `bool` и возвращает истину, если хотя бы два аргумента — истина. В противном случае функция возвращает ложь. Допишите тело функции голосования  {.task_text}
 
 ```golang {.task_source #golang_chapter_0020_task_0030}
 package main
-import "fmt"
+
+import (
+	"fmt"
+)
+
+func vote(a bool, b bool, c bool) bool {
+	// ваш код здесь 
+}
 
 func main() {
-	// ваш код здесь
+	a := true
+	b := true
+	c := true
+
+	fmt.Println(vote(a, b, c))
+
+	a = false
+	b = true
+	c = true
+
+	fmt.Println(vote(a, b, c))
+
+	a = true
+	b = false
+	c = true
+
+	fmt.Println(vote(a, b, c))
+
+	a = true
+	b = true
+	c = false
+
+	fmt.Println(vote(a, b, c))
+
+	a = true
+	b = false
+	c = false
+
+	fmt.Println(vote(a, b, c))
+
+	a = false
+	b = true
+	c = false
+
+	fmt.Println(vote(a, b, c))
+
+	a = false
+	b = false
+	c = true
+
+	fmt.Println(vote(a, b, c))
+
+	a = false
+	b = false
+	c = false
+
+	fmt.Println(vote(a, b, c))
 }
+
 ```  
 ``` {.task_hint}
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func main() {
-
-	num := 25
-
-	a1 := 0
-	a2 := 1
-
-	fmt.Print(a1)
-	fmt.Print("; ")
-	fmt.Print(a2)
-	fmt.Print("; ")
-
-	for i := 0; i < num-2; i++ {
-		a3 := a1 + a2
-		fmt.Print(a3)
-		if i != num-3 {
-			fmt.Print("; ")
-		}
-		a1 = a2
-		a2 = a3
+func vote(a bool, b bool, c bool) bool {
+	if a && b {
+		return true
+	}
+	if a && c {
+		return true
+	}
+	if b && c {
+		return true
 	}
 
+	return false
+}
+
+func main() {
+	a := true
+	b := true
+	c := true
+
+	fmt.Println(vote(a, b, c))
+
+	a = false
+	b = true
+	c = true
+
+	fmt.Println(vote(a, b, c))
+
+	a = true
+	b = false
+	c = true
+
+	fmt.Println(vote(a, b, c))
+
+	a = true
+	b = true
+	c = false
+
+	fmt.Println(vote(a, b, c))
+
+	a = true
+	b = false
+	c = false
+
+	fmt.Println(vote(a, b, c))
+
+	a = false
+	b = true
+	c = false
+
+	fmt.Println(vote(a, b, c))
+
+	a = false
+	b = false
+	c = true
+
+	fmt.Println(vote(a, b, c))
+
+	a = false
+	b = false
+	c = false
+
+	fmt.Println(vote(a, b, c))
 }
 
 ```
 
 ## Резюме 
-1. В `Go` используются шесть операций сравнения:
-- Меньше: `<`
-- Больше: `>`
-- Меньше или равно: `<=`
-- Больше или равно: `>=`
-- Проверка на равенство: `==`
-- Проверка на неравенство: `!=`
-2. Существуют три логические операции:
-- Отрицание: `!`
-- Конъюнкция (логическое И): `&&`
-- Дизъюнкция (логическое ИЛИ): `||`
-3. Условные конструкции могут быть выражены четырьмя приемами:
-- `if`
-- `if-else`
-- `if-else-if`
-- `switch-case`
-4. В `Go` существует единственный цикл — это цикл `for`.
-5. С помощью цикла `for` могут быть выражены различные классические циклы. Например, `while` и `do-while`. 
+1. В `Go` используются операции сравнения: `<`, `>`, `<=`, `>=`, `==`, `!=`.
+2. Логические операции: `!`, `&&`, `||`.
+3. Условные выражения: `if`, `if-else`,`if-else-if`, `switch-case`.
