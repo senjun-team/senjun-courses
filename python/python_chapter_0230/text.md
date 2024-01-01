@@ -82,10 +82,10 @@ class SeqIterator:
 ```python
 class SeqIterable:
     def __init__(self, sequence):
-        self._seuence = sequence
+        self._sequence = sequence
 
     def __iter__(self):
-        return SeqIterator(self._seuence)
+        return SeqIterator(self._sequence)
 
 for item in SeqIterable([1, 2, 3]):
     print(item)
