@@ -205,7 +205,7 @@ def even_sequence():
 def strange_generator():
     print("before return")
     return
-    print("after return")уступать
+    print("after return")
     yield
 
 g = strange_generator()
