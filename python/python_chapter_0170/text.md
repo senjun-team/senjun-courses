@@ -91,8 +91,38 @@ class Storage():
     def get_message(self, message_id):
         print(f"Extracting message {message_id}...")
 ```
-```{.task_hint}
-Не забудьте во всех трех методах `InMemoryStorage` вызывать методы базового класса через `super()`.
+Не забудьте во всех трех методах `InMemoryStorage` вызывать методы базового класса через `super()`. {.task_hint}
+```python {.task_answer}
+class Storage():
+    def __init__(self, message_size_limit):
+        self._message_size_limit = message_size_limit
+
+    def save_message(self, message_id, message):
+        print(f"Saving message {message_id}...")
+
+    def get_message(self, message_id):
+        print(f"Extracting message {message_id}...")
+
+
+class InMemoryStorage(Storage):    
+    def __init__(self, message_size_limit, message_count_limit):
+        super().__init__(message_size_limit)
+        self._message_count_limit = message_count_limit
+        self._saved_messages = {}
+
+    def save_message(self, message_id, message):
+        super().save_message(message_id, message)
+        
+        if len(self._saved_messages) + 1 > self._message_size_limit:
+            raise Exception("Too many messages")
+        if len(message) > self._message_size_limit:
+            raise Exception("Message is too long")
+            
+        self._saved_messages[message_id] = message
+
+    def get_message(self, message_id):
+        super().get_message(message_id)
+        return self._saved_messages.get(message_id)
 ```
 
 Что будет, если в классе-наследнике объявить метод с таким же именем, как в родителе, но с другим набором параметров?
@@ -225,8 +255,24 @@ class Tail(Z):
 t = Tail()
 t.f()
 ```
-```{.task_hint}
-super(Y, self).f()
+В `super()` требуется передать класс `Y` и `self`. {.task_hint}
+```python {.task_answer}
+class X:
+    def f(self):
+        print("X")
+
+class Y(X):
+    def f(self):
+        print("Y")
+
+class Z(Y):
+    def f(self):
+        print("Z")
+
+class Tail(Z):
+    def f(self):
+        super(Y, self).f()
+
 ```
 
 ## Абстрактные классы {#block-abstract-classes}
@@ -292,8 +338,39 @@ class Navigation:
         """
         ...
 ```
-```{.task_hint}
-Не забудьте импортировать модуль abc.
+Не забудьте импортировать модуль `abc`, отнаследовать `Navigation` от `ABC` и декорировать его методы через `@abstractmethod`. {.task_hint}
+```python {.task_answer}
+from abc import ABC, abstractmethod
+
+class Navigation(ABC):
+    @abstractmethod
+    def build_route(self, start, finish):
+        """
+        Creates route between start and finish coordinates.
+        Returns route object or None in case if the route couldn't be found.
+        """
+        pass
+    
+    @abstractmethod
+    def get_maneuvers(self):
+        """
+        Returns list of maneuvers on the last route.
+        """
+        pass
+
+class CarNavigation(Navigation):
+    def build_route(self, start, finish):
+        print("CarNavigation. build_route.")
+    
+    def get_maneuvers(self):
+        print("CarNavigation. get_maneuvers.")
+
+class TransitNavigation(Navigation):
+    def build_route(self, start, finish):
+        print("TransitNavigation. build_route.")
+    
+    def get_maneuvers(self):
+        print("TransitNavigation. get_maneuvers.")
 ```
 
 На практике использовать абстрактные классы в питоне не всегда удобно: например, если абстрактный класс реализован во внешнем модуле, но его требуется встроить в свою иерархию наследования или подправить интерфейс. 
@@ -371,8 +448,31 @@ error: Argument 1 to "fill_cache" has incompatible type "LRUCache"; expected "Ca
 
 ```python {.task_source #python_chapter_0170_task_0040}
 ```
-```{.task_hint}
-Не забудьте импорт Protocol.
+Не забудьте импортировать `Protocol`. {.task_hint}
+```python {.task_answer}
+from typing import Protocol
+
+class Validator(Protocol):
+    def is_valid(self, obj):
+        pass
+
+class TextValidator:
+    def __init__(self, alphabet):
+        self._alphabet = alphabet
+
+    def is_valid(self, obj):
+        for letter in obj:
+            if letter not in self._alphabet:
+                return False
+        return True
+
+class ValueValidator:
+    def __init__(self, min_val, max_val):
+        self._min_val = min_val
+        self._max_val = max_val
+
+    def is_valid(self, obj):
+        return self._min_val <= obj <= self._max_val
 ```
 
 ## Резюмируем

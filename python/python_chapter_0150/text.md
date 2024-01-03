@@ -71,9 +71,9 @@ print(product_to_purchases)
 
 Если элемент встречается в последовательности несколько раз, нужно сохранить индекс **последнего** вхождения. {.task_text}
 
-Если в `items` попадутся не хешируемые объекты, в словарь их добавлять не надо.{.task_text}
+Если в `items` попадутся не хешируемые объекты, в словарь их добавлять не надо. {.task_text}
 
-Например, для входного списка `["first", 2, "third", {4, 44}, "first"]` функция должна вернуть словарь `{'first': 4, 2: 1, 'third': 2}`.{.task_text}
+Например, для входного списка `["first", 2, "third", {4, 44}, "first"]` функция должна вернуть словарь `{'first': 4, 2: 1, 'third': 2}`. {.task_text}
 
 ```python {.task_source #python_chapter_0150_task_0010}
 import typing
@@ -81,7 +81,9 @@ import typing
 def to_dict(items):
     # Your code here
 ```
-```{.task_hint}
+
+Создайте пустой словарь. Проитерируйтесь по `items` и заполните словарь хэшируемыми элементами `items` и их индексами. {.task_hint}
+```python {.task_answer}
 import typing
 
 def to_dict(items):
@@ -191,8 +193,22 @@ obj = [
     }
 ]
 ```
-```{.task_hint}
-Выражение для доступа к нужному значению: `obj[3]["k6"]["val"]`
+Выражение для доступа к нужному значению: `obj[3]["k6"]["val"]` {.task_hint}
+```python {.task_answer}
+obj = [
+    "sort",
+    45,
+    (16, 17),
+    {
+        1: 3,
+        "k2": None,
+        "k6": {
+            "val": 1024
+        }
+    }
+]
+
+print(obj[3]["k6"]["val"])
 ```
 
 Обойти в цикле словарь можно двумя способами. Первый: перебрать ключи и по ним получить значения:
@@ -223,8 +239,16 @@ for k, v in d.items():
 
 ```python {.task_source #python_chapter_0150_task_0030}
 ```
-```{.task_hint}
-Для проверки ключа на вхождение в словарь используйте оператор `in`, для изменения существующего значения по ключу — `[]`.
+Для проверки ключа на вхождение в словарь используйте оператор `in`, для изменения существующего значения по ключу — `[]`. {.task_hint}
+```python {.task_answer}
+def calc_visits(users):
+    visits = {}
+    for user in users:
+        if user not in users:
+            users[user] = 0
+        users[user] += 1
+
+    return visits
 ```
 
 Но на этом популярные операции над типом `dict` не заканчиваются. Также широко применимы методы: {#block-methods}
@@ -239,7 +263,9 @@ for k, v in d.items():
 ```python {.task_source #python_chapter_0150_task_0040}
 temperatures = {"min": 5.5, "max": 28.0, "avg": 14.1}
 ```
-```{.task_hint}
+Воспользуйтесь методом `pop()`. {.task_hint}
+```python {.task_answer}
+temperatures = {"min": 5.5, "max": 28.0, "avg": 14.1}
 temperatures.pop("min")
 ```
 
@@ -247,8 +273,20 @@ temperatures.pop("min")
 
 ```python {.task_source #python_chapter_0150_task_0050}
 ```
-```{.task_hint}
-Для определения максимального из двух значений воспользуйтесь встроенной функцией `max(a, b)`.
+Для определения максимального из двух значений воспользуйтесь встроенной функцией `max(a, b)`. {.task_hint}
+```python {.task_answer}
+def merge_max(d1, d2):
+    merged = {}
+    for k, v in d1.items():
+        merged[k] = v
+
+    for k, v in d2.items():
+        if k in merged:
+            merged[k] = max(merged[k], v)
+        else:
+            merged[k] = v
+    
+    return merged
 ```
 
 ## Является ли dict упорядоченной коллекцией
@@ -261,7 +299,6 @@ d1 = {1: 1, 2: 2, 3: 3}
 d2 = {2: 2, 3: 3, 1: 1}
 print(d1 == d2)
 ```
-
 ```
 True
 ```

@@ -59,8 +59,15 @@ def analyze(**stats):
 
 ```python {.task_source #python_chapter_0260_task_0010}
 ```
-```{.task_hint}
-Сигнатура функции: def analyze(*args, **kwargs)
+Сигнатура функции: `analyze(*args, **kwargs)`. {.task_hint}
+```python {.task_answer}
+def analyze(*args, **kwargs):
+    res = []
+    for k, v in kwargs.items():
+        if v in args:
+            res.append(k)
+    return res
+
 ```
 
 Что выведет этот код? {.task_text}
@@ -77,8 +84,9 @@ append(2, 0, 1)
 
 ```consoleoutput {.task_source #python_chapter_0260_task_0020}
 ```
-```{.task_hint}
-error. Пояснение: *args — это кортеж, то есть неизменяемая коллекция. У кортежа нет метода append(), потому что он является модифицирующим. Поэтому при попытке добавить в кортеж значение будет сгенерировано исключение AttributeError.
+`*args` — это кортеж, то есть неизменяемая коллекция. У кортежа нет метода `append()`, ведь он является модифицирующим. Поэтому при попытке добавить в кортеж значение будет сгенерировано исключение `AttributeError`. {.task_hint}
+```python {.task_answer}
+error
 ```
 
 ## Только именованные аргументы функций
@@ -125,8 +133,9 @@ print(sort_words("list", "Set", True))
 
 ```consoleoutput {.task_source #python_chapter_0260_task_0030}
 ```
-```{.task_hint}
-error. Пояснение: True не присвоится параметру case_sensitive. Вместо этого он попадет последним элементом в кортеж words. Функция sorted() при попытке сравнения флага и строки упадет с исключением TypeError: '<' not supported between instances of 'bool' and 'str'.
+`True` не присвоится параметру `case_sensitive`. Вместо этого он попадет последним элементом в кортеж `words`. Функция `sorted()` при попытке сравнения флага и строки упадет с исключением `TypeError: '<' not supported between instances of 'bool' and 'str'`. {.task_hint}
+```python {.task_answer}
+error
 ```
 
 ## Только позиционные аргументы функций
@@ -163,8 +172,19 @@ def c(required, *, kw, /, p1, p2):
 def d(*, kw):
     pass
 ```
-```{.task_hint}
-Функция с ошибкой в определении: c().
+Функция с ошибкой в определении: `c()`. {.task_hint}
+```python {.task_answer}
+def a(p1, p2, /):
+    pass
+
+def b(p_or_kw, *, kw):
+    pass
+
+# def c(required, *, kw, /, p1, p2):
+#    pass
+
+def d(*, kw):
+    pass
 ```
 
 Если для одного из только позиционных аргументов задано значение по умолчанию, то оно должно присутствовать и у всех следующих за ним позиционных аргументов.
@@ -190,8 +210,25 @@ def e(p1, p2=None, /):
 def f(p1=None, p2, /):
     pass
 ```
-```{.task_hint}
-Функции с ошибками в определении: a(), d(), f().
+Функции с ошибками в определении: `a()`, `d()`, `f()`. {.task_hint}
+```python {.task_answer}
+#def a(p1, p2=None, /, p_or_kw, *, kw):
+#    pass
+
+def b(p1, p2=None, /, p_or_kw=None, *, kw):
+    pass
+
+def c(p1, p2=None, /, *, kw):
+    pass
+
+#def d(p1=None, p2, /, p_or_kw=None, *, kw):
+#    pass
+
+def e(p1, p2=None, /):
+    pass
+
+#def f(p1=None, p2, /):
+#    pass
 ```
 
 Наибольшую пользу только позиционные аргументы приносят авторам библиотек:

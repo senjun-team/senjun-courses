@@ -70,9 +70,8 @@ Permission to /var/logs granted for root
 
 ```python {.task_source #python_chapter_0070_task_0010}
 ```
-```{.task_hint}
-Вложенная функция на вход может принимать счетчик вызовов, инкрементировать его и возвращать в качестве одного из значений в return.
-
+Вложенная функция на вход может принимать счетчик вызовов, инкрементировать его и возвращать в качестве одного из значений в `return`. {.task_hint}
+```python {.task_answer}
 def calc_gcd(a, b):
     calls = 0
     
@@ -170,7 +169,8 @@ III
 
 ```python  {.task_source #python_chapter_0070_task_0020}
 ```
-```{.task_hint}
+Синтаксис: `<variable> = lambda <arg1, arg2, ...>: (ret_val1, ret_val2, ...)`. {.task_hint}
+```python {.task_answer}
 calc = lambda a, b: (a + b, a - b)
 ```
 
@@ -180,19 +180,20 @@ calc = lambda a, b: (a + b, a - b)
 
 ```python  {.task_source #python_chapter_0070_task_0030}
 ```
-```{.task_hint}
+Синтаксис: `<variable> = lambda: <function_call()>`.{.task_hint}
+```python {.task_answer}
 to_next_step = lambda : print("Press any key to continue")
 to_next_step()
 ```
 
 Теперь вы узнаете лямбду, если увидите ее в чужом коде! Но стоит ли лямбдами злоупотреблять? В PEP8 [сказано следующее:](https://peps.python.org/pep-0008/#programming-recommendations) всегда используйте определение функций через `def` вместо того, чтобы присваивать лямбду функциональному объекту. PEP8 настаивает на тотальном избегании лямбд, такие дела.
 
-Например, вот эту лямбду
+Например, вот эту лямбду PEP8 считает нужным превратить в полноценную функцию:
 
 ```python
 f = lambda x: 2 * x
 ```
-PEP8 считает нужным превратить в полноценную функцию:
+
 ```python
 def f(x): return 2 * x
 ```
@@ -201,7 +202,7 @@ def f(x): return 2 * x
 
 Перепишите эту функцию в виде лямбды с внутренней лямбдой. Получится замыкание лямбды. Присвойте ее функциональному объекту `format_line`, для которого параметр `prefix` был бы равен `"a"`. {.task_text}
 
-Чтобы его можно было вызвать следующим образом: `format_line(some_suffix)`. {.task_text}
+Вызовите его следующим образом: `format_line(some_suffix)`. {.task_text}
 
 ```python  {.task_source #python_chapter_0070_task_0040}
 def format_line(prefix):
@@ -209,7 +210,8 @@ def format_line(prefix):
         return f"{prefix} - {suffix}"
     return inner
 ```
-```{.task_hint}
+Синтаксис сохранения в переменную `variable` замыкания, полученного из внешней лямбды с переданным в нее значением `arg_outer_val`: `<variable> = (lambda <arg_outer> : lambda <arg_inner>: <some action>)(<arg_outer_val>)`. {.task_hint}
+```python {.task_answer}
 format_line = (lambda prefix : lambda suffix : f"{prefix} - {suffix}")("a")
 print(format_line("b"))
 ```
@@ -236,7 +238,8 @@ f(1, 2, 3, k1="A", k2="B")
 
 ```python  {.task_source #python_chapter_0070_task_0050}
 ```
-```{.task_hint}
+Внутри функции `f()` сначала проитерируйтесь циклом `for` по позиционным аргументам для вывода их по одному в консоль, затем — по именованным. {.task_hint}
+```python {.task_answer}
 def f(*args, **kwargs):
     for a in args:
         print(a)

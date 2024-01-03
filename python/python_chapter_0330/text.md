@@ -109,8 +109,25 @@ s = Storage("9")
 s.save_message("8", "message")
 s.get_message(8)
 ```
-```{.task_hint}
-Не забудьте указывать типы для возвращаемых методами значений.
+Не забудьте указывать типы для возвращаемых методами значений. {.task_hint}
+```python {.task_answer}
+class Storage():
+    def __init__(self, message_size_limit: int) -> None:
+        self._message_size_limit = message_size_limit
+
+        # mapping of message id to message
+        self._storage: dict[int, str] = {}
+
+    def save_message(self, message_id: int, message: str) -> None:
+        self._storage[message_id] = message
+
+    def get_message(self, message_id: int) -> str:
+        return self._storage[message_id]
+
+
+s = Storage(9)
+s.save_message(8, "message")
+s.get_message(8)
 ```
 
 В аннотации кортежа перечисляются типы всех его элементов:
@@ -139,8 +156,14 @@ def word_count(lines):
               result[word] = result.get(word, 0) + 1
       return result
 ```
-```{.task_hint}
-Не забудьте указать тип для переменной result.
+Не забудьте указать тип для переменной `result`. {.task_hint}
+```python {.task_answer}
+def word_count(lines: list[str]) -> dict[str, int]:
+      result: dict[str, int] = {}
+      for line in lines:
+          for word in line.split():
+              result[word] = result.get(word, 0) + 1
+      return result
 ```
 
 Как быть, если одной переменной могут быть присвоены значения разных типов? Например, если список содержит целые числа и строки. Тогда возможные типы перечисляются через символ `|`:
@@ -221,7 +244,9 @@ import sys
 def get_tuple(arg = None):
     if arg is None:
         return 1, 2
-    return 2, 3
+    if arg == 0:
+        return 2, 3
+    return 3, 2
 
 def get_false():
     # Always returns false
@@ -237,8 +262,31 @@ def format(a, b, c):
 
     return f"{a=} {b=} {c=}"
 ```
-```{.task_hint}
-Не забудьте импортировать модуль typing.
+Вам пригодятся аннотации `Any`, `Literal`, `NoReturn`, `Optional` из модуля `typing`. {.task_hint}
+```python {.task_answer}
+import sys
+from typing import Any, Literal, NoReturn, Optional
+
+def get_tuple(arg: Optional[int] = None) -> tuple[int, int]:
+    if arg is None:
+        return 1, 2
+    if arg == 0:
+        return 2, 3
+    return 3, 2
+
+def get_false() -> Literal[False]:
+    # Always returns false
+    return False
+
+def shutdown() -> NoReturn:
+    sys.exit(0)
+
+def format(a: int, b: bool, c: Any) -> str:
+    # 'a' is int
+    # 'b' is bool
+    # we don't know 'c' type
+
+    return f"{a=} {b=} {c=}"
 ```
 
 ## Модуль collections.abc
@@ -275,13 +323,25 @@ def format(d):
 
 def modify(d):
     for k, v in d.items():
-        if d[k] < 0:
+        if v is not None and v < 0:
             print("Modifying key:", k)
             d[k] = None
 ```
-```{.task_hint}
-Не забудьте импортировать модуль collections.abc.
+Вам пригодятся аннотации `Mapping`, `MutableMapping` и `Iterable` из модуля `collections.abc` и `Any` из `typing`. {.task_hint}
+```python {.task_answer}
+from collections.abc import Mapping, MutableMapping, Iterable
+from typing import Any
+
+def format(d: Mapping[Any, Any]) -> Iterable[str]:
+    return (f"{k}-{v}" for k, v in d.items())
+
+def modify(d: MutableMapping[int, int | None]) -> None:
+    for k, v in d.items():
+        if v is not None and v < 0:
+            print("Modifying key:", k)
+            d[k] = None
 ```
+
 
 ## Игнорирование типов в mypy
 Комментарий с текстом `# type: ignore` используется, чтобы подавить ошибки mypy для конкретных строк. Хорошим тоном считается после него оставить комментарий, поясняющий, почему в данном месте следует опустить проверку типов.

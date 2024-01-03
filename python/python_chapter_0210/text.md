@@ -59,7 +59,7 @@ with open("/mnt/data/urls.txt", "a") as f:
 
 Явного вызова `close()` больше нет. Вместо него `with` дает гарантию, что по достижении конца блока файл будет закрыт. Оператор `with` создает блок кода, используя функционал контекстного менеджера. Который в нашем примере спрятан внутри функции `open()`. Как и следует из названия, контекстный менеджер управляет контекстом: выполняет некие действия при входе в блок и при выходе из блока. Что нам это дало? Код примера упростился, а контроль своевременного освобождении ресурса делегирован менеджеру контекста. 
 
-Сделайте этот код более безопасным с помощью `with`: отдельно для записи и для чтения из файла. Обратите внимание: в метод `write` объекта `file` передается url с символом переноса строки. Это нужно, чтобы url находились на разных строках и не были склеены в одну. {.task_text}
+Сделайте этот код более безопасным с помощью `with`: отдельно для записи и для чтения из файла. Обратите внимание: в метод `write()` объекта `file` передается url с символом переноса строки. Это нужно, чтобы разные url находились на разных строках и не были склеены в одну. {.task_text}
 
 ```python {.task_source #python_chapter_0210_task_0010}
 FILEPATH = "urls.txt"
@@ -72,8 +72,17 @@ file = open(FILEPATH, "r")
 for i, line in enumerate(file):
     print(f"{i}: {line.strip()}")
 ```
-```{.task_hint}
-with open(FILEPATH, "w") as file: ...
+Воспользуйтесь конструкцией `with open(...) as ...: ...`. {.task_hint}
+```python {.task_answer}
+FILEPATH = "urls.txt"
+with open(FILEPATH, "w") as file:
+    file.write("https://www.python.org\n")
+    file.write("https://senjun.ru\n")
+
+
+with open(FILEPATH, "r") as file:
+    for i, line in enumerate(file):
+        print(f"{i}: {line.strip()}")
 ```
 
 А как быть, если требуется открыть сразу несколько файлов? В принципе никто не запрещает добавить вложенных блоков `with`. Но иногда проще их скомбинировать:
@@ -94,9 +103,14 @@ with open("messages.txt", "w") as f_out:
             f_out.write(f"{msg}\n")
             f_out_upper.write(f"{msg.upper()}\n")
 ```
-```{.task_hint}
+Для комбинирования нескольких блоков `with` в один через запятую перечислите открываемые файлы. {.task_hint}
+```python {.task_answer}
+messages = ["msg1", "msg2"]
+
 with open("messages.txt", "w") as f_out, open("messages_uppercase.txt", "w") as f_out_upper:
-    ...
+    for msg in messages:
+        f_out.write(f"{msg}\n")
+        f_out_upper.write(f"{msg.upper()}\n")
 ```
 
 ## Протокол контекстного менеджера
@@ -169,15 +183,27 @@ print("---> stdout again")
 
 Особенность примера в том, что от метода `__enter__()` не требуется возвращать какой-либо объект для получения доступа к нему через оператор `as`. `__enter__()` неявно возвращает `None`.
 
-Напишите свой контекстный менеджер `TimeIt` для подсчета времени выполнения блока кода.  Пусть при установке контекста он выводит в консоль строку `"Started measuring execution time..."`, а при выходе из контекста — `"Execution time: N seconds. Catched exception: {FLAG}"`, где `N` - целое число (секунды выполнения кода), а `FLAG` принимает значение `True` либо `False` в зависимости от того, было ли перехвачено внутри `with` исключение.{.task_text}
+Напишите свой контекстный менеджер `TimeIt` для подсчета времени выполнения блока кода.  Пусть при установке контекста он выводит в консоль строку `"Started measuring execution time..."`, а при выходе из контекста — `"Execution time: N seconds. Catched exception: {FLAG}"`, где `N` - целое число (секунды выполнения кода), а `FLAG` принимает значение `True` либо `False` в зависимости от того, было ли перехвачено внутри `with` исключение. {.task_text}
 
-Для замера времени выполнения используйте функцию `default_timer()` из модуля `timeit`. Она возвращает секунды в формате Unix timestamp. {.task_text}
+Для замера времени выполнения используйте функцию `default_timer()` из модуля `timeit`. Она возвращает float-значение секунд в формате Unix timestamp. {.task_text}
 
 Убедитесь, что код, обрабатывающий выход из блока `with`, вызовется даже если внутри блока будет брошено исключение. {.task_text}
 
 ```python {.task_source #python_chapter_0210_task_0030}
 ```
-```{.task_hint}
+Для реализации протокола контекстного менеджера не забудьте имплементировать dunder-методы `__enter__()` и `__exit__()`. Секунды не забудьте привести к целому числу. {.task_hint}
+```python {.task_answer}
+import timeit
+
+class TimeIt:        
+    def __enter__(self):
+        self._start = timeit.default_timer()
+        print("Started measuring execution time...")
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        delta = timeit.default_timer() - self._start
+        print(f"Execution time: {int(delta)} seconds. Catched exception: {exc_type is not None}")
+        return True
 ```
 
 Кстати, в контекстный менеджер можно превратить не только класс, но и функцию. Но для этого нужно понимать, что такое генераторы и декораторы. Их мы рассмотрим в следующих главах.

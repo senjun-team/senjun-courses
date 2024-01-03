@@ -21,7 +21,7 @@ print(hash(["some", "list"]))
 TypeError: unhashable type: 'list'
 ```
 
-Хеш от строки вернет целое число, а попытка вызова `hash()` от списка завершится ошибкой. Поэтому `str` относится хешируемым типам, а `list` — нет. 
+Хеш от строки вернет целое число, а попытка вызова `hash()` от списка завершится ошибкой. Поэтому `str` относится к хешируемым типам, а `list` — нет. 
 
 Изменяемые встроенные типы не являются хешируемыми: вызов `hash()` от словаря, списка или множества приведет к исключению. Неизменяемые коллекции (такие как кортежи) **могут** быть хешируемыми, но только если свойство хешируемости применимо ко всем их элементам. 
 
@@ -33,8 +33,10 @@ TypeError: unhashable type: 'list'
 tpl = (None, -2, False, 145.5, (2, 4, 8), [2, 4, 8], "wednesday", set("set constructor"), dict())
 print(hash(tpl))
 ```
-```{.task_hint}
+Список, множество и словарь не являются хэшируемыми. {.task_hint}
+```python {.task_answer}
 tpl = (None, -2, False, 145.5, (2, 4, 8), "wednesday")
+print(hash(tpl))
 ```
 
 Итак, соблюдение свойства хешируемости позволяет хранить объект в коллекциях `set`, `frozenset`, `dict`. Эти коллекции имплементированы на базе хеш-таблиц [с открытой адресацией.](https://ru.wikipedia.org/wiki/%D0%A5%D0%B5%D1%88-%D1%82%D0%B0%D0%B1%D0%BB%D0%B8%D1%86%D0%B0#%D0%9E%D1%82%D0%BA%D1%80%D1%8B%D1%82%D0%B0%D1%8F_%D0%B0%D0%B4%D1%80%D0%B5%D1%81%D0%B0%D1%86%D0%B8%D1%8F) Благодаря этому алгоритмическая сложность поиска, добавления и удаления элементов соответствует амортизированной константе O(1). {#block-complexity}
@@ -132,8 +134,12 @@ print(kv)
 Имплементируйте функцию `print_set(obj)`. В качестве аргумента она принимает любой итерируемый объект: список, кортеж, строку и т.д. Функция на двух разных строках должна вывести в консоль множество, полученное из этого объекта, и размер множества.{.task_text}
 ```python {.task_source #python_chapter_0140_task_0020}
 ```
-```{.task_hint}
-Размер множества `x`: `len(x)`.
+Размер множества `s`: `len(s)`. {.task_hint}
+```python {.task_answer}
+def print_set(obj):
+    s = set(obj)
+    print(s)
+    print(len(s))
 ```
 
 Перечислим базовые [операции теории множеств,](https://ru.wikipedia.org/wiki/%D0%A2%D0%B5%D0%BE%D1%80%D0%B8%D1%8F_%D0%BC%D0%BD%D0%BE%D0%B6%D0%B5%D1%81%D1%82%D0%B2#%D0%9E%D1%81%D0%BD%D0%BE%D0%B2%D0%BD%D1%8B%D0%B5_%D0%BF%D0%BE%D0%BD%D1%8F%D1%82%D0%B8%D1%8F) которые отражены методами класса `set` и специальными операторами.
@@ -158,9 +164,16 @@ books_total = # Все доступные и приобретенные книг
 books_popular = # Доступные книги, которые были куплены
 books_sold_out = # Раскупленные книги, которых уже нет в продаже
 ```
+Воспользуйтесь операциями объединения, пересечения и разности. {.task_hint}
+```python {.task_answer}
+# Все доступные книги (находящиеся в продаже)
+books_available = {"Fluent Python", "Python Cookbook", "Python crash course"}
+# Уже купленные книги
+books_purchased = {"Learning python", "Python in a nutshell", "Fluent Python"}
 
-```{.task_hint}
-Воспользуйтесь операциями объединения, пересечения и разности.
+books_total = books_available | books_purchased
+books_popular = books_available & books_purchased
+books_sold_out = books_purchased - books_available
 ```
 
 Так выглядят основные способы **модификации** множеств:
@@ -178,8 +191,17 @@ books_sold_out = # Раскупленные книги, которых уже н
 ```python {.task_source #python_chapter_0140_task_0040}
 
 ```
-```{.task_hint}
-Создайте множество из входного списка. Проитерируйтесь по нему для расчета среднего арифметического.
+Создайте множество из входного списка. Проитерируйтесь по нему для расчета среднего арифметического. {.task_hint}
+```python {.task_answer}
+def avg_unique(*args):
+    l = 0
+    st = set(args)
+    if len(st) == 0:
+        return 0
+        
+    for s in st:
+        l += len(s)
+    return l / len(st)
 ```
 
 Также с помощью методов и операторов легко определять **соотношения множеств:**
@@ -197,8 +219,10 @@ books_sold_out = # Раскупленные книги, которых уже н
 
 ```python {.task_source #python_chapter_0140_task_0050}
 ```
-```{.task_hint}
-Для определения, является ли `a` супермножеством `b`, воспользуйтесь оператором `>=`. Для определения количества общих элементов используйте `len(a & b)`.
+Для определения, является ли `a` супермножеством `b`, воспользуйтесь оператором `>=`. Для определения количества общих элементов используйте `len(a & b)`. {.task_hint}
+```python {.task_answer}
+def analyze(a, b):
+    print(f"a is b's superset: {a >= b}. Count of common elements: {len(a & b)}.")
 ```
 
 ## Различия между методами класса set и операторами
@@ -216,14 +240,14 @@ common_letters = set("abc") & "bcd"
 TypeError: unsupported operand type(s) for &: 'set' and 'str'
 ```
 
-Исправьте этот код, заменив оператор на вызов метода.{.task_text}
+Этот код должен выводить в консоль общее количество элементов между `"abc"` и `"bcd"`, но в нем допущена ошибка. Исправьте ее. {.task_text}
 
 ```python {.task_source #python_chapter_0140_task_0060}
 common_letters = set("abc") & "bcd"
 print(common_letters)
 ```
-
-```{.task_hint}
+Требуется заменить оператор `&` на вызов метода `intersection()`. {.task_hint}
+```python {.task_answer}
 common_letters = set("abc").intersection("bcd")
 ```
 
@@ -248,13 +272,16 @@ frozenset({'c', 'b'})
 
 Объекты типа `frozenset` создаются только с помощью одноименного конструктора `frozenset()`, принимающего итерируемый объект. 
 
-Создайте переменную типа `frozenset` с именем `x` из списка `hashable_types`. Выведите ее в консоль.{.task_text}
+Создайте переменную типа `frozenset` с именем `x` из списка `hashable_types`. Выведите ее в консоль. {.task_text}
 
 ```python {.task_source #python_chapter_0140_task_0070}
 hashable_types = ["int", "frozenset", "bool", "int"]
 ```
-```{.task_hint}
-print(frozenset(hashable_types))
+Вызовите конструктор неизменяемого множества, передав в него список. {.task_hint}
+```python {.task_answer}
+hashable_types = ["int", "frozenset", "bool", "int"]
+x = frozenset(hashable_types)
+print(x)
 ```
 
 Важное отличие `frozenset` от `set`: тип `frozenset` является **хешируемым.** А значит, может выступать в качестве ключа в `dict` или элемента в `set`.
@@ -270,8 +297,11 @@ import typing
 
 objects = ["M", 7.8, True, [9, 9], {1, 2, 2}, None, frozenset([5]), (True, False)]
 ```
-```{.task_hint}
-isinstance(x, typing.Hashable)
+
+Так выглядит проверка на хэшируемость: `isinstance(obj, typing.Hashable)`. {.task_hint}
+```python {.task_answer}
+for obj in objects:
+    print(type(obj), isinstance(x, typing.Hashable))
 ```
 
 ## Резюмируем

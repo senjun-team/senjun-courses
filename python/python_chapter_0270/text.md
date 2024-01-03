@@ -64,8 +64,9 @@ print(increment(4))
 
 ```consoleoutput {.task_source #python_chapter_0270_task_0010}
 ```
-```{.task_hint}
-7. Пояснение: мы перезаписали значение объекта increment замыканием wrapper. Перед вызовом оригинальной функции wrapper увеличил значение аргумента 4 на 2. То есть в функцию increment() был передан аргумент x=6. Функция увеличила его на 1, и в консоль вывелось 7.
+Мы перезаписали значение объекта `increment` замыканием `wrapper`. Перед вызовом оригинальной функции `wrapper` увеличил значение аргумента 4 на 2. То есть в функцию `increment()` был передан аргумент `x=6`. Функция увеличила его на 1. {.task_hint}
+```python {.task_answer}
+7
 ```
 
 ## Простой декоратор
@@ -130,7 +131,8 @@ def get_random_string():
 
 print(get_random_string())
 ```
-```{.task_hint}
+Для перевода строки в верхний регистр воспользуйтесь методом строки `upper()`. {.task_hint}
+```python {.task_answer}
 def to_uppercase(func):
     def wrapper():
         return func().upper()
@@ -139,7 +141,16 @@ def to_uppercase(func):
 
 @to_uppercase
 def get_random_string():
-    ...
+    """
+    Returns string consisting of 10 random ASCII letters
+    """
+    length = 10
+    letters = string.ascii_lowercase
+
+    return "".join(random.choice(letters) for i in range(length))
+
+
+print(get_random_string())
 ```
 
 Напишите декоратор `print_exec_time()`, который выводит в консоль время выполнения функции в секундах. Например, `"2.03 seconds"`. {.task_text}
@@ -160,7 +171,8 @@ def slumber():
 
 slumber()
 ```
-```{.task_hint}
+Пример f-строки для форматированного вывода времени исполнения: `f"{finish - start:.2f} seconds"`. {.task_hint}
+```python {.task_answer}
 def print_exec_time(func):
     def wrapper():
         start = time.perf_counter()
@@ -173,7 +185,9 @@ def print_exec_time(func):
 
 @print_exec_time
 def slumber():
-    ...
+    time.sleep(random.randint(0, 3))
+
+slumber()
 ```
 
 ## Цепочки декораторов
@@ -204,7 +218,8 @@ def f():
 
 print(f())
 ```
-```{.task_hint}
+Ближе всего к функции должен быть добавлен декоратор `@parentheses`, а над ним `@brackets`. {.task_hint}
+```python {.task_answer}
 def parentheses(func):
     def inner():
         return f"({func()})"
@@ -218,7 +233,9 @@ def brackets(func):
 @brackets
 @parentheses
 def f():
-    ...
+    return "baz"
+
+print(f())
 ```
 
 ## Параметры декорируемых функций
@@ -254,12 +271,12 @@ def concat(*words):
 print(concat("A", "B", "C"))
 
 ```
-```python {.task_hint}
-
+Для проверки, является ли аргумент строкой, примените к нему встроенную функцию `isinstance()`. Она принимает 2 аргумента: объект и тип. {.task_hint}
+```python {.task_answer}
 def str_checker(func):
     def wrapper(*args):
         for arg in args:
-            if type(arg) is not str:
+            if not isinstance(arg, str):
                 raise ValueError
 
         return func(*args)
@@ -268,7 +285,9 @@ def str_checker(func):
 
 @str_checker
 def concat(*words):
-    ...
+    return "~".join(words)
+
+print(concat("A", "B", "C"))
 ```
 
 ## Метаданные функций
@@ -373,7 +392,8 @@ def f():
 
 f()
 ```
-```{.task_hint}
+Не забудьте обернуть замыкание внутри декоратора через `@functools.wraps`. {.task_hint}
+```python {.task_answer}
 import functools
 
 def run_in_loop(n):
@@ -389,7 +409,12 @@ def run_in_loop(n):
 
 @run_in_loop(4)
 def f():
-    ...
+    """
+    Test function
+    """
+    print("f")
+
+f()
 ```
 
 ## Классы-декораторы

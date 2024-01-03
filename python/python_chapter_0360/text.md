@@ -102,7 +102,8 @@ try:
 except AttributeError as e:
 	print(f"Deleting hex: {e}")
 ```
-```{.task_hint}
+Метод `hex(self)` требуется декорировать через `@hex.deleter` и в теле метода кидать исключение. {.task_hint}
+```python {.task_answer}
 def rgb_to_hex(r, g, b):
     return f"#{r:02x}{g:02x}{b:02x}"
 
@@ -154,7 +155,8 @@ c = Circle(5, 2.01, 6)
 print(c.area)
 print(c.circumference)
 ```
-```{.task_hint}
+`area()` и `circumference()` — методы, декорированные `@property`. {.task_hint}
+```python {.task_answer}
 from math import pi
 
 class Circle:
@@ -211,7 +213,8 @@ c = Child()
 c.field
 c.field = 1
 ```
-```{.task_hint}
+В классе `Child` требуется реализовать сеттер `field`, декорированный `@field.setter`. {.task_hint}
+```python {.task_answer}
 class Parent:
 	@property
 	def field(self):

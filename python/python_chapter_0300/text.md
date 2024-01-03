@@ -97,8 +97,33 @@ def is_prime(n):
 
 # Your code here
 ```
-```{.task_hint}
+Для получения пар чисел и результатов примененной к ним функции `is_prime()` можно воспользоваться функцией `zip()`. {.task_hint}
+```python {.task_answer}
+import math
+
 from concurrent.futures import ProcessPoolExecutor
+
+nums = [
+    112272535095293,
+    112582705942171,
+    102272535065492,
+    115280095190773,
+    115797848077099,
+    1099726899285419]
+
+def is_prime(n):
+    if n < 2:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+
+    sqrt_n = int(math.floor(math.sqrt(n)))
+    for i in range(3, sqrt_n + 1, 2):
+        if n % i == 0:
+            return False
+    return True
 
 if __name__ == "__main__":
     with ProcessPoolExecutor() as executor:
@@ -245,11 +270,24 @@ if __name__ == '__main__':
     p.start()
     p.join()
 ```
-```{.task_hint}
+Взаимная блокировка происходит из-за того, что `f()` не может дождаться освобождения лока, захваченного вызвавшей ее функцией `g()`. {.task_hint}
+```python {.task_answer}
+from multiprocessing import Process, Lock
+ 
+def f(lock):
+    with lock:
+        print("f() acquired lock")
+
 def g(lock):
     with lock:
         print("g() acquired lock")
     f(lock)
+
+if __name__ == '__main__':
+    lock = Lock()
+    p = Process(target=g, args=(lock, ))
+    p.start()
+    p.join()
 ```
 
 Для обмена данными между процессами можно использовать разделяемую память (shared memory). Поверх нее в модуле `multiprocessing` реализованы классы `Value` и `Array`. Останавливаться на них мы не будем, потому что в промышленной разработке их почти не используют. Авторы библиотеки `multiprocessing` по этому поводу [дают рекомендации:](https://docs.python.org/3/library/multiprocessing.html#multiprocessing-programming)
@@ -298,10 +336,34 @@ t1.join()
 t2.join()
 
 ```
-```{.task_hint}
-В конструктор Thread() для объекта t2 блокировки передаются в неправильном порядке.
+В конструктор `Thread()` для объекта `t2` блокировки передаются в неправильном порядке. {.task_hint}
+```python {.task_answer}
+from time import sleep
+from threading import Thread, Lock
 
+
+def f(n, lock1, lock2):
+    print(f"Thread {n} acquiring lock 1...")
+
+    with lock1:
+        sleep(1)
+        print(f"Thread {n} acquiring lock 2...")
+        
+        with lock2:
+            print(f"Thread {n} acquired 2 locks!")
+
+
+lock_a = Lock()
+lock_b = Lock()
+
+t1 = Thread(target=f, args=(1, lock_a, lock_b))
 t2 = Thread(target=f, args=(2, lock_a, lock_b))
+
+t1.start()
+t2.start()
+
+t1.join()
+t2.join()
 ```
 
 Кроме того, модуль `threading` содержит:
@@ -314,7 +376,7 @@ t2 = Thread(target=f, args=(2, lock_a, lock_b))
 
 Как правило, эти примитивы используются в библиотеках для реализации потоко-безопасных структур данных: защищенных очередей, брокеров сообщений и т.д. В промышленной разработке чаще всего в связке с потоками используются только блокировки и защищенные очереди. Если требуется организовать совместную работу с данными, в игру вступают внешние по отношению к проекту сущности. Например, [Redis,](https://redis.io/) [Celery,](https://docs.celeryq.dev/en/stable/) [Memcached.](https://memcached.org/)
 
-В данном коде присутствует ошибка, приводящая к [состоянию гонки](https://en.wikipedia.org/wiki/Race_condition) (race condition). Чтобы ее исправить, защитите данные с помощью блокировки. {.task_text}
+В данном коде присутствует ошибка, приводящая к [состоянию гонки](https://en.wikipedia.org/wiki/Race_condition) (race condition). Исправьте ее. {.task_text}
 
 ```python {.task_source #python_chapter_0300_task_0040}
 from threading import Thread
@@ -344,7 +406,8 @@ t2.start()
 t1.join()
 t2.join()
 ```
-```{.task_hint}
+Чтобы устранить состояние гонки, защитите данные с помощью блокировки. {.task_hint}
+```python {.task_answer}
 from threading import Thread, Lock
 from time import sleep
 
@@ -373,7 +436,6 @@ t2.start()
 
 t1.join()
 t2.join()
-
 ```
 
 ## Резюмируем

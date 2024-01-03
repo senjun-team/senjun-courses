@@ -77,7 +77,9 @@ print(tpl)
 ```python {.task_source #python_chapter_0120_task_0010}
 tpl = (-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
 ```
-```{.task_hint}
+Синтаксис для среза до конечного индекса не включительно: `[начальный индекс: конечный индекс: шаг]`. {.task_hint}
+```python {.task_answer}
+tpl = (-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
 print(tpl[2:9:2])
 ```
 
@@ -128,8 +130,18 @@ TypeError: 'tuple' object does not support item assignment
 
 ```python {.task_source #python_chapter_0120_task_0020}
 ```
-```{.task_hint}
+Для поэлементного сравнения кортежей воспользуйтесь оператором `==`. Для проверки, являются ли кортежи одним и тем же объектом в памяти, воспользуйтесь оператором `is`. {.task_hint}
+```python {.task_answer}
 t1 = (1, [], 2)
+t2 = (1, [], 2)
+
+print(t1 == t2)
+print(t1 is t2)
+
+t1[1].append("A")
+
+print(t1 == t2)
+print(t1 is t2)
 ```
 
 О чем говорит консольный вывод задачи? 

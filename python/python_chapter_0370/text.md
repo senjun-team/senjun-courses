@@ -67,8 +67,9 @@ print("field" in C.__dict__)
 
 ```consoleoutput {.task_source #python_chapter_0370_task_0010}
 ```
-```{.task_hint}
-True. Пояснение: мы завели пустой класс C. Затем добавили в него поле field со значением 8. В консоль мы вывели результат проверки, содержится ли поле field в словаре с атрибутами.
+Мы завели пустой класс `C`. Затем добавили в него поле `field` со значением 8. В консоль мы вывели результат проверки, содержится ли поле `field` в словаре с атрибутами. {.task_hint}
+```python {.task_answer}
+True
 ```
 
 Класс можно передавать в функцию и возвращать из функции:
@@ -157,8 +158,9 @@ print(len(Dummy.__bases__))
 
 ```consoleoutput {.task_source #python_chapter_0370_task_0020}
 ```
-```{.task_hint}
-1. Пояснение: если у класса явно не указан родитель, класс наследуется от object. Поэтому кортеж __bases__ состоит из единственного элемента: <class 'object'>.
+Если у класса явно не указан родитель, класс наследуется от `object`. Поэтому кортеж `__bases__` состоит из единственного элемента: `<class 'object'>`. {.task_hint}
+```python {.task_answer}
+1
 ```
 
 Атрибутами класса могут быть, разумеется, и поля, и методы. И вот как свободная функция превращается в метод:
@@ -208,7 +210,8 @@ child = Child()
 res = child.f(3)
 print(f"Result: {res}\n")
 ```
-```{.task_hint}
+Создание класса `Parent` после заведения функции `f_parent()`: `Parent = type("Parent", (), {"x": 5, "f": f_parent})`. {.task_hint}
+```python {.task_answer}
 def f_parent(self, val):
     print(f"Parent f({val})")
     return self.x * val
@@ -311,12 +314,14 @@ class SimpleClass:
 print(hasattr(SimpleClass, "attr1"))
 print(hasattr(SimpleClass, "ATTR1"))
 ```
-```{.task_hint}
-class UpperAttrMeta(type): 
+Метод `__new__()` класса `UpperAttrMeta` принимает аргументы: `cls`, `name`, `bases`, `attrs`. Внутри метода требуется пройтись по ключам и значениям словаря `attrs` и добавить в новый словарь их в модифицированном виде. Затем вызвать `type.__new__()`, передав в него этот новый словарь. {.task_hint}
+```python {.task_answer}
+class UpperAttrMeta(type):
     def __new__(cls, name, bases, attrs):
-
-        attrs = [(name, value) for name, value in attrs.items() if not name.startswith("__")]
-        uppercase_attrs = dict((name.upper(), value) for name, value in attrs)
+        uppercase_attrs = {
+            name if name.startswith("__") else name.upper(): value
+            for name, value in attrs.items()
+        }
 
         return type.__new__(cls, name, bases, uppercase_attrs)
 

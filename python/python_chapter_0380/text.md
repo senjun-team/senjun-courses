@@ -18,7 +18,7 @@
 Просмотр версий, доступных для установки:
 
 ```shell
-$ pyenv install --list
+pyenv install --list
 ```
 ```
 Available versions:
@@ -39,13 +39,13 @@ Available versions:
 Из списка доступных версий можно выбрать и установить любую:
 
 ```shell
-$ pyenv install 3.12.0
+pyenv install 3.12.0
 ```
 
 Просмотр версий, установленных в системе:
 
 ```shell
-$ pyenv versions
+pyenv versions
 ```
 ```
   system
@@ -58,9 +58,9 @@ $ pyenv versions
 С помощью команд `pyenv global <version>`, `pyenv local <version>` и `pyenv shell <version>` задается глобальная для всей системы версия питона, версия для текущей директории и соответственно для текущей сессии в терминале.
 
 ```shell
-$ python3 --version
-$ pyenv local 3.12.0
-$ python3 --version
+python3 --version
+pyenv local 3.12.0
+python3 --version
 ```
 ```
 Python 3.7.5
@@ -92,7 +92,7 @@ Python 3.12.0
 Команда для создания виртуального окружения:
 
 ```shell
-$ python3 -m venv <venv_directory_name>
+python3 -m venv <venv_directory_name>
 ```
 
 Путь к директории с виртуальным окружением `venv_directory_name` чаще всего именуется `.venv` (скрытая директория) или `venv`. Ее не нужно сохранять в системе контроля версий.
@@ -100,7 +100,7 @@ $ python3 -m venv <venv_directory_name>
 Допустим, мы создали виртуальное окружение в директории `.venv`. Тогда его активация будет выглядеть следующим образом:
 
 ```shell
-$ source .venv/bin/activate
+source .venv/bin/activate
 ```
 
 После выполнения этой команды можно устанавливать все необходимые зависимости проекта и запускать его.
@@ -108,7 +108,7 @@ $ source .venv/bin/activate
 Деактивация окружения выполняется просто:
 
 ```shell
-$ deactivate
+deactivate
 ```
 
 ## Управление зависимостями
@@ -121,31 +121,31 @@ $ deactivate
 Установка через pip библиотеки pandas:
 
 ```shell
-$ pip3 install pandas
+pip3 install pandas
 ```
 
 Установка конкретной версии:
 
 ```shell
-$ pip3 install pandas==2.1.2
+pip3 install pandas==2.1.2
 ```
 
 Просмотр всех установленных пакетов:
 
 ```shell
-$ pip3 freeze
+pip3 freeze
 ```
 
 Сохранение списка установленных пакетов в файл requirements.txt. Так принято называть файл, в котором перечислены зависимости проекта.
 
 ```shell
-$ pip3 freeze > requirements.txt
+pip3 freeze > requirements.txt
 ```
 
 Установка всех необходимых зависимостей проекта из requirements.txt:
 
 ```shell
-$ pip3 install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 Помимо сохранения зависимостей в requirements.txt набирает популярность более гибкий и современный формат: [pyproject.toml.](https://python-poetry.org/docs/pyproject/) С ним умеет работать менеджер пакетов Poetry.
