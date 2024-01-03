@@ -76,11 +76,12 @@ ZeroDivisionError: division by zero
 
 Это правило строго соблюдается в стандартной библиотеке, и его следует придерживаться при реализации собственных классов исключений.
 
-Обработайте исключение `1 / 0` с выводом на экран сообщения «division by zero is forbidden» {.task_text}
+Обработайте исключение `1 / 0` с выводом на экран сообщения `"division by zero is forbidden"`. {.task_text}
 
 ```python {.task_source #python_chapter_0190_task_0010}
 ```
-```{.task_hint}
+Внутри блока `try` требуется вызвать деление на ноль. А в блоке `except ZeroDivisionError` вывести в консоль строку `"division by zero is forbidden"`. {.task_hint}
+```python {.task_answer}
 try:
     1 / 0
 except ZeroDivisionError:
@@ -139,8 +140,11 @@ def raise_exception():
 
 ```python {.task_source #python_chapter_0190_task_0020}
 ```
-```{.task_hint}
-Используйте функцию isinstance(s, str)
+Для проверки, является ли объект строкой, используйте функцию `isinstance()`: первым аргументом передайте в нее объект, вторым тип строки. {.task_hint}
+```python {.task_answer}
+def check_str(obj):
+    if not isinstance(obj, str):
+        raise TypeError
 ```
 
 Помимо этого, `raise` позволяет «перебросить» только что пойманное исключение:
@@ -165,8 +169,20 @@ RuntimeError: no active exception to reraise
 
 ```python {.task_source #python_chapter_0190_task_0030}
 ```
-```{.task_hint}
-Для проверки типа используйте isinstance. Для проверки на четность используйте: a % 2 == 0.
+Для проверки типа используйте `isinstance()`. Для проверки на нечетность используйте условие `val % 2 != 0`. {.task_hint}
+```python {.task_answer}
+def is_negative_odd(val):
+    return val < 0 and val % 2 != 0
+
+def negative_odd_sum(first, second):
+        if not isinstance(first, int) or not isinstance(second, int):
+            raise TypeError
+        
+        if not is_negative_odd(first) or not is_negative_odd(second):
+            raise ValueError
+
+        return first + second
+
 ```
 
 ## Блоки else и finally в конструкции try/except
@@ -221,8 +237,9 @@ else:
 
 ```consoleoutput {.task_source #python_chapter_0190_task_0050}
 ```
-```{.task_hint}
-1. Пояснение: в блоке try было сгенерено исключение, а в блоке except оно перехвачено. Соответственно блок else не выполнился.
+В блоке `try` было брошено исключение, а в блоке `except` оно перехвачено. Поэтому блок `else` не выполнился. {.task_hint}
+```python {.task_answer}
+1
 ```
 
 ## Инструкция assert
@@ -292,12 +309,18 @@ MyError: this is my exception!
 
 Например, исключение `StopIteration` возникает при работе с генераторами или корутинами, если были исчерпаны доступные значения и не является ошибкой (об этом в следующих главах).
 
-Создайте тип исключения с названием `UpperCaseError`. Напишите функцию `upper_case_check(s)`, которая принимает строку и проверяет, что первый символ — заглавная буква. В противном случае она выбрасывает исключение `UpperCaseError` {.task_text}
+Создайте тип исключения с названием `UpperCaseError`. Напишите функцию `upper_case_check()`, которая принимает строку и проверяет, что первый символ — заглавная буква. В противном случае она выбрасывает исключение `UpperCaseError` {.task_text}
 
 ```python {.task_source #python_chapter_0190_task_0040}
 ```
-```{.task_hint}
-Обратиться к первому символу строки можно через квадратные скобки []. Для проверки, является ли буква заглавной, можно использовать метод `isupper()`.
+Обратиться к первому символу строки можно через оператор взятия по индексу `[]`. Для проверки, является ли буква заглавной, можно использовать метод `isupper()`. {.task_hint}
+```python {.task_answer}
+class UpperCaseError(Exception):
+    ...
+
+def upper_case_check(s):
+    if not s or not s[0].isupper():
+        raise UpperCaseError
 ```
 
 ## Цепочки исключений

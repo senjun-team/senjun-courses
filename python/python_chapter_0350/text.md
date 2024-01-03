@@ -94,7 +94,8 @@ class Message:
 messages = [Message(x, str(x) for x in range(1000))]
 
 ```
-```{.task_hint}
+Так выглядит вывод в консоль размера `messages_slots`: `pympler.asizeof.asizeof(messages_slots)`. {.task_hint}
+```python {.task_answer}
 import pympler.asizeof
 
 class Message:
@@ -160,7 +161,8 @@ results_slots = timeit.repeat(test_class_with_slots)
 
 # Print average of results_dict, results_slots
 ```
-```{.task_hint}
+Пример подсчета времени выполнения `test_class_with_slots`: `timeit.repeat(test_class_with_slots)`. {.task_hint}
+```python {.task_answer}
 import timeit
 
 class C:
@@ -211,8 +213,9 @@ print(X("val").val)
 
 ```consoleoutput {.task_source #python_chapter_0350_task_0030}
 ```
-```{.task_hint}
-error. Пояснение: поле __slots__ класса X пустое. Следовательно, у объектов класса не может быть никаких атрибутов. При попытке присвоения self.val = val сгенерируется исключение AttributeError: 'X' object has no attribute 'val'.
+Поле `__slots__` класса `X` пустое. Следовательно, у объектов класса не может быть никаких атрибутов. При попытке присвоения `self.val = val` сгенерируется исключение `AttributeError: 'X' object has no attribute 'val'`. {.task_hint}
+```python {.task_answer}
+error
 ```
 
 ## Ограничения классов со слотами

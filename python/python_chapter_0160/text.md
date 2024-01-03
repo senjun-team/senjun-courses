@@ -89,7 +89,8 @@ b value: 10
 
 ```python {.task_source #python_chapter_0160_task_0010}
 ```
-```{.task_hint}
+Внутри класса можно завести поле типа словарь, ключи которого — HTTP статусы, а значения - их количество. {.task_hint}
+```python {.task_answer}
 class ResponseStats:
     def __init__(self):
         self._resp = {}
@@ -184,8 +185,21 @@ class Message:
     def next_free_id(self):
         return Message._id
 ```
-```{.task_hint}
-Присваивание атрибута в инициализаторе: self._id = type(self)._id
+Присваивание атрибута в инициализаторе: `self._id = type(self)._id` {.task_hint}
+```python {.task_answer}
+class Message:
+    _id = 0
+
+    def __init__(self, data):
+        self._id = type(self)._id
+        self._data = data
+        type(self)._id += 1
+
+    def print(self):
+        print(f"{self._data}\t id {self._id} / {type(self)._id}")
+
+    def next_free_id(self):
+        return type(self)._id
 ```
 
 ## Методы объекта, методы класса и статические методы
@@ -262,8 +276,35 @@ tc.static_method()
 TestClass.class_method()
 TestClass.static_method()
 ```
-```{.task_hint}
-В __init__() и instance_method() нужно передать self, а к class_method() и static_method() добавить декораторы @classmethod и @staticmethod.
+В `__init__()` и `instance_method()` нужно передать `self` и работать с полем инсанса через него. К `class_method()` и `static_method()` нужно добавить декораторы `@classmethod` и `@staticmethod`. В `class_method()` при этом передать `cls`. {.task_hint}
+```python {.task_answer}
+class TestClass:
+    class_field = "This is class field"
+
+    def __init__(self):
+        print("Constructor")
+        self.instance_field = "This is instance field"
+
+    def instance_method(self):
+        print(f"Instance method. {self.instance_field}. {(type(self)).class_field}")
+
+    @classmethod
+    def class_method(cls):
+        print(f"Class method. {cls.class_field}")
+
+    @staticmethod
+    def static_method():
+        print("Static method")
+
+
+tc = TestClass()
+
+tc.instance_method()
+tc.class_method()
+tc.static_method()
+
+TestClass.class_method()
+TestClass.static_method()
 ```
 
 Распространенная ошибка при работе со статическими методами заключается в том, что при их объявлении пропускается декоратор `@staticmethod`. Казалось бы, это бесполезная строка кода, ведь в метод и так не передается ни `self`, ни `cls`. Однако именно `@staticmethod` указывает интерпретатору, что метод вызывается через класс, а не объект, и в него не требуется неявно передавать дополнительный первый аргумент. 

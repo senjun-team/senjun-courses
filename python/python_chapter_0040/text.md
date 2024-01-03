@@ -26,7 +26,7 @@ a is a divisor of b
 
 В конструкции `if/elif/else` блоки `elif` и `else` не обязательны, а `elif` можно повторять сколько угодно раз.
 
-Сделайте этот код более читабельным, уменьшив вложенность условий: откажитесь от вложенных `if` в пользу единого блока `if/elif/else`. {.task_text}
+Сделайте код функции `analyze_string()` более читабельным, уменьшив вложенность условий: откажитесь от вложенных `if` в пользу единого блока `if/elif/else`. {.task_text}
 
 ```python {.task_source #python_chapter_0040_task_0010}
 def analyze_string(s):
@@ -48,8 +48,24 @@ def analyze_string(s):
 
 analyze_string("Hint")
 ```
-```{.task_hint}
-Должно получиться условие, состоящее из одного if, двух elif и одного else.
+Должно получиться условие, состоящее из одного `if`, двух `elif` и одного `else`. {.task_hint}
+```python {.task_answer}
+def analyze_string(s):
+    print("Analyzing string...")
+
+    if s.isdigit():
+        print("All characters are digits")
+    elif s.islower():
+        print("All characters are lower case")
+    elif s.isalpha():
+        print("All characters are in the alphabet")
+    else:
+        print("There is nothing special about this string")
+    
+    print("Finished string analysis")
+
+
+analyze_string("Hint")
 ```
 
 ## Тернарный if
@@ -68,7 +84,10 @@ res = "OK" if code == 200 else "Error"
 s = "Explicit is better than implicit."
 
 ```
-```{.task_hint}
+Синтаксис: `<variable> = <result_true> if <condition> else <result_false>` {.task_hint}
+```python {.task_answer}
+s = "Explicit is better than implicit."
+
 s_descr = "long string" if len(s) > 79 else "short string"
 ```
 
@@ -83,7 +102,8 @@ for val in [8, 3, 16]:
 
     print(val, res)
 ```
-```{.task_hint}
+Синтаксис: `<variable> = <result_true> if <condition> else <result_false>` {.task_hint}
+```python {.task_answer}
 for val in [8, 3, 16]:
     res = "even" if val % 2 == 0 else "odd"
 
@@ -127,16 +147,18 @@ def parse_option(option):
 	else:
 		return "Unsupported option"
 ```
-```{.task_hint}
-match option:
-    case "save_to_file":
-        return "Saving data to file..."
-    case "log_statistics":
-        return "Dumping stats to logs..."
-    case "quit":
-        return "Quitting..."
-    case _:
-        return "Unsupported option"
+Не забудьте обработать случай, в котором требуется вернуть `"Unsupported option"`. {.task_hint}
+```python {.task_answer}
+def parse_option(option):
+    match option:
+        case "save_to_file":
+            return "Saving data to file..."
+        case "log_statistics":
+            return "Dumping stats to logs..."
+        case "quit":
+            return "Quitting..."
+        case _:
+            return "Unsupported option"
 ```
 
 Рассмотрим еще один пример. Для его цельного восприятия важно знать, что в питоне есть тип данных [список](/courses/python/chapters/python_chapter_0110/) (динамический массив). Список из нескольких элементов выглядит как перечисленные в квадратных скобках объекты. Вот список строк: 

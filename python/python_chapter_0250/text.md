@@ -50,8 +50,11 @@ ValueError: too many values to unpack (expected 3)
 ```python {.task_source #python_chapter_0250_task_0010}
 s = "abc"
 ```
-```{.task_hint}
+При распаковке слева от оператора `=` должно быть три переменные, а справа — объект `s`. {.task_hint}
+```python {.task_answer}
+s = "abc"
 c1, c2, c3 = s
+print(c1, c2, c3)
 ```
 
 ## Множественное присваивание
@@ -102,9 +105,11 @@ i, lst[i] = 1, 2
 print(lst)
 ```
 ```consoleoutput {.task_source #python_chapter_0250_task_0020}
+Присваивания идут слева направо. Поэтому переменной `i` присвоится 1. Затем элементу списка по индексу 1 будет присвоено значение 2.
 ```
-```{.task_hint}
-[0, 2]. Пояснение: присваивания идут слева направо. Поэтому переменной i присвоится 1. Затем элементу списка по индексу 1 будет присвоено значение 2.
+ {.task_hint}
+```python {.task_answer}
+[0, 2]
 ```
 
 ## Как устроена распаковка
@@ -166,8 +171,10 @@ print(k1, k2)
 
 ```python {.task_source #python_chapter_0250_task_0030}
 ```
-```{.task_hint}
+Слева от оператора `=` должны быть перечислены 3 переменные. Справа должен быть указан `range()`. {.task_hint}
+```python {.task_answer}
 first, second, third = range(100, 107, 3)
+print(first, second, third)
 ```
 
 К распаковке часто прибегают при итерации в циклах.
@@ -208,8 +215,10 @@ for i, db in enumerate(databases):
 
 ```python {.task_source #python_chapter_0250_task_0040}
 ```
-```{.task_hint}
+Возведение в квадрат переменной `x`: `x**2`. {.task_hint}
+```python {.task_answer}
 a, b, c = [x**2 for x in range(1, 4)]
+print(a, b, c)
 ```
 
 ## Упаковка
@@ -281,7 +290,10 @@ i s
 ```python {.task_source #python_chapter_0250_task_0050}
 lst = [1, 2, 3, 4]
 ```
-```{.task_hint}
+Для запаковки в переменную `_` воспользуйтесь синтаксисом `*`: `*_`. {.task_hint}
+```python {.task_answer}
+lst = [1, 2, 3, 4]
+
 a, b, *_, c, d = lst
 ```
 
@@ -317,8 +329,9 @@ _, (head, *tail), *_ = containers
 
 ```consoleoutput {.task_source #python_chapter_0250_task_0060}
 ```
-```{.task_hint}
-['e', 't']. Пояснение: в _ распаковывается "tuple", в кортеж "set", в *_ все остальное: "list" и "dict". "s", то есть первая буква "set", распаковывается в head. Остальные буквы распаковываются в список tail: ['e', 't'].
+В `_` распаковывается "tuple", в кортеж — "set", в `*_` все остальное: "list" и "dict". "s", то есть первая буква "set", распаковывается в `head`. Остальные буквы распаковываются в список `tail`. {.task_hint}
+```python {.task_answer}
+['e', 't']
 ```
 
 Что сохранится в переменную `b`? {.task_text}
@@ -332,8 +345,9 @@ title, [r, g, b, a] = style
 
 ```consoleoutput {.task_source #python_chapter_0250_task_0070}
 ```
-```{.task_hint}
-252. Пояснение: в title распакуется "primary color", в список — кортеж (3, 161, 252, 0.5). b — это третий элемент списка, и ему будет присвоен третий элемент кортежа, то есть 252.
+В `title` распакуется "primary color", в список — кортеж (3, 161, 252, 0.5). `b` — это третий элемент списка, и ему будет присвоен третий элемент кортежа. {.task_hint}
+```python {.task_answer}
+252
 ```
 
 ## Объединение итерабельных объектов
@@ -385,7 +399,10 @@ s2 = {2, 3, 4, 5, 6}
 merged = # Your code here
 
 ```
-```{.task_hint}
+В объединенное множество нужно добавить `*s1`, `*s2`, значения 10 и 20. {.task_hint}
+```python {.task_answer}
+s1 = {1, 3, 4}
+s2 = {2, 3, 4, 5, 6}
 merged = {*s1, *s2, 10, 20}
 ```
 
@@ -398,7 +415,12 @@ d1 = {"a": 1, "b": 2, "c": 3}
 d2 = {"c": 4, "d": 5}
 d3 = {"d": 6, "e": 7}
 ```
-```{.task_hint}
+Синтаксис: `{**d1, **d2, **d3}`. {.task_hint}
+```python {.task_answer}
+d1 = {"a": 1, "b": 2, "c": 3}
+d2 = {"c": 4, "d": 5}
+d3 = {"d": 6, "e": 7}
+
 merged = {**d1, **d2, **d3}
 ```
 
@@ -432,7 +454,11 @@ weather_forecast(*lst)
 def weather_forecast(city, date):
     ...
 ```
-```{.task_hint}
+По сути создание и распаковка словаря при вызове функци и распаковка уже существующего словаря практически не отличаются: в обоих случаях перед объектом словаря должно стоять `**`. {.task_hint}
+```python {.task_answer}
+def weather_forecast(city, date):
+    ...
+
 weather_forecast(city="Omsk",date="tomorrow")
 
 weather_forecast(**{"city": "Omsk", "date": "tomorrow"})

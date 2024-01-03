@@ -88,8 +88,10 @@ start_transaction()
 
 ```python {.task_source #python_chapter_0020_task_0010}
 ```
-```{.task_hint}
-Синтаксис: переменная = значение
+Синтаксис: переменная = значение {.task_hint}
+```python {.task_answer}
+a = 8
+b = 10
 ```
 
 Исправьте синтаксические ошибки в коде. {.task_text}
@@ -97,8 +99,10 @@ start_transaction()
 ```python  {.task_source #python_chapter_0020_task_0020}
 for i in range(1, 10); print(i);
 ```
-```{.task_hint}
-Нужно удалить точку с запятой и перенести вызов print() на новую строку с отступом.
+Нужно заменить точку с запятой в конце цикла на двоеточие. Удалить точку с запятой после `print()` и перенести вызов `print()` на новую строку с отступом. {.task_hint}
+```python {.task_answer}
+for i in range(1, 10):
+    print(i)
 ```
 
 Если инструкция не влезает в строку (например, становится длиннее рекомендованных PEP8 79 символов), ее можно разбить на несколько строк с использованием круглых скобок. 
@@ -136,14 +140,21 @@ error_in_request = True
 if sessions_count > MAX_SESSIONS or len(queue_tasks) > MAX_QUEUE_LEN or error_in_request:
     print("Error handling request")
 ```
-```{.task_hint}
+Для разбиения условия на несколько строк возьмите его в круглые скобки. {.task_hint}
+```python {.task_answer}
+MAX_SESSIONS = 5
+MAX_QUEUE_LEN = 100
+
+sessions_count = 9
+queue_tasks = ["task1", "task2"] # Here we create list of strings
+error_in_request = True
+
 if (
     sessions_count > MAX_SESSIONS
     or len(queue_tasks) > MAX_QUEUE_LEN
     or error_in_request
 ):
     print("Error handling request")
-
 ```
 
 ## Исключения из правил
@@ -160,8 +171,11 @@ x = x_offset(); y = y_offset(); print(x, y)
 ```python  {.task_source #python_chapter_0020_task_0040}
 x = 5; y = 8; print(x, y)
 ```
-```{.task_hint}
-Должно получиться 3 строки: 2 для инициализации переменных и 1 на вызов функции.
+Должно получиться 3 строки: 2 для инициализации переменных и 1 на вызов функции. {.task_hint}
+```python {.task_answer}
+x = 5
+y = 8
+print(x, y)
 ```
 
 Также допустимо размещать инструкцию и ее вложенный блок на одной строке. Это сработает, если сам вложенный блок не содержит каких-то своих вложенных инструкций:
@@ -172,6 +186,8 @@ while is_acitve: send_request()
 
 Перепишите этот код, чтобы вложенный блок `while` шел на отдельной строке. {.task_text}
 
+В коде заводится функция `send_request()`, которая затем вызывается в цикле `while`. {.task_text}
+
 ```python  {.task_source #python_chapter_0020_task_0050}
 def send_request():
     # some business logic
@@ -181,8 +197,16 @@ is_active = True
 
 while is_active: is_active = send_request()
 ```
-```{.task_hint}
-Тело цикла должно идти на отдельной строке с отступом.
+Тело цикла должно идти на отдельной строке с отступом. {.task_hint}
+```python {.task_answer}
+def send_request():
+    # some business logic
+    return False
+
+is_active = True
+
+while is_active:
+    is_active = send_request()
 ```
 
 ## Оператор pass
@@ -219,7 +243,8 @@ n = 101
 
 while n < 100:
 ```
-```{.task_hint}
+Перед оператором `pass` не забудьте сделать отступ. {.task_hint}
+```python {.task_answer}
 n = 101
 
 while n < 100:

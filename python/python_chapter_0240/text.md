@@ -38,16 +38,18 @@ numbers = [i * i for i in range(10)]
 ```python {.task_source #python_chapter_0240_task_0010}
 dates = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
 ```
-```{.task_hint}
-print([date for date in range(1, 31)])
+Вызов `range()` выглядит следующим образом: range(1, 31). {.task_hint}
+```python {.task_answer}
+dates = [date for date in range(1, 31)]
 ```
 
 Перепишите list comprehension из предыдущей задачи так, чтобы получился список дат в строковом представлении и шестнадцатеричной системе счисления. {.task_text}
 
 ```python {.task_source #python_chapter_0240_task_0020}
 ```
-```{.task_hint}
-dates = [hex(x) for x in range(1, 31)]
+Для получения шестнадцатеричного строкового представления числа воспользуйтесь встроенной функцией `hex()`. {.task_hint}
+```python {.task_answer}
+dates = [hex(date) for date in range(1, 31)]
 ```
 
 С помощью list comprehension удобно фильтровать данные:
@@ -83,7 +85,8 @@ print(three_divisable)
 
 ```python {.task_source #python_chapter_0240_task_0030}
 ```
-```{.task_hint}
+Для формирования строки воспользуйтесь тернарным оператором: `"even" if x % 2 == 0 else "odd"`. {.task_hint}
+```python {.task_answer}
 lst = ["even" if x % 2 == 0 else "odd" for x in range(0, 20)]
 ```
 
@@ -93,7 +96,8 @@ lst = ["even" if x % 2 == 0 else "odd" for x in range(0, 20)]
 l1 = [1, 2, 3, 4, 5]
 l2 = [4, 5, 6, 7, 8]
 ```
-```{.task_hint}
+Добавляйте в список `common` только элементы, присутствующие в `l2`. {.task_hint}
+```python {.task_answer}
 common = [number for number in l1 if number in l2]
 ```
 
@@ -132,7 +136,8 @@ print(squares)
 ```python {.task_source #python_chapter_0240_task_0050}
 matrix = [[1, 2, 3], [1, 2, 3], [1, 2, 3]]
 ```
-```{.task_hint}
+Должен получиться вложенный list comprehension для итерации от 0 до 2-х и для итерации от 1 до 3-х. {.task_hint}
+```python {.task_answer}
 matrix = [
     [x for x in range(1, 4)]
     for y in range(3)
@@ -176,7 +181,23 @@ apis = [
     }
 ]
 ```
-```{.task_hint}
+Результирующими элементами списка `rps` должны быть значения "max_rps" словарей из списка `apis`. {.task_hint}
+```python {.task_answer}
+apis = [
+    {
+        "name": "search engine",
+        "max_rps": 3000,
+    },
+    {
+        "name": "analytics",
+        "max_rps": 1100,
+    },
+    {
+        "name": "crawler", 
+        "max_rps": 4000
+    }
+]
+
 rps = [d["max_rps"] for d in apis]
 ```
 
@@ -198,7 +219,23 @@ apis = [
     }
 ]
 ```
-```{.task_hint}
+Проитерируйтесь по значениям словаря с помощью метода `values()`. {.task_hint}
+```python {.task_answer}
+apis = [
+    {
+        "name": "search engine",
+        "max_rps": 3000,
+    },
+    {
+        "name": "analytics",
+        "max_rps": 1100,
+    },
+    {
+        "name": "crawler", 
+        "max_rps": 3000
+    }
+]
+
 plain = [v for d in apis for v in d.values()]
 ```
 

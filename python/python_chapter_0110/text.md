@@ -68,7 +68,9 @@ print(langs)
 ```python {.task_source #python_chapter_0110_task_0010}
 sequences = ["str", "list", "tuple", "range"]
 ```
-```{.task_hint}
+Второй элемент списка имеет индекс 1. {.task_hint}
+```python {.task_answer}
+sequences = ["str", "list", "tuple", "range"]
 print(sequences[1])
 ```
 
@@ -116,7 +118,9 @@ last_val = collections[-1]
 ```python {.task_source #python_chapter_0110_task_0020}
 matrix = [["A", "B", "C"], ["D", "E", "F"]]
 ```
-```{.task_hint}
+Элемент со значением `"E"` находится в первом с конца вложенном списке. Это его второй с конца элемент. {.task_hint}
+```python {.task_answer}
+matrix = [["A", "B", "C"], ["D", "E", "F"]]
 matrix[-1][-2] = "NEW"
 ```
 
@@ -149,18 +153,23 @@ print(l == m)
 ```python {.task_source #python_chapter_0110_task_0030}
 l1 = ["pointer", "reference"]
 ```
-```{.task_hint}
+Копия списка `l1` — это список, содержащий все его элементы. Его можно получить через срез `[:]`. {.task_hint}
+```python {.task_answer}
+l1 = ["pointer", "reference"]
 l2 = l1[:]
+print(l2)
 ```
 
 С помощью срезов удобно получать перевернутый список: для этого достаточно опустить начальный и конечный индексы среза, а в качестве шага указать -1.
 
-Выведите в консоль элементы списка `lst` в обратном порядке. Используйте для этого среза. {.task_text}
+Выведите в консоль элементы списка `lst` в обратном порядке. Используйте для этого срез. {.task_text}
 
 ```python {.task_source #python_chapter_0110_task_0040}
 lst = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 ```
-```{.task_hint}
+Чтобы указать отрицательный шаг среза, воспользуйтесь синтаксисом `[::-1]`. {.task_hint}
+```python {.task_answer}
+lst = [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 print(lst[::-1])
 ```
 
@@ -212,15 +221,18 @@ sl1 [1, 6]
 sl2 [2, 3]
 ```
 
-В этом списке последовательность степеней двойки прервана символами. Исправьте это при помощи присвоения срезу.{.task_text}
+В этом списке последовательность степеней двойки прервана символами. Исправьте это при помощи присвоения срезу. {.task_text}
 
 ```python {.task_source #python_chapter_0110_task_0050}
 lst = [1, 2, 4, 8, 'N', 'M', 128, 256, 512]
 # Your code here
 print(lst)
 ```
-```{.task_hint}
+В списке есть два символа по индексам 4 и 5. Соответственно срезу списка `lst`, указывающему на эти индексы, требуется присвоить список из трех элементов: степенй двойки между 8 и 128. {.task_hint}
+```python {.task_answer}
+lst = [1, 2, 4, 8, 'N', 'M', 128, 256, 512]
 lst[4:6] = [16, 32, 64]
+print(lst)
 ```
 
 В этом списке последовательность букв английского алфавита прервана элементами - пустыми списками. Исправьте это при помощи присвоения срезу. {.task_text}
@@ -230,8 +242,11 @@ lst = ["A", "B", [], [], [], "D", "E", "F", "G", "H"]
 # Your code here
 print(lst)
 ```
-```{.task_hint}
+Пустые списки содержатся по индексам 2, 3, 4. Срез, смотрящий на эти элементы, требуется заменить списком из одного элемента. {.task_hint}
+```python {.task_answer}
+lst = ["A", "B", [], [], [], "D", "E", "F", "G", "H"]
 lst[2:5] = ["C"]
+print(lst)
 ```
 
 Через присвоение срезу пустого списка можно удалять произвольные последовательности элементов.
@@ -243,8 +258,11 @@ lst = ["A", None, 0, "B", "C", "D", "E"]
 # Your code here
 print(lst)
 ```
-```{.task_hint}
+В последовательности букв английского алфавита есть два лишних вхождения: `None` и 0. Они содержатся по индксам 1 и 2. Соответствующему им срезу нужно присвоить пустой список. {.task_hint}
+```python {.task_answer}
+lst = ["A", None, 0, "B", "C", "D", "E"]
 lst[1:3] = []
+print(lst)
 ```
 
 ## Распространенные операции над списками {#block-operators}
@@ -278,16 +296,22 @@ l = ["kotlin"]
 # Your code here
 print(l)
 ```
-```{.task_hint}
+Сложите два списка и результат присвойте одному из исходных списков. {.task_hint}
+```python {.task_answer}
+m = ["dart", "carbon"]
+l = ["kotlin"]
 l = m + l
+print(l)
 ```
 
 Реализуйте функцию `is_item_in_list()`, которая принимает 2 аргумента: список и некое значение. Функция должна проверить, содержится ли значение в списке, и в зависимости от этого вернуть `True` либо `False`. {.task_text}
 
 ```python {.task_source #python_chapter_0110_task_0090}
 ```
-```{.task_hint}
-return item in lst
+Для проверки вхождения элемента в список воспользуйтесь оператором `in`. {.task_hint}
+```python {.task_answer}
+def is_item_in_list(lst, item):
+    return item in lst
 ```
 
 К спискам, как и к строкам, применимы функции: определение длины `len()`, поиск минимального и максимального элементов `min()` и `max()`.
@@ -323,8 +347,11 @@ print(x)
 ```python {.task_source #python_chapter_0110_task_0100}
 words = "Sparse is better than dense".split()
 ```
-```{.task_hint}
+Срез должен включать в себя элементы с 1-го индекса и до последнего. Последний элемент имеет индекс -1. {.task_hint}
+```python {.task_answer}
+words = "Sparse is better than dense".split()
 del words[1:-1]
+print(words)
 ```
 
 ## Распространенные методы списков
@@ -362,32 +389,42 @@ print(res)
 ['Errors', 'should', 'never', 'pass', 's', 'i', 'l', 'e', 'n', 't', 'l', 'y']
 ```
 
-Исправьте этот код, чтобы на 2-ой строке к списку добавлялась полноценная строка. {.task_text}
+Исправьте этот код так, чтобы на 2-ой строке к списку добавлялась полноценная строка. {.task_text}
 
 ```python {.task_source #python_chapter_0110_task_0110}
 res = ["Errors", "should", "never", "pass"]
 res += "silently" # Fix me
 print(res)
 ```
-```{.task_hint}
+Замените оператор `+=` на вызов метода `append()`. {.task_hint}
+```python {.task_answer}
+res = ["Errors", "should", "never", "pass"]
 res.append("silently")
+print(res)
 ```
 
-Составьте из элементов списка `words` строку. Назовите ее `citation`. Слова в строке должны быть разделены пробелом. Для этого воспользуйтесь методом строки `join()`, рассмотренным в прошлой главе. Выведите строку в консоль. {.task_text}
+Составьте из элементов списка `words` строку. Назовите ее `citation`. Слова в строке должны быть разделены пробелом. {.task_text}
+
+Выведите строку в консоль. {.task_text}
 
 ```python {.task_source #python_chapter_0110_task_0120}
 words = ["simple", "is", "better", "than", "complex"]
 ```
-```{.task_hint}
+Воспользуйтесь методом строки `join()`, рассмотренным в прошлой главе. {.task_hint}
+```python {.task_answer}
+words = ["simple", "is", "better", "than", "complex"]
 citation = " ".join(words)
+print(citation)
 ```
 
 Реализуйте функцию `abs_sort`, которая принимает на вход список чисел и сортирует его in-place по убыванию модуля числа. {.task_text}
 
 ```python {.task_source #python_chapter_0110_task_0130}
 ```
-```{.task_hint}
-l.sort(key=abs, reverse=True)
+Для in-place сортировки вызовите метод списка `sort()`. Передайте в него два параметра: `key=abs` для указания в качестве ключа сортировки встренной функции `abs()`; `reverse=True` для сортировки списка в обратном порядке. {.task_hint}
+```python {.task_answer}
+def abs_sort(lst):
+    lst.sort(key=abs, reverse=True)
 ```
 
 ## Как организован список изнутри {#block-lst-inner}

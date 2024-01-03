@@ -21,10 +21,10 @@ response_ok = "OK"
 
 ```python {.task_source #python_chapter_0010_task_0010}
 ```
-```{.task_hint}
+Синтаксис: переменная = значение {.task_hint}
+```python {.task_answer}
 err_service_unavailable = 503
 ```
-
 
 **Динамическая типизация.** По мере выполнения кода одна и та же переменная может содержать значения разных типов, от строки до числа или флага. {#block-dynamic-typing}
 
@@ -68,7 +68,8 @@ TypeError: must be str, not int
 ```python {.task_source #python_chapter_0010_task_0020}
 print("Returned HTTP code " + 200)
 ```
-```{.task_hint}
+В функцию `print()` необходимо передать две строки, сложенных с помощью оператора `+`. Первая строка: `"Returned HTTP code "`. Вторая строка: число 200, конвертированное в строку с помощью функции `str()`. Функция `str()` принимает аргумент и возвращает строку, к которой приведен аргумент. {.task_hint}
+```python {.task_answer}
 print("Returned HTTP code " + str(200))
 ```
 
@@ -115,8 +116,11 @@ new_items = [2, 8, 6]
 for item in new_items
 print(item)
 ```
-```{.task_hint}
-Функция print() должна вызываться внутри цикла с новой строки. Перед ней нужно поставить отступ (например, 4 пробела).
+Функция `print()` должна вызываться внутри цикла с новой строки. Перед ней нужно поставить отступ (например, 4 пробела). После цикла должно стоять двоеточие. {.task_hint}
+```python {.task_answer}
+new_items = [2, 8, 6]
+for item in new_items:
+    print(item)
 ```
 
 Отсутствие отступов и смешивание табов с пробелами — **лидеры рейтинга ошибок** начинающих питонистов. Чтобы на этом не попадаться, нужна практика.
@@ -135,8 +139,14 @@ for i in range(0, 5)
 
 print(matrix)
 ```
-```{.task_hint}
-Пропущены двоеточия в объявлениях циклов.
+В объявлениях циклов пропущены двоеточия. {.task_hint}
+```python {.task_answer}
+for i in range(0, 5):
+    matrix.append(list())
+    for j in range(0, 5):
+        matrix[i].append(i * j)
+
+print(matrix)
 ```
 
 ## Сильные и слабые стороны
@@ -185,8 +195,10 @@ print(matrix)
 x = 3/2
 print x
 ```
-```{.task_hint}
-Для целочисленного деления используйте оператор '//' вместо '/', для вывода в консоль - функцию 'print()' вместо оператора 'print'.
+Для целочисленного деления используйте оператор `//` вместо `/`, для вывода в консоль — функцию `print()` вместо оператора `print`. {.task_hint}
+```python {.task_answer}
+x = 3//2
+print(x)
 ```
 
 
@@ -208,7 +220,8 @@ print x
 
 ```python {.task_source #python_chapter_0010_task_0060}
 ```
-```{.task_hint}
+Нужно вызвать функцию `print()` от строки `"Hello Monty Python's Flying Circus!"`. {.task_hint}
+```python {.task_answer}
 print("Hello Monty Python's Flying Circus!")
 ```
 

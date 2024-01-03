@@ -40,8 +40,13 @@ if "blog" in clicks:
 
 print(f"{count=}")
 ```
-```{.task_hint}
+Нужно вызвать метод `get()`: `clicks.get("blog", 0)`. {.task_hint}
+```python {.task_answer}
+clicks = {"news": 15, "home": 102, "faq": 8}
+
 count = clicks.get("blog", 0)
+
+print(f"{count=}")
 ```
 
 ### Обновление элемента: if vs класс defaultdict
@@ -89,12 +94,15 @@ clicks["news"] += 1
 
 print(clicks["news"])
 ```
-```{.task_hint}
+Инициализация переменной `clicks`: `defaultdict(lambda : 0)`. {.task_hint}
+```python {.task_answer}
 from collections import defaultdict
 
 clicks = defaultdict(lambda : 0)
 
 clicks["news"] += 1
+
+print(clicks["news"])
 ```
 
 ### Обновление элемента: if vs метод setdefault()
@@ -131,8 +139,13 @@ subscriptions["user_1"].add("monthly")
 
 print(subscriptions)
 ```
-```{.task_hint}
+Добавление в словарь `subscriptions` ключа "user_1", к которому привязано множество из одного элемента "monthly": `setdefault("user_1", set()).add("monthly")`. {.task_hint}
+```python {.task_answer}
+subscriptions = {}
+
 subscriptions.setdefault("user_1", set()).add("monthly")
+
+print(subscriptions)
 ```
 
 ### Циклы: обращение по ключу vs метод items()
@@ -161,7 +174,10 @@ for num in numbers:
     if num % 2 == 0:
         print(f"{num} -> {numbers[num]}")
 ```
-```{.task_hint}
+Проитерируйтесь по парам ключ-значение, которые возвращает `numbers.items()`. {.task_hint}
+```python {.task_answer}
+numbers = {i: i * 2 for i in range(5)}
+
 for k, v in numbers.items():
     if k % 2 == 0:
         print(f"{k} -> {v}")
@@ -212,7 +228,8 @@ search_in_list(large_lst, vals)
 
 search_in_set(large_lst, vals)
 ```
-```{.task_hint}
+Требуется декорировать методы `search_in_list()` и `search_in_set()` через `@measure_time`. {.task_hint}
+```python {.task_answer}
 import time
 
 def measure_time(func):
@@ -277,7 +294,8 @@ while i < len(langs):
     print(i + 1, langs[i]) # Numeration must start from 1!
     i += 1
 ```
-```{.task_hint}
+`enumerate()` принимает 2 аргумента: итерабельный объект и начальное значение счетчика (по умолчанию 0). А возвращает пару: индекс элемента и сам элемент, извлеченный из итерабельного объекта. {.task_hint}
+```python {.task_answer}
 langs = ["go", "rust", "ruby", "c++", "c"]
 
 for i, lang in enumerate(langs, 1):
@@ -307,8 +325,13 @@ s = sum(lst)
 
 print(s)
 ```
-```{.task_hint}
+Синтаксис генераторных выражений отличается от синтаксиса list comprehension только заменой квадратных скобок на круглые. {.task_hint}
+```python {.task_answer}
+lst = [i*i for i in range(10)]
+
 s = sum(i*i for i in range(10))
+
+print(s)
 ```
 
 ## Резюмируем

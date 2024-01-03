@@ -37,7 +37,8 @@ WIDTH = 0.5
 
 ```python  {.task_source #python_chapter_0030_task_0010}
 ```
-```{.task_hint}
+Синтаксис: переменная = значение {.task_hint}
+```python {.task_answer}
 API_URL = "https://api.senjun.dev.ru"
 ```
 
@@ -63,6 +64,8 @@ while (res := calc_next_val()) >= 0:
 
 Перепишите условие с использованием оператора моржа. {.task_text}
 
+В данном коде у строки `title` вызывается метод `split()`, который разбивае сроку по пробелам и возвращает список слов. К списку слов применяется встроенная функция `len()`, возвращающая количество элементов в контейнере. {.task_text}
+
 ```python {.task_source #python_chapter_0030_task_0020}
 title = "The walrus operator"
 words_count = len(title.split())
@@ -73,8 +76,14 @@ else:
     print("Paragraph title is suitable. Words count:", words_count)
 
 ```
-```{.task_hint}
-if (words_count := len(title.split())) > 10
+Вызов функции для подсчета количества слов в предложении должен быть внутри оператора `if`. {.task_hint}
+```python {.task_answer}
+title = "The walrus operator"
+
+if (words_count := len(title.split())) > 10:
+    print("Too many words in paragraph title:", words_count)
+else:
+    print("Paragraph title is suitable. Words count:", words_count)
 ```
 
 ## Резюмируем

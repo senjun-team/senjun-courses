@@ -40,8 +40,12 @@ def sphere_volume(r):
 
 ```python {.task_source #python_chapter_0200_task_0010}
 ```
-```{.task_hint}
-import sys; print(sys.path)
+После импорта модуля `sys` можно обращаться к его переменным через точку. Например, `sys.path`. {.task_hint}
+```python {.task_answer}
+import sys
+
+print(sys.path)
+print(sys.version)
 ```
 
 Всякий раз при обращении к функции из модуля предварять ее именем модуля может быть неудобно. На помощь приходят псевдонимы (aliases). 
@@ -72,8 +76,11 @@ documents/scans/passport.pdf
 
 ```python {.task_source #python_chapter_0200_task_0020}
 ```
-```{.task_hint}
-import shutil as sh; print(sh.disk_usage("/"))
+Импорт с использованием псевдонима: `import shutil as sh`. {.task_hint}
+```python {.task_answer}
+import shutil as sh
+
+print(sh.disk_usage("/"))
 ```
 
 Чтобы импортировать из модуля только нужные определения, а не все подряд, их перечисляют после ключевого слова `from`. Тогда обращение к ним осуществляется без указания имени модуля:
@@ -122,8 +129,17 @@ pow = 1
 print(round(pi))
 print(pow(2, 3))
 ```
-```{.task_hint}
+Задание псевдонима для импортируемого определения: `from math import pi as pi_val`. {.task_hint}
+```python {.task_answer}
 from math import pi as pi_val, pow as pow_f
+
+# Local names:
+pi = 0
+pow = 1
+
+# Here we want to use imported names, not local:
+print(round(pi_val))
+print(pow_f(2, 3))
 ```
 
 С помощью `from` можно организовать и **массовый импорт,** при котором в локальную область видимости попадают вообще все определения из модуля кроме приватных. Имена приватных объектов начинаются с символа `_`, и в момент импорта интерпретатор их пропускает.
@@ -154,8 +170,13 @@ print(exists("/tmp"))
 
 print(splitext("documents/scans/passport.pdf"))
 ```
-```{.task_hint}
+Импорт определения из модуля: `from os.path import exists`. {.task_hint}
+```python {.task_answer}
 from os.path import exists, splitext
+
+print(exists("/tmp"))
+
+print(splitext("documents/scans/passport.pdf"))
 ```
 
 При импорте нескольких модулей их допускается перечислять на одной строке:
@@ -178,8 +199,13 @@ import sys
 
 ```python {.task_source #python_chapter_0200_task_0050}
 ```
-```{.task_hint}
-import datetime; print(datetime.datetime.today())
+Внутри модуля `datetime` содержится одноименный класс `datetime`. Поэтому после импорта модуля через `import datetime` вызвать метод класса можно следующим образом: `datetime.datetime.today()`. {.task_hint}
+```python {.task_answer}
+import datetime
+
+print(datetime.datetime.today())
+print(type(datetime))
+print(datetime.__doc__)
 ```
 
 ## Создание пользовательских модулей
@@ -239,7 +265,8 @@ function from module
 
 ```python {.task_source #python_chapter_0200_task_0060}
 ```
-```{.task_hint}
+Для обработки ситуации, когда ключ `PYTHON_VERSION` отсутствует в словаре `environ`, вместо обращения к элементу через `[]` воспользуйтесь методом словаря `get()`. {.task_hint}
+```python {.task_answer}
 import os
 
 print(os.environ.get("PYTHON_VERSION", ""))
@@ -266,8 +293,12 @@ if __name__ == "__main__":
 
 ```python {.task_source #python_chapter_0200_task_0070}
 ```
-```{.task_hint}
+Внутри условия  `__name__ == "__main__"` требуется вывести значение `csv.__name__`. {.task_hint}
+```python {.task_answer}
+import csv
+
 if __name__ == "__main__":
+    print(csv.__name__)
 ```
 
 ## Пакеты
@@ -305,7 +336,8 @@ import utils.logging.rotating_file_log as log
 
 ```consoleoutput {.task_source #python_chapter_0200_task_0080}
 ```
-```{.task_hint}
+Путь к `bin`: `utils` -> `fs` -> `filetypes` -> `bin`. {.task_hint}
+```python {.task_answer}
 import utils.fs.filetypes.bin
 ```
 
@@ -351,7 +383,8 @@ import utils.fs.filetypes.bin
 
 ```python {.task_source #python_chapter_0200_task_0090}
 ```
-```{.task_hint}
+Для сорировки имен модулей воспользуйтесь встроенной функцией `sorted()`. {.task_hint}
+```python {.task_answer}
 from sys import stdlib_module_names
 
 for m in sorted(stdlib_module_names):

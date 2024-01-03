@@ -67,7 +67,8 @@ lst = [45, 9, -1, 0, 9, 1024, -1]
 s = # your code here
 print(s)
 ```
-```{.task_hint}
+В конструктор `set()` требуется передать результат работы `map()`. {.task_hint}
+```python {.task_answer}
 s = set(map(lambda n: "s" + str(n), lst))
 ```
 
@@ -100,9 +101,12 @@ print(squares)
 ```python {.task_source #python_chapter_0280_task_0020}
 products = {"corn": 5.2, "noodle": 6.5, "mayonnaise": 1.0}
 ```
-```{.task_hint}
+Пригодится вспомогательная функция `apply_discount(product, discount=3.0)`, которую `map()` применит к элементам `products.items()``. {.task_hint}
+```python {.task_answer}
 def apply_discount(product, discount=3.0):
     return product[0], product[1] * (1.0 - discount / 100.0)
+
+products = {"corn": 5.2, "noodle": 6.5, "mayonnaise": 1.0}
 
 discounted = dict(map(apply_discount, products.items()))
 ```
@@ -131,7 +135,8 @@ print(safe_passwords)
 ```python {.task_source #python_chapter_0280_task_0030}
 products = {"corn": 5.2, "noodle": 6.5, "mayonnaise": 1.0}
 ```
-```{.task_hint}
+Пригодится вспомогательная функция `is_expensive(product)`, которую можно передать аргументом в `filter()`. {.task_hint}
+```python {.task_answer}
 def is_expensive(product):
     return product[1] > 4
 
@@ -152,9 +157,12 @@ print(tuple(filter(None, temperatures)))
 Сохраните в множество `valid_keys` не пустые элементы из `keys`. {.task_text}
 
 ```python {.task_source #python_chapter_0280_task_0040}
-keys = ['u', 'u', '', 'd', 'h', '', '', 'r']
+
 ```
-```{.task_hint}
+Вызов `filter()`:  `filter(None, keys)`. {.task_hint}
+```python {.task_answer}
+keys = ['u', 'u', '', 'd', 'h', '', '', 'r']
+
 valid_keys = set(filter(None, keys))
 ```
 
@@ -167,8 +175,13 @@ res = [f"{v} km/h" for v in velocities if v > 60]
 
 print(res)
 ```
-```{.task_hint}
+Воспользуйтесь функциями `map()` и `filter()`, а также конструктором `list()`. {.task_hint}
+```python {.task_answer}
+velocities = {60, 65, 90, 100, 120, 20, 40}
+
 res = list(map(lambda v : f"{v} km/h", filter(lambda v : v > 60, velocities)))
+
+print(res)
 ```
 
 ## functools.reduce()
@@ -223,7 +236,8 @@ page_stats = [
 
 print(get_total_clicks(page_stats))
 ```
-```{.task_hint}
+Воспользуйтесь связкой `reduce()` и `filter()`. {.task_hint}
+```python {.task_answer}
 from functools import reduce
 
 
@@ -233,6 +247,23 @@ def get_total_clicks(stats):
         filter(lambda p: not p["is_bot"], stats),
         0,
     )
+
+page_stats = [
+    {
+        "is_bot": True,
+        "clicks": 2,
+    },
+    {
+        "is_bot": False,
+        "clicks": 3,
+    },
+    {
+        "is_bot": False,
+        "clicks": 1,
+    }
+]
+
+print(get_total_clicks(page_stats))
 ```
 
 ## zip() {#block-zip}
@@ -284,7 +315,8 @@ ValueError: zip() argument 2 is shorter than argument 1
 
 ```python {.task_source #python_chapter_0280_task_0070}
 ```
-```{.task_hint}
+Воспользуйтесь связкой `zip()`, `filter()` и конструктора `list()`. {.task_hint}
+```python {.task_answer}
 def match(*args):
     return list(zip(*filter(len, args), strict=True))
 ```
@@ -302,8 +334,15 @@ a2, b2 = # Your code here
 
 assert a == list(a2) and b == list(b2)
 ```
-```{.task_hint}
+Вызов `zip()`: `zip(*paired)`. {.task_hint}
+```python {.task_answer}
+a = ["A", "B", "C"]
+b = ["D", "E", "F"]
+paired = list(zip(a, b)) # [("A", "D"), ("B", "E"), ("C", "F")]
+
 a2, b2 = zip(*paired)
+
+assert a == list(a2) and b == list(b2)
 ```
 
 ## itertools.zip_longest()
@@ -384,8 +423,28 @@ def get_best_genres(*stats):
 
 print(get_best_genres(games_shop_stats_april, games_shop_stats_june))
 ```
-```{.task_hint}
+Воспользуйтесь связкой `map()`, `filter()`, `chain()` и конструктором `set()`. {.task_hint}
+```python {.task_answer}
 from itertools import chain
+
+games_shop_stats_april = [{
+    "title": "Tower defense",
+    "avg_rating": 3.4
+},
+{
+    "title": "Hack and Slash RPG",
+    "avg_rating": 3.6
+}]
+
+games_shop_stats_june = [
+{
+    "title": "Hack and Slash RPG",
+    "avg_rating": 3.7
+},
+{
+    "title": "Rouelike",
+    "avg_rating": 4.1
+}]
 
 def get_best_genres(*stats):
     return set(
@@ -394,6 +453,8 @@ def get_best_genres(*stats):
             filter(lambda g: g["avg_rating"] > 3.5, chain(*stats)),
         )
     )
+
+print(get_best_genres(games_shop_stats_april, games_shop_stats_june))
 ```
 
 ## Резюмируем

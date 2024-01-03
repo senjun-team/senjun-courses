@@ -29,7 +29,6 @@ while 1:
 ```
 
 ## Цикл for
-
 Цикл `for` последовательно перебирает элементы коллекции:
 
 ```python
@@ -50,7 +49,8 @@ for x in range(10):
 def get_words_count(s):
     # Your code here
 ```
-```{.task_hint}
+Не забудьте обработать случай, когда строка `s` пустая. Количество слов, из которых состоит слово в snake_case, равно количеству символов `_` + 1. {.task_hint}
+```python {.task_answer}
 def get_words_count(s):
     if s == "":
         return 0
@@ -119,9 +119,8 @@ else:
 def print_letters(s):
     # Your code here
 ```
-```{.task_hint}
-Для выхода из цикла используйте break, для перехода на новую итерацию — continue, а для обработки условия не выхода по break — else.
-
+Для выхода из цикла используйте `break`, для перехода на новую итерацию — `continue`, а для обработки условия не выхода по `break` — ветку `else`. {.task_hint}
+```python {.task_answer}
 def print_letters(s):
     for i in s:
         if i.isupper():

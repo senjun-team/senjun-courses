@@ -80,8 +80,21 @@ s2 = s1
 
 ```python {.task_source #python_chapter_0100_task_0010}
 ```
-```{.task_hint}
-Для определения id воспользуйтесь функцией id().
+Для определения id воспользуйтесь функцией `id()`. {.task_hint}
+```python {.task_answer}
+a = "TEXT"
+b = a
+
+print(a)
+print(id(a))
+print(b)
+print(id(b))
+
+b += "2"
+
+print(id(a))
+print(b)
+print(id(b))
 ```
 
 Этот эксперимент демонстрирует, что пока `a` и `b` указывают на одну и ту же строку, их id совпадают. Но id `b` меняется после изменения строки по данному указателю: `b` становится новым объектом в памяти.
@@ -117,12 +130,16 @@ for i in range(len(s)):
     print(s[i])
 ```
 
-Заведите функцию `print_letters(s)`, которая принимает на вход строку и выводит по одному символу на одну строку, пропуская при этом символы пробела: {.task_text}
+Заведите функцию `print_letters(s)`, которая принимает на вход строку и выводит по одному символу на одну строку, пропуская при этом символы пробела. {.task_text}
 
 ```python {.task_source #python_chapter_0100_task_0020}
 ```
-```{.task_hint}
-Самый простой способ итерирования: for letter in text
+Для итерирования по строке воспользуйтесь циклом `for`. {.task_hint}
+```python {.task_answer}
+def print_letters(s):
+    for letter in s:
+        if letter != " ":
+            print(letter)
 ```
 
 ## Срезы {#block-slices}
@@ -178,7 +195,9 @@ ABCD
 ```python {.task_source #python_chapter_0100_task_0030}
 commands = "grep, sed, awk"
 ```
-```{.task_hint}
+Определите индекс символа, являющегося первой запятой в строке. И возьмите срез до этого индекса. {.task_hint}
+```python {.task_answer}
+commands = "grep, sed, awk"
 x = commands[:4]
 ```
 
@@ -187,7 +206,9 @@ x = commands[:4]
 ```python {.task_source #python_chapter_0100_task_0040}
 vals = "1:10:89"
 ```
-```{.task_hint}
+Определите индекс последнего двоеточия в строке. Возьмите срез, начиная со следующего за ним символа. {.task_hint}
+```python {.task_answer}
+vals = "1:10:89"
 y = vals[5:]
 ```
 
@@ -232,7 +253,8 @@ b = a[:]
 
 ```python {.task_source #python_chapter_0100_task_0050}
 ```
-```{.task_hint}
+Нужно воспользоваться методом `join()` объекта `sep` и передать в него список из `s1`, `s2`, `s3`. {.task_hint}
+```python {.task_answer}
 def concat(sep, s1, s2, s3):
     return sep.join([s1, s2, s3])
 ```
@@ -241,7 +263,8 @@ def concat(sep, s1, s2, s3):
 
 ```python {.task_source #python_chapter_0100_task_0060}
 ```
-```{.task_hint}
+Нужно воспользоваться методом `count()` объекта `s`. {.task_hint}
+```python {.task_answer}
 def count(s, c):
     return s.count(c)
 ```
@@ -299,7 +322,8 @@ x=5
 
 ```python {.task_source #python_chapter_0100_task_0070}
 ```
-```{.task_hint}
+Воспользуйтесь f-строкой, внутри которой в фигурных скобках будут присутствовать переменные `user_id` и `visits`. {.task_hint}
+```python {.task_answer}
 def f(user_id, visits):
     return f"User '{user_id}' visited page {visits} times"
 ```

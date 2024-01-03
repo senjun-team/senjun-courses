@@ -22,7 +22,8 @@ print(type(list))
 
 ```python {.task_source #python_chapter_0180_task_0010}
 ```
-```{.task_hint}
+Нужно вызвать встроенную функцию `type()`, передав в нее аргумент `type`. {.task_hint}
+```python {.task_answer}
 print(type(type))
 ```
 
@@ -83,8 +84,17 @@ class Storage():
     def __init__(self, message_size_limit):
         self.message_size_limit = message_size_limit
 ```
-```{.task_hint}
-__repr__() должен возвращать строку-инициализатор.
+Метод `__repr__()` должен возвращать строку-инициализатор. {.task_hint}
+```python {.task_answer}
+class Storage():
+    def __init__(self, message_size_limit):
+        self.message_size_limit = message_size_limit
+
+    def __str__(self):
+        return f"Storage with message_size_limit {self.message_size_limit}"
+
+    def __repr__(self):
+        return f"Storage({self.message_size_limit})"
 ```
 
 ## Базовый класс object
@@ -111,8 +121,9 @@ base of object: ()
 
 ```python {.task_source #python_chapter_0180_task_0030}
 ```
-```{.task_hint}
-issubclass(list, object)
+Требуется вызвать функцию `issubclass()` от двух аргументов: `list` и `object`. {.task_hint}
+```python {.task_answer}
+print(issubclass(list, object))
 ```
 
 Заведите список с именем `lst`. Выведите в консоль результат проверки, является ли объект `lst` экземпляром класса `object`.  {.task_text}
@@ -121,8 +132,10 @@ issubclass(list, object)
 
 ```python {.task_source #python_chapter_0180_task_0040}
 ```
-```{.task_hint}
-isinstance(lst, object)
+Требуется вызвать функцию `isinstance()` от двух аргументов: списка и `object`. {.task_hint}
+```python {.task_answer}
+lst = []
+print(isinstance(lst, object))
 ```
 
 Так как `type` — это класс, а все классы наследуются от `object`... то `type` тоже наследуется от `object`. Кого-то данный факт шокирует.
@@ -133,8 +146,10 @@ isinstance(lst, object)
 
 ```python {.task_source #python_chapter_0180_task_0050}
 ```
-```{.task_hint}
-type.__bases__, issubclass(type, object)
+Для получения родительских классов воспользуйтесь полем `__bases__` класса `type`. Для определения, является ли `type` потомков `object`, вызовите функцию `issubclass()` от `type` и `object`. {.task_hint}
+```python {.task_answer}
+print(type.__bases__)
+print(issubclass(type, object))
 ```
 
 Вот мы и выяснили, как в питоне выглядит [интроспекция,](https://ru.wikipedia.org/wiki/%D0%98%D0%BD%D1%82%D1%80%D0%BE%D1%81%D0%BF%D0%B5%D0%BA%D1%86%D0%B8%D1%8F_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)) то есть получение для объекта в рантайме типа, списка методов и полей, базовых классов и других свойств. Для интроспекции предназначены некоторые dunder-атрибуты и использующие их под капотом встроенные функции, такие как `isinstance()` и `issubclass()`.
@@ -193,7 +208,8 @@ Instance attributes: {'_id_obj': 0}
 
 ```python {.task_source #python_chapter_0180_task_0060}
 ```
-```{.task_hint}
+Требуется проитерироваься по `list.__dict__.items()`. {.task_hint}
+```python {.task_answer}
 for k, v in list.__dict__.items():
     print(k, v)
 ```
@@ -213,7 +229,8 @@ for k, v in list.__dict__.items():
 
 ```python {.task_source #python_chapter_0180_task_0070}
 ```
-```{.task_hint}
+Чтобы определить, какие элементты появились в `__dict__` после присваивани, нужно предварительно сохранить в объект-множество ключи `__dict__` до присваивания и сравнить их с ключами после. Например, через разность множеств. {.task_hint}
+```python {.task_answer}
 class DataRow:
     ...
 
