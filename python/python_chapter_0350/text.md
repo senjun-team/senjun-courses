@@ -53,7 +53,7 @@ Traceback (most recent call last):
   File "example.py", line 12, in <module>
     print("Instance attributes", S().__dict__)
                                  ^^^^^^^^^^^^
-AttributeError: 'S' object has no attribute '__dict__'.
+AttributeError: 'S' object has no attribute '__dict__'
 ```
 
 Как видите, добавление в класс `__slots__` предотвращает появление у объектов поля `__dict__`. Попытка присвоить значение несуществующему полю объекта тоже обречена на провал:
@@ -63,7 +63,7 @@ s = S()
 s.c = 3
 ```
 ```
-AttributeError: 'S' object has no attribute '__dict__'.
+AttributeError: 'S' object has no attribute 'c'
 ```
 
 В качестве присваиваемого полю `__slots__` перечисления может выступать кортеж, список, ключи словаря. Примеры:
@@ -87,21 +87,23 @@ __slots__ = {"a": "val1", "b": "val2"}
 
 ```python {.task_source #python_chapter_0350_task_0010}
 class Message:
-  def __init__(self, msg_id, text):
-    self._id = msg_id
-    self._text = text
+    def __init__(self, msg_id, text):
+        self._id = msg_id
+        self._text = text
 
-messages = [Message(x, str(x) for x in range(1000))]
 
+messages = [Message(x, str(x)) for x in range(1000)]
 ```
 Так выглядит вывод в консоль размера `messages_slots`: `pympler.asizeof.asizeof(messages_slots)`. {.task_hint}
 ```python {.task_answer}
 import pympler.asizeof
 
+
 class Message:
     def __init__(self, msg_id, text):
         self._id = msg_id
         self._text = text
+
 
 class MessageSlots:
     __slots__ = ("_id", "_text")
@@ -116,6 +118,7 @@ messages_slots = [MessageSlots(x, str(x)) for x in range(1000)]
 
 print(pympler.asizeof.asizeof(messages))
 print(pympler.asizeof.asizeof(messages_slots))
+
 ```
 
 Если вам интересно, почему в данной задаче мы использовали функцию из [стороннего модуля](https://pympler.readthedocs.io/en/latest/) `pympler.asizeof.asizeof()` вместо родной функции `sys.getsizeof()`, то ответ прост: `sys.getsizeof()` считает размер объекта без учета вложенных объектов (shallow size). А `pympler.asizeof.asizeof()` считает фактический размер, занимаемый в памяти с учетом объектов, на которые ссылается интересующий объект.
@@ -139,21 +142,25 @@ print(pympler.asizeof.asizeof(messages_slots))
 ```python {.task_source #python_chapter_0350_task_0020}
 import timeit
 
+
 class C:
-  def __init__(self, val=None):
-    self.field = val
+    def __init__(self, val=None):
+        self.field = val
+
 
 # Implement class S
 
 # Implement function field_rw()
 
+
 def test_class_with_dict():
-  obj = C()
-  field_rw(obj)
+    obj = C()
+    field_rw(obj)
+
 
 def test_class_with_slots():
-  obj = S()
-  field_rw(obj)
+    obj = S()
+    field_rw(obj)
 
 
 results_dict = timeit.repeat(test_class_with_dict)
@@ -165,34 +172,39 @@ results_slots = timeit.repeat(test_class_with_slots)
 ```python {.task_answer}
 import timeit
 
+
 class C:
-  def __init__(self, val=None):
-    self.field = val
+    def __init__(self, val=None):
+        self.field = val
+
 
 class S:
-  __slots__ = ('field', )
+    __slots__ = ("field",)
 
-  def __init__(self, val=None):
-    self.field = val
+    def __init__(self, val=None):
+        self.field = val
+
 
 def field_rw(obj):
-  obj.field = "test"
-  x = obj.field
+    obj.field = "test"
+    x = obj.field
+
 
 def test_class_with_dict():
-  obj = C()
-  field_rw(obj)
+    obj = C()
+    field_rw(obj)
+
 
 def test_class_with_slots():
-  obj = S()
-  field_rw(obj)
+    obj = S()
+    field_rw(obj)
 
 
 results_dict = timeit.repeat(test_class_with_dict)
 results_slots = timeit.repeat(test_class_with_slots)
 
-print(sum(results_dict)/len(results_dict))
-print(sum(results_slots)/len(results_slots))
+print(sum(results_dict) / len(results_dict))
+print(sum(results_slots) / len(results_slots))
 ```
 
 То, насколько добавление в класс слотов ускорит доступ к атрибутам, также сильно зависит от целевой платформы, версии языка и других факторов. На docs.python.org [приведен](https://docs.python.org/3/howto/descriptor.html) замер, выполненный на процессоре Apple M1 (версия питона 3.10): чтение атрибутов объектов со слотами ускорилось на 35% относительно объектов без слотов.

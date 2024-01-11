@@ -158,6 +158,7 @@ print(tuple(filter(None, temperatures)))
 
 ```python {.task_source #python_chapter_0280_task_0040}
 keys = ['u', 'u', '', 'd', 'h', '', '', 'r']
+
 ```
 Вызов `filter()`:  `filter(None, keys)`. {.task_hint}
 ```python {.task_answer}
