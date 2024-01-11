@@ -113,7 +113,7 @@ class InMemoryStorage(Storage):
     def save_message(self, message_id, message):
         super().save_message(message_id, message)
         
-        if len(self._saved_messages) + 1 > self._message_size_limit:
+        if len(self._saved_messages) + 1 > self._message_count_limit:
             raise Exception("Too many messages")
         if len(message) > self._message_size_limit:
             raise Exception("Message is too long")
