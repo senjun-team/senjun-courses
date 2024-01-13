@@ -136,7 +136,10 @@ func main() {
 	fmt.Println(s + s2)
 }
 ```  
-``` {.task_hint}
+
+Для обмена местами значений двух переменных между собой используйте третью переменную. {.task_hint}
+
+``` golang {.task_answer}
 package main
 import "fmt"
 

@@ -11,31 +11,42 @@
 - Проверка на равенство: `==`
 - Проверка на неравенство: `!=`
 
-Переменной типа `bool` может быть присвоен результат сравнения. Например: 
+Переменной типа `bool` может быть присвоен результат сравнения. Вот так можно проверить, является ли сегодняшний день рабочим, без учета праздников: 
+
 ```golang
-var b bool
-b = 4 < 5
+weekday := time.Now().Weekday()
+working := weekday != time.Sunday && weekday != time.Saturday
+fmt.Println("Is it a working day:", working, "[", weekday, "]")
 ```
 
-Объявите переменную типа `bool`, присвойте ей результат логического выражения, когда 4 не равно 5. Выведите эту переменную на экран. {.task_text}
+Здесь `&&` означает конъюнкцию, логичечское `И`.
+
+Наудачу бросают 20-ти гранный кубик. Выпавшее значение сохраняется в переменной `coub`. В случае, если значение `coub` больше 10, выведите на экран `true`, иначе — `false`. Для вывода значения на экран воспользуйтесь функцией `fmt.Println()`. {.task_text}
 
 ```golang {.task_source #golang_chapter_0020_task_0010}
 package main
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 func main() {
-	// ваш код здесь
+	coub := rand.Intn(19) + 1
+	// ваш код здесь 
 }
 ```  
-``` {.task_hint}
+
+Объявите переменную типа `bool` и задайте ей значение условия. {.task_hint}
+
+``` golang {.task_answer}
 package main
 
 import "fmt"
 
 func main() {
-	var b bool
-	b = 4 != 5
-	fmt.Println(b)
+	coub := rand.Intn(19) + 1
+	lucky := coub > 10
+	fmt.Println(lucky)
 }
 ```
 
@@ -47,8 +58,7 @@ func main() {
 
 Отрицание инвертирует результат условия. Конъюнкция возвращает `true`, когда оба операнда равны `true`. В противном случае конъюнкция возвращает `false`. Дизъюнкция возвращает `true`, когда хотя бы один из операндов равен `true`. В противном случае дизъюнкция возвращает `false`. 
 
-Даны две переменные типа `bool`: `a` и `b`. Импликацией называется логическая связка "если..., то...". Если `a` и `b` истинны, то их импликация — истина. Если `a` и `b` ложны, то их импликация — истина. Если `a` — истина, а `b` — ложь, то их ипликация — ложь. Если `a` — ложь, а `b` — истина, то их импликация — истина. Допишите тело функции `implic` так, чтобы она выполняла импликацию. Данная функция принимает два значения типа `bool` и возвращает значение типа `bool`. Для возврата результата используйте ключевое слово `return`. Более подробно функции рассматриваются в последующих главах.
- {.task_text}
+Реализуйте функцию implic(), выполняющую импликацию. Импликацией называется логическая операция `a → b`, которая ложна лишь тогда, когда `a` истинно, а `b` ложно. Функция implic() принимает два значения типа `bool` и возвращает значение того же типа. Для возврата результата используйте ключевое слово `return`. Более подробно функции рассматриваются в последующих главах. {.task_text}
 
 ```golang {.task_source #golang_chapter_0020_task_0020}
 package main
@@ -62,21 +72,16 @@ func implic(a bool, b bool) bool {
 }
 
 func main() {
-	a := true
-	b := true
-	fmt.Println(implic(a, b))
-	a = false
-	b = false
-	fmt.Println(implic(a, b))
-	a = true
-	b = false
-	fmt.Println(implic(a, b))
-	a = false
-	b = true
-	fmt.Println(implic(a, b))
+	fmt.Println(implic(true, true))
+	fmt.Println(implic(false, false))
+	fmt.Println(implic(true, false))
+	fmt.Println(implic(false, true))
 }
 ```  
-``` {.task_hint}
+
+Импликацию можно выразить выражением, принимающем истинное значение, если истинно отрицание `a` или истинно `b`. {.task_hint}
+
+```golang {.task_answer}
 package main
 
 import (
@@ -88,22 +93,14 @@ func implic(a bool, b bool) bool {
 }
 
 func main() {
-	a := true
-	b := true
-	fmt.Println(implic(a, b))
-	a = false
-	b = false
-	fmt.Println(implic(a, b))
-	a = true
-	b = false
-	fmt.Println(implic(a, b))
-	a = false
-	b = true
-	fmt.Println(implic(a, b))
+	fmt.Println(implic(true, true))
+	fmt.Println(implic(false, false))
+	fmt.Println(implic(true, false))
+	fmt.Println(implic(false, true))
 }
 ```
 
-Условные конструкции могут быть выражены следующими приемами: 
+Условные конструкции `Go` представлены следующими формами: 
 - `if`
 - `if-else`
 - `if-else-if`
@@ -189,7 +186,7 @@ default:
     fmt.Println("Unknown language")
 }
 ```
-Функцией голосования называется функция, которая принимает на вход три аргумента типа `bool` и возвращает истину, если хотя бы два аргумента — истина. В противном случае функция возвращает ложь. Допишите тело функции голосования  {.task_text}
+Функцией голосования называется функция, которая принимает на вход три аргумента типа `bool` и возвращает истину, если хотя бы два аргумента — истина. В противном случае функция возвращает ложь. Допишите тело функции голосования. {.task_text}
 
 ```golang {.task_source #golang_chapter_0020_task_0030}
 package main
@@ -203,57 +200,21 @@ func vote(a bool, b bool, c bool) bool {
 }
 
 func main() {
-	a := true
-	b := true
-	c := true
-
-	fmt.Println(vote(a, b, c))
-
-	a = false
-	b = true
-	c = true
-
-	fmt.Println(vote(a, b, c))
-
-	a = true
-	b = false
-	c = true
-
-	fmt.Println(vote(a, b, c))
-
-	a = true
-	b = true
-	c = false
-
-	fmt.Println(vote(a, b, c))
-
-	a = true
-	b = false
-	c = false
-
-	fmt.Println(vote(a, b, c))
-
-	a = false
-	b = true
-	c = false
-
-	fmt.Println(vote(a, b, c))
-
-	a = false
-	b = false
-	c = true
-
-	fmt.Println(vote(a, b, c))
-
-	a = false
-	b = false
-	c = false
-
-	fmt.Println(vote(a, b, c))
+	fmt.Println(vote(true, true, true))
+	fmt.Println(vote(false, true, true))
+	fmt.Println(vote(true, false, true))
+	fmt.Println(vote(true, true, false))
+	fmt.Println(vote(true, false, false))
+	fmt.Println(vote(false, true, false))
+	fmt.Println(vote(false, false, true))
+	fmt.Println(vote(false, false, false))
 }
 
 ```  
-``` {.task_hint}
+
+Проверьте попарно истинность конъюнкции всех аргументов. {.task_hint}
+
+```golang {.task_answer}
 package main
 
 import (
@@ -275,53 +236,14 @@ func vote(a bool, b bool, c bool) bool {
 }
 
 func main() {
-	a := true
-	b := true
-	c := true
-
-	fmt.Println(vote(a, b, c))
-
-	a = false
-	b = true
-	c = true
-
-	fmt.Println(vote(a, b, c))
-
-	a = true
-	b = false
-	c = true
-
-	fmt.Println(vote(a, b, c))
-
-	a = true
-	b = true
-	c = false
-
-	fmt.Println(vote(a, b, c))
-
-	a = true
-	b = false
-	c = false
-
-	fmt.Println(vote(a, b, c))
-
-	a = false
-	b = true
-	c = false
-
-	fmt.Println(vote(a, b, c))
-
-	a = false
-	b = false
-	c = true
-
-	fmt.Println(vote(a, b, c))
-
-	a = false
-	b = false
-	c = false
-
-	fmt.Println(vote(a, b, c))
+	fmt.Println(vote(true, true, true))
+	fmt.Println(vote(false, true, true))
+	fmt.Println(vote(true, false, true))
+	fmt.Println(vote(true, true, false))
+	fmt.Println(vote(true, false, false))
+	fmt.Println(vote(false, true, false))
+	fmt.Println(vote(false, false, true))
+	fmt.Println(vote(false, false, false))
 }
 
 ```
@@ -329,4 +251,4 @@ func main() {
 ## Резюме 
 1. В `Go` используются операции сравнения: `<`, `>`, `<=`, `>=`, `==`, `!=`.
 2. Логические операции: `!`, `&&`, `||`.
-3. Условные выражения: `if`, `if-else`,`if-else-if`, `switch-case`.
+3. Условия в языке представлены инструкциями: `if`, `if-else`,`if-else-if`, `switch-case`.
