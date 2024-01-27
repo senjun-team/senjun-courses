@@ -19,7 +19,7 @@ working := weekday != time.Sunday && weekday != time.Saturday
 fmt.Println("Is it a working day:", working, "[", weekday, "]")
 ```
 
-Здесь `&&` означает конъюнкцию, логичечское `И`.
+Здесь `&&` означает конъюнкцию, логическое `И`.
 
 Наудачу бросают 20-ти гранный кубик. Выпавшее значение сохраняется в переменной `coub`. В случае, если значение `coub` больше 10, выведите на экран `true`, иначе — `false`. Для вывода значения на экран воспользуйтесь функцией `fmt.Println()`. {.task_text}
 
@@ -98,6 +98,58 @@ func main() {
 	fmt.Println(implic(true, false))
 	fmt.Println(implic(false, true))
 }
+```
+
+Функцией голосования называется функция, которая принимает на вход три аргумента типа `bool` и возвращает истину, если хотя бы два аргумента — истина. В противном случае функция возвращает ложь. Допишите тело функции голосования. {.task_text}
+
+```golang {.task_source #golang_chapter_0020_task_0030}
+package main
+
+import (
+	"fmt"
+)
+
+func vote(a bool, b bool, c bool) bool {
+	// ваш код здесь 
+}
+
+func main() {
+	fmt.Println(vote(true, true, true))
+	fmt.Println(vote(false, true, true))
+	fmt.Println(vote(true, false, true))
+	fmt.Println(vote(true, true, false))
+	fmt.Println(vote(true, false, false))
+	fmt.Println(vote(false, true, false))
+	fmt.Println(vote(false, false, true))
+	fmt.Println(vote(false, false, false))
+}
+
+```  
+
+Проверьте попарно истинность конъюнкции всех аргументов. {.task_hint}
+
+```golang {.task_answer}
+package main
+
+import (
+	"fmt"
+)
+
+func vote(a bool, b bool, c bool) bool {
+	return a && b || a && c || b && c
+}
+
+func main() {
+	fmt.Println(vote(true, true, true))
+	fmt.Println(vote(false, true, true))
+	fmt.Println(vote(true, false, true))
+	fmt.Println(vote(true, true, false))
+	fmt.Println(vote(true, false, false))
+	fmt.Println(vote(false, true, false))
+	fmt.Println(vote(false, false, true))
+	fmt.Println(vote(false, false, false))
+}
+
 ```
 
 Условные конструкции `Go` представлены следующими формами: 
@@ -186,69 +238,58 @@ default:
     fmt.Println("Unknown language")
 }
 ```
-Функцией голосования называется функция, которая принимает на вход три аргумента типа `bool` и возвращает истину, если хотя бы два аргумента — истина. В противном случае функция возвращает ложь. Допишите тело функции голосования. {.task_text}
+Необходимо реализовать функцию `developerGrade()`, которая возвращает номер грейда разработчика по его названию. Всего есть четыре грейда разработчика: `trainee`, `junior`, `middle`, `senior`. Номер первого грейда `trainee` — 1, номер последнего грейда `senior` — 4. Если передано название, не соответствующее ни одному из перечисленных грейдов, то функция `developerGrade()` возвращает 0.{.task_text}
 
-```golang {.task_source #golang_chapter_0020_task_0030}
+```golang {.task_source #golang_chapter_0020_task_0040}
 package main
+import "fmt"
 
-import (
-	"fmt"
-)
-
-func vote(a bool, b bool, c bool) bool {
+func developerGrade(grade string) int {
 	// ваш код здесь 
 }
 
 func main() {
-	fmt.Println(vote(true, true, true))
-	fmt.Println(vote(false, true, true))
-	fmt.Println(vote(true, false, true))
-	fmt.Println(vote(true, true, false))
-	fmt.Println(vote(true, false, false))
-	fmt.Println(vote(false, true, false))
-	fmt.Println(vote(false, false, true))
-	fmt.Println(vote(false, false, false))
+	fmt.Println("senior", ":", developerGrade("senior"))
+	fmt.Println("middle", ":", developerGrade("middle"))
+	fmt.Println("junior", ":", developerGrade("junior"))
+	fmt.Println("trainee", ":", developerGrade("trainee"))
+	fmt.Println("bookkeeper", ":", developerGrade("bookkeeper"))
 }
+```
 
-```  
+Реализуйте классическую форму `switch-case`. {.task_hint}
 
-Проверьте попарно истинность конъюнкции всех аргументов. {.task_hint}
 
 ```golang {.task_answer}
 package main
+import "fmt"
 
-import (
-	"fmt"
-)
-
-func vote(a bool, b bool, c bool) bool {
-	if a && b {
-		return true
+func developerGrade(grade string) int {
+	switch grade {
+	case "trainee":
+		return 1
+	case "junior":
+		return 2
+	case "middle":
+		return 3
+	case "senior":
+		return 4
+	default:
+		return 0
 	}
-	if a && c {
-		return true
-	}
-	if b && c {
-		return true
-	}
-
-	return false
 }
 
 func main() {
-	fmt.Println(vote(true, true, true))
-	fmt.Println(vote(false, true, true))
-	fmt.Println(vote(true, false, true))
-	fmt.Println(vote(true, true, false))
-	fmt.Println(vote(true, false, false))
-	fmt.Println(vote(false, true, false))
-	fmt.Println(vote(false, false, true))
-	fmt.Println(vote(false, false, false))
+	fmt.Println("senior", ":", developerGrade("senior"))
+	fmt.Println("middle", ":", developerGrade("middle"))
+	fmt.Println("junior", ":", developerGrade("junior"))
+	fmt.Println("trainee", ":", developerGrade("trainee"))
+	fmt.Println("bookkeeper", ":", developerGrade("bookkeeper"))
 }
-
 ```
 
 ## Резюме 
 1. В `Go` используются операции сравнения: `<`, `>`, `<=`, `>=`, `==`, `!=`.
 2. Логические операции: `!`, `&&`, `||`.
 3. Условия в языке представлены инструкциями: `if`, `if-else`,`if-else-if`, `switch-case`.
+4. Внутри `if` условия может быть объявлена переменная, которая будет видна только внутри блока `if`. 
