@@ -1,5 +1,4 @@
-# Глава 3
-## Циклы
+# Глава 3. Циклы
 В языке `Go` существует один единственный вид циклов — это цикл `for`. С использованием данного цикла реализуются и другие классические циклы (например, `while` и `do-while`).
 
 Цикл `for` позволяет выполнить код заранее заданное число раз, пока действительно некоторое условие. Цикл `for` в языке Go может быть написан очень по-разному. В целом, однако, цикл `for` соответствует следующей схеме:
@@ -39,8 +38,8 @@ Go build failed.
 ```golang
 for {
     var s string
-	fmt.Scan(&s)
-	fmt.Println("Your input: ", s)
+    fmt.Scan(&s)
+    fmt.Println("Your input: ", s)
 }
 ``` 
 
@@ -51,7 +50,7 @@ package main
 import "fmt"
 
 func main() {
-	// ваш код здесь
+    // ваш код здесь
 }
 ```  
 
@@ -63,9 +62,9 @@ package main
 import "fmt"
 
 func main() {
-	for i := 0; i < 5; i++ {
-		fmt.Println("Hello, gophers!")
-	}
+    for i := 0; i < 5; i++ {
+        fmt.Println("Hello, gophers!")
+    }
 }
 ```
 
@@ -76,7 +75,7 @@ var i int
 
 for i < 100 {
     fmt.Println("Number: ", i)
-	i++
+    i++
 }
 ```
 
@@ -89,11 +88,11 @@ package main
 import "fmt"
 
 func main() {
-	var anExpression = false
+    var anExpression = false
 
-	for anExpression { // измените цикл 
-		fmt.Println("Hello, gophers!")
-	}
+    for anExpression { // измените цикл 
+        fmt.Println("Hello, gophers!")
+    }
 }
 ```  
 
@@ -105,11 +104,11 @@ package main
 import "fmt"
 
 func main() {
-	var anExpression = false
+    var anExpression = false
 
-	for ok := true; ok; ok = anExpression {
-		fmt.Println("Hello, gophers!")
-	}
+    for ok := true; ok; ok = anExpression {
+        fmt.Println("Hello, gophers!")
+    }
 }
 ```
 
@@ -145,7 +144,7 @@ package main
 import "fmt"
 
 func main() {
-	// ваш код здесь
+    // ваш код здесь
 }
 ```  
 
@@ -155,26 +154,26 @@ func main() {
 package main
 
 import (
-	"fmt"
+    "fmt"
 )
 
 func main() {
-	num := 25
-	a1 := 0
-	a2 := 1
+    num := 25
+    a1 := 0
+    a2 := 1
 
-	fmt.Print(a1, "; ")
-	fmt.Print(a2, "; ")
+    fmt.Print(a1, "; ")
+    fmt.Print(a2, "; ")
 
-	for i := 0; i < num-2; i++ {
-		a3 := a1 + a2
-		fmt.Print(a3)
-		if i != num-3 {
-			fmt.Print("; ")
-		}
-		a1 = a2
-		a2 = a3
-	}
+    for i := 0; i < num-2; i++ {
+        a3 := a1 + a2
+        fmt.Print(a3)
+        if i != num-3 {
+            fmt.Print("; ")
+        }
+        a1 = a2
+        a2 = a3
+    }
 }
 ```
 

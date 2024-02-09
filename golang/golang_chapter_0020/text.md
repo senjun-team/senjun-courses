@@ -1,5 +1,4 @@
-# Глава 2
-## Условия 
+# Глава 2. Условия 
 В `Go`, аналогично другим языкам, в условиях используются условные выражения. Условные выражения должны быть типа `bool`. 
 
 В условных выражениях используются следующие операции сравнения.
@@ -26,13 +25,13 @@ fmt.Println("Is it a working day:", working, "[", weekday, "]")
 ```golang {.task_source #golang_chapter_0020_task_0010}
 package main
 import (
-	"fmt"
-	"math/rand"
+    "fmt"
+    "math/rand"
 )
 
 func main() {
-	coub := rand.Intn(19) + 1
-	// ваш код здесь 
+    coub := rand.Intn(19) + 1
+    // ваш код здесь 
 }
 ```  
 
@@ -44,9 +43,9 @@ package main
 import "fmt"
 
 func main() {
-	coub := rand.Intn(19) + 1
-	lucky := coub > 10
-	fmt.Println(lucky)
+    coub := rand.Intn(19) + 1
+    lucky := coub > 10
+    fmt.Println(lucky)
 }
 ```
 
@@ -64,18 +63,18 @@ func main() {
 package main
 
 import (
-	"fmt"
+    "fmt"
 )
 
 func implic(a bool, b bool) bool {
-	// ваш код здесь 
+    // ваш код здесь 
 }
 
 func main() {
-	fmt.Println(implic(true, true))
-	fmt.Println(implic(false, false))
-	fmt.Println(implic(true, false))
-	fmt.Println(implic(false, true))
+    fmt.Println(implic(true, true))
+    fmt.Println(implic(false, false))
+    fmt.Println(implic(true, false))
+    fmt.Println(implic(false, true))
 }
 ```  
 
@@ -85,18 +84,18 @@ func main() {
 package main
 
 import (
-	"fmt"
+    "fmt"
 )
 
 func implic(a bool, b bool) bool {
-	return !a || b
+    return !a || b
 }
 
 func main() {
-	fmt.Println(implic(true, true))
-	fmt.Println(implic(false, false))
-	fmt.Println(implic(true, false))
-	fmt.Println(implic(false, true))
+    fmt.Println(implic(true, true))
+    fmt.Println(implic(false, false))
+    fmt.Println(implic(true, false))
+    fmt.Println(implic(false, true))
 }
 ```
 
@@ -106,22 +105,22 @@ func main() {
 package main
 
 import (
-	"fmt"
+    "fmt"
 )
 
 func vote(a bool, b bool, c bool) bool {
-	// ваш код здесь 
+    // ваш код здесь 
 }
 
 func main() {
-	fmt.Println(vote(true, true, true))
-	fmt.Println(vote(false, true, true))
-	fmt.Println(vote(true, false, true))
-	fmt.Println(vote(true, true, false))
-	fmt.Println(vote(true, false, false))
-	fmt.Println(vote(false, true, false))
-	fmt.Println(vote(false, false, true))
-	fmt.Println(vote(false, false, false))
+    fmt.Println(vote(true, true, true))
+    fmt.Println(vote(false, true, true))
+    fmt.Println(vote(true, false, true))
+    fmt.Println(vote(true, true, false))
+    fmt.Println(vote(true, false, false))
+    fmt.Println(vote(false, true, false))
+    fmt.Println(vote(false, false, true))
+    fmt.Println(vote(false, false, false))
 }
 
 ```  
@@ -140,14 +139,14 @@ func vote(a bool, b bool, c bool) bool {
 }
 
 func main() {
-	fmt.Println(vote(true, true, true))
-	fmt.Println(vote(false, true, true))
-	fmt.Println(vote(true, false, true))
-	fmt.Println(vote(true, true, false))
-	fmt.Println(vote(true, false, false))
-	fmt.Println(vote(false, true, false))
-	fmt.Println(vote(false, false, true))
-	fmt.Println(vote(false, false, false))
+    fmt.Println(vote(true, true, true))
+    fmt.Println(vote(false, true, true))
+    fmt.Println(vote(true, false, true))
+    fmt.Println(vote(true, true, false))
+    fmt.Println(vote(true, false, false))
+    fmt.Println(vote(false, true, false))
+    fmt.Println(vote(false, false, true))
+    fmt.Println(vote(false, false, false))
 }
 
 ```
@@ -245,15 +244,15 @@ package main
 import "fmt"
 
 func developerGrade(grade string) int {
-	// ваш код здесь 
+    // ваш код здесь 
 }
 
 func main() {
-	fmt.Println("senior", ":", developerGrade("senior"))
-	fmt.Println("middle", ":", developerGrade("middle"))
-	fmt.Println("junior", ":", developerGrade("junior"))
-	fmt.Println("trainee", ":", developerGrade("trainee"))
-	fmt.Println("bookkeeper", ":", developerGrade("bookkeeper"))
+    fmt.Println("senior", ":", developerGrade("senior"))
+    fmt.Println("middle", ":", developerGrade("middle"))
+    fmt.Println("junior", ":", developerGrade("junior"))
+    fmt.Println("trainee", ":", developerGrade("trainee"))
+    fmt.Println("bookkeeper", ":", developerGrade("bookkeeper"))
 }
 ```
 
@@ -265,26 +264,26 @@ package main
 import "fmt"
 
 func developerGrade(grade string) int {
-	switch grade {
-	case "trainee":
-		return 1
-	case "junior":
-		return 2
-	case "middle":
-		return 3
-	case "senior":
-		return 4
-	default:
-		return 0
-	}
+    switch grade {
+    case "trainee":
+        return 1
+    case "junior":
+        return 2
+    case "middle":
+        return 3
+    case "senior":
+        return 4
+    default:
+        return 0
+    }
 }
 
 func main() {
-	fmt.Println("senior", ":", developerGrade("senior"))
-	fmt.Println("middle", ":", developerGrade("middle"))
-	fmt.Println("junior", ":", developerGrade("junior"))
-	fmt.Println("trainee", ":", developerGrade("trainee"))
-	fmt.Println("bookkeeper", ":", developerGrade("bookkeeper"))
+    fmt.Println("senior", ":", developerGrade("senior"))
+    fmt.Println("middle", ":", developerGrade("middle"))
+    fmt.Println("junior", ":", developerGrade("junior"))
+    fmt.Println("trainee", ":", developerGrade("trainee"))
+    fmt.Println("bookkeeper", ":", developerGrade("bookkeeper"))
 }
 ```
 
