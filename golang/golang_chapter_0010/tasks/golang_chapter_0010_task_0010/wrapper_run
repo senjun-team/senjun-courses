@@ -1,18 +1,1 @@
-package main
-
-import "fmt"
-
-func swap(p *string, p2 *string) {
-	// ваш код здесь
-}
-
-func main() {
-	var s string
-	var s2 string
-
-	s = ", gophers!"
-	s2 = "Hello"
-
-	swap(&s, &s2)
-	fmt.Println(s + s2)
-}
+#INJECT-b585472fa
