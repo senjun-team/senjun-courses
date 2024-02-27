@@ -1,0 +1,76 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestImpic(t *testing.T) {
+	cases := []struct {
+		in1  bool
+		in2  bool
+		want bool
+	}{
+		{true, true, true},
+		{false, false, true},
+		{true, false, false},
+		{false, true, true},
+	}
+	for _, c := range cases {
+		got := implic(c.in1, c.in2)
+		if got != c.want {
+			t.Errorf("impic(%t, %t) == %t, want %t", c.in1, c.in2, got, c.want)
+		}
+	}
+}
+
+func TestMain(t *testing.T) {
+	old := os.Stdout // keep backup of the real stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	outC := make(chan string)
+	// copy the output in a separate goroutine so printing can't block indefinitely
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+		outC <- buf.String()
+	}()
+
+	main()
+
+	// back to normal state
+	w.Close()
+	os.Stdout = old // restoring the real stdout
+	out := <-outC
+	res := strings.Split(out, "\n")
+	var valsForTesting []string
+
+	for _, el := range res {
+		val := strings.TrimSpace(el)
+		if val != "" {
+			valsForTesting = append(valsForTesting, val)
+		}
+	}
+
+	if len(valsForTesting) != 4 {
+		t.Fatalf("main() prints %d values, wants 4 values", len(valsForTesting))
+	}
+
+	if valsForTesting[0] != "true" {
+		t.Fatalf("main() prints \"" + valsForTesting[0] + "\" as first value, not \"true\"")
+	}
+	if valsForTesting[1] != "true" {
+		t.Fatalf("main() prints \"" + valsForTesting[1] + "\" as second value, not \"true\"")
+	}
+	if valsForTesting[2] != "false" {
+		t.Fatalf("main() prints \"" + valsForTesting[2] + "\" as third value, not \"false\"")
+	}
+	if valsForTesting[3] != "true" {
+		t.Fatalf("main() prints \"" + valsForTesting[3] + "\" as fourth value, not \"true\"")
+	}
+
+}

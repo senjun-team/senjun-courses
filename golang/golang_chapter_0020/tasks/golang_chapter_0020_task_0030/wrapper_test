@@ -1,0 +1,93 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestVote(t *testing.T) {
+	cases := []struct {
+		in1  bool
+		in2  bool
+		in3  bool
+		want bool
+	}{
+		{true, true, true, true},
+		{false, true, true, true},
+		{true, false, true, true},
+		{true, true, false, true},
+		{true, false, false, false},
+		{false, true, false, false},
+		{false, false, true, false},
+		{false, false, false, false},
+	}
+	for _, c := range cases {
+		got := vote(c.in1, c.in2, c.in3)
+		if got != c.want {
+			t.Errorf("impic(%t, %t, %t) == %t, want %t", c.in1, c.in2, c.in3, got, c.want)
+		}
+	}
+}
+
+func TestMain(t *testing.T) {
+	old := os.Stdout // keep backup of the real stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	outC := make(chan string)
+	// copy the output in a separate goroutine so printing can't block indefinitely
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+		outC <- buf.String()
+	}()
+
+	main()
+
+	// back to normal state
+	w.Close()
+	os.Stdout = old // restoring the real stdout
+	out := <-outC
+	res := strings.Split(out, "\n")
+	var valsForTesting []string
+
+	for _, el := range res {
+		val := strings.TrimSpace(el)
+		if val != "" {
+			valsForTesting = append(valsForTesting, val)
+		}
+	}
+
+	if len(valsForTesting) != 8 {
+		t.Fatalf("main() prints %d values, wants 8 values", len(valsForTesting))
+	}
+
+	if valsForTesting[0] != "true" {
+		t.Fatalf("main() prints \"" + valsForTesting[0] + "\" as first value, not \"true\"")
+	}
+	if valsForTesting[1] != "true" {
+		t.Fatalf("main() prints \"" + valsForTesting[1] + "\" as second value, not \"true\"")
+	}
+	if valsForTesting[2] != "true" {
+		t.Fatalf("main() prints \"" + valsForTesting[2] + "\" as third value, not \"true\"")
+	}
+	if valsForTesting[3] != "true" {
+		t.Fatalf("main() prints \"" + valsForTesting[3] + "\" as fourth value, not \"true\"")
+	}
+	if valsForTesting[4] != "false" {
+		t.Fatalf("main() prints \"" + valsForTesting[4] + "\" as fifth value, not \"false\"")
+	}
+	if valsForTesting[5] != "false" {
+		t.Fatalf("main() prints \"" + valsForTesting[5] + "\" as sixth value, not \"false\"")
+	}
+	if valsForTesting[6] != "false" {
+		t.Fatalf("main() prints \"" + valsForTesting[6] + "\" as seventh value, not \"false\"")
+	}
+	if valsForTesting[7] != "false" {
+		t.Fatalf("main() prints \"" + valsForTesting[7] + "\" as eighth value, not \"false\"")
+	}
+
+}
