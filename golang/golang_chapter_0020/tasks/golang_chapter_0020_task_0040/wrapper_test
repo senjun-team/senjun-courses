@@ -1,0 +1,79 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestDeveloperGrade(t *testing.T) {
+	cases := []struct {
+		in   string
+		want int
+	}{
+		{"trainee", 1},
+		{"junior", 2},
+		{"middle", 3},
+		{"senior", 4},
+		{"bookkeeper", 0},
+	}
+	for _, c := range cases {
+		got := developerGrade(c.in)
+		if got != c.want {
+			t.Errorf("developerGrade(%q) == %d, want %d", c.in, got, c.want)
+		}
+	}
+}
+
+func TestMain(t *testing.T) {
+	old := os.Stdout // keep backup of the real stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	outC := make(chan string)
+	// copy the output in a separate goroutine so printing can't block indefinitely
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+		outC <- buf.String()
+	}()
+
+	main()
+
+	// back to normal state
+	w.Close()
+	os.Stdout = old // restoring the real stdout
+	out := <-outC
+	res := strings.Split(out, "\n")
+	var valsForTesting []string
+
+	for _, el := range res {
+		val := strings.TrimSpace(el)
+		if val != "" {
+			valsForTesting = append(valsForTesting, val)
+		}
+	}
+
+	if len(valsForTesting) != 5 {
+		t.Fatalf("main() prints %d values, wants 5 values", len(valsForTesting))
+	}
+
+	if valsForTesting[0] != "senior : 4" {
+		t.Fatalf("main() prints \"" + valsForTesting[0] + "\" as first value, not \"senior : 4\"")
+	}
+	if valsForTesting[1] != "middle : 3" {
+		t.Fatalf("main() prints \"" + valsForTesting[1] + "\" as second value, not \"middle : 3\"")
+	}
+	if valsForTesting[2] != "junior : 2" {
+		t.Fatalf("main() prints \"" + valsForTesting[2] + "\" as third value, not \"junior : 2\"")
+	}
+	if valsForTesting[3] != "trainee : 1" {
+		t.Fatalf("main() prints \"" + valsForTesting[3] + "\" as fourth value, not \"trainee : 1\"")
+	}
+	if valsForTesting[4] != "bookkeeper : 0" {
+		t.Fatalf("main() prints \"" + valsForTesting[4] + "\" as fifth value, not \"bookkeeper : 0\"")
+	}
+
+}

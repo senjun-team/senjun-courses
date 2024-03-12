@@ -25,28 +25,41 @@ fmt.Println("Is it a working day:", working, "[", weekday, "]")
 
 ```golang {.task_source #golang_chapter_0020_task_0010}
 package main
+
 import (
     "fmt"
     "math/rand"
 )
 
+func isLucky(coub int) (lucky bool){
+    // ваш код здесь 
+    return 
+}
+
 func main() {
     coub := rand.Intn(19) + 1
-    // ваш код здесь 
+    fmt.Println(isLucky(coub))
 }
 ```
 
-Объявите переменную типа `bool` и задайте ей значение условия. {.task_hint}
+Задайте переменной `lucky` типа `bool` значение условия. {.task_hint}
 
 ``` golang {.task_answer}
 package main
 
-import "fmt"
+import (
+    "fmt"
+    "math/rand"
+)
+
+func isLucky(coub int) (lucky bool){
+    lucky = coub > 10
+    return
+}
 
 func main() {
     coub := rand.Intn(19) + 1
-    lucky := coub > 10
-    fmt.Println(lucky)
+    fmt.Println(isLucky(coub))
 }
 ```
 
