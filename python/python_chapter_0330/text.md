@@ -1,321 +1,355 @@
-# Глава 33. Еще раз про pythonic way
-> Readability counts.  
-Дзен питона
+# Глава 33. Аннотации типов
 
+Аннотации типов — это возможность указывать типы при объявлении переменных, полей класса, параметров и возвращаемых значений функций... Типизация в питоне динамическая: интерпретатор получает информацию о типах не во время компиляции, а лишь во время выполнения. Так что аннотации типов — не более чем **подсказки** для разработчиков, IDE и статических анализаторов кода, таких как [mypy.](https://mypy-lang.org/) 
 
-Для того, чтобы по-максимуму использовать преимущества языка, недостаточно знать его синтаксис. Приемы, считающиеся хорошей практикой в одном языке, назовут анти-паттернами, если они встретятся в коде на другом языке. 
+Не смотря на это аннотации типов все чаще становятся неотъемлемой частью код-стайла в крупных проектах. Ведь они повышают читабельность кода и помогают уберечься от досадных ошибок.
 
-В мире Java геттеры и сеттеры для полей класса — это норма, но переносить их в питон [не имеет смысла.](/courses/python/chapters/python_chapter_0140#block-fields) Невозможно представить код на go без возврата и проверки кодов ошибок функций. А для питона подобный подход слишком многословный: проще придерживаться [принципа EAFP](/courses/python/chapters/python_chapter_0170#block-eafp) и обрабатывать исключения. Подобных примеров сотни.
+## Как работают аннотации типов
+Аннотации не дают никакой гарантии, что в переменную будет записано значение указанного типа. Зато во многих случаях это обнаружит статический анализатор и сгенерирует предупреждение. Не удивительно, что во многих проектах анализ кода встроен в [CI](https://en.wikipedia.org/wiki/Continuous_integration) и запускается автоматически.
 
-Иными словами, важно не просто уметь написать рабочий код, а сделать это *идиоматично.* В этой главе мы пойдем от обратного: рассмотрим популярные анти-паттерны питона. И варианты их рефакторинга.
+Поэтому хоть аннотации типов являются встроенным функционалом питона и для их использования не требуется никаких сторонних библиотек и утилит, рассматривать мы их будем в связке с mypy. Только обязательное использование статического анализатора позволит в полной мере раскрыть пользу от внедрения в проект статической типизации.
 
-## Работа со словарями
-### Поиск элемента: if vs метод get()
-Допустим, нам нужно найти в словаре `d` значение по ключу `k` и присвоить его переменной `x`. Если ключ не найден, то присвоить значение по умолчанию 1. Вот как выглядит громоздкое и неэффективное решение этой задачи:
+Связывание переменной с типом строится на простых правилах:
+- Типы переменных и параметров указываются после двоеточия `:`. Например, запись `res = calc()` превращается в `res: float = calc()`.
+- Типы возвращаемых значений указываются после стрелочки `->`, например `-> str`. Если функция ничего не возвращает, это прописывается явно с помощью `-> None`.
+- В качестве типа объекта можно указать его базовый класс. Тогда переменной можно присвоить его наследников, но использовать для них только функционал, определенный в базовом классе. Например, нельзя вызвать метод, отсутствующий в базовом классе.
 
-```python
-x = 1
-
-if k in d:
-    x = d[k]
-```
-
-`k in d` и `d[k]` — двойная работа по поиску элемента в словаре. А вместо трех строчек то же самое выражается одной:
+Сохраним в скрипт `example.py` простой пример использования аннотаций типов:
 
 ```python
-x = d.get(k, 1)
+def format(val: float) -> str:
+    return f"{val=:.2f}"
+
+print(format(2.009))
 ```
 
-Мы воспользовались [методом словаря](/courses/python/chapters/python_chapter_0130#block-methods) `get(key, default_val=None)`.
+Проверим файл `example.py` через mypy:
 
-Проведите рефакторинг поиска записи `"blog"` в словаре `clicks`. {.task_text}
-
-```python {.task_source #python_chapter_0330_task_0010}
-clicks = {"news": 15, "home": 102, "faq": 8}
-
-count = 0
-
-if "blog" in clicks:
-    count = clicks["blog"]
-
-print(f"{count=}")
 ```
-```{.task_hint}
-count = clicks.get("blog", 0)
+$ mypy example.py 
+Success: no issues found in 1 source file
 ```
 
-### Обновление элемента: if vs класс defaultdict
-Распространенная задача: изменить значение в словаре по ключу. При этом обработать ситуацию, если значение еще не было добавлено.
+А теперь вместо ожидаемого значения типа `float` передадим в функцию строку:
 
 ```python
-d = {}
+def format(val: float) -> str:
+    return f"{val=:.2f}"
 
-if k not in d:
-    d[k] = []
-
-d[k].append("some value")
+print(format("value"))
 ```
 
-Внутри `if` происходит повторное обращение по ключу, что не эффективно. То же самое легко выразить лаконичнее и без участия `if`. Достаточно заменить встроенный тип `dict` на `defaultdict` из [модуля](https://docs.python.org/3/library/collections.html#collections.defaultdict) `collections`:
+При несовпадении типов mypy сгенерирует ошибку:
+
+```
+example.py:4: error: Argument 1 to "format" has incompatible type "str"; expected "float"  [arg-type]
+Found 1 error in 1 file (checked 1 source file)
+```
+
+Как видите, mypy запускается из консоли. Его можно установить через менеджер пакетов `pip`:
+
+```shell
+python3 -m pip install mypy
+```
+
+Если при вызове mypy задать флаг `--strict`, то будут включены все возможные опциональные проверки. Они гарантируют, что если в процессе выполнения кода возможно какое-то несовпадение типов, mypy о них сообщит. При этом будьте готовы к ложным срабатываниям.
+
+Даже если тип переменной не указан, с помощью анализа [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) во многих случаях mypy  способен его вывести самостоятельно. Так, в этом тривиальном примере аннотация считается избыточной:
 
 ```python
-from collections import defaultdict
-
-d = defaultdict(list)
-
-d[k].append("some value")
+x: int = 1
+l: list[int] = [1, 2]
 ```
 
-Класс `defaultdict` отнаследован от `dict` и отличается от него только обработкой значений по умолчанию. Его конструктор `defaultdict(default_factory=None, /[, ...])` соответствует конструктору `dict` с добавлением аргумента `default_factory` для заполнения значений по умолчанию. 
-
-В качестве `default_factory` может выступать `None` или вызываемый объект. В том числе лямбда или конструктор встроенных типов:
+Но если мы заводим **пустую** коллекцию, то без явного указания типа `mypy` не сможет определить, какие элементы в нее попадут:
 
 ```python
-from collections import defaultdict
-
-d1 = defaultdict(lambda: 255)
-d2 = defaultdict(str)
+d: dict[str, float] = {}
+s: set[str] = set()
 ```
 
-Откажитесь от стандартного словаря в пользу `defaultdict`. {.task_text}
-
-```python {.task_source #python_chapter_0330_task_0020}
-clicks = {}
-
-if "news" not in clicks:
-    clicks["news"] = 0
-
-clicks["news"] += 1
-
-print(clicks["news"])
-```
-```{.task_hint}
-from collections import defaultdict
-
-clicks = defaultdict(lambda : 0)
-
-clicks["news"] += 1
-```
-
-### Обновление элемента: if vs метод setdefault()
-Вернемся к неудачному коду из предыдущего пункта главы.
+## Аннотации для встроенных типов
+Аннотация для встроенного типа — это просто имя типа:
 
 ```python
-d = {}
-
-if k not in d:
-    d[k] = []
-
-d[k].append("some value")
+x: bool = True
+val: int = 2
+a: float = 5.01
+s: str = "ABC"
 ```
 
-Как мы разобрались, его можно отрефакторить заменой `dict` на `collections.defaultdict`. Второй вариант — воспользоваться [методом словаря](/courses/python/chapters/python_chapter_0130#block-methods) `setdefault()`:
+В аннотации коллекций после типа коллекции в скобках указывается тип элементов:
 
 ```python
-d = {}
-
-d.setdefault(k, []).append("some value")
+l: list[str] = ["A", "B"]
+s: set[int] = {105, -9}
+d: dict[int, bool] = {}
 ```
 
-`setdefault()` удобен, если значение по умолчанию в процессе работы со словарем может поменяться. Например, оно разное для разных ключей.
+Добавьте аннотации типов вместо их описания в комментариях. Исправьте код, который нарушает аннотации. {.task_text}
 
-Проведите рефакторинг этого кода с помощью метода `setdefault()`. {.task_text}
+```python {.task_source #python_chapter_0330_task_0010 .run_static_type_checker}
+class Storage():
+    def __init__(self, message_size_limit):
+        # message_size_limit must be int
+        self._message_size_limit = message_size_limit
 
-```python {.task_source #python_chapter_0330_task_0030}
-subscriptions = {}
+        # mapping of message id to message
+        self._storage = {}
 
-if "user_1" not in subscriptions:
-    subscriptions["user_1"] = set()
+    def save_message(self, message_id, message):
+        # message_id must be int
+        self._storage[message_id] = message
 
-subscriptions["user_1"].add("monthly")
+    def get_message(self, message_id):
+        return self._storage[message_id]
 
-print(subscriptions)
+
+s = Storage("9")
+s.save_message("8", "message")
+s.get_message(8)
 ```
-```{.task_hint}
-subscriptions.setdefault("user_1", set()).add("monthly")
+Не забудьте указывать типы для возвращаемых методами значений. {.task_hint}
+```python {.task_answer}
+class Storage():
+    def __init__(self, message_size_limit: int) -> None:
+        self._message_size_limit = message_size_limit
+
+        # mapping of message id to message
+        self._storage: dict[int, str] = {}
+
+    def save_message(self, message_id: int, message: str) -> None:
+        self._storage[message_id] = message
+
+    def get_message(self, message_id: int) -> str:
+        return self._storage[message_id]
+
+
+s = Storage(9)
+s.save_message(8, "message")
+s.get_message(8)
 ```
 
-### Циклы: обращение по ключу vs метод items()
-Так выглядит типичный проход по словарю у новичка в мире питона:
+В аннотации кортежа перечисляются типы всех его элементов:
 
 ```python
-for k in d:
-    print(k, d[k])
+def f(t: tuple[int, float, str]) -> None:
+    ...
 ```
 
-Этот код не оптимален: в нем есть лишнее обращение по ключу. Правильнее проитерироваться по парам ключ-значение, которые возвращает [метод](/courses/python/chapters/python_chapter_0130#block-basic-ops) `items()`:
+Однако в некоторых случаях длина кортежа неизвестна. Например, если кортеж подается на вход функции. Тогда вместо поэлементного перечисления типов используется многоточие `...`. В данном примере функция принимает кортеж произвольной длины, заполненный целыми числами:
 
 ```python
-for k, v in d.items():
-    print(k, v)
+def f(t: tuple[int, ...]) -> None:
+    ...
 ```
 
-А точнее, `items()` возвращает [генератор,](/courses/python/chapters/python_chapter_0210#block-generators) который при каждом обращении отдает кортеж из двух элементов. Поэтому `items()` безопасно использовать даже для очень больших словарей.
+Добавьте аннотации типов в функцию. {.task_text}
 
-Проведите рефакторинг цикла по словарю. {.task_text}
-
-```python {.task_source #python_chapter_0330_task_0040}
-numbers = {i: i * 2 for i in range(5)}
-
-for num in numbers:
-    if num % 2 == 0:
-        print(f"{num} -> {numbers[num]}")
+```python {.task_source #python_chapter_0330_task_0020 .run_static_type_checker}
+def word_count(lines):
+      result = {}
+      for line in lines:
+          for word in line.split():
+              result[word] = result.get(word, 0) + 1
+      return result
 ```
-```{.task_hint}
-for k, v in numbers.items():
-    if k % 2 == 0:
-        print(f"{k} -> {v}")
+Не забудьте указать тип для переменной `result`. {.task_hint}
+```python {.task_answer}
+def word_count(lines: list[str]) -> dict[str, int]:
+      result: dict[str, int] = {}
+      for line in lines:
+          for word in line.split():
+              result[word] = result.get(word, 0) + 1
+      return result
 ```
 
-## Работа со списками
-### Поиск по списку vs поиск по множеству
-Проверим, содержит ли список `lst` элемент `x`:
+Как быть, если одной переменной могут быть присвоены значения разных типов? Например, если список содержит целые числа и строки. Тогда возможные типы перечисляются через символ `|`:
 
 ```python
-if x in lst:
-    print(f"Found {x} in list!")
+l: list[int | str]
 ```
 
-В такой проверке нет ничего плохого, но ровно до тех пор, пока длина списка удерживается в рамках разумного. Как мы [обсуждали](/courses/python/chapters/python_chapter_0090#block-lst-inner) в главе про списки, сложность поиска элемента в объекте типа `list` — O(n). И если количество элементов списка переваливает за тысячи, а то и миллионы, то поиск становится ужасно не эффективным.
-
-В таком случае появляется веский повод отказаться от списка в пользу другой структуры данных, например множества `set` или словаря `dict`. Поиск в этих коллекциях [занимает](/courses/python/chapters/python_chapter_0120#block-complexity) O(1).
+Частный случай — переменная, которая может быть `None`:
 
 ```python
-s = set(lst)
-
-if x in s:
-    print(f"Found {x} in set!")
+x: list[int | None]
 ```
 
+## Модуль typing
+Модуль `typing` содержит множество подсказок о типах, среди которых:
+- `Optional`: тип переменной, которая может принимать значение `None`. Например, `Optional[int]`. Может использоваться вместо синтаксиса `T | None`.
+- `Any`: произвольный тип.
+- `Literal`: перечисление допустимых значений для переменной. Например, `Literal["retry", "abort"]`.
+- `Protocol`: [протокол,](/courses/python/chapters/python_chapter_0170#block-protocols) то есть класс, описывающий некоторый интерфейс в традициях утиной типизации.
+- `NoReturn`: способ указания результата функции, если функция никогда не возвращает управление.
 
-Напишите [декоратор](/courses/python/chapters/python_chapter_0250/) `measure_time()` для измерения времени выполнения функции. Он должен логировать, сколько секунд она выполнялась: `"2.03 seconds"`. {.task_text}
-
-Декорируйте им функции `search_in_list()` и `search_in_set()`. Визуально сравните, сколько времени занимает их выполнение. {.task_text}
-
-Пример измерения времени выполнения [приведен](/courses/python/chapters/python_chapter_0280#block-measure-time) в главе про процессы и потоки. {.task_text}
-
-```python {.task_source #python_chapter_0330_task_0050}
-def search_in_list(lst, vals):
-    for val in vals:
-        x = val in lst
-
-def search_in_set(lst, vals):
-    s = set(lst)
-    for val in vals:
-        x = val in s
-
-
-large_lst = [n for n in range(25000)]
-vals = [n for n in range(15000, 30000)]
-
-search_in_list(large_lst, vals)
-
-search_in_set(large_lst, vals)
-```
-```{.task_hint}
-import time
-
-def measure_time(func):
-    def wrapper(*args, **kwargs):
-        start = time.perf_counter()
-        func(*args, **kwargs)
-        finish = time.perf_counter()
-        print(f"{finish - start:.2f} seconds")
-
-    return wrapper
-
-
-@measure_time
-def search_in_list(lst, vals):
-    for val in vals:
-        x = val in lst
-
-
-@measure_time
-def search_in_set(lst, vals):
-    s = set(lst)
-    for val in vals:
-        x = val in s
-
-
-large_lst = [n for n in range(25000)]
-vals = [n for n in range(15000, 30000)]
-
-search_in_list(large_lst, vals)
-
-search_in_set(large_lst, vals)
-```
-
-### Циклы: len() + range() vs enumerate()
-Этот анти-паттерн касается не только списков, но и строк, кортежей. Просто применительно к спискам он встречается особенно часто. И заключается он в организации цикла по коллекции через индексы:
+`Optional` используется для переменных, которые могут становиться `None`:
 
 ```python
-lst = ["a", "b", "c"]
+from typing import Optional
 
-for i in range(0,len(lst)):
-    elem = lst[i]
-    print(i, elem)
+x: Optional[str] = "val" if some_check() else None
 ```
 
-Связку `len()` + `range()` для получения индекса и обращения к элементам коллекции по этому индексу следует заменить на вызов [встроенной функции](/courses/python/chapters/python_chapter_0330#block-enumerate) `enumerate()`:
+Для обозначения объектов произвольного типа предназначено определение `Any`:
 
 ```python
-lst = ["a", "b", "c"]
+from typing import Any
 
-for i, elem in enumerate(lst):
-    print(i, elem)
+obj: Any = some_magic()
 ```
 
-Проведите рефакторинг этого кода. {.task_text}
+Конечно, вместо `Any` можно было бы указать тип `object`, потому что он базовый вообще для всех объектов. Но, во-первых, `Any` более явно выражает намерение подчеркнуть, что тип объекта неизвестен или не важен. Во-вторых, если переменной задать тип `object`, то и работать с ней можно только как с экземпляром `object`. Иначе статические анализаторы выдадут ошибку типов.
 
-```python {.task_source #python_chapter_0330_task_0060}
-langs = ["go", "rust", "ruby", "c++", "c"]
-
-i = 0
-
-while i < len(langs):
-    print(i + 1, langs[i]) # Numeration must start from 1!
-    i += 1
-```
-```{.task_hint}
-langs = ["go", "rust", "ruby", "c++", "c"]
-
-for i, lang in enumerate(langs, 1):
-    print(i, lang)
-```
-
-### List comprehensions vs generator expressions
-Многие обходят [list comprehension](/courses/python/chapters/python_chapter_0220/) стороной из-за необычного синтаксиса. Но стоит его освоить, и зачастую новички в мире питона бросаются в другую крайность: злоупотребление.
+Определение `Literal` нужно для проверки соответствия значения переменной одному из фиксированных литералов.
 
 ```python
-comma_seperated_words = ','.join([word for word in words])
+from typing import Literal
+
+ENDPOINTS = Literal["/search", "/suggest"]
+
+def get_endpoint_rps(endpoint: ENDPOINTS) -> dict[ENDPOINTS, int]:
+    return {endpoint: 3000}
+
+print(get_endpoint_rps("/search"))
 ```
 
-В этом примере кода, как и во многих других случаях, нет нужды создавать целый список и расходовать на него оперативную память. Достаточно применить [генераторное выражение:](/courses/python/chapters/python_chapter_0220#generator-expressions)
+Разумеется, в качестве литералов можно перечислять не только строки:
 
 ```python
-comma_seperated_words = ','.join(word for word in words)
+def validate_simple(data: Any) -> Literal[True]:
+    return True
 ```
 
-Большинство встроенных и библиотечных функций могут работать с генераторными выражениями: `all()`, `any()`, `enumerate()`, `iter()`, `itertools.cycle()`, `itertools.accumulate()` и т.д.
+Использование `Protocol` мы [подробно рассматривали](/courses/python/chapters/python_chapter_0170#block-protocols) в главе про полиморфизм, поэтому здесь останавливаться на нем не будем.
 
-Проведите рефакторинг этого кода, чтобы вместо заведения списка `lst` через list comprehension сразу использовать генераторное выражение. {.task_text}
+Определение `NoReturn` указывается для возвращаемого значения, если функция никогда не возвращает управление. Например, она в вечном цикле обрабатывает соединения либо вызывает `sys.exit()`.
 
-```python {.task_source #python_chapter_0330_task_0070}
-lst = [i*i for i in range(10)]
-s = sum(lst)
+```python
+from typing import NoReturn
 
-print(s)
+def f() -> NoReturn:
+    while True:
+        ...
 ```
-```{.task_hint}
-s = sum(i*i for i in range(10))
+
+Добавьте аннотации типов в код. {.task_text}
+
+```python {.task_source #python_chapter_0330_task_0030 .run_static_type_checker}
+import sys
+
+def get_tuple(arg = None):
+    if arg is None:
+        return 1, 2
+    if arg == 0:
+        return 2, 3
+    return 3, 2
+
+def get_false():
+    # Always returns false
+    return False
+
+def shutdown():
+    sys.exit(0)
+
+def format(a, b, c):
+    # 'a' is int
+    # 'b' is bool
+    # we don't know 'c' type
+
+    return f"{a=} {b=} {c=}"
+```
+Вам пригодятся аннотации `Any`, `Literal`, `NoReturn`, `Optional` из модуля `typing`. {.task_hint}
+```python {.task_answer}
+import sys
+from typing import Any, Literal, NoReturn, Optional
+
+def get_tuple(arg: Optional[int] = None) -> tuple[int, int]:
+    if arg is None:
+        return 1, 2
+    if arg == 0:
+        return 2, 3
+    return 3, 2
+
+def get_false() -> Literal[False]:
+    # Always returns false
+    return False
+
+def shutdown() -> NoReturn:
+    sys.exit(0)
+
+def format(a: int, b: bool, c: Any) -> str:
+    # 'a' is int
+    # 'b' is bool
+    # we don't know 'c' type
+
+    return f"{a=} {b=} {c=}"
+```
+
+## Модуль collections.abc
+В модуле `collections.abc` содержатся [определения](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes) для обобщенной (generic) аннотации типов.
+
+Наиболее распространенные из них:
+- `Callable`: функция или другой вызываемый объект, у которого определен dunder-метод `__call__()`.
+- `Mapping`: объект, хранящий пары ключ-значение, у которого есть метод `__getitem__()`.
+- `MutableMapping`: изменяемый объект для хранения пар ключ-значение. У него должен быть определен метод `__setitem__()`.
+- `Sequence`: последовательность элементов с доступом по индексу. Должна поддерживать методы `__len__()` и `__getitem__()`.
+- `Iterable`: [итерабельный объект,](/courses/python/chapters/python_chapter_0230/) то есть любой объект, по которому можно пройтись циклом `for`.
+- `Iterator`: [итератор,](/courses/python/chapters/python_chapter_0230/) то есть объект, поддерживающий протокол итератора (методы `__iter__()` и `__next__()`).
+
+Пример аннотации для функции, которая принимает функцию и итерабельный объект и вызывает для них [встроенную функцию](/courses/python/chapters/python_chapter_0280#block-filter) `filter()`:
+
+```python
+from collections.abc import Callable, Iterable, Iterator
+
+def filter_vals(check_data: Callable[[int], bool], data: Iterable[int]) -> Iterator[int]:
+    return filter(check_data, data)
+
+print(list(filter_vals(lambda x : x > 0, [-1, 3, -2, 8, 9])))
+```
+
+Здесь для функции мы использовали аннотацию `Callable[[int], bool]`, то есть указали, что функция принимает единственный параметр типа `int` и возвращает тип `bool`. Если сигнатура функции не важна, можно писать просто `Callable`.
+
+Модуль `collections.abc` позволяет типизировать обобщенный код. Например, вы написали функцию, которая принимает последовательность и считает по ее элементам какую-то статистику. Функция корректно отработает и для строки, и для списка, и для кортежа. Поэтому для параметра функции подойдет тип `Sequence`, а для результирующей статистики например тип `Mapping`.
+
+Добавьте аннотации типов в код. {.task_text}
+
+```python {.task_source #python_chapter_0330_task_0040 .run_static_type_checker}
+def format(d):
+    return (f"{k}-{v}" for k, v in d.items())
+
+def modify(d):
+    for k, v in d.items():
+        if v is not None and v < 0:
+            print("Modifying key:", k)
+            d[k] = None
+```
+Вам пригодятся аннотации `Mapping`, `MutableMapping` и `Iterable` из модуля `collections.abc` и `Any` из `typing`. {.task_hint}
+```python {.task_answer}
+from collections.abc import Mapping, MutableMapping, Iterable
+from typing import Any
+
+def format(d: Mapping[Any, Any]) -> Iterable[str]:
+    return (f"{k}-{v}" for k, v in d.items())
+
+def modify(d: MutableMapping[int, int | None]) -> None:
+    for k, v in d.items():
+        if v is not None and v < 0:
+            print("Modifying key:", k)
+            d[k] = None
+```
+
+
+## Игнорирование типов в mypy
+Комментарий с текстом `# type: ignore` используется, чтобы подавить ошибки mypy для конкретных строк. Хорошим тоном считается после него оставить комментарий, поясняющий, почему в данном месте следует опустить проверку типов.
+
+```python
+x = some_magic()  # type: ignore  # some_magic() won't return None here because ...
 ```
 
 ## Резюмируем
-- Для получения из словаря значения по ключу (либо значения по умолчанию, если ключ не найден), используйте метод `get()`.
-- Когда требуется задавать одно и то же значение по умолчанию для несуществующих ключей словаря, вместо класса `dict` используйте `collections.defaultdict`.
-- Если же необходимо задавать различные умолчания для несуществующих ключей словаря, используйте метод `setdefault()`.
-- Для итерации по словарю используйте метод `items()`.
-- Во множестве или словаре поиск элементов осуществляется гораздо быстрее, чем в списках, строках и кортежах. Помните об этом, если перед вами встает задача частых поисков в большой коллекции.
-- Используйте метод `enumerate()` для получения индексов элементов при итерации по коллекции.
-- Везде, где вместо list comprehension подойдет генераторное выражение, отдавайте предпочтение генераторному выражению.
+- Аннотации типов нужны для повышения читабельности кода, для подсказок от IDE и проверки статическими анализаторами. Они никак не влияют на рантайм. Интерпретатор их пропускает. 
+- Аннотация для переменной, поля или параметра функции указывается через двоеточие: `x : int`. Аннотация для возвращаемого значения — после стрелочки: `def f() -> None`.
+- Модуль `typing` содержит подсказки о типах, например `Any`, `Optional`, `NoReturn`.
+- Модуль `collections.abc` содержит подсказки для типов коллекций.

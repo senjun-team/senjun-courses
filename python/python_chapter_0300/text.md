@@ -1,297 +1,444 @@
-# Глава 30. Аннотации типов
+# Глава 30. Потоки, процессы
 
-Аннотации типов — это возможность указывать типы при объявлении переменных, полей класса, параметров и возвращаемых значений функций... Типизация в питоне динамическая: интерпретатор получает информацию о типах не во время компиляции, а лишь во время выполнения. Так что аннотации типов — не более чем **подсказки** для разработчиков, IDE и статических анализаторов кода, таких как [mypy.](https://mypy-lang.org/) 
+Как мы [выяснили](/courses/python/chapters/python_chapter_0290#block-cpu-bound) в главе про GIL, CPU-bound задачи лучше распараллеливать на процессы, а IO-bound — на потоки. Для высокоуровневого выполнения задач на пуле процессов или потоков предназначен модуль `concurrent.futures`. Низкоуровневые примитивы для работы с процессами и потоками реализованы в модулях `multiprocessing` и `threading`. Об этих трех модулях мы сегодня и поговорим.
 
-Не смотря на это аннотации типов все чаще становятся неотъемлемой частью код-стайла в крупных проектах. Ведь они повышают читабельность кода и помогают уберечься от досадных ошибок.
+## Процессы
+Рассмотрим два способа работы с процессами:
+- Класс `ProcessPoolExecutor` из модуля `concurrent.futures` — самый простой способ распределить задачи по процессам.
+- Модуль `multiprocessing` — низкоуровневый интерфейс для более тонкого управления процессами.
 
-## Как работают аннотации типов
-Аннотации не дают никакой гарантии, что в переменную будет записано значение указанного типа. Зато во многих случаях это обнаружит статический анализатор и сгенерирует предупреждение. Не удивительно, что во многих проектах анализ кода встроен в [CI](https://en.wikipedia.org/wiki/Continuous_integration) и запускается автоматически.
+### Модуль concurrent.futures
+Модуль `concurrent.futures` предоставляет простой способ асинхронного запуска задач буквально парой строк кода. 
 
-Поэтому хоть аннотации типов являются встроенным функционалом питона и для их использования не требуется никаких сторонних библиотек и утилит, рассматривать мы их будем в связке с mypy. Только обязательное использование статического анализатора позволит в полной мере раскрыть пользу от внедрения в проект статической типизации.
-
-Связывание переменной с типом строится на простых правилах:
-- Типы переменных и параметров указываются после двоеточия `:`. Например, запись `res = calc()` превращается в `res: float = calc()`.
-- Типы возвращаемых значений указываются после стрелочки `->`, например `-> str`. Если функция ничего не возвращает, это прописывается явно с помощью `-> None`.
-- В качестве типа объекта можно указать его базовый класс. Тогда переменной можно присвоить его наследников, но использовать для них только функционал, определенный в базовом классе. Например, нельзя вызвать метод, отсутствующий в базовом классе.
-
-Сохраним в скрипт `example.py` простой пример использования аннотаций типов:
+Задачи могут выполняться как в отдельных процессах с помощью класса `ProcessPoolExecutor`, так и в потоках с помощью `ThreadPoolExecutor`. У этих классов одинаковый интерфейс, определенный в абстрактном классе `Executor` и состоящий из 3-х методов: `submit()`, `map()`, `shutdown()`.
 
 ```python
-def format(val: float) -> str:
-    return f"{val=:.2f}"
-
-print(format(2.009))
+submit(fn, /, *args, **kwargs)
 ```
 
-Проверим файл `example.py` через mypy:
+`submit()` отправляет функцию с аргументами `fn(*args, **kwargs)` на выполнение в пул процессов и возвращает объект `Future`. Сущность [future](https://en.wikipedia.org/wiki/Futures_and_promises) встречается во многих языках программирования и представляет собой объект, ждущий результатов выполнения задачи.
 
-```
-$ mypy example.py 
-Success: no issues found in 1 source file
-```
-
-А теперь вместо ожидаемого значения типа `float` передадим в функцию строку:
+Рассмотрим пример запуска задач на пуле процессов. Так выглядит выполнение задачи `calc_and_sleep()` в пуле, состоящем из единственного процесса. {#block-measure-time}
 
 ```python
-def format(val: float) -> str:
-    return f"{val=:.2f}"
+import time
+from concurrent.futures import ProcessPoolExecutor
 
-print(format("value"))
+
+def calc_and_sleep(a, b):
+    time.sleep(1)
+    return pow(a, b)
+
+
+start = time.perf_counter()
+
+with ProcessPoolExecutor(max_workers=1) as executor:
+    future = executor.submit(calc_and_sleep, 128, 256)
+    print(future.result())
+
+finish = time.perf_counter()
+print(f"Finished in {finish - start:.2f} seconds")
+```
+```
+279095111627852376407822673918065072905887935345660252615989519488029661278604994789701101367875859521849524793382568057369148405837577299984720398976429790087982805274893437406788716103454867635208144157749912668657006085226160261808841484862703257771979713923863820038729637520989894984676774385364934677289947762340313157123529922421738738162392233756507666339799675257002539356619747080176786496732679854783185583233878234270370065954615221443190595445898747930123678952192875629172092437548194134594886873249778512829119416327938768896
+Finished in 1.01 seconds
 ```
 
-При несовпадении типов mypy сгенерирует ошибку:
-
-```
-example.py:4: error: Argument 1 to "format" has incompatible type "str"; expected "float"  [arg-type]
-Found 1 error in 1 file (checked 1 source file)
-```
-
-Как видите, mypy запускается из консоли. Его можно установить через менеджер пакетов `pip`:
-
-```shell
-python3 -m pip install mypy
-```
-
-Если при вызове mypy задать флаг `--strict`, то будут включены все возможные опциональные проверки. Они гарантируют, что если в процессе выполнения кода возможно какое-то несовпадение типов, mypy о них сообщит. При этом будьте готовы к ложным срабатываниям.
-
-Даже если тип переменной не указан, с помощью анализа [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) во многих случаях mypy  способен его вывести самостоятельно. Так, в этом тривиальном примере аннотация считается избыточной:
+Для получения результата выполнения функции `calc_and_sleep()` мы вызвали метод `result()` объекта типа `Future`. С помощью `perf_counter()` было замерено время выполнения кода. 
 
 ```python
-x: int = 1
-l: list[int] = [1, 2]
+map(fn, *iterables, timeout=None, chunksize=1)
 ```
 
-Но если мы заводим **пустую** коллекцию, то без явного указания типа `mypy` не сможет определить, какие элементы в нее попадут:
+`map()` применяет функцию к каждому элементу итерабельного объекта. По принципу работы она похожа на [встроенную функцию](/courses/python/chapters/python_chapter_0280#block-map) `map()`, только исполняет задачи асинхронно в пуле процессов. `map()` возвращает итератор на результаты применения функции. Если указан параметр `timeout` (в секундах), а функция не успела выполниться за это время, итератор бросает исключение `TimeoutError`.
+
+Параметр `chunksize` определяет размер чанков, на которые распределяется итерабельный объект по процессам из пула. Для больших коллекций имеет смысл увеличить значение `chunksize` и таким образом ускорить обработку.
 
 ```python
-d: dict[str, float] = {}
-s: set[str] = set()
+shutdown(wait=True, *, cancel_futures=False)
 ```
+`shutdown()` завершает пул процессов. Этот метод не нужно вызывать, если `ProcessPoolExecutor` создается через контекстный менеджер `with ... as`.  
 
-## Аннотации для встроенных типов
-Аннотация для встроенного типа — это просто имя типа:
+Если аргумент `wait` равен `True`, метод блокируется до тех пор, пока все задачи не завершатся. 
 
-```python
-x: bool = True
-val: int = 2
-a: float = 5.01
-s: str = "ABC"
-```
-
-В аннотации коллекций после типа коллекции в скобках указывается тип элементов:
-
-```python
-l: list[str] = ["A", "B"]
-s: set[int] = {105, -9}
-d: dict[int, bool] = {}
-```
-
-Добавьте аннотации типов вместо их описания в комментариях. Исправьте код, который нарушает аннотации. {.task_text}
-
-```python {.task_source #python_chapter_0300_task_0010 .run_static_type_checker}
-class Storage():
-    def __init__(self, message_size_limit):
-        # message_size_limit must be int
-        self._message_size_limit = message_size_limit
-
-        # mapping of message id to message
-        self._storage = {}
-
-    def save_message(self, message_id, message):
-        # message_id must be int
-        self._storage[message_id] = message
-
-    def get_message(self, message_id):
-        return self._storage[message_id]
+Если `cancel_futures` равен `True`, то все запланированные, но не начавшие исполнятся в пуле задачи будут отменены.
 
 
-s = Storage("9")
-s.save_message("8", "message")
-s.get_message(8)
-```
-```{.task_hint}
-Не забудьте указывать типы для возвращаемых методами значений.
-```
+Дан массив чисел `nums` и функция `is_prime()`, определяющая, является ли число простым. {.task_text}
 
-В аннотации кортежа перечисляются типы всех его элементов:
+Через `ProcessPoolExecutor` нужно распараллелить применение `is_prime()` к элементам `nums`. Для каждого из чисел в том порядке, в котором они идут в `nums`, вывести в консоль строку вида `"112272535095293 is prime: True"`. {.task_text}
 
-```python
-def f(t: tuple[int, float, str]) -> None:
-    ...
-```
+Для итерации по числам и результатам метода `map()` объекта `ProcessPoolExecutor` используйте [встроенную функцию](/courses/python/chapters/python_chapter_0280#block-zip) `zip()`. {.task_text}
 
-Однако в некоторых случаях длина кортежа неизвестна. Например, если кортеж подается на вход функции. Тогда вместо поэлементного перечисления типов используется многоточие `...`:
+```python {.task_source #python_chapter_0300_task_0010}
+import math
 
-```python
-def f(t: tuple[int, ...]) -> None:
-    ...
-```
+nums = [
+    112272535095293,
+    112582705942171,
+    102272535065492,
+    115280095190773,
+    115797848077099,
+    1099726899285419]
 
-В данном примере в функцию можно передать кортеж произвольной длины, заполненный целыми числами.
+def is_prime(n):
+    if n < 2:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
 
-Добавьте аннотации типов в функцию. {.task_text}
-
-```python {.task_source #python_chapter_0300_task_0020 .run_static_type_checker}
-def word_count(lines):
-      result = {}
-      for line in lines:
-          for word in line.split():
-              result[word] = result.get(word, 0) + 1
-      return result
-```
-```{.task_hint}
-Не забудьте указать тип для переменной result.
-```
-
-Как быть, если одной переменной могут быть присвоены значения разных типов? Например, если список содержит целые числа и строки. Тогда возможные типы перечисляются через символ `|`:
-
-```python
-l: list[int | str]
-```
-
-Частный случай — переменная, которая может быть `None`:
-
-```python
-x: list[int | None]
-```
-
-## Модуль typing
-Модуль `typing` содержит множество подсказок о типах, среди которых:
-- `Optional`: тип переменной, которая может принимать значение `None`. Например, `Optional[int]`. Может использоваться вместо синтаксиса `T | None`.
-- `Any`: произвольный тип.
-- `Literal`: перечисление допустимых значений для переменной. Например, `Literal["retry", "abort"]`.
-- `Protocol`: [протокол,](/courses/python/chapters/python_chapter_0150#block-protocols) то есть класс, описывающий некоторый интерфейс в традициях утиной типизации.
-- `NoReturn`: способ указания результата функции, если функция никогда не возвращает управление.
-
-`Optional` используется для переменных, которые могут становиться `None`:
-
-```python
-from typing import Optional
-
-x: Optional[str] = "val" if some_check() else None
-```
-
-Для обозначения объектов произвольного типа предназначено определение `Any`:
-
-```python
-from typing import Any
-
-obj: Any = some_magic()
-```
-
-Конечно, вместо `Any` можно было бы указать тип `object`, потому что он базовый вообще для всех объектов. Но, во-первых, `Any` более явно выражает намерение подчеркнуть, что тип объекта неизвестен или не важен. Во-вторых, если переменной задать тип `object`, то и работать с ней можно только как с экземпляром `object`. Иначе статические анализаторы выдадут ошибку типов.
-
-Определение `Literal` нужно для проверки соответствия значения переменной одному из фиксированных литералов.
-
-```python
-from typing import Literal
-
-ENDPOINTS = Literal["/search", "/suggest"]
-
-def get_endpoint_rps(endpoint: ENDPOINTS) -> dict[ENDPOINTS, int]:
-    return {endpoint: 3000}
-
-print(get_endpoint_rps("/search"))
-```
-
-Разумеется, в качестве литералов можно перечислять не только строки:
-
-```python
-def validate_simple(data: Any) -> Literal[True]:
+    sqrt_n = int(math.floor(math.sqrt(n)))
+    for i in range(3, sqrt_n + 1, 2):
+        if n % i == 0:
+            return False
     return True
+
+# Your code here
+```
+Для получения пар чисел и результатов примененной к ним функции `is_prime()` можно воспользоваться функцией `zip()`. {.task_hint}
+```python {.task_answer}
+import math
+
+from concurrent.futures import ProcessPoolExecutor
+
+nums = [
+    112272535095293,
+    112582705942171,
+    102272535065492,
+    115280095190773,
+    115797848077099,
+    1099726899285419]
+
+def is_prime(n):
+    if n < 2:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+
+    sqrt_n = int(math.floor(math.sqrt(n)))
+    for i in range(3, sqrt_n + 1, 2):
+        if n % i == 0:
+            return False
+    return True
+
+if __name__ == "__main__":
+    with ProcessPoolExecutor() as executor:
+        for number, prime in zip(nums, executor.map(is_prime, nums)):
+            print(f"{number} is prime: {prime}")
 ```
 
-Использование `Protocol` мы [подробно рассматривали](/courses/python/chapters/python_chapter_0150#block-protocols) в главе про полиморфизм, поэтому здесь останавливаться на нем не будем.
+На самом деле под капотом `ProcessPoolExecutor` работает с абстракциями над POSIX и Windows процессами из модуля `multiprocessing`.
 
-Определение `NoReturn` указывается для возвращаемого значения, если функция никогда не возвращает управление. Например, она в вечном цикле обрабатывает соединения либо вызывает `sys.exit()`.
+### Модуль multiprocessing
+Модуль `multiprocessing` содержит [все необходимое](https://docs.python.org/3/library/multiprocessing.html) для управления процессами, создания пулов, синхронизации и передачи данных между процессами.
+
+Прежде чем переходить к примерам, обговорим, что в скриптах, порождающих новые процессы через `multiprocessing`, **должен присутствовать** блок `if __name__ == "__main__"`. Для чего в принципе нужен этот блок, мы [разбирали](/courses/python/chapters/python_chapter_0200#block-if-main) в главе про модули. 
+
+Применительно к `multiprocessing` корректный импорт `__main__` модуля нужен, чтобы при старте нового экземпляра интерпретатора не возникало побочных эффектов, таких как порождение лишних процессов. Точка входа `if __name__ == "__main__"` позволяет этого избежать.
+
+Итак, работа с пулом процессов в модуле `multiprocessing` выглядит следующим образом:
 
 ```python
-from typing import NoReturn
+from multiprocessing import Pool
 
-def f() -> NoReturn:
+if __name__ == '__main__':
+    with Pool(3) as p:
+        print(p.map(abs, [-2, 8, -3, 0]))
+```
+```
+[2, 8, 3, 0]
+```
+
+Запуск и ожидание завершения отдельного процесса:
+
+```python
+from multiprocessing import Process
+
+if __name__ == '__main__':
+    p = Process(target=print, args=("text",))
+    p.start()
+    p.join()
+```
+```
+text
+```
+
+Передача данных между двумя процессами через очередь, которую безопасно использовать из разных потоков и процессов:
+
+```python
+from multiprocessing import Process, Queue
+
+def f(q, x):
+    q.put([x*2, x*3])
+
+if __name__ == '__main__':
+    q = Queue()
+    p = Process(target=f, args=(q, 3))
+    p.start()
+    print(q.get())
+    p.join()
+```
+```
+[6, 9]
+```
+
+Передача данных между процессами через пайп (дуплексный канал, читать и писать в который могут оба процесса):
+
+```python
+from multiprocessing import Process, Pipe
+
+def f(conn):
     while True:
-        ...
+        x = conn.recv()
+        if x is None:
+            return
+
+        conn.send(x*2)
+
+if __name__ == '__main__':
+    conn_parent, conn_child = Pipe()
+    p = Process(target=f, args=(conn_child, ))
+    p.start()
+
+    for val in [3, 4, 5]:
+        conn_parent.send(val)
+        print(conn_parent.recv())
+    
+    conn_parent.send(None)
+    p.join()
+```
+```
+6
+8
+10
 ```
 
-Добавьте аннотации типов в код. {.task_text}
-
-```python {.task_source #python_chapter_0300_task_0030 .run_static_type_checker}
-import sys
-
-def get_tuple(arg = None):
-    if arg is None:
-        return 1, 2
-    return 2, 3
-
-def get_false():
-    # Always returns false
-    return False
-
-def shutdown():
-    sys.exit(0)
-
-def format(a, b, c):
-    # 'a' is int
-    # 'b' is bool
-    # we don't know 'c' type
-
-    return f"{a=} {b=} {c=}"
-```
-```{.task_hint}
-Не забудьте импортировать модуль typing.
-```
-
-## Модуль collections.abc
-В модуле `collections.abc` содержатся [определения](https://docs.python.org/3/library/collections.abc.html#collections-abstract-base-classes) для обобщенной (generic) аннотации типов.
-
-Наиболее распространенные из них:
-- `Callable`: функция или другой вызываемый объект, у которого определен dunder-метод `__call__()`.
-- `Mapping`: объект, хранящий пары ключ-значение, у которого есть метод `__getitem__()`.
-- `MutableMapping`: изменяемый объект для хранения пар ключ-значение. У него должен быть определен метод `__setitem__()`.
-- `Sequence`: последовательность элементов с доступом по индексу. Должна поддерживать методы `__len__()` и `__getitem__()`.
-- `Iterable`: [итерабельный объект,](/courses/python/chapters/python_chapter_0210/) то есть любой объект, по которому можно пройтись циклом `for`.
-- `Iterator`: [итератор,](/courses/python/chapters/python_chapter_0210/) то есть объект, поддерживающий протокол итератора (методы `__iter__()` и `__next__()`).
-
-Пример аннотации для функции, которая принимает функцию и итерабельный объект и вызывает для них [встроенную функцию](/courses/python/chapters/python_chapter_0260#block-filter) `filter()`:
+Примитив синхронизации `Lock` нужен для блокирования какого-либо ресурса, чтобы в любой момент времени с ним работал только один процесс. Пример использования `Lock` для блокирования консольного вывода:
 
 ```python
-from collections.abc import Callable, Iterable, Iterator
+import random
+import time
+from multiprocessing import Process, Lock
 
-def filter_vals(check_data: Callable[[int], bool], data: Iterable[int]) -> Iterator[int]:
-    return filter(check_data, data)
+def f(lock, i):
+    time.sleep(random.randint(0, 6))
 
-print(list(filter_vals(lambda x : x > 0, [-1, 3, -2, 8, 9])))
+    lock.acquire()
+
+    try:
+        print("Process #", i)
+    finally:
+        lock.release()
+
+if __name__ == '__main__':
+    lock = Lock()
+
+    for i in range(1, 6):
+        Process(target=f, args=(lock, i)).start()
+```
+```
+Process # 2
+Process # 4
+Process # 5
+Process # 3
+Process # 1
 ```
 
-Здесь для функции мы использовали аннотацию `Callable[[int], bool]`, то есть указали, что функция принимает единственный параметр типа `int` и возвращает тип `bool`. Если сигнатура функции не важна, можно писать просто `Callable`.
+Вместо вызова методов `acquire()` и `release()` удобнее использовать блокировку через контекстный менеджер `with ... as`.
 
-Модуль `collections.abc` позволяет типизировать обобщенный код. Например, вы написали функцию, которая принимает последовательность и считает по ее элементам какую-то статистику. Функция корректно отработает и для строки, и для списка, и для кортежа. Поэтому для параметра функции подойдет тип `Sequence`, а для результирующей статистики например тип `Mapping`.
+Функции `f()` и `g()` захватывают блокировку, чтобы под ней выводить текст в консоль. Но в коде допущена ошибка, которая приводит к [взаимной блокировке](https://ru.wikipedia.org/wiki/%D0%92%D0%B7%D0%B0%D0%B8%D0%BC%D0%BD%D0%B0%D1%8F_%D0%B1%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0) (deadlock). Нужно ее исправить. {.task_text}
 
-Добавьте аннотации типов в код. {.task_text}
-
-```python {.task_source #python_chapter_0300_task_0040 .run_static_type_checker}
-def format(d):
-    return (f"{k}-{v}" for k, v in d.items())
-
-def modify(d):
-    for k, v in d.items():
-        if d[k] < 0:
-            print("Modifying key:", k)
-            d[k] = None
+```python {.task_source #python_chapter_0300_task_0020}
+from multiprocessing import Process, Lock
+ 
+def f(lock):
+    with lock:
+        print("f() acquired lock")
+ 
+def g(lock):
+    with lock:
+        print("g() acquired lock")
+        f(lock)
+ 
+if __name__ == '__main__':
+    lock = Lock()
+    p = Process(target=g, args=(lock, ))
+    p.start()
+    p.join()
 ```
-```{.task_hint}
-Не забудьте импортировать модуль collections.abc.
+Взаимная блокировка происходит из-за того, что `f()` не может дождаться освобождения лока, захваченного вызвавшей ее функцией `g()`. {.task_hint}
+```python {.task_answer}
+from multiprocessing import Process, Lock
+ 
+def f(lock):
+    with lock:
+        print("f() acquired lock")
+
+def g(lock):
+    with lock:
+        print("g() acquired lock")
+    f(lock)
+
+if __name__ == '__main__':
+    lock = Lock()
+    p = Process(target=g, args=(lock, ))
+    p.start()
+    p.join()
 ```
 
-## Игнорирование типов в mypy
-Комментарий с текстом `# type: ignore` используется, чтобы подавить ошибки mypy для конкретных строк. Хорошим тоном считается после него оставить комментарий, поясняющий, почему в данном месте следует опустить проверку типов.
+Для обмена данными между процессами можно использовать разделяемую память (shared memory). Поверх нее в модуле `multiprocessing` реализованы классы `Value` и `Array`. Останавливаться на них мы не будем, потому что в промышленной разработке их почти не используют. Авторы библиотеки `multiprocessing` по этому поводу [дают рекомендации:](https://docs.python.org/3/library/multiprocessing.html#multiprocessing-programming)
+- Для обмена данными между процессами предпочтительно использовать пайпы и очереди.
+- Более низкоуровневых примитивов лучше избегать. 
 
-```python
-x = some_magic()  # type: ignore  # some_magic() won't return None here because ...
+Более того, существует негласное правило. Если какая-то задача требует сложной логики синхронизации между процессами, долгих CPU-bound вычислений и обмена между процессами большими объемов данных, то использовать питон для нее попросту не идиоматично. 
+
+## Потоки
+Классы для работы с потоками почти во всем схожи с соответствующими классами для процессов:
+- Класс `ThreadPoolExecutor` из модуля `concurrent.futures` предназначен для асинхронного запуска задач на пуле потоков.
+- Модуль `threading` имеет более низкоуровневый интерфейс аналогично модулю `multiprocessing` для процессов.
+
+`ThreadPoolExecutor`, как и `ProcessPoolExecutor`, отнаследован от абстрактного класса `Executor` и имплементирует его методы: `submit()`, `map()`, `shutdown()`. Не будем останавливаться на них повторно.
+
+В модуле `threading` среди прочего определен класс `Thread` с интерфейсом, схожим с интерфейсом класса `multiprocessing.Process`, а также примитив `Lock` с интерфейсом, эквивалентным `multiprocessing.Lock`.
+
+В данном коде допущена ошибка, которая привела к взаимной блокировке. Нужно ее исправить, чтобы в консоль вывелись все сообщения из функции `f()`, запущенной на двух потоках. {.task_text}
+
+```python {.task_source #python_chapter_0300_task_0030}
+from time import sleep
+from threading import Thread, Lock
+
+
+def f(n, lock1, lock2):
+    print(f"Thread {n} acquiring lock 1...")
+
+    with lock1:
+        sleep(1)
+        print(f"Thread {n} acquiring lock 2...")
+        
+        with lock2:
+            print(f"Thread {n} acquired 2 locks!")
+
+
+lock_a = Lock()
+lock_b = Lock()
+
+t1 = Thread(target=f, args=(1, lock_a, lock_b))
+t2 = Thread(target=f, args=(2, lock_b, lock_a))
+
+t1.start()
+t2.start()
+
+t1.join()
+t2.join()
+
+```
+В конструктор `Thread()` для объекта `t2` блокировки передаются в неправильном порядке. {.task_hint}
+```python {.task_answer}
+from time import sleep
+from threading import Thread, Lock
+
+
+def f(n, lock1, lock2):
+    print(f"Thread {n} acquiring lock 1...")
+
+    with lock1:
+        sleep(1)
+        print(f"Thread {n} acquiring lock 2...")
+        
+        with lock2:
+            print(f"Thread {n} acquired 2 locks!")
+
+
+lock_a = Lock()
+lock_b = Lock()
+
+t1 = Thread(target=f, args=(1, lock_a, lock_b))
+t2 = Thread(target=f, args=(2, lock_a, lock_b))
+
+t1.start()
+t2.start()
+
+t1.join()
+t2.join()
+```
+
+Кроме того, модуль `threading` содержит:
+- Класс `RLock` для реентерабельных блокировок.
+- Условные переменные `Condition` для ожидания наступления какого-то события и уведомления о его наступлении.
+- Семафоры `Semaphore` для захвата и освобождения блокировки со счетчиком.
+- События `Event` для ожидания сигнала о наступлении события и триггера этого сигнала.
+- Таймеры `Timer` для отложенного выполнения кода.
+- Барьерные секции `Barrier` для синхронизации выполнения блоков кода.
+
+Как правило, эти примитивы используются в библиотеках для реализации потоко-безопасных структур данных: защищенных очередей, брокеров сообщений и т.д. В промышленной разработке чаще всего в связке с потоками используются только блокировки и защищенные очереди. Если требуется организовать совместную работу с данными, в игру вступают внешние по отношению к проекту сущности. Например, [Redis,](https://redis.io/) [Celery,](https://docs.celeryq.dev/en/stable/) [Memcached.](https://memcached.org/)
+
+В данном коде присутствует ошибка, приводящая к [состоянию гонки](https://en.wikipedia.org/wiki/Race_condition) (race condition). Исправьте ее. {.task_text}
+
+```python {.task_source #python_chapter_0300_task_0040}
+from threading import Thread
+from time import sleep
+
+counter = 0
+
+
+def increment(val):
+    global counter
+
+    local_counter = counter
+    local_counter += val
+
+    sleep(1)
+
+    counter = local_counter
+    print(f"{counter=}")
+
+
+t1 = Thread(target=increment, args=(1,))
+t2 = Thread(target=increment, args=(2,))
+
+t1.start()
+t2.start()
+
+t1.join()
+t2.join()
+```
+Чтобы устранить состояние гонки, защитите данные с помощью блокировки. {.task_hint}
+```python {.task_answer}
+from threading import Thread, Lock
+from time import sleep
+
+counter = 0
+
+
+def increment(val, lock):
+    with lock:
+        global counter
+
+        local_counter = counter
+        local_counter += val
+
+        sleep(1)
+
+        counter = local_counter
+        print(f"{counter=}")
+
+
+lock = Lock()
+t1 = Thread(target=increment, args=(1, lock, ))
+t2 = Thread(target=increment, args=(2, lock, ))
+
+t1.start()
+t2.start()
+
+t1.join()
+t2.join()
 ```
 
 ## Резюмируем
-- Аннотации типов нужны для повышения читабельности кода, для подсказок от IDE и проверки статическими анализаторами. Они никак не влияют на рантайм. Интерпретатор их пропускает. 
-- Аннотация для переменной, поля или параметра функции указывается через двоеточие: `x : int`. Аннотация для возвращаемого значения — после стрелочки: `def f() -> None`.
-- Модуль `typing` содержит подсказки о типах, например `Any`, `Optional`, `NoReturn`.
-- Модуль `collections.abc` содержит подсказки для типов коллекций.
+- Модуль `concurrent.futures` предназначен для высокоуровневого распределения задач по пулам процессов и потоков.
+- Модуль `multiprocessing` предоставляет более низкоуровневый интерфейс для работы с процессами.
+- В модуле `threading` есть все необходимое для низкоуровневой работы с потоками.
