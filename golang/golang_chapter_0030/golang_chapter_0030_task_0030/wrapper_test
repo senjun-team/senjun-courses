@@ -1,0 +1,71 @@
+package main
+
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestMain(t *testing.T) {
+	old := os.Stdout // keep backup of the real stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	outC := make(chan string)
+	// copy the output in a separate goroutine so printing can't block indefinitely
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+		outC <- buf.String()
+	}()
+
+	main()
+
+	// back to normal state
+	w.Close()
+	os.Stdout = old // restoring the real stdout
+	out := <-outC
+	out = strings.TrimSpace(out)
+
+	res := strings.Split(out, ";")
+	var valsForTesting []string
+
+	for _, el := range res {
+		val := strings.TrimSpace(el)
+		if val != "" {
+			valsForTesting = append(valsForTesting, val)
+		}
+	}
+
+	num := 25
+
+	if len(valsForTesting) != num {
+		t.Fatalf("main() prints %d values, wants %d values", len(valsForTesting), num)
+	}
+
+	a1 := 0
+	a2 := 1
+
+	if fmt.Sprintf("%d", a1) != valsForTesting[0] {
+		t.Fatalf("main() prints \"%s\" as %d value, not \"%d\"", valsForTesting[0], 1, 0)
+	}
+
+	if fmt.Sprintf("%d", a2) != valsForTesting[1] {
+		t.Fatalf("main() prints \"%s\" as %d value, not \"%d\"", valsForTesting[1], 2, 1)
+	}
+
+	for i := 0; i < num-2; i++ {
+		a3 := a1 + a2
+
+		if fmt.Sprintf("%d", a3) != valsForTesting[i+2] {
+			t.Fatalf("main() prints \"%s\" as %d value, not \"%d\"", valsForTesting[i+2], i+3, a3)
+		}
+
+		a1 = a2
+		a2 = a3
+	}
+
+}
