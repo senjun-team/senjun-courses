@@ -262,7 +262,7 @@ print(normalized)
 Перепишите этот list comprehension с использованием оператора моржа. Это позволит отказаться от повторного расчета куба числа и ускорит код. {.task_text}
 
 ```python {.task_source #python_chapter_0240_task_0080}
-vals = [-100, 5, 19, 46, 99, 101]
+vals = [-100, 5, 19, 46, -99, 101]
 
 cubes = [x**3 for x in vals if x**3 > 0]
 ```
