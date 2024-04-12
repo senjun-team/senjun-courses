@@ -8,7 +8,7 @@ Senior Junior — это курсы для эффективного изучен
 - На сайте: https://senjun.ru
 - В телеграм-боте: https://t.me/sen_jun_bot
 
-[![Курсы можно проходить на сайте и в боте](https://github.com/senjun-team/senjun-courses/blob/readme/about/site_senjun_ru_and_tg_bot.png)](https://github.com/senjun-team/senjun-courses)
+[![Курсы можно проходить на сайте и в боте](https://github.com/senjun-team/senjun-courses/blob/main/about/site_senjun_ru_and_tg_bot.png)](https://github.com/senjun-team/senjun-courses)
 
 ## Обратная связь
 
@@ -24,6 +24,6 @@ Senior Junior — это курсы для эффективного изучен
 ## Как стать автором или ревьюером
 
 Делиться знаниями — это потрясающе! Попробуйте себя в роли автора курса или ревьюера. Для этого:
-1. Ознакомьтесь со [структурой проекта.](https://github.com/senjun-team/senjun-courses/blob/readme/about/course_structure.md)
+1. Ознакомьтесь со [структурой проекта.](https://github.com/senjun-team/senjun-courses/blob/main/about/course_structure.md)
 2. Напишите нам на team@senjun.ru, над каким курсом хотели бы поработать.
 
