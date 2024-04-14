@@ -465,7 +465,7 @@ Tick
 Tick
 1
 Tick
-Tich
+Tick
 2
 ```
 

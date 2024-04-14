@@ -110,7 +110,7 @@ for val in [8, 3, 16]:
     print(val, res)
 ```
 
-## pattern matching: когда if/else становится мало
+## Pattern matching: когда if/else становится мало
 В питоне 3.10 появилась новая фича: [pattern matching](https://ru.wikipedia.org/wiki/%D0%A1%D0%BE%D0%BF%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5_%D1%81_%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D1%86%D0%BE%D0%BC) (сопоставление с образцом). Звучит сложно, но под капотом это всего лишь синтаксический сахар над старым-добрым `if/elif/else`. Он позволяет более гибко сравнивать и обрабатывать значения, распаковывать коллекции в отдельные переменные, управлять потоком выполнения.
 
 Начнем с простого:
@@ -154,14 +154,14 @@ case _:
 
 ```python  {.task_source #python_chapter_0040_task_0040}
 def parse_option(option):
-	if option == "save_to_file":
-		return "Saving data to file..."
-	elif option == "log_statistics":
-		return "Dumping stats to logs..."
-	elif option == "quit":
-		return "Quitting..."
-	else:
-		return "Unsupported option"
+    if option == "save_to_file":
+        return "Saving data to file..."
+    elif option == "log_statistics":
+        return "Dumping stats to logs..."
+    elif option == "quit":
+        return "Quitting..."
+    else:
+        return "Unsupported option"
 ```
 Не забудьте обработать случай, в котором требуется вернуть `"Unsupported option"`. {.task_hint}
 ```python {.task_answer}
@@ -198,7 +198,7 @@ match commands:
     case ["delete", path]:
         print(f"Deleting file {path}...")
     case _:
-        print ("Unsupported command", input)
+        print ("Unsupported command", user_input)
 ```
 
 Первый `case` сопоставляет список `commands` со списком из одного элемента `"exit"`. 
