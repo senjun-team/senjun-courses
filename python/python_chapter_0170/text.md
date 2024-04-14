@@ -330,9 +330,9 @@ TypeError: Can't instantiate abstract class LRUCache with abstract method get
 
 Что-то пошло не так: в классе `LRUCache` мы определили только один из двух методов базового класса `add()` и `get()`. Чтобы можно было создавать объекты классов, отнаследованных от абстрактного, в этих классах должны быть реализованы **все** его абстрактные методы.
 
-Превратите класс `Navigation` (движок для построения маршрутов) в абстрактный класс. Отнаследуйте от него 2 класса: `CarNavigation` для автомобильных маршрутов и `TransitNavigation` для маршрутов на общественном транспорте. {.task_text}
+Превратите класс `Navigation` (построения маршрутов) в абстрактный класс. Отнаследуйте от него 2 класса: `CarNavigation` для автомобильных маршрутов и `TransitNavigation` для маршрутов на общественном транспорте. {.task_text}
 
-Определенные в производных классах методы должны выводить в консоль сообщение вида `Имя класса. Имя метода.` Пусть они ничего не возвращают. {.task_text}
+Определенные в производных классах методы должны выводить в консоль сообщение вида `Имя класса. Имя метода` Пусть они ничего не возвращают. {.task_text}
 
 ```python {.task_source #python_chapter_0170_task_0030}
 class Navigation:
@@ -371,17 +371,17 @@ class Navigation(ABC):
 
 class CarNavigation(Navigation):
     def build_route(self, start, finish):
-        print("CarNavigation. build_route.")
+        print("CarNavigation. build_route")
     
     def get_maneuvers(self):
-        print("CarNavigation. get_maneuvers.")
+        print("CarNavigation. get_maneuvers")
 
 class TransitNavigation(Navigation):
     def build_route(self, start, finish):
-        print("TransitNavigation. build_route.")
+        print("TransitNavigation. build_route")
     
     def get_maneuvers(self):
-        print("TransitNavigation. get_maneuvers.")
+        print("TransitNavigation. get_maneuvers")
 ```
 
 На практике использовать абстрактные классы в питоне не всегда удобно: например, если абстрактный класс реализован во внешнем модуле, но его требуется встроить в свою иерархию наследования или подправить интерфейс. 

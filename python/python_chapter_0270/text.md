@@ -165,7 +165,6 @@ import time
 
 # Your code here
 
-@print_exec_time
 def slumber():
     time.sleep(random.randint(0, 3))
 
