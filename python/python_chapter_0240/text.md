@@ -240,7 +240,7 @@ plain = [v for d in apis for v in d.values()]
 ```
 
 ## Оператор моржа внутри comprehensions {#block-walrus}
-[Оператор моржа](/courses/python/chapters/python_chapter_0030#block-walrus) `:=` может использоваться внутри comprehensions для того, чтобы избежать повторных вычислений одних и тех же данных.
+[Оператор моржа](/courses/python/chapters/python_chapter_0030#block-walrus) `:=` может использоваться внутри comprehensions для того чтобы избежать повторных вычислений одних и тех же данных.
 
 Рассмотрим пример:
 
