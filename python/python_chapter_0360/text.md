@@ -57,7 +57,7 @@ def count_available(self):
 Итак, в питоне можно переопределить поведение любого атрибута при чтении, записи и удалении. Для этого создаются специальные методы, называемые геттерами (getters), сеттерами (setters) и делитерами (deleters). Их общее название — **свойства.**
 
 ### Геттеры
-Для того, чтобы превратить метод в геттер, метод оборачивается декоратором `@property`. После этого пользователь класса работает с методом как с обычным полем.
+Для того чтобы превратить метод в геттер, метод оборачивается декоратором `@property`. После этого пользователь класса работает с методом как с обычным полем.
 
 Заведем класс `User`, а в нем — геттер `data`.
 
@@ -366,7 +366,7 @@ class Circle:
     
     @property
     def area(self):
-        return pi * self.r * self. r
+        return pi * self.r * self.r
 
     @property
     def circumference(self):
@@ -457,7 +457,7 @@ class Circle:
         self._r = value
     
     def _get_area(self):
-        return pi * self.r * self. r
+        return pi * self.r * self.r
 
     def _get_circumference(self):
         return 2 * pi * self.r
