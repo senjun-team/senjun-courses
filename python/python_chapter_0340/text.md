@@ -112,8 +112,9 @@ print(server.uptime)
 ```python {.task_source #python_chapter_0340_task_0010}
 import logging
 import time
+import sys
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 class Server:
@@ -138,8 +139,9 @@ except AttributeError as e:
 ```python {.task_answer}
 import logging
 import time
+import sys
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 class Name:
