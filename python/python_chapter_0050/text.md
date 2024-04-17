@@ -124,10 +124,10 @@ def print_letters(s):
 Для выхода из цикла используйте `break`, для перехода на новую итерацию — `continue`, а для обработки условия не выхода по `break` — ветку `else`. {.task_hint}
 ```python {.task_answer}
 def print_letters(s):
-    for i in s:
-        if i.isupper():
-            print(i)
-        if i == ' ':
+    for с in s:
+        if с.isupper():
+            print(с)
+        if с == ' ':
             break            
     else:
         print("no spaces")

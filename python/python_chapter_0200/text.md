@@ -367,7 +367,7 @@ import utils.fs.filetypes.bin
 - `re` — [регулярные выражения.](https://docs.python.org/3/library/re.html)
 - `copy` — [поверхностное и глубокое копирование.](https://docs.python.org/3/library/copy.html)
 - `math` — [математические формулы и константы.](https://docs.python.org/3/library/math.html)
-- `random` — [генераторы псевдо-случайных чисел.](https://docs.python.org/3/library/random.html)
+- `random` — [генераторы псевдослучайных чисел.](https://docs.python.org/3/library/random.html)
 - `itertools` — [итераторы для работы с данными в функциональном стиле.](https://docs.python.org/3/library/itertools.html)
 - `functools` — [функции высшего порядка,](https://docs.python.org/3/library/functools.html) которые принимают в себя функции и возвращают функции.
 
