@@ -301,7 +301,7 @@ if __name__ == '__main__':
 - Класс `ThreadPoolExecutor` из модуля `concurrent.futures` предназначен для асинхронного запуска задач на пуле потоков.
 - Модуль `threading` имеет более низкоуровневый интерфейс аналогично модулю `multiprocessing` для процессов.
 
-`ThreadPoolExecutor`, как и `ProcessPoolExecutor`, отнаследован от абстрактного класса `Executor` и имплементирует его методы: `submit()`, `map()`, `shutdown()`. Не будем останавливаться на них повторно.
+`ThreadPoolExecutor`, как и `ProcessPoolExecutor`, наследован от абстрактного класса `Executor` и имплементирует его методы: `submit()`, `map()`, `shutdown()`. Не будем останавливаться на них повторно.
 
 В модуле `threading` среди прочего определен класс `Thread` с интерфейсом, схожим с интерфейсом класса `multiprocessing.Process`, а также примитив `Lock` с интерфейсом, эквивалентным `multiprocessing.Lock`.
 
