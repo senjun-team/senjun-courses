@@ -116,18 +116,18 @@ for val in [8, 3, 16]:
 Начнем с простого:
 
 ```python
-val = 1
+val = 8
 
 match val:
-    case -1:
-        print('Negative number')
+    case 0:
+        print('OK')
     case 1:
-        print('Positive number')
+        print('Error')
     case unknown_val:
         print('Unexpected value:', unknown_val)
 ```
 ```
-Positive number
+Unexpected value: 8
 ```
 
 Этот пример проясняет два момента. Во-первых, при использовании `match/case` оператор `break` в конце `case` для прерывания прохода по всему `match` не нужен. Выход произойдет автоматом.
