@@ -128,7 +128,7 @@ d = {"a": 1, "b": 2}
 for k, v in KVIterator(d):
     print(f"{k}={v}")
 ```
-В инициализатор `KVIterator` должен передаваться словарь. Назовем его `d`. Тогда внутри инициализатора можно завести итераор: `self._i = iter(d.items())`. {.task_hint}
+В инициализатор `KVIterator` должен передаваться словарь. Назовем его `d`. Тогда внутри инициализатора можно завести итератор: `self._i = iter(d.items())`. {.task_hint}
 ```python {.task_answer}
 class KVIterator:
     def __init__(self, d):
