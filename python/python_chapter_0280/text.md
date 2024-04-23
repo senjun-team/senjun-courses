@@ -296,9 +296,6 @@ locations = [(55.43, 37.54), (56.85, 35.90)]
 places = tuple(zip(cities, locations, strict=True))
 ```
 ```
-(('Podolsk', (55.43, 37.54)), ('Tver', (56.85, 35.9)))
-```
-```
 Traceback (most recent call last):
   File "example.py", line 4, in <module>
     places = tuple(zip(cities, locations, strict=True))
@@ -414,7 +411,7 @@ games_shop_stats_june = [
     "avg_rating": 3.7
 },
 {
-    "title": "Rouelike",
+    "title": "Roguelike",
     "avg_rating": 4.1
 }]
 
@@ -443,7 +440,7 @@ games_shop_stats_june = [
     "avg_rating": 3.7
 },
 {
-    "title": "Rouelike",
+    "title": "Roguelike",
     "avg_rating": 4.1
 }]
 
