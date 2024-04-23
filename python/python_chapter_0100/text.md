@@ -92,6 +92,7 @@ print(id(b))
 
 b += "2"
 
+print(a)
 print(id(a))
 print(b)
 print(id(b))
