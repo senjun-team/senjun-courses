@@ -76,12 +76,12 @@ Result: 30
 
 Если же длина сообщения превышает `message_size_limit`, метод должен сгенерировать исключение с текстом `"Message is too long"`. Если сообщение с указанным id уже есть в хранилище, оно должно быть перезаписано. {.task_text}
 
-`get_message()` должен возвращать сообщение либо `None`, если оно не найдено. {.task_text}
+Метод `get_message()` должен возвращать сообщение либо `None`, если оно не найдено. {.task_text}
 
 Имплементируйте методы `save_message()` и `get_message()` таким образом, чтобы они **расширяли** функциональность `Storage`. {.task_text}
 
 ```python {.task_source #python_chapter_0170_task_0010}
-class Storage():
+class Storage:
     def __init__(self, message_size_limit):
         self._message_size_limit = message_size_limit
 
@@ -93,7 +93,7 @@ class Storage():
 ```
 Не забудьте во всех трех методах `InMemoryStorage` вызывать методы базового класса через `super()`. {.task_hint}
 ```python {.task_answer}
-class Storage():
+class Storage:
     def __init__(self, message_size_limit):
         self._message_size_limit = message_size_limit
 
@@ -104,7 +104,7 @@ class Storage():
         print(f"Extracting message {message_id}...")
 
 
-class InMemoryStorage(Storage):    
+class InMemoryStorage(Storage):
     def __init__(self, message_size_limit, message_count_limit):
         super().__init__(message_size_limit)
         self._message_count_limit = message_count_limit
@@ -112,12 +112,15 @@ class InMemoryStorage(Storage):
 
     def save_message(self, message_id, message):
         super().save_message(message_id, message)
-        
-        if len(self._saved_messages) + 1 > self._message_count_limit:
+
+        if (
+            len(self._saved_messages) + 1 > self._message_count_limit
+            and message_id not in self._saved_messages
+        ):
             raise Exception("Too many messages")
         if len(message) > self._message_size_limit:
             raise Exception("Message is too long")
-            
+
         self._saved_messages[message_id] = message
 
     def get_message(self, message_id):

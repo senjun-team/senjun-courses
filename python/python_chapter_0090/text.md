@@ -151,9 +151,6 @@ if x != y != z:
 def not_eq(a, b, c):
     return a != b != c
 ```
-```{.task_hint}
-a != b and b != c and a != c
-```
 Чтобы удостовериться, что все три переменные не равны между собой, их следует попарно сравнить: `a` и `b`, `a` и `c`, `b` и `c`. {.task_hint}
 ```python {.task_answer}
 def not_eq(a, b, c):
