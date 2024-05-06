@@ -43,7 +43,7 @@ main =
 if CONDITION then EXPR1 else EXPR2
 ```
 
-где `CONDITION` — логическое выражение, дающее ложь или истину, `EXPR1` — выражение, используемое в случае `True`, `EXPR2` — выражение, используемое в случае `False`. Пример:
+где `CONDITION` — логическое выражение, дающее ложь или истину, `EXPR1` — выражение, используемое в случае `True`, `EXPR2` — выражение, используемое в случае `False`. Пример: {#block-check-localhost}
 
 ```haskell
 checkLocalhost :: String -> String
