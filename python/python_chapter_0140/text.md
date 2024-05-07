@@ -240,7 +240,7 @@ common_letters = set("abc") & "bcd"
 TypeError: unsupported operand type(s) for &: 'set' and 'str'
 ```
 
-Этот код должен выводить в консоль общие элементы между `"abc"` и `"bcd"`, но в нем допущена ошибка. Исправьте ее. {.task_text}
+Этот код должен выводить в консоль общие элементы между `"abc"` и `"bcd"`, но в нем допущена ошибка. Исправьте ее с помощью метода множества. {.task_text}
 
 ```python {.task_source #python_chapter_0140_task_0060}
 common_letters = set("abc") & "bcd"

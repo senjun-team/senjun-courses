@@ -85,7 +85,12 @@ print(id(count))
 - `bool`. Логическое значение (флаг): `True` и `False`.
 - `NoneType`. Неопределенное значение переменной: `None`.
 
-**Коллекции** в питоне представлены [списками](/courses/python/chapters/python_chapter_0110/) (`list`, по сути массивы), [множествами](/courses/python/chapters/python_chapter_0140#block-sets) (`set`, наборы уникальных значений), [неизменяемыми множествами](/courses/python/chapters/python_chapter_0140#block-frozensets) (`frozenset`), а также [словарями](/courses/python/chapters/python_chapter_0150/) (`dict`, контейнеры пар ключ-значение).
+**Коллекции** в питоне представлены типами:
+- [Список:](/courses/python/chapters/python_chapter_0110/) `list`, по сути массив.
+- [Кортеж:](/courses/python/chapters/python_chapter_0120/) `tuple`, его можно назвать неизменяемым списком.
+- [Множество:](/courses/python/chapters/python_chapter_0140#block-sets) `set`, набор уникальных значений.
+- [Неизменяемое множество:](/courses/python/chapters/python_chapter_0140#block-frozensets) `frozenset`.
+- [Словарь:](/courses/python/chapters/python_chapter_0150/) `dict`, контейнер пар ключ-значение.
 
 ## Создание объектов
 Объекты в питоне создаются двумя способами. Способ первый: просто присвоить объекту какое-то значение. Вот как это выглядит на примере объявления логической переменной:
