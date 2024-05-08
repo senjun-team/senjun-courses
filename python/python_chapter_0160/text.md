@@ -183,6 +183,7 @@ class Message:
     def print(self):
         print(f"{self._data}\t id {self._msg_id} / {self._id}")
 
+    @classmethod
     def next_free_id(self):
         return Message._id
 ```
@@ -199,6 +200,7 @@ class Message:
     def print(self):
         print(f"{self._data}\t id {self._id} / {type(self)._id}")
 
+    @classmethod
     def next_free_id(self):
         return type(self)._id
 ```
