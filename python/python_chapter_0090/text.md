@@ -79,13 +79,13 @@ if 0 < val and val <= 12:
 
 ```python  {.task_source #python_chapter_0090_task_0030}
 x = 1999
-if x < 2000 and x > 1899:
+if x < 2001 and x > 1900:
     print("XX century!")
 ```
 Вид цепочки сравнений: `min_val < x < max_val`. {.task_hint}
 ```python {.task_answer}
 x = 1999
-if 1899 < x < 2000:
+if 1900 < x < 2001:
     print("XX century!")
 ```
 
