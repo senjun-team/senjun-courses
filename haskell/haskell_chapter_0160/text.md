@@ -67,11 +67,11 @@ main = do
        print $ fact 5
 ```
 
-Напишите функцию `calc_gcd(a, b)`, которая находит наибольший общий делитель (GCD, greatest common divisor) чисел `a` и `b`. Функция должна быть рекурсивной. {.task_text}
+Напишите функцию `gcd a b`, которая находит наибольший общий делитель (GCD, greatest common divisor) чисел `a` и `b`. Функция должна быть рекурсивной. {.task_text}
 
-Например, `calc_gcd(25, 15)` вернет 5, а `calc_gcd(8, 3)` вернет 1.  {.task_text}
+Например, `gcd 25 15` вернет 5, а `gcd 8 3` вернет 1.  {.task_text}
 
-В своем решении реализуйте алгоритм Евклида. Он заключается в следующем: {.task_text}
+В своем решении используйте алгоритм Евклида. Он заключается в следующем: {.task_text}
 - GCD равен `a`, если `a` и `b` совпадают.
 - GCD равен GCD от `a - b` и `b`, если `a` больше `b`.
 - GCD равен GCD от `a` и `b - a`, если `a` меньше `b`.
@@ -83,25 +83,25 @@ module Main where
 
 main :: IO()
 main = do
-       print $ calc_gcd 25 15
-       print $ calc_gcd 8 3
-       print $ calc_gcd 14 49
+       print $ gcd 25 15
+       print $ gcd 8 3
+       print $ gcd 14 49
 ```
 Вы можете воспользоваться цепочкой определений `function arg | COND1 = EXPR1 | ...`. {.task_hint}
 ```haskell {.task_answer}
 module Main where
 
-calc_gcd :: Int -> Int -> Int
-calc_gcd a b 
-             | a == b = a
-             | a > b = calc_gcd (a-b) b
-             | otherwise = calc_gcd a (b-a)
+gcd :: Int -> Int -> Int
+gcd a b 
+       | a == b = a
+       | a > b = gcd (a-b) b
+       | otherwise = gcd a (b-a)
 
 main :: IO()
 main = do
-       print $ calc_gcd 25 15
-       print $ calc_gcd 8 3
-       print $ calc_gcd 14 49
+       print $ gcd 25 15
+       print $ gcd 8 3
+       print $ gcd 14 49
 ```
 
 Взглянем на определение функции `map`:
@@ -397,7 +397,50 @@ main = do
        print $ myTake 100 [1, 2, 3, 4, 5, 6]
 ```
 
+В некоторых случаях для реализации рекурсивных функций удобно использовать вспомогательные выражения внутри блока `let` или `where`. Например, требуется определить индекс искомого элемента в списке. Для этого функция принимает два аргумента: искомое значение и список. Но для реализации рекурсивного поиска нам бы пригодился аргумент-счетчик, инициализируемый нулем и увеличиваемый на каждом шаге рекурсии. Он и означал бы индекс элемента в списке. Чтобы не выносить его в объявление функции, можно завести внутреннюю функцию. Потренируйтесь. {#block-task-indexof}
 
+Напишите функцию `indexOf`, которая принимает два аргумента: целочисленное значение и список. Функция должна вернуть индекс первого вхождения заданного значения в список. Либо -1, если оно не найдено. {.task_text}
+
+```haskell {.task_source #haskell_chapter_0160_task_0060}
+module Main where
+
+-- Your code here
+     
+main :: IO ()
+main = do
+       print $ indexOf 5 []
+       print $ indexOf 5 [1, 2, 3]
+       print $ indexOf 5 [5]
+       print $ indexOf 5 [5, 10]
+       print $ indexOf 5 [1, 5]
+       print $ indexOf 5 [1, 5, 5]
+       print $ indexOf 5 [1, 2, 3, 4, 5, 6]
+```
+Заведите внутреннюю функцию `findVal`, которая принимает текущий индекс и список. Если список пустой, она возвращает -1. Если список не пустой, то его голова сравнивается с искомым значением. При совпадении функция возвращает индекс. Иначе возвращает собственное рекурсивное применение к увеличенному на 1 значению индекса и хвосту списка. Все, что останется сделать в теле функции `indexOf` — это вызвать `findVal` от индекса 0 и списка. {.task_hint}
+```haskell {.task_answer}
+module Main where
+
+indexOf :: Int -> [Int] -> Int
+
+indexOf val lst = findVal 0 lst
+  where
+    findVal :: Int -> [Int] -> Int
+    findVal _ [] = -1
+    findVal index (h:t)
+     | val == h = index
+     | otherwise = findVal (index + 1) t
+     
+
+main :: IO ()
+main = do
+       print $ indexOf 5 []
+       print $ indexOf 5 [1, 2, 3]
+       print $ indexOf 5 [5]
+       print $ indexOf 5 [5, 10]
+       print $ indexOf 5 [1, 5]
+       print $ indexOf 5 [1, 5, 5]
+       print $ indexOf 5 [1, 2, 3, 4, 5, 6]
+```
 
 ## Для любопытных
 
