@@ -210,7 +210,8 @@ module Main where
 
 clamp :: Int -> Int -> Int -> Int
 clamp a val b = if val < a 
-                then a else
+                then a 
+                else 
                   if val < b then val else b
 
 main :: IO ()
@@ -275,7 +276,6 @@ main = putStrLn ...
 module Main where
 
 f :: Int -> Int
-
 f x = (if mod x 2 == 0 then x*2 else x*3) + 1
 
 main :: IO ()
