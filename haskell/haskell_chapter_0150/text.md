@@ -256,7 +256,7 @@ import qualified Data.Text.IO as TIO
 Ключевое слово `qualified` используется для «строгого» включения модуля: в этом случае мы обязаны указывать принадлежность к нему. 
 
 
-Используйте срогое включение модуля `Data.Text` и исправьте в соответствии с этим код функции `main`. {.task_text}
+Используйте строгое включение модуля `Data.Text` и исправьте в соответствии с этим код функции `main`. {.task_text}
 
 ```haskell {.task_source #haskell_chapter_0150_task_0020}
 {-# LANGUAGE OverloadedStrings #-}
