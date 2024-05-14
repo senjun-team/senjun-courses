@@ -64,7 +64,7 @@ calculateTime timeInS =
 
 Напишите функцию `f`, считающую вес тела по его массе. Вес равен массе, умноженной на ускорение свободного падения (9.81 м/с^2).  {.task_text}
 
-Вместо использования «магического числа» 9.81 заведите выражение `g`. {.task_text}
+Вместо «магического числа» 9.81 заведите выражение `g` в блоке `let-in` функции `f`. {.task_text}
 
 ```haskell {.task_source #haskell_chapter_0070_task_0010}
 module Main where
@@ -116,7 +116,7 @@ main :: IO ()
 main = print (calculateTime 40)
 ```
 
-```consoleoutput {.task_source #haskell_chapter_0040_task_0030}
+```consoleoutput {.task_source #haskell_chapter_0070_task_0020}
 ```
 Функция `calculateTime` применяется к значению 40, которое равно `threshold`. Это означает, что выполнится `otherwise` и будет вычислено выражение 40 + 8 + 120. {.task_hint}
 ```haskell {.task_answer}
@@ -287,7 +287,7 @@ main = print (calculateTime 50)
 ```
 Выражение `correction` равно `timeInS * 2`, то есть теперь оно зависит от значения аргумента функции. А выражение `delta` зависит в свою очередь от `correction`.  {.task_hint}
 ```haskell {.task_answer}
-error
+246
 ```
 
 Что интересно, мы можем менять порядок задания выражений:

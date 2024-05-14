@@ -91,6 +91,9 @@ main = print (makeAlias "173.194.71.106" "www.google.com")
 Извлечение элементов из кортежа также производится через паттерн матчинг:
 
 ```haskell
+makeAlias :: String -> String -> (String, String)
+makeAlias host alias = (host, alias)
+
 main :: IO ()
 main =
   let (host, alias) = makeAlias "173.194.71.106"
@@ -192,7 +195,7 @@ module Main where
 main :: IO ()
 main = -- And here
 ```
-Д. {.task_hint}
+Определите функцию `formatLocation`, принимающую кортеж и возвращающую строку. В блоке `where` функции `main` заведите кортеж: `loc = (34.7, 10.1)`. {.task_hint}
 ```haskell {.task_answer}
 module Main where
 

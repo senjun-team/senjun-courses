@@ -98,7 +98,7 @@ main = do
 module Main where
 
 progressionSum :: Int -> Int -> Int -> Int
-progressionSum first last step = sum [first, first + step.. last]
+progressionSum firstEl lastEl step = sum [firstEl, firstEl + step.. lastEl]
 
 main :: IO ()
 main = do

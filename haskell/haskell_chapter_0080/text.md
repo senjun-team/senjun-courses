@@ -115,7 +115,7 @@ div ! class_ "nav-wrapper" $
 
 Напишите оператор `@`, который возвращает сумму квадратов двух целочисленных аргументов. {.task_text}
 
-Используйте его в теле `main`. {.task_text}
+Используйте его в теле `main` так, чтобы вывод функции `print` не изменился. {.task_text}
 
 ```haskell {.task_source #haskell_chapter_0080_task_0020}
 module Main where
