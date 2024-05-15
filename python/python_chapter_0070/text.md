@@ -227,20 +227,27 @@ def f(x): return 2 * x
 
 С чем это связано? Да, лямбды действительно позволяют сэкономить немного места. Но взамен лишают вас понятного стека вызовов, усложняют процесс отладки. Потому что в стек вызовов вместо имени конкретной функции попадает весьма расплывчатое `<lambda>`. Так что выбирая между компактностью и понятностью, отдавайте предпочтение понятности.
 
-Перепишите эту функцию в виде лямбды с внутренней лямбдой. Получится замыкание лямбды. Присвойте ее функциональному объекту `format_line`, для которого параметр `prefix` был бы равен `"a"`. {.task_text}
+Что выведет этот код?  {.task_text}
 
-Вызовите его следующим образом: `format_line("some_suffix")`. {.task_text}
+```python
+def f(items):
+    predicate = lambda x: x > 0
 
-```python  {.task_source #python_chapter_0070_task_0040}
-def format_line(prefix):
-    def inner(suffix):
-        return f"{prefix} - {suffix}"
-    return inner
+    for item in items:
+        if predicate(item):
+            return item
+
+    return 0
+
+x = f([-10, 0, 10, 20])
+print(x)
 ```
-Синтаксис сохранения в переменную `variable` замыкания, полученного из внешней лямбды с переданным в нее значением `arg_outer_val`: `<variable> = (lambda <arg_outer> : lambda <arg_inner>: <some action>)(<arg_outer_val>)`. {.task_hint}
+
+```consoleoutput {.task_source #python_chapter_0070_task_0040}
+```
+Функция `f` принимает на вход список. Внутри нее создается функциональный объект `predicate`, которому присваивается лямбда. Лямбда возвращает `True`, если переданный ей аргумент больше нуля. Иначе она возвращает `False`. Затем в цикле к каждому элементу списка `items` применяется этот предикат. И если элемент оказывается больше нуля, мы возвращаем его из функции `f`. Если такой элемент не найден, функция возвращает ноль. {.task_hint}
 ```python {.task_answer}
-format_line = (lambda prefix : lambda suffix : f"{prefix} - {suffix}")("a")
-print(format_line("b"))
+10
 ```
 
 ## Вариативные функции {#block-variadic}
