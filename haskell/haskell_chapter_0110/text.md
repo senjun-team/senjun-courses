@@ -82,7 +82,7 @@ main = print (makeAlias "173.194.71.106" "www.google.com")
 module Main where
 
 makeAlias :: String -> String -> (String, String, String)
-makeAlias host alias = (host, "https://" ++ host, alias)
+makeAlias host alias = (host, "https://" ++ alias, alias)
 
 main :: IO ()
 main = print (makeAlias "173.194.71.106" "www.google.com")
@@ -208,7 +208,7 @@ main = print (formatLocation loc)
     loc = (34.7, 10.1)
 ```
 
-## Не всё
+## Кортежи и универсальные образцы
 
 Мы можем вытаскивать по образцу лишь часть нужной нам информации. [Помните](/courses/haskell/chapters/haskell_chapter_0060#block-wildcard-match) универсальный образец `_`? 
 
@@ -256,7 +256,7 @@ module Main where
 -- Your code here
 
 main :: IO ()
-main = print (extractTimestamp (37.0932, 51.8821, 87979))
+main = print (extractTimestamp (37.0932, 51.8821, 1715536019))
 ```
 Требуется получить третий элемент кортежа: `(_, _, ts) = ts`. {.task_hint}
 ```haskell {.task_answer}
@@ -270,7 +270,7 @@ extractTimestamp :: (Latitude, Longitude, UnixTimestamp) -> UnixTimestamp
 extractTimestamp (_, _, ts) = ts
 
 main :: IO ()
-main = print (extractTimestamp (37.0932, 51.8821, 87979))
+main = print (extractTimestamp (37.0932, 51.8821, 1715536019))
 ```
 
 ## А если ошиблись?

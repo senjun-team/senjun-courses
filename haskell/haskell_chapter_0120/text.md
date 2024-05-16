@@ -299,11 +299,11 @@ main =  let
 
 Для типа функции тоже можно ввести псевдоним!
 
-Импортируйте функции `isInfixOf` и `isSuffixOf` из соответствующего модуля. {.task_text}
+Импортируйте функции `isInfixOf` и `isSuffixOf` из модуля `Data.List`. {.task_text}
 
 Внутри лямбда-абстракций замените их применение с префиксной на [инфиксную форму.](/courses/haskell/chapters/haskell_chapter_0080#block-infix) {.task_text}
 
-Создайте псевдоним `Func` и с его помощью укажите тип для `valicComEmail` и двух лямбда-абстракций. {.task_text}
+Создайте псевдоним `Func` и с его помощью укажите тип для `validComEmail` и двух лямбда-абстракций. {.task_text}
 
 ```haskell {.task_source #haskell_chapter_0120_task_0030}
 module Main where
