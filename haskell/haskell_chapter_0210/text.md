@@ -258,7 +258,7 @@ Missing field in record construction hasInsurance
 ```haskell {.task_source #haskell_chapter_0210_task_0010}
 module Main where
 
--- UserQuery class definition
+-- UserQuery type definition
 
 main :: IO()
 main = do
@@ -269,7 +269,7 @@ main = do
        q2 = -- q1 with incremented clickCount value
        q1 = -- UserQuery with clickCount = 2
 ```
-. {.task_hint}
+Синтаксис определения типа: `data TypeName = TypeName { label1 :: Type1, label2 :: Type2, ...}`. {.task_hint}
 ```haskell {.task_answer}
 module Main where
 

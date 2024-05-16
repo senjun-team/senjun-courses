@@ -235,7 +235,6 @@ lookupChapterNameBy :: FilePath
 module Main where
 
 indexOf :: Int -> [Int] -> Int
-
 indexOf val lst = findVal 0 lst
   where
     findVal :: Int -> [Int] -> Int
@@ -260,7 +259,6 @@ main = do
 module Main where
 
 indexOf :: Int -> [Int] -> Maybe Int
-
 indexOf val lst = findVal 0 lst
   where
     findVal :: Int -> [Int] -> Maybe Int

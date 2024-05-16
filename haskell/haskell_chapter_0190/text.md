@@ -200,6 +200,101 @@ main = do
        print $ workingDays SixDays
 ```
 
+Заведите тип-перечисление `Theme` из трех значений: `Light`, `Dark`, `Default`. Оно характеризует цветовую тему некоей IDE. {.task_text}
+
+Уже готова функция `getTheme`, которая по названию конкретной цветовой гаммы получает тему. Например, цветовая гамма "abyss" относится к темной теме. {.task_text}
+
+Вам необходимо написать тело функции `countThemes`. Эта функция принимает два списка: {.task_text}
+- Список строковых названий тем. Например, `["Light", "Default"]`.
+- Список строк — названий цветовых гамм, выбранных различными пользователями.
+ {.task_text}
+
+Функция должна вернуть количество цветовых гамм, относящихся к заданным темам. Например, `countThemes ["Dark", "Default"] ["abyss", "solarized light", "default"]` вернет 2, то есть количество цветовых гамм из второго списка, которые соответствуют темам из первого списка.
+
+Чтобы преобразовать строку в значение типа-перечисления, воспользуйтесь функцией `read`.
+
+```haskell {.task_source #haskell_chapter_0190_task_0020}
+module Main where
+
+-- Define Theme type
+
+getTheme :: String -> Theme
+getTheme theme =
+        case theme of
+          "abyss" -> Dark
+          "dracula" -> Dark
+          "solarized light" -> Light
+          "night blue" -> Dark
+          _ -> Default
+
+countThemes :: [String] -> [String] -> Int
+countThemes themeNames themes = -- Your code here
+            
+main :: IO()
+main = do
+       print $ countThemes ["Dark", "Default"] 
+                           ["default", 
+                           "solarized light", 
+                           "solarized light"]
+       print $ countThemes ["Dark"] 
+                           ["abyss", 
+                           "dracula", 
+                           "solarized light"]
+       print $ countThemes ["Light", "Default"] 
+                           ["high contrast", 
+                           "solarized light", 
+                           "solarized light",
+                           "night blue"]
+       print $ countThemes ["Light", "Dark"] 
+                           ["abyss", 
+                           "solarized light", 
+                           "solarized light",
+                           "night blue"]
+```
+Для того, чтобы значения типа `Theme` можно было читать из строки, писать в строку и сравнивать между собой, допишите к определению типа: `deriving (Eq, Read, Show)`. В теле функции вы можете завести блок `where` и в нем два выражения. Первое выражение — `targets`, являющееся применением функции `read` к каждому элементу `themeNames`. Второе выражение — `sources`. Это применение функции `getTheme` к каждому элементу `themes`. В теле функции останется отфильтровать `sources` по наличию элемента в `targets` и посчитать длину результирующего списка. {.task_hint}
+```haskell {.task_answer}
+module Main where
+
+data Theme = Light | Dark | Default deriving (Eq, Read, Show)
+
+getTheme :: String -> Theme
+getTheme theme =
+        case theme of
+          "abyss" -> Dark
+          "dracula" -> Dark
+          "solarized light" -> Light
+          "night blue" -> Dark
+          _ -> Default
+
+countThemes :: [String] -> [String] -> Int
+countThemes themeNames themes = length $ 
+                                filter (\x -> elem x targets) sources
+            where 
+              targets = map read themeNames
+              sources = map getTheme themes
+            
+main :: IO()
+main = do
+       print $ countThemes ["Dark", "Default"] 
+                           ["default", 
+                           "solarized light", 
+                           "solarized light"]
+       print $ countThemes ["Dark"] 
+                           ["abyss", 
+                           "dracula", 
+                           "solarized light"]
+       print $ countThemes ["Light", "Default"] 
+                           ["high contrast", 
+                           "solarized light", 
+                           "solarized light",
+                           "night blue"]
+       print $ countThemes ["Light", "Dark"] 
+                           ["abyss", 
+                           "solarized light", 
+                           "solarized light",
+                           "night blue"]
+```
+
 Польза от типов, сформированных нульарными конструкторами, не очень велика, хотя встречаться с такими типами вы будете часто.
 
 Приоткрою секрет: новый тип можно определить не только с помощью ключевого слова `data`, но об этом [узнаем](/courses/haskell/chapters/haskell_chapter_0220/) в одной из следующих глав.
