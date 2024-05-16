@@ -67,9 +67,9 @@ main = do
        print $ fact 5
 ```
 
-Напишите функцию `gcd a b`, которая находит наибольший общий делитель (GCD, greatest common divisor) чисел `a` и `b`. Функция должна быть рекурсивной. {.task_text}
+Напишите функцию `myGcd a b`, которая находит наибольший общий делитель (GCD, greatest common divisor) чисел `a` и `b`. Функция должна быть рекурсивной. Название функции начинается с `my`, потому что в Haskell есть стандартная функция `gcd`, которая делает то же самое. {.task_text}
 
-Например, `gcd 25 15` вернет 5, а `gcd 8 3` вернет 1.  {.task_text}
+Например, `myGcd 25 15` вернет 5, а `myGcd 8 3` вернет 1.  {.task_text}
 
 В своем решении используйте алгоритм Евклида. Он заключается в следующем: {.task_text}
 - GCD равен `a`, если `a` и `b` совпадают.
@@ -83,25 +83,25 @@ module Main where
 
 main :: IO()
 main = do
-       print $ gcd 25 15
-       print $ gcd 8 3
-       print $ gcd 14 49
+       print $ myGcd 25 15
+       print $ myGcd 8 3
+       print $ myGcd 14 49
 ```
 Вы можете воспользоваться цепочкой определений `function arg | COND1 = EXPR1 | ...`. {.task_hint}
 ```haskell {.task_answer}
 module Main where
 
-gcd :: Int -> Int -> Int
-gcd a b 
+myGcd :: Int -> Int -> Int
+myGcd a b 
        | a == b = a
-       | a > b = gcd (a-b) b
-       | otherwise = gcd a (b-a)
+       | a > b = myGcd (a-b) b
+       | otherwise = myGcd a (b-a)
 
 main :: IO()
 main = do
-       print $ gcd 25 15
-       print $ gcd 8 3
-       print $ gcd 14 49
+       print $ myGcd 25 15
+       print $ myGcd 8 3
+       print $ myGcd 14 49
 ```
 
 Взглянем на определение функции `map`:
@@ -350,7 +350,6 @@ main = do
 module Main where
 
 myReverse :: [Int] -> [Int]
-
 myReverse [] = []
 myReverse (h:t) = (myReverse t) ++ [h]
 
@@ -421,7 +420,6 @@ main = do
 module Main where
 
 indexOf :: Int -> [Int] -> Int
-
 indexOf val lst = findVal 0 lst
   where
     findVal :: Int -> [Int] -> Int

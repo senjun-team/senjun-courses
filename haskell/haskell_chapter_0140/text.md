@@ -359,3 +359,89 @@ main = print . pretty $ ["haskell", "lisp", "coq"]
 
 Ну что ж, теперь мы знаем о функции `map`, и последующих главах мы увидим множество других ФВП. Отныне они будут нашими постоянными спутниками.
 
+## Функция filter
+
+Мы выяснили, что функция `map f lst` используется для применения функции `f` к каждому элементу списка `lst`. Вторая функция высшего порядка, которая крайне полезна при работе со списками — это функция `filter`:
+
+```haskell
+filter f lst
+```
+
+Она принимает два аргумента: предикат `f` (предикат — это функция, возвращающая `True` либо `False`) и список `lst`. Функция `filter` применяет предикат `f` к каждому элементу списка `lst`. И возвращает новый список, сформированный из элементов, удовлетворяющих предикату.
+
+В этом примере в качестве предиката выступает встроенная функция `odd`, которая возвращает `True` для нечетных чисел:
+
+```haskell
+main :: IO ()
+main = print $ filter odd [1, 4, 17, 46, 100]
+```
+```
+[1,17]
+```
+
+А здесь мы передали в `filter` свою собственную функцию:
+
+```haskell
+isLongLine :: String -> Bool
+isLongLine line = length line > 3
+
+main :: IO ()
+main = print $ filter isLongLine ["coq", "idris", "ml", "scala"]
+```
+```
+["idris","scala"]
+```
+
+В качестве предиката подойдет и ЛФ. Перепишем предыдущий пример:
+
+```haskell
+main :: IO ()
+main = print $ filter (\line -> length line > 3) ["coq", "idris", "ml", "scala"]
+```
+```
+["idris","scala"]
+```
+
+Допустимо даже использование операторов:
+
+```haskell
+main :: IO ()
+main = print $ filter (>128) [3, 55, 129, 4, 200]
+```
+```
+[129,200]
+```
+
+Очень часто функции `filter` и `map` объединяются в цепочки! {.task_text}
+
+Напишите функцию `findEmails`, которая принимает список строк. Она приводит к нижнему регистру и возвращает те строки, в которых содержится символ `@`. {.task_text}
+
+Для приведения символа к нижнему регистру воспользуйтесь функцией `toLower` из модуля `Data.Char`. {.task_text}
+
+```haskell {.task_source #haskell_chapter_0140_task_0040}
+module Main where
+
+-- Your code here
+
+main :: IO ()
+main = do
+       print $ findEmails ["x", "x@mail.com", "haskell", "HaskEll@lst.org"]
+       print $ findEmails ["mail", "MAIL@team.ru"]
+```
+Импортируйте модуль `Data.Char`. Напишите вспомогательную функцию для приведения всей строки к нижнему регистру. В функции `findEmails` напишите композицию функций `filter` и `map`: сначала `filter` проверяет, входит ли в строку символ `@`. Эту проверку можно сделать с помощью функции `elem`, [описанной](/courses/haskell/chapters/haskell_chapter_0090#block-useful-functions) в главе про списки. Результат работы `filter` передается в функцию `map`, которая применяет к каждой подходящей строке приведение к нижнему регистру. {.task_hint}
+```haskell {.task_answer}
+module Main where
+
+import Data.Char
+
+toLowerCase :: String -> String
+toLowerCase str = map toLower str
+
+findEmails :: [String] -> [String]
+findEmails lst = map toLowerCase $ filter (\s -> elem '@' s) lst
+
+main :: IO ()
+main = do
+       print $ findEmails ["x", "x@mail.com", "haskell", "HaskEll@lst.org"]
+       print $ findEmails ["mail", "MAIL@team.ru"]
+```
