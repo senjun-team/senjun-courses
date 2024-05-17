@@ -316,7 +316,7 @@ In the pattern: (_, _, email, _)
 
 Для работы с элементами многоэлементных кортежей можно использовать готовые библиотеки, во избежание длинных паттерн матчинговых цепочек. Например, пакет [tuple](http://hackage.haskell.org/package/tuple). Он не входит в стандартную библиотеку и устанавливается отдельно. 
 
-Для того, чтобы в своем проекте использовать сторонний пакет, его нужно указать в качестве зависимости (секция `dependencies` конфига `package.yaml`), после чего собрать проект через `stack build`. Подробнее об этом [будет](/courses/haskell/chapters/haskell_chapter_0150/#block-add-dependency) в главе про Hackage и библиотеки {#block-add-dependency}
+Для того, чтобы в своем проекте использовать сторонний пакет, его нужно указать в качестве зависимости (секция `dependencies` конфига `package.yaml`), после чего собрать проект через `stack build`. Подробнее об этом [будет](/courses/haskell/chapters/haskell_chapter_0150/#block-add-dependency) в главе про Hackage и библиотеки. {#block-add-dependency}
 
 И вот как выглядит импорт модуля `Data.Tuple.Select` из пакета `tuple`:
 
