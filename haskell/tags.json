@@ -1,0 +1,19 @@
+{
+    "version": "Haskell 2010",
+    "url": "https://www.haskell.org/",
+    "chapters": "24 главы", 
+    "projects": [
+        {
+            "name": "GitHub Semantic — анализатор исходников",
+            "url": "https://github.com/github/semantic/"
+        }, 
+        {
+            "name": "Cardano — блокчейн платформа",
+            "url": "https://cardano.org/"
+        }, 
+        {
+            "name": "Freckle — площадка для онлайн-обучения",
+            "url": "https://freckle.com/en-us/"
+        }
+    ]
+}
