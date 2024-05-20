@@ -379,7 +379,7 @@ f $ x = f x
 
 ```haskell
 putStrLn . show . square $ 8 -- 1
-putStrLn $ show $ square   8 -- 2
+putStrLn $ show . square   8 -- 2
 putStrLn . show $ square $ 8 -- 3
 putStrLn   show . square $ 8 -- 4
 putStrLn $ show $ square $ 8 -- 5

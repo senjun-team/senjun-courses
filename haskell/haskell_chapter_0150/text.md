@@ -356,17 +356,6 @@ import Data.Text.IO hiding ( readFile
                            )
 ```
 
-При желании можно скрыть и из `Prelude`:
-
-```haskell
-import Prelude hiding (putStrLn)
-import Data.Text.IO
-
-main :: IO ()
-main = let f = \handle text -> putStrLn handle text 
-print 1
-```
-
 Скройте функцию `putStrLn` из `Prelude`, чтобы появилась возможность использования `putStrLn` из `Data.Text.IO`. {.task_text}
 
 ```haskell {.task_source #haskell_chapter_0150_task_0040}
