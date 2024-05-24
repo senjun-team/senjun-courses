@@ -1,0 +1,75 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strconv"
+	"strings"
+	"testing"
+)
+
+func TestMain(t *testing.T) {
+	old := os.Stdout // keep backup of the real stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	outC := make(chan string)
+	// copy the output in a separate goroutine so printing can't block indefinitely
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+		outC <- buf.String()
+	}()
+
+	main()
+
+	// back to normal state
+	w.Close()
+	os.Stdout = old // restoring the real stdout
+	out := <-outC
+
+	out = strings.TrimSpace(out)
+	if out[0] != '[' || out[len(out)-1] != ']' {
+		t.Fatalf("main() prints \"" + out + "\", wants output in the format [2 3 5 7 ...]")
+	}
+
+	out = out[1 : len(out)-1]
+	sum := 100
+	valsForTesting := strings.Split(out, " ")
+
+	if len(valsForTesting) != sum {
+		t.Fatalf("main() prints %d values, wants %d values", len(valsForTesting), sum)
+	}
+
+	i := 0      // номер простого числа
+	number := 2 // число
+
+	for i < 100 {
+		isPrime := true
+
+		for j := 2; j < number; j++ {
+			if number%j == 0 {
+				isPrime = false
+				break
+			}
+		}
+
+		if isPrime {
+			val, err := strconv.Atoi(valsForTesting[i])
+
+			if err != nil {
+				t.Fatalf("main() prints %v value in the %d position, could not parse as integer: %v", valsForTesting[i], i, err.Error())
+			}
+
+			if number != val {
+				t.Fatalf("main() prints %d in the %d position, wants %d", val, i, number)
+			}
+
+			i++
+		}
+
+		number++
+	}
+
+}

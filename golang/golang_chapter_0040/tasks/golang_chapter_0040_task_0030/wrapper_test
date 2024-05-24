@@ -1,0 +1,70 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strconv"
+	"strings"
+	"testing"
+)
+
+func TestMain(t *testing.T) {
+	old := os.Stdout // keep backup of the real stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	outC := make(chan string)
+	// copy the output in a separate goroutine so printing can't block indefinitely
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+		outC <- buf.String()
+	}()
+
+	main()
+
+	// back to normal state
+	w.Close()
+	os.Stdout = old // restoring the real stdout
+	out := <-outC
+
+	out = strings.TrimSpace(out)
+	rowsNum := 10
+	colsNum := 10
+
+	rows := strings.Split(out, "\n")
+
+	var valsForTesting [][]string
+
+	if len(rows) != rowsNum {
+		t.Fatalf("main() prints %d rows, wants %d rows", len(rows), rowsNum)
+	}
+
+	for idx, row := range rows {
+		valsForTesting = append(valsForTesting, strings.Split(row, "\t"))
+		if len(valsForTesting[len(valsForTesting)-1]) != colsNum {
+			t.Fatalf("main() prints %d cols in the %d row, wants %d", len(valsForTesting[len(valsForTesting)-1]), idx, colsNum)
+		}
+	}
+
+	for i := 0; i < rowsNum; i++ {
+		for j := 0; j < colsNum; j++ {
+
+			val, err := strconv.Atoi(valsForTesting[i][j])
+
+			if err != nil {
+				t.Fatalf("main() prints %v value in the [%d][%d] position, could not parse as integer: %v", valsForTesting[i][j], i, j, err.Error())
+			}
+
+			if val != 0 && i > j {
+				t.Fatalf("main() prints %d in the [%d][%d] position, wants %d", val, i, j, 0)
+			}
+			if val != i+j+2 && i <= j {
+				t.Fatalf("main() prints %d in the [%d][%d] position, wants %d", val, i, j, i+j+2)
+			}
+
+		}
+	}
+
+}
