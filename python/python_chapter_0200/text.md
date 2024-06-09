@@ -23,7 +23,7 @@
 
 Модуль `math` содержит математические функции и константы. Импортируем его, чтобы посчитать объем шара. Задействуем константу `pi` и функцию возведения в степень `pow()`:
 
-```python
+```python  {.example_for_playground}
 import math
 
 def sphere_volume(r):
@@ -52,7 +52,7 @@ print(sys.version)
 
 Зададим для модуля `math` псевдоним `m`. Для этого воспользуемся квалификатором `as`:
 
-```python
+```python  {.example_for_playground}
 import math as m
 
 def sphere_volume(r):
@@ -61,7 +61,7 @@ def sphere_volume(r):
 
 Сократив `math.pow()` до `m.pow()`, мы ничего не выиграли. Но имена других модулей могут быть довольно длинными. Также модули могут группироваться в пакеты. Тогда при импорте вложенные имена разделяются точкой:
 
-```python
+```python  {.example_for_playground}
 import os.path as p
 
 print(p.join("documents", "scans", "passport.pdf"))
@@ -85,7 +85,7 @@ print(sh.disk_usage("/"))
 
 Чтобы импортировать из модуля только нужные определения, а не все подряд, их перечисляют с помощью конструкции `from ... import ...`. Тогда обращение к ним осуществляется без указания имени модуля:
 
-```python
+```python  {.example_for_playground}
 from math import pi, pow
 
 def sphere_volume(r):
@@ -94,7 +94,7 @@ def sphere_volume(r):
 
 Однако импортируемые имена могут конфликтовать с теми, что уже присутствуют в коде:
 
-```python
+```python  {.example_for_playground}
 from math import pi, pow
 
 pow = 8
@@ -146,7 +146,7 @@ print(pow_f(2, 3))
 
 Для массового импорта применяется символ `*`:
 
-```python
+```python  {.example_for_playground}
 from math import *
 
 print(pi)
@@ -283,7 +283,7 @@ print(os.environ.get("PYTHON_VERSION", ""))
 
 Это позволяет организовать в модуле вот такую проверку:
 
-```python
+```python  {.example_for_playground}
 if __name__ == "__main__":
     # Code for running in console
     ...

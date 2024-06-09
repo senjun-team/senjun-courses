@@ -38,7 +38,7 @@ for resp in responses:
 
 Пример прохода в цикле `for` по последовательности чисел от 0 до 9, которую генерирует функция `range()`:
 
-```python
+```python {.example_for_playground}
 for x in range(10):
     print(x * x)
 ```
@@ -71,7 +71,7 @@ def get_words_count(s):
 
 В этом цикле выведутся все согласные буквы:
 
-```python
+```python {.example_for_playground}
 s = "Now is better than never."
 
 for letter in s:
@@ -83,7 +83,7 @@ for letter in s:
 
 Также в питоне есть оператор `break` для выхода из цикла. Этот цикл завершится на первом встреченном пробеле:
 
-```python
+```python {.example_for_playground}
 s = "Although never is often better than right now."
 
 for letter in s:
@@ -96,7 +96,7 @@ for letter in s:
 ## Ключевое слово else в связке с циклами
 Забавная особенность питона: ключевое слово `else` может использоваться не только в связке с `if`, но и после циклов `while` и `for`! В таком случае `else` сработает, только если выход из цикла произошел **без** участия `break`. 
 
-```python
+```python {.example_for_playground}
 s = "go"
 
 for letter in s:

@@ -20,7 +20,7 @@ submit(fn, /, *args, **kwargs)
 
 Рассмотрим пример запуска задач на пуле процессов. Так выглядит выполнение задачи `calc_and_sleep()` в пуле, состоящем из единственного процесса. {#block-measure-time}
 
-```python
+```python  {.example_for_playground}
 import time
 from concurrent.futures import ProcessPoolExecutor
 
@@ -142,7 +142,7 @@ if __name__ == "__main__":
 
 Итак, работа с пулом процессов в модуле `multiprocessing` выглядит следующим образом:
 
-```python
+```python  {.example_for_playground}
 from multiprocessing import Pool
 
 if __name__ == '__main__':
@@ -155,7 +155,7 @@ if __name__ == '__main__':
 
 Запуск и ожидание завершения отдельного процесса:
 
-```python
+```python  {.example_for_playground}
 from multiprocessing import Process
 
 if __name__ == '__main__':
@@ -169,7 +169,7 @@ text
 
 Передача данных между двумя процессами через очередь, которую безопасно использовать из разных потоков и процессов:
 
-```python
+```python  {.example_for_playground}
 from multiprocessing import Process, Queue
 
 def f(q, x):
@@ -188,7 +188,7 @@ if __name__ == '__main__':
 
 Передача данных между процессами через пайп (дуплексный канал, читать и писать в который могут оба процесса):
 
-```python
+```python  {.example_for_playground}
 from multiprocessing import Process, Pipe
 
 def f(conn):
@@ -219,7 +219,7 @@ if __name__ == '__main__':
 
 Примитив синхронизации `Lock` нужен для блокирования какого-либо ресурса, чтобы в любой момент времени с ним работал только один процесс. Пример использования `Lock` для блокирования консольного вывода:
 
-```python
+```python  {.example_for_playground}
 import random
 import time
 from multiprocessing import Process, Lock

@@ -35,7 +35,7 @@ if err != nil {
 Исключительной считается ситуация, в которой синтаксически корректная программа приводит к ошибке времени выполнения.
 
 ```python
-l = []
+l = []  {.example_for_playground}
 l[42]
 ```
 ```
@@ -48,7 +48,7 @@ IndexError: list index out of range
 
 Чтобы программа продолжила свое выполнение, достаточно обернуть код, который может бросить исключение, следующим образом:
 
-```python
+```python  {.example_for_playground}
 try:
     l = []
     l[42]
@@ -67,7 +67,7 @@ Exception is processed!
 
 Текст исключений в питоне принято начинать со строчной, а не заглавной буквы.
 
-```python
+```python  {.example_for_playground}
 a = 1 / 0
 ```
 ```
@@ -149,7 +149,7 @@ def check_str(obj):
 
 Помимо этого, `raise` позволяет «перебросить» только что пойманное исключение:
 
-```python
+```python  {.example_for_playground}
 try:
     raise Exception("my raise!")
 except Exception as e:
@@ -188,7 +188,7 @@ def negative_odd_sum(first, second):
 ## Блоки else и finally в конструкции try/except
 По аналогии с циклом `for` при работе с исключениями можно использовать ключевое слово `else`. Программа будет выполнять этот блок в том случае, если исключения не произошло:
 
-```python
+```python  {.example_for_playground}
 try:
     a = 42
 except Exception as e:
@@ -202,7 +202,7 @@ Else block
 
 Также существует блок `finally`. Выполнение будет передано в этот блок независимо от того, возникло исключение или нет:
 
-```python
+```python  {.example_for_playground}
 def foo():
     try:
         pass
@@ -226,7 +226,7 @@ Finish him!
 
 В случае не обработанного исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 try:
     raise ValueError
 except ValueError as e:
@@ -245,7 +245,7 @@ else:
 ## Инструкция assert
 В ряде случаев вместо обработки исключений через `try/except` уместнее использовать инструкцию `assert`. Это условная проверка, которая при истинном условии продолжает выполнение программы, а при ложном генерирует исключение `AssertionError`.
 
-```python
+```python  {.example_for_playground}
 assert "linux" in sys.platform, "this code works only on linux"
 ```
 

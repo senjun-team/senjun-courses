@@ -61,7 +61,7 @@ def count_available(self):
 
 Заведем класс `User`, а в нем — геттер `data`.
 
-```python
+```python  {.example_for_playground}
 class User:
     def __init__(self, user_id, name, email):
         self._id = user_id
@@ -118,7 +118,7 @@ print(scanner.count_available)
 
 Например, если в классе объявлен геттер `query`, сеттер для него должен быть задекорирован через `@query.setter`:
 
-```python
+```python  {.example_for_playground}
 class Query:
     def __init__(self, q):
         self.query = q
@@ -142,7 +142,7 @@ print(q.query)
 
 Что случится, если забыть добавить сеттер для свойства, у которого есть геттер, и попытаться присвоить полю значение?
 
-```python
+```python  {.example_for_playground}
 class Query:
     def __init__(self, q):
         self.query = q
@@ -220,7 +220,7 @@ headphones.number = "headphones001"
 Напишем класс `Coordinate` для хранения координат точки. В сеттерах `@lat.setter` и `@lon.setter` организуем проверку, что в качестве 
 широты (latitude) и долготы (longitude) переданы адекватные значения. С помощью делитеров вместо удаления полей будем их сбрасывать в нулевую координату.
 
-```python
+```python  {.example_for_playground}
 class Coordinate:
     def __init__(self, lat, lon):
         self.lat = lat
@@ -440,7 +440,7 @@ property(fget=None, fset=None, fdel=None, doc=None)
 
 Перепишем класс `Circle` из задачи выше на использование `property()`.
 
-```python
+```python  {.example_for_playground}
 from math import pi
 
 class Circle:

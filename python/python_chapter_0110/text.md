@@ -25,7 +25,7 @@ random_stuff = [2, 2, False, 9.1, ["A", 8], "search"]
 
 Внимательно прочитайте объявление списка `links`. Как думаете, сколько в нем элементов и какие они?
 
-```python
+```python  {.example_for_playground}
 links = ["realpython.com", "docs.python.org" "python.org"]
 print(links)
 ```
@@ -46,7 +46,7 @@ langs = list()
 
 ...И еще один пример с подвохом. Как считаете, что окажется в списке, если при создании вызвать конструктор `list()` от строки?
 
-```python
+```python  {.example_for_playground}
 langs = list("elixir")
 print(langs)
 ```
@@ -76,7 +76,7 @@ print(sequences[1])
 
 При обращении к элементам списков, вложенных в другие списки, индексы указываются в последовательно идущих квадратных скобках:
 
-```python
+```python  {.example_for_playground}
 matrix = [[1, 2], [3, 4], [5, 6], [7, 8]]
 
 val = matrix[2][1]
@@ -93,7 +93,7 @@ print(matrix)
 
 Из примера видно, что в отличие от [строк,](/courses/python/chapters/python_chapter_0100/) элементы списков можно модифицировать. Со строками подобный фокус не пройдет:
 
-```python
+```python  {.example_for_playground}
 s = "Lists & tuples"
 s[8] = "T"
 ```
@@ -106,7 +106,7 @@ TypeError: 'str' object does not support item assignment
 
 Как и при [посимвольном доступе к строкам,](/courses/python/chapters/python_chapter_0100#block-string-indices) при обращении к элементам списка допускается использовать отрицательные индексы. Особенно это удобно для получения последнего элемента:
 
-```python
+```python  {.example_for_playground}
 collections = ["sequences", "sets", "mappings"]
 last_val = collections[-1]
 ```
@@ -127,7 +127,7 @@ print(matrix)
 
 Так как списки в питоне — это **упорядоченные** коллекции с доступом по индексу, то два списка, содержащих одинаковые элементы, но в разном порядке, считаются разными объектами:
 
-```python
+```python  {.example_for_playground}
 l = [1, 2, "bonjour"]
 m = [1, "bonjour", 2]
 
@@ -138,7 +138,7 @@ print(l == m)
 
 Если же содержимое списков поэлементно совпадает, то списки считаются равными:
 
-```python
+```python  {.example_for_playground}
 l = [16, 32]
 m = [16, 32]
 
@@ -192,7 +192,7 @@ print(l)
 
 Что произойдет с исходным списком и срезами, на него ссылающимися, если один из таких срезов изменить? Приведет ли изменение среза к изменению исходного списка?
 
-```python
+```python  {.example_for_playground}
 lst = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 print("lst", lst)
 
@@ -271,7 +271,7 @@ print(lst)
 
 Так выглядит проверка, содержит ли список значение -1:
 
-```python
+```python  {.example_for_playground}
 if -1 in [8, -1, 93]:
     print("list contains -1")
 ```
@@ -281,7 +281,7 @@ list contains -1
 
 А так выглядит умножение списка на число:
 
-```python
+```python  {.example_for_playground}
 lst = ["a", "b"]
 print(lst * 4)
 ```
@@ -319,7 +319,7 @@ def is_item_in_list(lst, item):
 
 Пример поиска минимального элемента:
 
-```python
+```python  {.example_for_playground}
 temperatures = [23.2, 21.0, 19.9, 22.5]
 min_temp = min(temperatures)
 print(min_temp)
@@ -330,7 +330,7 @@ print(min_temp)
 
 Для удаления одного элемента или среза элементов из списка используется **оператор del:**
 
-```python
+```python  {.example_for_playground}
 x = ["assert", "bool", "false"]
 del x[1]
 print(x)
@@ -366,7 +366,7 @@ print(words)
 
 Пример сортировки списка слов по убыванию их длины:
 
-```python
+```python  {.example_for_playground}
 words = ["clear", "pop", "append"]
 words.sort(key=len, reverse=True)
 print(words)
@@ -378,7 +378,7 @@ print(words)
 
 Как считаете, что выведет этот код?
 
-```python
+```python  {.example_for_playground}
 res = ["Errors", "should", "never", "pass"]
 res += "silently"
 print(res)

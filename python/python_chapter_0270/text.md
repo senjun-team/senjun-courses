@@ -46,7 +46,7 @@ print(outer())
 
 В случае не обработанного исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 def outer(func):
     def wrapper(arg):
         arg += 2
@@ -72,7 +72,7 @@ print(increment(4))
 ## Простой декоратор
 Переопределим функцию `f()` функцией `wrapper()` из `log_func_start()`. Такой прием позволяет выполнять некоторые действия как непосредственно **до** вызова функции, так и **после** него.
 
-```python
+```python  {.example_for_playground}
 from datetime import datetime
 
 
@@ -240,7 +240,7 @@ print(f())
 ## Параметры декорируемых функций
 Мы рассмотрели простой случай: декорирование функций без параметров. А что делать, если функция принимает параметры или их количество в общем случае не ограничено? Решение на поверхности: передавать в замыкание декоратора вариабельные позиционные и именованные аргументы:
 
-```python
+```python  {.example_for_playground}
 def decorator(func):
     def wrapper(*args, **kwargs):
         print("Args decorator!")
@@ -292,7 +292,7 @@ print(concat("A", "B", "C"))
 ## Метаданные функций
 Каждая функция обладает такими метаданными как `__name__`, `__doc__` и т.д. При декорировании эта информация теряется, так как объекту функции присваивается объект замыкания из декоратора:
 
-```python
+```python  {.example_for_playground}
 def decorator(func):
     def inner(*args, **kwargs):
         """decorator doc"""
@@ -316,7 +316,7 @@ decorator doc
 
 Это может стать проблемой, потому что во время отладки кода удобно удостоверяться, какая функция действительно была вызвана. Но, к счастью, решение есть и имя ему `functools.wraps`. Это специальный декоратор для декоратора, который под капотом сохраняет метаданные декорируемой функции:
 
-```python
+```python  {.example_for_playground}
 import functools
 
 def decorator(func):
@@ -352,7 +352,7 @@ f doc
 
 Декораторы возвращают замыкание, декорирующее исходную функцию. А фабрика декораторов возвращает декоратор! Это можно лучше понять на примере:
 
-```python
+```python  {.example_for_playground}
 def factory(text):
     def decorator(func):
         def inner(*args, **kwargs):
@@ -419,7 +419,7 @@ f()
 ## Классы-декораторы
 Декорировать можно не только функции, но и методы. Более того. В качестве самого декоратора может выступать не только функция, но и класс.
 
-```python
+```python  {.example_for_playground}
 class SquareResult:
     def __init__(self, func):
         # момент декорирования
@@ -427,7 +427,7 @@ class SquareResult:
 
     def __call__(self, *args, **kwargs):
         # момент вызова
-        result = self.func(*args)
+        result = self.func(*args, **kwargs)
         return result**2
 
 @SquareResult

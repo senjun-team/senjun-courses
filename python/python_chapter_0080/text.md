@@ -26,7 +26,7 @@
 Чтобы это доказать, воспользуемся двумя встроенными функциями: `id()` и `type()`.
 Функция `id()` возвращает идентификатор объекта:
 
-```python
+```python {.example_for_playground}
 lang = "ru"
 print(id(lang))
 ```
@@ -39,7 +39,7 @@ print(id(lang))
 
 `type()` возвращает название класса (типа) объекта:
 
-```python
+```python {.example_for_playground}
 is_connected = True
 print(type(is_connected))
 ```

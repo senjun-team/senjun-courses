@@ -7,7 +7,7 @@
 
 Воспользуемся функцией `type()`, которая принимает объект и возвращает его тип:
 
-```python
+```python  {.example_for_playground}
 print(type(int))
 print(type(list))
 ```
@@ -40,7 +40,7 @@ print(type(type))
 
 Остановимся подробнее на dunder-методах `__str__()` и `__repr__()`, отвечающих за строковое представление экземпляра класса. Если в классе не определен ни один из них, то мы получаем стандартную и малоинформативную строку об объекте:
 
-```python
+```python  {.example_for_playground}
 class Example:
     def __init__(self):
         self.a = 10
@@ -54,7 +54,7 @@ print(Example())
 
 Но стоит добавить в класс метод `__str__()`, и консольный вывод изменится.
 
-```python
+```python  {.example_for_playground}
 class Example:
     def __init__(self):
         self.a = 10
@@ -102,7 +102,7 @@ class Storage():
 
 Поле `__bases__` как раз один из них. В нем хранится перечисление родительских классов. Их может быть больше одного, так как в языке поддерживается множественное наследование.
 
-```python
+```python  {.example_for_playground}
 print(f"base of bool: {bool.__bases__}")
 print(f"base of int: {int.__bases__}")
 print(f"base of object: {object.__bases__}")
@@ -161,7 +161,7 @@ print(issubclass(type, object))
 
 С помощью ключевого слова `class` создадим пустой пользовательский класс `Dummy`. Инстанцируем экземпляр `x` этого класса, выведем его id и тип.
 
-```python
+```python  {.example_for_playground}
 class Dummy:
     pass
 
@@ -182,7 +182,7 @@ type: <class '__main__.Dummy'>
 ## Внутреннее представление атрибутов объекта {#block-dict}
 Понимание dunder-атрибутов приоткрывает завесу тайны над внутренним устройством объектов: на самом деле атрибуты объектов хранятся в специальном словаре `__dict__`. Да, это всего лишь пары ключ-значение!
 
-```python
+```python  {.example_for_playground}
 class Example:
     _id_cls = 0
 

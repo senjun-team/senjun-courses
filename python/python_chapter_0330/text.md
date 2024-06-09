@@ -63,7 +63,7 @@ l: list[int] = [1, 2]
 
 Но если мы заводим **пустую** коллекцию, то без явного указания типа `mypy` не сможет определить, какие элементы в нее попадут:
 
-```python
+```python  {.example_for_playground}
 d: dict[str, float] = {}
 s: set[str] = set()
 ```
@@ -71,7 +71,7 @@ s: set[str] = set()
 ## Аннотации для встроенных типов
 Аннотация для встроенного типа — это просто имя типа:
 
-```python
+```python  {.example_for_playground}
 x: bool = True
 val: int = 2
 a: float = 5.01
@@ -80,7 +80,7 @@ s: str = "ABC"
 
 В аннотации коллекций после типа коллекции в скобках указывается тип элементов:
 
-```python
+```python  {.example_for_playground}
 l: list[str] = ["A", "B"]
 s: set[int] = {105, -9}
 d: dict[int, bool] = {}
@@ -300,13 +300,20 @@ def format(a: int, b: bool, c: Any) -> str:
 
 Пример аннотации для функции, которая принимает функцию и итерабельный объект и вызывает для них [встроенную функцию](/courses/python/chapters/python_chapter_0280#block-filter) `filter()`:
 
-```python
+```python  {.example_for_playground}
 from collections.abc import Callable, Iterable, Iterator
 
-def filter_vals(check_data: Callable[[int], bool], data: Iterable[int]) -> Iterator[int]:
+
+def filter_vals(
+    check_data: Callable[[int], bool], data: Iterable[int]
+) -> Iterator[int]:
     return filter(check_data, data)
 
-print(list(filter_vals(lambda x : x > 0, [-1, 3, -2, 8, 9])))
+
+print(list(filter_vals(lambda x: x > 0, [-1, 3, -2, 8, 9])))
+```
+```
+[3, 8, 9]
 ```
 
 Здесь для функции мы использовали аннотацию `Callable[[int], bool]`, то есть указали, что функция принимает единственный параметр типа `int` и возвращает тип `bool`. Если сигнатура функции не важна, можно писать просто `Callable`.

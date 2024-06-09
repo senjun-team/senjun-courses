@@ -7,7 +7,7 @@
 
 Создадим функцию, принимающую один обязательный аргумент `x`, произвольное количество позиционных аргументов `args` и именованных аргументов `kwargs`. Вызовем ее:
 
-```python
+```python  {.example_for_playground}
 def f(x, *args, **kwargs):
     print(x)
 
@@ -74,7 +74,7 @@ def analyze(*args, **kwargs):
 
 В случае исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 def append(x, *args):
     args.append(x)
     print(*args)
@@ -96,7 +96,7 @@ error
 
 Эти нововведения позволили использовать оператор `*` как визуальный разграничитель, слева от которого перечисляются только позиционные аргументы, а справа только именованные (keyword-only arguments):
 
-```python
+```python  {.example_for_playground}
 def f(a1, a2, *, k1, k2):
     ...
 
@@ -105,7 +105,7 @@ f(1, 2, k1="val1", k2="val2")
 
 Теперь при попытке передачи именованных аргументов там, где должны быть позиционные, интерпретатор сгенерирует ошибку:
 
-```python
+```python  {.example_for_playground}
 def f(a1, a2, *, k1, k2):
     ...
 
@@ -122,7 +122,7 @@ TypeError: f() takes 2 positional arguments but 4 were given
 
 В случае исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 def sort_words(*words, case_sensitive=False):
     key = str.lower if case_sensitive else None
     return sorted(words, key=key)

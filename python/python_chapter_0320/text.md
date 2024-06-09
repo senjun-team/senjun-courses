@@ -8,7 +8,7 @@
 ## Корутины и синтаксис async/await
 Для выполнения асинхронного кода в питоне используются **корутины**. Чтобы превратить функцию в корутину, необходимо в ее сигнатуре прописать ключевое слово `async`.
 
-```python
+```python  {.example_for_playground}
 async def f():
     pass
 
@@ -37,7 +37,7 @@ print(type(f()))
 
 Рассмотрим пример вызова одной корутины из другой.
 
-```python
+```python  {.example_for_playground}
 async def coro_100():
     print(100)
 
@@ -72,7 +72,7 @@ main ended
 
 С помощью библиотеки `asyncio` перепишем этот код более компактно.
 
-```python
+```python  {.example_for_playground}
 import asyncio
 
 
@@ -111,7 +111,7 @@ asyncio.run(main())
 
 Пример запуска задачи:
 
-```python
+```python  {.example_for_playground}
 import asyncio
 
 
@@ -144,7 +144,7 @@ main ended
 
 Запустим две задачи. Одна из них должна завершиться почти моментально, другая имитирует более длительные вычисления.
 
-```python
+```python  {.example_for_playground}
 import asyncio
 
 
@@ -251,7 +251,7 @@ asyncio.run(main())
 ## Ожидание выполнения группы задач
 Часто возникает ситуация, когда нужно запустить много задач и дождаться выполнения их всех. Сделать это можно «в лоб», пройдясь циклом по списку задач:
 
-```python
+```python  {.example_for_playground}
 import asyncio
 
 
@@ -350,7 +350,7 @@ asyncio.run(main())
 ## Ожидание выполнения первой задачи из множества
 Иногда возникает потребность дождаться выполнения только самой первой из всех запущенных задач. Для этого используется вызов `asyncio.wait()`. Эта функция принимает список задач и указание, когда нужно завершиться. По умолчанию происходит ожидание всех переданных задач. Возвращает она кортеж из двух множеств, содержащих завершенные и незавершенные задачи.
 
-```python
+```python  {.example_for_playground}
 import asyncio
 import time
 
@@ -384,7 +384,7 @@ main done for 0.0002 seconds
 
 Рассмотрим пример асинхронного контекстного менеджера `AsyncContextManager`, метод `__aenter__` которого вызывает `asyncio.sleep()` для имитации работы с большим файлом.
 
-```python
+```python  {.example_for_playground}
 import asyncio
 
 
@@ -429,7 +429,7 @@ async manager exited
 
 `__anext__()` — метод, возвращающий следующий элемент.
 
-```python
+```python  {.example_for_playground}
 import asyncio
 
 

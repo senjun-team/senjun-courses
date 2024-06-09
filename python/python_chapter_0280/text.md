@@ -31,7 +31,7 @@ map(function, *iterables)
 
 Применим `map()`, чтобы конвертировать числа в шестнадцатеричную систему счисления:
 
-```python
+```python  {.example_for_playground}
 numbers = [32, 51, 3]
 
 for n in map(hex, numbers):
@@ -45,7 +45,7 @@ for n in map(hex, numbers):
 
 Обработаем через `map()` сразу три коллекции. Чтобы не заводить отдельную вспомогательную функцию, воспользуемся лямбдой:
 
-```python
+```python  {.example_for_playground}
 l1 = [-2, 3, 1]
 l2 = [0, 5, 8]
 l3 = [1, 2, 0]
@@ -76,7 +76,7 @@ s = set(map(lambda n: "s" + str(n), lst))
 
 Рассмотрим классический list comprehension:
 
-```python
+```python  {.example_for_playground}
 squares = [n*n for n in range(0, 5)]
 
 print(squares)
@@ -87,7 +87,7 @@ print(squares)
 
 Перепишем его с использованием `map()`:
 
-```python
+```python  {.example_for_playground}
 squares = list(map(lambda n : n*n, range(0, 5)))
 
 print(squares)
@@ -120,7 +120,7 @@ filter(function, iterable)
 
 `filter()` возвращает итератор из тех элементов `iterable`, для которых `function` вернула `True` или приводимое к нему значение. Пропускаются элементы, для которых `function` вернула `False` либо 0, `None`, пустую строку и т.д.
 
-```python
+```python  {.example_for_playground}
 passwords = ["*****", "**", "*******", "*"]
 
 safe_passwords = list(filter(lambda p: len(p) >= 3, passwords))
@@ -143,9 +143,9 @@ def is_expensive(product):
 expensive = dict(filter(is_expensive, products.items()))
 ```
 
-Если вместо функции в `filter()` передать `None`, то в отфильтрованном объекте окажутся те значения, которые сами по себе приводимы к  `True`:
+Если вместо функции в `filter()` передать `None`, то в отфильтрованном объекте окажутся те значения, которые сами по себе приводимы к `True`:
 
-```python
+```python  {.example_for_playground}
 temperatures = (5, 0, -1, 6)
 
 print(tuple(filter(None, temperatures)))
@@ -186,7 +186,10 @@ print(res)
 ```
 
 ## functools.reduce()
-Функция `reduce()` из модуля `functools` производит цепочечные вычисления, многократно применяя `function` к каждому элементу коллекции и подставляя `initializer` в качестве первого параметра, а сам элемент в качестве второго. 
+
+Функция `reduce()` из модуля `functools` кумулятивно применяет переданную ей функцию к каждому элементу итерируемой последовательности. В конце вычислений остается единственное значение. Самые простые примеры таких вычислений — это сумма и произведение элементов списка. 
+
+Функция выглядит так:
 
 ```python
 functools.reduce(function, iterable, initializer=None)
@@ -194,7 +197,9 @@ functools.reduce(function, iterable, initializer=None)
 
 `initializer` — это аккумулятор (стартовое значение), с которого начинаются расчеты. Он возвращается, если последовательность пуста. Если `initializer` не указан, а итерабельный объект состоит из единственного элемента, то `reduce()` возвращает этот элемент.
 
-```python
+Иными словами, `reduce()` производит цепочечные вычисления, многократно применяя `function` к каждому элементу `iterable` и подставляя `initializer` в качестве первого параметра, а сам элемент в качестве второго. 
+
+```python  {.example_for_playground}
 from functools import reduce
 
 def f(prev, cur):
@@ -276,7 +281,7 @@ zip(*iterables, strict=False)
 
 Если значение аргумента `strict` равно `False` (то есть совпадает со значением по умолчанию), то по достижению самой короткой последовательности `zip()` завершает работу. Если же `strict` выставлен в `True`, а переданные в `zip()` коллекции имеют различное количество элементов, функция сгенерирует исключение `ValueError`.
 
-```python
+```python  {.example_for_playground}
 cities = ["Podolsk", "Tver"]
 locations = [(55.43, 37.54), (56.85, 35.90)]
 
@@ -289,7 +294,7 @@ print(places)
 
 Добавим в список `cities` еще один город и «забудем» внести его координаты в список `locations`. Выставим при этом `strict` в `True`: 
 
-```python
+```python  {.example_for_playground}
 cities = ["Podolsk", "Tver", "Voronej"]
 locations = [(55.43, 37.54), (56.85, 35.90)]
 
@@ -303,7 +308,7 @@ Traceback (most recent call last):
 ValueError: zip() argument 2 is shorter than argument 1
 ```
 
-Как видите, установка `strict=False` помогает удостовериться, что переданные в `zip()` коллекции имеют одинаковую длину.
+Как видите, установка `strict=True` помогает удостовериться, что переданные в `zip()` коллекции имеют одинаковую длину.
 
 Напишите вариативную функцию `match()`, которая принимает произвольное количество позиционных аргументов — итерабельных объектов.  {.task_text}
 
@@ -352,7 +357,7 @@ itertools.zip_longest(*iterables, fillvalue=None)
 
 Таким образом, `zip_longest()` отличается от встроенной функции `zip()` только обработкой ситуации, когда в нее переданы коллекции разной длины. 
 
-```python
+```python  {.example_for_playground}
 from itertools import zip_longest
 
 short = range(3)
@@ -374,7 +379,7 @@ itertools.chain(*iterables)
 
 С помощью `chain()` можно бесшовно итерироваться по нескольким итерабельным объектам:
 
-```python
+```python  {.example_for_playground}
 from itertools import chain
 
 for x in chain("ABC", "DEF"):
