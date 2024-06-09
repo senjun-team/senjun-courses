@@ -122,7 +122,7 @@ main =
 
 Если списки создаются — значит это кому-нибудь нужно. Со списком можно делать очень много всего. В стандартной Haskell-библиотеке существует модуль `Prelude`, включающий широкий набор функций, работающих со списком. Откроем модуль `Main` и применим функцию `head`, возвращающую голову списка (то есть его первый элемент):
 
-```haskell
+```haskell  {.example_for_playground}
 module Main where
 
 main :: IO ()
@@ -145,7 +145,7 @@ Vim
 
 Эдакая гусеница получается: первый элемент — голова, а всё остальное — хвост. Функция `tail` возвращает хвост:
 
-```haskell
+```haskell  {.example_for_playground}
 main :: IO ()
 main = print (tail ["Vim", "Emacs", "Atom"])
 ```
@@ -329,7 +329,7 @@ main = do
 
 Как вы уже знаете, все данные в Haskell неизменны, как Египетские пирамиды. Списки — не исключение: мы не можем изменить существующий список, мы можем лишь создать на его основе новый список. Например: {#block-immutability}
 
-```haskell
+```haskell  {.example_for_playground}
 addTo :: String -> [String] -> [String]
 addTo newHost hosts = newHost : hosts
 
@@ -360,7 +360,7 @@ addTo newHost hosts = newHost : hosts
 
 Что выведет этот код? В случае ошибки напишите `error`. {.task_text}
 
-```haskell
+```haskell  {.example_for_playground}
 module Main where
 
 main :: IO ()

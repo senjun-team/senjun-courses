@@ -100,7 +100,7 @@ someFunc = putStrLn "someFunc"
 
 А вот так выглядит модуль `app/Main.hs`:
 
-```haskell
+```haskell {.example_for_playground}
 module Main where
 
 import Lib

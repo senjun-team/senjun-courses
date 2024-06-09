@@ -6,7 +6,7 @@
 
 Применение функции нам уже знакомо, осталось узнать про объявление и определение, без них использовать функцию не получится. Помните функцию `square`, возводящую свой единственный аргумент в квадрат? Вот как выглядит её объявление и определение:
 
-```haskell
+```haskell {.example_for_playground .example_for_playground_001}
 square :: Int -> Int
 square v = v * v
 ```
@@ -158,7 +158,7 @@ coeff = 0.569
 
 Что выведет этот код? В случае ошибки напишите `error`. {.task_text}
 
-```haskell
+```haskell  {.example_for_playground}
 module Main where
 
 x = 2

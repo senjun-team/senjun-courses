@@ -79,7 +79,7 @@ data IPAddress = IPv4 String
 
 Как же нам потом извлечь конкретное строковое значение из `google`? С помощью нашего старого друга, паттерн матчинга:
 
-```haskell
+```haskell   {.example_for_playground .example_for_playground_001}
 checkIP :: IPAddress -> String
 checkIP (IPv4 address) = "IP is '" ++ address ++ "'."
 
@@ -172,7 +172,7 @@ data EndPoint = EndPoint IPAddress Int
 
 Красиво. Извлекать конкретные значения будем так:
 
-```haskell
+```haskell   {.example_for_playground .example_for_playground_002}
 main :: IO ()
 main = putStrLn $ "The host is: " ++ ip
   where
@@ -185,7 +185,7 @@ main = putStrLn $ "The host is: " ++ ip
 
 Любопытно, что конструкторы типов тоже можно компоновать, взгляните:
 
-```haskell
+```haskell   {.example_for_playground .example_for_playground_003}
 main :: IO ()
 main = putStrLn $ "The host is: " ++ ip
   where

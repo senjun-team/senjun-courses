@@ -6,7 +6,7 @@
 
 В нижеследующих примерах мы вновь будем использовать расширение GHC `MultiWayIf`. Рассмотрим следующую функцию:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_001}
 calculateTime :: Int -> Int
 calculateTime timeInS =
   if | timeInS <  40 -> timeInS + 120
@@ -15,7 +15,7 @@ calculateTime timeInS =
 
 Мы считаем время некоторого события, и если исходное время меньше `40` секунд — результирующее время увеличено на `120` секунд, в противном случае — ещё на `8` секунд сверх того. Перед нами классический пример «магических чисел» (англ. magic numbers), когда смысл конкретных значений скрыт за семью печатями. Что за `40`, и что за `8`? Во избежание этой проблемы можно ввести временные выражения, и тогда код станет совсем другим:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_002}
 calculateTime :: Int -> Int
 calculateTime timeInS =
   let threshold  = 40
@@ -51,7 +51,7 @@ let threshold = 40
 
 И кстати, мы ведь можем упростить условную конструкцию, воспользовавшись `otherwise`:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_003}
 calculateTime :: Int -> Int
 calculateTime timeInS =
   let threshold  = 40
@@ -179,7 +179,7 @@ main = do
 
 Существует иной способ введения промежуточных выражений, взгляните:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_004}
 calculateTime :: Int -> Int
 calculateTime timeInS =
   if | timeInS < threshold -> timeInS + correction
@@ -246,7 +246,7 @@ main = do
 
 Мы можем использовать `let-in` и `where` совместно, в рамках одной функции:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_005}
 calculateTime :: Int -> Int
 calculateTime timeInS =
   let threshold = 40 in
@@ -263,7 +263,7 @@ calculateTime timeInS =
 
 Что выведет этот код? В случае ошибки напишите `error`. {.task_text}
 
-```haskell
+```haskell {.example_for_playground}
 {-# LANGUAGE MultiWayIf #-}
 
 module Main where

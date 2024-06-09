@@ -9,7 +9,7 @@
 Установим `stack`. Идём [сюда](https://docs.haskellstack.org/en/stable/install_and_upgrade/) и забираем нужную нам версию. Общий Unix-вариант установки предельно прост:
 
 ```shell
-$ curl -sSL https://get.haskellstack.org/ | sh
+curl -sSL https://get.haskellstack.org/ | sh
 ```
 
 Готово. После установки нам будет доступна команда `stack`, и она — наше всё.

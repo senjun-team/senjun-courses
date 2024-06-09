@@ -163,7 +163,7 @@ newHost : hosts
 
 В данном случае слова `head` и `tail` не относятся к стандартным функциям, я лишь показываю назначение элементов данного образца. Вот более живой пример:
 
-```haskell
+```haskell  {.example_for_playground}
 main :: IO ()
 main = print first
   where
@@ -174,7 +174,7 @@ main = print first
 
 Но вы спросите, зачем нам это нужно? Если уж мы так хотим работать со списком через паттерн матчинг, можно ведь воспользоваться явным образцом:
 
-```haskell
+```haskell  {.example_for_playground}
 main :: IO ()
 main = print first
   where

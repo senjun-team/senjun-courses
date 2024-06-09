@@ -6,7 +6,7 @@
 
 Да, я не люблю круглые скобки. Они делают код визуально избыточным, к тому же нужно следить за симметрией скобок открывающих и закрывающих. Вспомним пример из [главы про кортежи:](/courses/haskell/chapters/haskell_chapter_0110#block-patient-email)
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_001}
 main :: IO ()
 main =
   putStrLn (patientEmail ( "63ab89d"
@@ -20,7 +20,7 @@ main =
 
 Если применение функции представляет собой выражение, не можем ли мы как-нибудь компоновать их друг с другом? Конечно можем, мы уже делали это много раз, [вспомните:](/courses/haskell/chapters/haskell_chapter_0050#block-check-localhost)
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_002}
 main :: IO ()
 main = putStrLn (checkLocalhost "173.194.22.100")
 ```
@@ -43,7 +43,7 @@ IP-адрес                    сообщение             текст
 
 Взгляните:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_003}
 main :: IO ()
 main = putStrLn . checkLocalhost $ "173.194.22.100"
 ```
@@ -94,7 +94,7 @@ checkLocalhost :: A -> B
 
 А оператор применения работает ещё проще. Без него код был бы таким:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_004}
 main :: IO ()
 main =
   (putStrLn . checkLocalhost)  "173.194.22.100"
