@@ -24,7 +24,7 @@ Dummy script, does nothing
 
 Пусть в консоль печатается текущее время:
 
-```python
+```python {.example_for_playground}
 from datetime import datetime
 
 def print_time():
@@ -256,7 +256,7 @@ while n < 100:
 ## Многоточие
 В питоне существует объект-синглтон «многоточие», привязанный к константе с именем `Ellipsis` и литералу `...`:
 
-```python
+```python {.example_for_playground}
 print(Ellipsis)
 print(...)
 ```

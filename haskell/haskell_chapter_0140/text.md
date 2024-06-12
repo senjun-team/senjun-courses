@@ -18,7 +18,7 @@ map :: (a -> b) -> [a] -> [b]
 
 Типовой заглушкой я назвал их потому, что на их место встают конкретные типы, что делает функцию `map` очень гибкой. Например: {#block-data-char}
 
-```haskell
+```haskell  {.example_for_playground}
 import Data.Char
 
 toUpperCase :: String -> String
@@ -145,7 +145,7 @@ map show [1.2, 1,4, 1.6] = ["1.2","1.0","4.0","1.6"]
 
 Разумеется, в качестве аргумента функции `map` мы можем использовать и наши собственные функции:
 
-```haskell
+```haskell  {.example_for_playground}
 ten :: [Double] -> [Double]
 ten = map (\n -> n * 10)
 
@@ -230,7 +230,7 @@ map :: (a -> b) -> [a]      -> [b]
 
 Что выведет этот код? В случае ошибки напишите `error`. {.task_text}
 
-```haskell
+```haskell  {.example_for_playground}
 module Main where
 
 f :: Int -> Int -> Int -> Int
@@ -336,7 +336,7 @@ main = let ten = \x -> x * 10
 
 Вернёмся к функции `map`. Если мы можем передать ей некую функцию для работы с элементами списка, значит мы можем передать ей и композицию двух или более функций. Например:
 
-```haskell
+```haskell  {.example_for_playground}
 import Data.Char
 
 pretty :: [String] -> [String]
@@ -381,7 +381,7 @@ main = print $ filter odd [1, 4, 17, 46, 100]
 
 А здесь мы передали в `filter` свою собственную функцию:
 
-```haskell
+```haskell  {.example_for_playground}
 isLongLine :: String -> Bool
 isLongLine line = length line > 3
 
@@ -394,7 +394,7 @@ main = print $ filter isLongLine ["coq", "idris", "ml", "scala"]
 
 В качестве предиката подойдет и ЛФ. Перепишем предыдущий пример:
 
-```haskell
+```haskell  {.example_for_playground}
 main :: IO ()
 main = print $ filter (\line -> length line > 3) ["coq", "idris", "ml", "scala"]
 ```
@@ -404,7 +404,7 @@ main = print $ filter (\line -> length line > 3) ["coq", "idris", "ml", "scala"]
 
 Допустимо даже использование операторов:
 
-```haskell
+```haskell  {.example_for_playground}
 main :: IO ()
 main = print $ filter (>128) [3, 55, 129, 4, 200]
 ```

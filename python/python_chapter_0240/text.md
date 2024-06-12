@@ -14,7 +14,7 @@ for i in range(10):
 
 Для такого простого действия используется аж три строки. Подобная многословность считается крайне [не идиоматичной.](https://realpython.com/lessons/zen-of-python/) Благодаря list comprehension количество строк редуцируется до одной:
 
-```python
+```python  {.example_for_playground}
 numbers = [i * i for i in range(10)]
 ```
 
@@ -59,7 +59,7 @@ dates = [hex(date) for date in range(1, 31)]
 <list_object> = [<expression> for <member> in <iterable> if <condition>]
 ```
 
-```python
+```python  {.example_for_playground}
 three_divisable = [i for i in range(31) if i % 3 == 0]
 print(three_divisable)
 ```
@@ -75,7 +75,7 @@ print(three_divisable)
 <list_object> = [<expression1> if <condition> else <expression2> for <member> in <iterable>]
 ```
 
-```python
+```python  {.example_for_playground}
 three_divisable = [i if i % 3 == 0 else -1 for i in range(10)]
 print(three_divisable)
 ```
@@ -107,7 +107,7 @@ List comprehensions могут быть вложенными!
 
 Допустим, у нас есть список списков `numbers`, и мы хотим получить из него плоский список `squares` с квадратами четных чисел. Этого можно добиться с помощью цикла и одного list comprehension:
 
-```python
+```python  {.example_for_playground}
 numbers = [[1, 2, 3, 4, 5], [6, 7]]
 
 squares = []
@@ -123,7 +123,7 @@ print(squares)
 
 Альтернативный вариант — организовать вложенный list comprehension:
 
-```python
+```python  {.example_for_playground}
 numbers = [[1, 2, 3, 4, 5], [6, 7]]
 
 squares = [n**2 for l in numbers for n in l if n%2 == 0]
@@ -149,7 +149,7 @@ matrix = [
 ## set comprehension, dict comprehension
 По аналогии с `list comprehension` в питоне есть возможность лаконично создавать множества и словари:
 
-```python
+```python  {.example_for_playground}
 s = {i for i in [1, 2, 3, 1, 2, 4]}
 print(s)
 ```
@@ -157,7 +157,7 @@ print(s)
 {1, 2, 3, 4}
 ```
 
-```python
+```python  {.example_for_playground}
 d = {i: i for i in range(10)}
 print(d)
 ```
@@ -246,7 +246,7 @@ plain = [v for d in apis for v in d.values()]
 
 Рассмотрим пример:
 
-```python
+```python  {.example_for_playground}
 def normalize(word):
     return word.strip().lower()
 
@@ -284,7 +284,7 @@ cubes = [cube for x in vals if (cube := x**3) > 0]
 
 В [прошлой главе](/courses/python/chapters/python_chapter_0230/) мы писали, что в теле генератора должен присутствовать оператор `yield`. Так вот, generator expression — это альтернативный способ создания генераторов. Он точно также реализует концепцию ленивых вычислений и отдает следующий элемент только при обращении к генератору. В нем нет слова `yield`, но `generator_object` все равно считается генератором.
 
-```python
+```python  {.example_for_playground}
 g = (i * i for i in range(1000000000))
 print(sys.getsizeof(g))
 print(sum(g))

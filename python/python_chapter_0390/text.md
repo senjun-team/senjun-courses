@@ -75,7 +75,7 @@ d[k].append("some value")
 
 В качестве `default_factory` может выступать `None` или вызываемый объект. В том числе лямбда или конструктор встроенных типов:
 
-```python
+```python  {.example_for_playground}
 from collections import defaultdict
 
 d1 = defaultdict(lambda: 255)
@@ -266,17 +266,17 @@ search_in_set(large_lst, vals)
 ### Циклы: len() + range() vs enumerate()
 Этот анти-паттерн касается не только списков, но и строк, кортежей. Просто применительно к спискам он встречается особенно часто. И заключается он в организации цикла по коллекции через индексы:
 
-```python
+```python  {.example_for_playground}
 lst = ["a", "b", "c"]
 
-for i in range(0,len(lst)):
+for i in range(0, len(lst)):
     elem = lst[i]
     print(i, elem)
 ```
 
 Связку `len()` + `range()` для получения индекса и обращения к элементам коллекции по этому индексу следует заменить на вызов [встроенной функции](/courses/python/chapters/python_chapter_0250#block-enumerate) `enumerate()`:
 
-```python
+```python  {.example_for_playground}
 lst = ["a", "b", "c"]
 
 for i, elem in enumerate(lst):

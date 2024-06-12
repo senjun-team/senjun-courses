@@ -64,7 +64,7 @@
 
 Рассмотрим пример запуска задач внутри `ThreadPoolExecutor` и ожидания их завершения.
 
-```python
+```python  {.example_for_playground}
 import concurrent.futures
 import time
 

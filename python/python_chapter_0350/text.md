@@ -7,7 +7,7 @@
 
 Посмотрим, как выглядит содержимое `__dict__` объекта класса `D`:
 
-```python
+```python  {.example_for_playground}
 class D:
   def __init__(self):
     self.a = 1
@@ -33,7 +33,7 @@ Instance attributes {'a': 1, 'b': 2}
 
 Убедимся в этом. Добавим слоты в класс `S`:
 
-```python
+```python  {.example_for_playground}
 class S:
   __slots__ = ("a", "b")
 
@@ -213,7 +213,7 @@ print(sum(results_slots) / len(results_slots))
 
 В случае не обработанного исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 class X:
     __slots__ = ()
 

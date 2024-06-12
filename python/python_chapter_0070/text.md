@@ -5,7 +5,7 @@
 ## Вложенные функции
 В питоне функции могут быть вложенными (inner, nested), то есть объявленными внутри другой функции:
 
-```python
+```python {.example_for_playground}
 def outer_f():
     def inner_f():
         print("This is inner function")
@@ -30,7 +30,7 @@ NameError: name 'inner_f' is not defined
 
 В этом примере используются строки вида `f"text {val} text"`: так называемые f-строки, о которых вы узнаете [в главе 10.](/courses/python/chapters/python_chapter_0100#block-formatting) Это литералы форматированных строк: перед строкой идет символ `f`, а в саму строку в фигурные скобки можо вставлять любые значения.
 
-```python
+```python {.example_for_playground}
 def has_permissions(directory):
     def get_permissions_str(user):
         if user == "root":
@@ -61,7 +61,7 @@ Permission to /var/logs granted for root
 
 Знание о вложенных функциях нам пригодится, когда в [главе про декораторы](/courses/python/chapters/python_chapter_0270/) мы будем обсуждать **замыкания** (closures) — вложенные функции, которые ссылаются на переменные, объявленные в теле внешней функции. Рассмотрим это на небольшом примере:
 
-```python
+```python {.example_for_playground}
 def f_outer(initial_val):
     items = [initial_val]
 
@@ -113,7 +113,7 @@ def calc_gcd(a, b):
 
 Кстати, автор питона Гвидо ван Россум в своей известной [презентации «Introduction to Python»](https://people.csail.mit.edu/rudolph/Teaching/Lectures/guido-intro-1.pdf) предложил вот такой лаконичный вариант поиска наибольшего общего делителя:
 
-```python
+```python {.example_for_playground}
 def gcd(a, b):
     "greatest common divisor"
     while a != 0:
@@ -152,7 +152,7 @@ lambda параметры: выражение
 
 Пример объявления и вызова лямбда-функции, которая повторяет строку `s` `n` раз:
 
-```python
+```python {.example_for_playground}
 mult_str = lambda s, n:  s * n
 print(mult_str("*", 5))
 ```
@@ -169,7 +169,7 @@ def mult_str(s, n):
 
 Ключевые слова, такие как `return` и `pass`, в лямбде использовать **нельзя.** Список параметров лямбды теоретически может быть и пустым:
 
-```python
+```python {.example_for_playground}
 x = lambda: 5
 
 print(x())
@@ -180,7 +180,7 @@ print(x())
 
 Вместо присваивания лямбды функциональному объекту ее можно сразу вызвать.
 
-```python
+```python {.example_for_playground}
 (lambda s, n:  print(s * n))("I", 3)
 ```
 
@@ -229,7 +229,7 @@ def f(x): return 2 * x
 
 Что выведет этот код?  {.task_text}
 
-```python
+```python  {.example_for_playground}
 def f(items):
     predicate = lambda x: x > 0
 
@@ -251,7 +251,7 @@ print(x)
 ```
 
 ## Вариативные функции {#block-variadic}
-[Вариативные функции](/courses/python/chapters/python_chapter_0260) (variadic funcions) — это функции с переменным числом аргументов. Они реализованы в питоне и способны принимать произвольное количество позиционных и именованных аргументов:
+[Вариативные функции](/courses/python/chapters/python_chapter_0260) (variadic functions) — это функции с переменным числом аргументов. Они реализованы в питоне и способны принимать произвольное количество позиционных и именованных аргументов:
 
 ```python
 def f(*args, **kwargs):
@@ -262,7 +262,7 @@ f(1, 2, 3, k1="A", k2="B")
 
 `args` и `kwargs` — популярные имена для вариативных позиционных и именованных аргументов. Символы звездочек `*` и `**` перед аргументами означают, что внутри переменной содержится некоторая коллекция, которую можно распаковать. 
 
-`*args` содержит все переданные в функцию позиционные аргументы (в нашем случае это 1, 2, 3). А `**kwargs` (от слова keyworded) хранит все именованные аргументы (`k1`, `k2`). Распаковку и упаковку коллекций мы обсудим в [одной из следующих глав.](/courses/python/chapters/python_chapter_0250/)
+`*args` — это список всех переданных в функцию позиционных аргументов (в нашем случае это 1, 2, 3). А `**kwargs` (от слова keyworded) хранит все именованные аргументы (`k1`, `k2`). Распаковку и упаковку коллекций мы обсудим в [одной из следующих глав.](/courses/python/chapters/python_chapter_0250/)
 
 `**kwargs` является словарем — коллекцией, хранящей ключи и значения. Более подробно словари будут рассмотрены в одной из следующих глав. А пока кратко приведем варианты обхода словаря, содержащего именованные аргументы `kwargs`:
 

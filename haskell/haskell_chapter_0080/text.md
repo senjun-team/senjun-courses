@@ -28,7 +28,7 @@
 
 Определим функцию `isEqualTo`, являющуюся аналогом оператора проверки на равенство для двух целочисленных значений:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_001}
 isEqualTo :: Int -> Int -> Bool
 isEqualTo x y = x == y
 ```

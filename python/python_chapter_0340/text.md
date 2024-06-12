@@ -9,7 +9,7 @@
 
 Дескрипторы — это именно **поля класса,** а не объекта. Рассмотрим это на примере.
 
-```python
+```python  {.example_for_playground}
 class MinMeasurement:
     def __get__(self, obj, objtype=None):
         return min(obj.measurements, default=0)
@@ -54,7 +54,7 @@ __delete__(self, obj)
 
 Рассмотрим еще один пример. Дескриптор для класса, описывающего аптайм сервера.
 
-```python
+```python  {.example_for_playground}
 import time
 from datetime import datetime, timedelta
 
@@ -192,7 +192,7 @@ except AttributeError as e:
 
 В случае не обработанного исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 class X2:
     def __get__(self, obj, obj_type=None):
         return obj.x * 2
@@ -221,7 +221,7 @@ print(d.x2)
 
 В случае не обработанного исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 class Length:
     def __get__(self, obj, obj_type=None):
         return len(obj.lst)

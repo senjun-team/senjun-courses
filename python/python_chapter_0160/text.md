@@ -10,7 +10,7 @@
 
 Так выглядит создание класса-пустышки `Dummy` и инстанцирование от него объекта `obj`:
 
-```python
+```python  {.example_for_playground}
 class Dummy:
     pass
 
@@ -19,7 +19,7 @@ obj = Dummy()
 
 Рассмотрим класс `SimpleExample`, содержащий атрибуты. **Атрибуты** — общее название для полей и методов.
 
-```python
+```python  {.example_for_playground}
 class SimpleExample:
     """
     Demonstrates the basic capabilites of classes.
@@ -124,7 +124,7 @@ class ResponseStats:
 
 Рассмотрим класс `Message` для хранения текста некоторого сообщения в привязке к идентификатору. Заведем в нем атрибут класса `_id`. Его удобно использовать для автоинкремента идентификаторов объектов `Message`:
 
-```python
+```python  {.example_for_playground}
 class Message:
     _id = 0
 
@@ -218,7 +218,7 @@ class Message:
 
 Методы класса вызываются через имя класса либо через инстанс:
 
-```python
+```python  {.example_for_playground}
 class C:
     field = "class field"
 
@@ -314,7 +314,7 @@ TestClass.static_method()
 
 Если завести статический метод без декоратора и вызвать через объект класса, произойдет исключение:
 
-```python
+```python  {.example_for_playground}
 class TestClass:
     def static_method():
         print("Static method")
@@ -333,7 +333,7 @@ TypeError: TestClass.static_method() takes 0 positional arguments but 1 was give
 
 ## Определение класса как исполняемое выражение
 Итак, мы уже знаем, что в теле класса можно заводить переменные. Такие переменные считаются полями класса. Инстанцирование этих переменных происходит в момент объявления класса. Именно объявления класса, а не создания объекта класса:
-```python
+```python  {.example_for_playground}
 class SideEffect:
     def __init__(self):
         print("Side effect")
@@ -357,7 +357,7 @@ After class definition
 
 Фактически это означает, что тело класса может целиком и полностью состоять из кода, ограниченного только полетом фантазии: импорта модулей, вложенных циклов, походов в бд...
 
-```python
+```python  {.example_for_playground}
 def send_sms():
     print("Sending sms...")
 

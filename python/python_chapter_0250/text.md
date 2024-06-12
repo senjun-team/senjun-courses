@@ -17,7 +17,7 @@ c = lst[2]
 
 С помощью распаковки то же самое делается куда проще:
 
-```python
+```python  {.example_for_playground}
 lst = ["a", "b", "c"]
 
 a, b, c = lst
@@ -32,7 +32,7 @@ a b c
 
 Нарушение этого правила приведет к исключению `ValueError`:
 
-```python
+```python  {.example_for_playground}
 lst = ["a", "b", "c", "d"]
 
 a, b, c = lst
@@ -62,7 +62,7 @@ print(c1, c2, c3)
 
 Наивный вариант обмена организуется через дополнительную переменную:
 
-```python
+```python  {.example_for_playground}
 a = 0
 b = 1
 
@@ -78,7 +78,7 @@ print(a, b)
 
 А вот как выглядит обмен через распаковку:
 
-```python
+```python  {.example_for_playground}
 a = 0
 b = 1
 
@@ -96,7 +96,7 @@ print(a, b)
 
 В случае исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 lst = [0, 0]
 i = 0
 
@@ -116,7 +116,7 @@ print(lst)
 
 Убедимся в этом:
 
-```python
+```python  {.example_for_playground}
 a = 0
 b = 1
 
@@ -142,7 +142,7 @@ a, b = (b, a)
 
 При распаковке словаря перебираются его ключи:
 
-```python
+```python  {.example_for_playground}
 d = {"a": 1, "b": 2}
 k1, k2 = d
 
@@ -154,7 +154,7 @@ a b
 
 Чтобы распаковать пары ключ-значение из словаря, воспользуемся методом `items()`. Тогда в результирующие переменные сохранятся кортежи:
 
-```python
+```python  {.example_for_playground}
 d = {"a": 1, "b": 2}
 k1, k2 = d.items()
 
@@ -180,7 +180,7 @@ print(first, second, third)
 
 Переберем список кортежей. Каждый кортеж распакуем в две переменные:
 
-```python
+```python  {.example_for_playground}
 clicks = [
     ("main page", 14),
     ("news page", 3)
@@ -196,7 +196,7 @@ news page 3
 
 Функция `enumerate()` на каждой итерации цикла генерирует кортеж из двух значений — индекс итерации и элемент итерируемого объекта:{#block-enumerate}
 
-```python
+```python  {.example_for_playground}
 databases = ["mongo", "clickhouse", "postgres"]
 
 for i, db in enumerate(databases):
@@ -231,7 +231,7 @@ print(a, b, c)
 
 Распакуем список из 3-х элементов, причем нам нужны только первый и третий:
 
-```python
+```python  {.example_for_playground}
 a, _, b = ["a", "x", "b"]
 print(a, _, b)
 ```
@@ -243,7 +243,7 @@ a x b
 
 Распакуем кортеж, из которого нам нужны второй и третий элементы:
 
-```python
+```python  {.example_for_playground}
 _, second, third, _ = (1, 2, 3, 4)
 print(second, third, _)
 ```
@@ -257,7 +257,7 @@ print(second, third, _)
 
 Распакуем список, чтобы достать из него последний элемент. Все предшествующие элементы **упакуем** в переменную `_`:
 
-```python
+```python  {.example_for_playground}
 *_, last = [1, 2, 3, 4, 5]
 print(_)
 print(last)
@@ -274,7 +274,7 @@ print(type(_))
 
 Распакуем первый и последний символы строки:
 
-```python
+```python  {.example_for_playground}
 first, *_, last = "import this"
 print(first, last)
 ```
@@ -299,7 +299,7 @@ print(_)
 
 Вместо итерабельного объекта справа от `=` может идти простое перечисление объектов:
 
-```python
+```python  {.example_for_playground}
 *vals, = 1, 2, 3
 print(vals)
 ```
@@ -322,7 +322,7 @@ SyntaxError: starred assignment target must be in a list or tuple
 
 В случае исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 containers = ["tuple", "set", "list", "dict"]
 _, (head, *tail), *_ = containers
 ```
@@ -338,7 +338,7 @@ _, (head, *tail), *_ = containers
 
 В случае исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 style = ["primary color", (3, 161, 252, 0.5)]
 title, [r, g, b, a] = style
 ```
@@ -353,7 +353,7 @@ title, [r, g, b, a] = style
 ## Объединение итерабельных объектов
 Допустим, требуется объединить 2 списка. Можем воспользоваться оператором `+`:
 
-```python
+```python  {.example_for_playground}
 head = [1, 2]
 tail = [3, 4, 5]
 
@@ -362,7 +362,7 @@ merged = head + tail
 
 А можем применить синтаксис распаковки:
 
-```python
+```python  {.example_for_playground}
 head = [1, 2]
 tail = [3, 4, 5]
 
@@ -378,7 +378,7 @@ print(merged)
 
 Преимуществом объединения коллекций через распаковку является возможность добавлять к распаковываемым коллекциям отдельные объекты:
 
-```python
+```python  {.example_for_playground}
 head = [1, 2]
 tail = [3, 4, 5]
 

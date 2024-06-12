@@ -6,7 +6,7 @@
 
 Допустим, понадобился нам список целых чисел от одного до десяти. Пишем:
 
-```haskell
+```haskell  {.example_for_playground}
 main :: IO ()
 main = print tenNumbers
   where tenNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -14,7 +14,7 @@ main = print tenNumbers
 
 Неплохо, но избыточно, ведь чисел могло быть и сто, и тысяча. Есть лучший путь:
 
-```haskell
+```haskell  {.example_for_playground}
 main :: IO ()
 main = print tenNumbers
   where tenNumbers = [1..10]
@@ -52,7 +52,7 @@ main = print tenNumbers
 
 Что выведет этот код? В случае ошибки напишите `error`. {.task_text}
 
-```haskell
+```haskell  {.example_for_playground}
 module Main where
 
 main :: IO ()
@@ -188,7 +188,7 @@ main = print f
 
 Что выведет этот код? В случае ошибки или нежелательного поведения программы напишите `error`. {.task_text}
 
-```haskell
+```haskell  {.example_for_playground}
 module Main where
 
 main :: IO ()

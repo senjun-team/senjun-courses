@@ -14,7 +14,7 @@
 
 Начиная разговор про области видимости, зайдем с козырей: вложенные блоки `if`, `for`, `while`, `try/except`, `with` **не создают** область видимости. 
 
-```python
+```python  {.example_for_playground}
 if True:
     x = "variable inside 'if'" 
 
@@ -28,7 +28,7 @@ variable inside 'if'
 
 Инвертируем условие, чтобы оно никогда не выполнилось:
 
-```python
+```python  {.example_for_playground}
 if False:
     x = "variable inside 'if'" 
 
@@ -46,7 +46,7 @@ NameError: name 'x' is not defined
 
 Блоки `for` и `while` также не создают области видимости. Но если уж возникла потребность снаружи использовать переменную, объявленную внутри цикла, нужна гарантия, что цикл выполнится хотя бы 1 раз:
 
-```python
+```python  {.example_for_playground}
 vals = []
 for val in vals:
     print(f"val in loop: {val}")
@@ -63,7 +63,7 @@ NameError: name 'val' is not defined. Did you mean: 'vals'?
 
 Рассмотрим пример с циклом `for`:
 
-```python
+```python  {.example_for_playground}
 for i in range(3):
     x = i * 2
 
@@ -92,7 +92,7 @@ print(a)
 
 Что насчет блока `try/except`?
 
-```python
+```python  {.example_for_playground}
 try:
     a = "Inside 'try'"
     raise ValueError("Some unexpected val")
@@ -147,7 +147,7 @@ print(res)
 
 В случае исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 def f(a, b):
     res = a + b
 
@@ -185,7 +185,7 @@ None
 
 **Enclosing:** нелокальная область видимости. Это объемлющая область, созданная с помощью `def`, внутри которой содержится вложенная область видимости. Если внутри функции объявить лямбду, то для лямбды тело функции будет нелокальной областью и лямбда будет иметь к нему доступ:
 
-```python
+```python  {.example_for_playground}
 def f():
     needle = "c"
     search = lambda haystack: haystack.find(needle)
@@ -228,7 +228,7 @@ f()
 
 Как можно догадаться, работаем мы с тремя областями видимости. Четвертую — только ломаем. Если локальная переменная перекроет переменную с таким же именем из встроенной области видимости, вас ждет небольшая катастрофа:
 
-```python
+```python  {.example_for_playground}
 str = "питон сломан"
 
 print(str)
@@ -251,7 +251,7 @@ TypeError: 'str' object is not callable
 
 Пример, демонстрирующий разрешение имен по правилу LEGB:
 
-```python
+```python  {.example_for_playground}
 x = 1
 
 def f():
@@ -318,7 +318,7 @@ f()
 
 Мы **не можем переопределить** переменную из внешней области видимости с помощью оператора присваивания. Вместо этого она затеняется, перекрывается локальной переменной. Но мы можем модифицировать переменную. Заменим в нашем примере целочисленную переменную `x` на список `lst`:
 
-```python
+```python  {.example_for_playground}
 lst = [1]
 
 def f():
@@ -348,7 +348,7 @@ inner(): [1, 2, 3]
 
 Убедимся, что оператор присваивания не изменит переменную из глобальной области видимости:
 
-```python
+```python  {.example_for_playground}
 path = "/tmp/"
 
 def set_path():
@@ -373,7 +373,7 @@ global var1, var2, var3
 
 Поправим пример выше. Добавим перед присваиванием `path` указание, что это глобальная переменная:
 
-```python
+```python  {.example_for_playground}
 path = "/tmp/"
 
 def set_path():
@@ -421,7 +421,7 @@ print(stats)
 
 Если вызвать `locals()` и `globals()` в глобальном пространстве имен, то они будут ссылаться на один и тот же словарь:
 
-```python
+```python  {.example_for_playground}
 a = 1
 b = 2
 

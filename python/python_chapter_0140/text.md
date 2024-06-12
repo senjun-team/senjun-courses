@@ -11,11 +11,10 @@
 
 Как же узнать, какой объект хешируемый, а какой — нет? Для проверки достаточно применить к нему встроенную функцию `hash()`:
 
-```python
+```python  {.example_for_playground}
 print(hash("some string"))
 print(hash(["some", "list"]))
 ```
-
 ```
 -8951052346672417576
 TypeError: unhashable type: 'list'
@@ -50,11 +49,10 @@ print(hash(tpl))
 ## Создание множества
 Для инициализации множества используется литерал фигурных скобок `{}` либо конструктор `set()`. Так выглядит инициализация через литерал:
 
-```python
+```python   {.example_for_playground}
 web_frameworks = {"Django", "Flask", "FastAPI", "Flask"}
 print(web_frameworks)
 ```
-
 ```
 {'FastAPI', 'Flask', 'Django'}
 ```
@@ -63,32 +61,29 @@ print(web_frameworks)
 
 Конструктор `set()` принимает на вход итерируемый объект. С его помощью легко получить множество из списка:
 
-```python
+```python  {.example_for_playground}
 web_frameworks = set(["Django", "Flask", "FastAPI", "Flask"])
 print(web_frameworks)
 ```
-
 ```
 {'FastAPI', 'Flask', 'Django'}
 ```
 
 ...Из кортежа:
 
-```python
+```python  {.example_for_playground}
 ml_libraries = set(("Pandas", "Pandas", "NumPy", "Keras", "TensorFlow"))
 print(ml_libraries)
 ```
-
 ```
 {'Pandas', 'Keras', 'NumPy', 'TensorFlow'}
 ```
 ...И из строки:
 
-```python
+```python  {.example_for_playground}
 letters = set("AABBC")
 print(letters)
 ```
-
 ```
 {'A', 'C', 'B'}
 ```
@@ -103,7 +98,7 @@ vals = set()
 
 Дело в том, что литерал `{}` также применяется и для создания [словарей](/courses/python/chapters/python_chapter_0150/) (контейнеров пар ключ-значение). Мы получаем некоторую двусмысленность при использовании **пустых** фигурных скобок: какой тип закрепится за объектом — множество или словарь? В соответствии с правилами языка будет создан словарь:
 
-```python
+```python  {.example_for_playground}
 x = {}
 print(type(x))
 ```
@@ -114,7 +109,7 @@ print(type(x))
 
 Немного забегая вперед, посмотрим, как же выглядит инициализация не пустого словаря:
 
-```python
+```python  {.example_for_playground}
 kv = {"key1": "val1", "key2": "val2"}
 print(kv)
 ```
@@ -230,7 +225,7 @@ def analyze(a, b):
 
 Методы, например `union()`, `difference()` и `issuperset()`, принимают в качестве аргумента любой итерабельный объект. А операторы ожидают только объекты типа `set`. Многие начинающие питонисты об этом забывают и надеются на автоматическое преобразование:
 
-```python
+```python  {.example_for_playground}
 common_letters = set("abc") & "bcd"
 ```
 
@@ -254,7 +249,7 @@ common_letters = set("abc").intersection("bcd")
 ## Неизменяемые множества {#block-frozensets}
 `frozenset` — тип, с помощью которого создаются неизменяемые после инициализации множества. Он поддерживает тот же набор методов и операторов, что и `set`, за исключением направленных на модификацию. Более того, операторы допустимо использовать для сравнения содержимого множеств разных типов: `set` и `frozenset`.
 
-```python
+```python  {.example_for_playground}
 a = frozenset("abc")
 b = set("bcd")
 intersection = a & b

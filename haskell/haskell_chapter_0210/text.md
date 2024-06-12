@@ -105,7 +105,7 @@ data Patient = Patient { firstName
 
 Вот как мы создаём значение типа `Patient`:
 
-```haskell
+```haskell    {.example_for_playground .example_for_playground_001}
 main :: IO ()
 main = print $ diseaseId patient
   where
@@ -142,7 +142,7 @@ main = print $ diseaseId  patient
 
 Но что же за интригу я приготовил под конец? Выше я упомянул, что метки используются не только для задания значений полей и для их извлечения, но и для изменения. Вот что я имел в виду:
 
-```haskell
+```haskell   {.example_for_playground .example_for_playground_002}
 main :: IO ()
 main = print $ email patientWithChangedEmail
   where
@@ -201,7 +201,7 @@ patientWithChangedEmail = patient {
 
 Будьте внимательны при инициализации значения с полями: вы обязаны предоставить значения для всех полей. Если вы напишете так:
 
-```haskell
+```haskell   {.example_for_playground .example_for_playground_003}
 main :: IO ()
 main = print $ email patientWithChangedEmail
   where

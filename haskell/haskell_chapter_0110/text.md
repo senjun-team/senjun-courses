@@ -90,7 +90,7 @@ main = print (makeAlias "173.194.71.106" "www.google.com")
 
 Извлечение элементов из кортежа также производится через паттерн матчинг:
 
-```haskell
+```haskell  {.example_for_playground}
 makeAlias :: String -> String -> (String, String)
 makeAlias host alias = (host, alias)
 
@@ -103,7 +103,7 @@ main =
 
 Функция `makeAlias` даёт нам пару из хоста и имени. Но что это за странная запись возле уже знакомого нам слова `let`? Это промежуточное выражение, но выражение хитрое, образованное через паттерн матчинг. Чтобы было понятнее, сначала перепишем функцию без него:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_001}
 main :: IO ()
 main =
   let pair  = makeAlias "173.194.71.106"
@@ -157,7 +157,7 @@ host alias = (host, alias)
 
 Что выведет этот код? В случае ошибки напишите `error`. {.task_text}
 
-```haskell
+```haskell  {.example_for_playground}
 module Main where
 
 chessMove :: String
@@ -214,7 +214,7 @@ main = print (formatLocation loc)
 
 Взгляните. Функция `patientEmail` даёт нам почту пациента. {#block-patient-email}
 
-```haskell
+```haskell  {.example_for_playground}
 -- Поясняющие псевдонимы
 type UUID     = String
 type FullName = String
@@ -321,7 +321,7 @@ In the pattern: (_, _, email, _)
 И вот как выглядит импорт модуля `Data.Tuple.Select` из пакета `tuple`:
 
 
-```haskell
+```haskell {.example_for_playground}
 import Data.Tuple.Select
 
 main :: IO ()
@@ -332,7 +332,7 @@ main = print (sel4 (123, 7, "hydra", "DC:4", 44, "12.04"))
 
 Кроме того, мы и обновлять элементы кортежа можем:
 
-```haskell
+```haskell {.example_for_playground}
 import Data.Tuple.Update
 
 main :: IO ()

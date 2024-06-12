@@ -6,7 +6,7 @@
 
 Мы начинаем писать настоящий код. А для этого нам понадобится окно во внешний мир. Еще раз взглянем на модуль `app/Main.hs` с функцией `main`:
 
-```haskell
+```haskell {.example_for_playground}
 main :: IO ()
 main = putStrLn "Hi, real world!"
 ```
@@ -19,7 +19,7 @@ main = putStrLn "Hi, real world!"
 
 И ещё нам следует познакомиться с Haskell-комментариями, они нам понадобятся:
 
-```haskell
+```haskell {.example_for_playground}
 {-
     Я - сложный многострочный
      комментарий, содержащий
@@ -45,7 +45,7 @@ if CONDITION then EXPR1 else EXPR2
 
 где `CONDITION` — логическое выражение, дающее ложь или истину, `EXPR1` — выражение, используемое в случае `True`, `EXPR2` — выражение, используемое в случае `False`. Пример: {#block-check-localhost}
 
-```haskell
+```haskell {.example_for_playground .example_for_playground_001}
 checkLocalhost :: String -> String
 checkLocalhost ip =
   -- True или False?
@@ -272,7 +272,7 @@ main = putStrLn ...
 
 Что выведет этот код? В случае ошибки напишите `error`. Встроенная функция `mod` возвращает остаток от деления первого аргумента на второй. {.task_text}
 
-```haskell
+```haskell   {.example_for_playground}
 module Main where
 
 f :: Int -> Int

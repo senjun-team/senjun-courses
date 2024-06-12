@@ -6,7 +6,7 @@
 
 Часто мы хотим выбирать не только из двух возможных вариантов. Вот как это можно сделать:
 
-```haskell
+```haskell {.example_for_playground}
 analyzeGold :: Int -> String
 analyzeGold standard =
   if standard == 999
@@ -23,7 +23,7 @@ main = putStrLn (analyzeGold 999)
 
 Уверен, вы уже стираете плевок с экрана. Вложенная `if-then-else` конструкция не может понравиться никому, ведь она крайне неудобна в обращении. А уж если бы анализируемых проб золота было штук пять или семь, эта лестница стала бы поистине ужасной. К счастью, в Haskell можно написать по-другому:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_001}
 analyzeGold :: Int -> String
 analyzeGold standard =
   if | standard == 999 -> "Wow! 999 standard!"
@@ -102,7 +102,7 @@ main = do
 
 Не пренебрегайте `otherwise`! Возвращаясь к функции `analyzeGold`: если вы не укажете `otherwise` и при этом примените функцию к значению, отличному от проверяемых:
 
-```haskell
+```haskell {.example_for_playground}
 analyzeGold :: Int -> String
 analyzeGold standard =
   if | standard == 999 -> "Wow! 999 standard!"
@@ -125,7 +125,7 @@ Non-exhaustive guards in multi-way if
 
 А сейчас стоп. На самом деле такой код не скомпилируется, так как не хватает одной маленькой, но важной детали. Вот как должен выглядеть модуль `Main`:
 
-```haskell
+```haskell {.example_for_playground}
 {-# LANGUAGE MultiWayIf #-}  -- Что это??
 
 module Main where
@@ -151,7 +151,7 @@ main = putStrLn (analyzeGold 999)
 
 Множественный `if` весьма удобен, но есть способ более красивый. Взгляните:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_002}
 analyzeGold :: Int -> String
 analyzeGold standard
   | standard == 999 = "Wow! 999 standard!"
@@ -227,7 +227,7 @@ main = do
 
 Что выведет этот код? В случае ошибки напишите `error`. {.task_text}
 
-```haskell
+```haskell  {.example_for_playground}
 module Main where
 
 f :: Int -> Int -> Char
@@ -250,7 +250,7 @@ B
 
 Убрав слово `if`, мы и с нашими виртуальными «ИЛИ» можем расстаться. В этом случае останется лишь это:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_003}
 analyzeGold :: Int -> String  -- Одно объявление.
 -- И множество определений...
 analyzeGold 999 = "Wow! 999 standard!"
@@ -277,7 +277,7 @@ analyzeGold _ = "I don't know such a standard..."
 
 Важно отметить, что сравнение аргумента с образцами происходит последовательно, сверху вниз. Поэтому если мы напишем так:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_004}
 analyzeGold :: Int -> String
 analyzeGold _   = "I don't know such a standard..."
 analyzeGold 999 = "Wow! 999 standard!"
@@ -330,7 +330,7 @@ main = do
 
 Существует ещё один вид паттерн матчинга, с помощью конструкции `case-of`:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_005}
 analyzeGold standard =
   case standard of
     999 -> "Wow! 999 standard!"

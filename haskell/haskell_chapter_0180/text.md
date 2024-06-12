@@ -4,9 +4,9 @@
 
 ## Причины space leak
 
-Вспомним пример с делением:
+[Вспомним](/courses/haskell/chapters/haskell_chapter_0170#block-strange) пример с делением:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_001}
 main :: IO ()
 main = print . strange $ 2 `div` 0
 ```
@@ -202,7 +202,7 @@ fakeSum x _ = x + 100
 
 В стандартной библиотеке Haskell определена особая функция `undefined`. Это — чёрная дыра: при попытке прикоснуться к ней программа гарантированно падает с ошибкой. Проверяем:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_002}
 main :: IO ()
 main = print $ fakeSum 1 undefined
 ```
@@ -215,7 +215,7 @@ main = print $ fakeSum 1 undefined
 
 Чёрная дыра была проигнорирована, ведь функция `fakeSum` ленива по второму аргументу. Если же мы напишем так:
 
-```haskell
+```haskell {.example_for_playground .example_for_playground_003}
 main :: IO ()
 main = print $ fakeSum undefined 45
 ```
@@ -224,7 +224,7 @@ main = print $ fakeSum undefined 45
 
 Что выведет этот код? В случае ошибки (в том числе из-за применения функции `undefied`) напишите `error`. {.task_text}
 
-```haskell
+```haskell {.example_for_playground}
 module Main where
 
 main :: IO ()

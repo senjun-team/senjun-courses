@@ -10,7 +10,7 @@
 
 Вспомним [пример из главы про ФВП:](/courses/haskell/chapters/haskell_chapter_0140#block-data-char)
 
-```haskell
+```haskell  {.example_for_playground}
 import Data.Char
 
 toUpperCase :: String -> String

@@ -41,7 +41,7 @@ range(3, 0, -1)
 
 Вторым способом создания диапазона является взятие среза. При применении **среза** к `range` возвращается новый объект `range`.
 
-```python
+```python  {.example_for_playground}
 r = range(2, 5)
 s = r[1:3]
 
@@ -54,11 +54,10 @@ range(3, 5)
 ## Диапазоны и циклы
 Наверное, наиболее часто диапазон встречается в контексте итерирования внутри цикла `for`:
 
-```python
+```python  {.example_for_playground}
 for i in range(3):
     print(i)
 ```
-
 ```
 0
 1
@@ -97,7 +96,7 @@ print(list(range(10, 15)))
 
 Что выведет этот код?  {.task_text}
 
-```python
+```python  {.example_for_playground}
 r_eq = range(1, 4, 2) == range(1, 5, 2)
 print(r_eq)
 ```

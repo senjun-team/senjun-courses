@@ -9,7 +9,7 @@
 
 Два классических примера использования итераторов и итерабельных объектов — цикл `for` и выражение `in`:
 
-```python
+```python  {.example_for_playground}
 numbers = [1, 2, 3]
 
 for n in numbers:
@@ -17,6 +17,12 @@ for n in numbers:
 
 if 2 in numbers:
     print("found item")
+```
+```
+1
+2
+3
+found item
 ```
 
 Списки являются итерабельными объектами. Чтобы пройтись по ним, под капотом цикла `for` создается итератор. Он и перебирает элементы, пока они не кончатся:
@@ -79,7 +85,7 @@ class SeqIterator:
 
 Возьмем нашу реализацию итератора `SeqIterator` из примера выше и создадим с ее помощью итерабельный класс `SeqIterable`.
 
-```python
+```python  {.example_for_playground}
 class SeqIterable:
     def __init__(self, sequence):
         self._sequence = sequence
@@ -101,7 +107,7 @@ for item in SeqIterable([1, 2, 3]):
 
 В случае исключения напишите `error`. {.task_text}
 
-```python
+```python  {.example_for_playground}
 vals = iter([1, 2, 3])
 a = 2 in vals
 b = 2 in vals
@@ -116,7 +122,7 @@ print(a is b)
 False
 ```
 
-Реализуйте класс-итератор `KVIterator`: обертку для итерирования по ключам и значениям словаря без явного вызова метода `items()`. {.task_text}
+Реализуйте класс-итератор `KVIterator`: обертку для итерирования по ключам и значениям словаря. {.task_text}
 
 ```python {.task_source #python_chapter_0230_task_0020}
 class KVIterator:
@@ -152,7 +158,7 @@ class KVIterator:
 
 Рассмотрим пример генератора:
 
-```python
+```python  {.example_for_playground}
 def sequence_generator(sequence):
     for item in sequence:
         yield item
@@ -160,12 +166,17 @@ def sequence_generator(sequence):
 for number in sequence_generator([1, 2, 3]):
     print(number)
 ```
+```
+1
+2
+3
+```
 
 При вызове функции `sequence_generator()` наружу возвращается генератор. Выполнение функции при этом еще не началось! Чтобы его инициировать, нужно вызвать метод `__next__()` генератора. Внутри цикла `for` этот вызов происходит неявно.
 
 C помощью конструкции `yield from` удобно создавать генераторы-посредники. Рассмотрим редуцированный пример:
 
-```python
+```python  {.example_for_playground}
 def f(items):
     for item in items:
         yield item
@@ -179,7 +190,7 @@ print(list(g))
 
 В генератор `f()` передан итерабельный объект `items`. Генератор по одному возвращает из него элементы. `yield from` позволяет это выразить более компактно:
 
-```python
+```python  {.example_for_playground}
 def f(items):
     yield from items
 ```
@@ -204,7 +215,7 @@ def even_sequence():
 
 Генератор — это подвид итератора. Поэтому при его истощении также генерируется исключение `StopIteration`:
 
-```python
+```python  {.example_for_playground}
 def strange_generator():
     print("before return")
     return
@@ -252,7 +263,7 @@ awesome
 
 Функции-конструкторы встроенных коллекций принимают на вход итераторы. В том числе в них можно передать и генератор:
 
-```python
+```python  {.example_for_playground}
 print(list(range(5)))
 print(dict(enumerate(range(8))))
 ```
@@ -266,7 +277,7 @@ print(dict(enumerate(range(8))))
 ## Генератор с получаемым значением
 Помимо получения значений из генератора существует возможность отправить в него значение. Генератор, которому можно предоставить значение, можно считать урезанной **корутиной**. «Урезанной», потому что нельзя использовать в цикле событий asyncio. Подробнее о корутинах в одной из следующих глав.
 
-```python
+```python  {.example_for_playground}
 def input_gen():
     while True:
         r = yield

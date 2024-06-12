@@ -60,7 +60,7 @@
 
 Мы можем ввести промежуточное значение для лямбда-абстракции:
 
-```haskell
+```haskell {.example_for_playground}
 main :: IO ()
 main = print (mul 10 4)
   where mul = \x y -> x * y
@@ -170,7 +170,7 @@ square x = x * x
 
 И раз функция характеризуется типом так же, как и прочие данные, мы делаем ещё одно важное открытие: функциями можно оперировать как данными. Например, можно создать список функций:
 
-```haskell
+```haskell {.example_for_playground}
 main :: IO ()
 main = putStrLn ((head functions) "Hi")
   where
@@ -207,10 +207,10 @@ Hi val1
 
 Итак, между ЛФ и простыми функциями фактически нет различий, а функции есть частный случай данных. Следовательно, мы можем создавать функции локально для других функций:
 
-```haskell
+```haskell {.example_for_playground}
 -- Здесь определены функции
 -- isInfixOf и isSuffixOf.
-import Data.List
+import Data.List (isInfixOf, isSuffixOf)
 
 validComEmail :: String -> Bool
 validComEmail email =

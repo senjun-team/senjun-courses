@@ -8,7 +8,7 @@
 
 Для перехода на метки используются операторы `continue` и `break`. Например:
 
-```rust
+```rust {.example_for_playground .example_for_playground_001}
 fn main() {
     let mut i = 1;
     'outer: loop {
@@ -54,7 +54,7 @@ continue [label name];
 
 Этот код напечатает все двузначные числа, в записи которых обе цифры четные (22, 24,.. 86, 88):
 
-```rust
+```rust {.example_for_playground .example_for_playground_002}
 'outer: for a in 1..10 {
     'inner: for b in 1..10 {
         // продолжает цикл по a
@@ -85,7 +85,7 @@ break [label name] [expression value];
 
 По задумке функция `calc_sum()` вычисляет и печатает сумму элементов заданной матрицы. Если какой-то из элементов меньше нуля, то расчет прекращается и выводится сообщение об ошибке:
 
-```rust
+```rust {.example_for_playground .example_for_playground_003}
 fn calc_sum(matrix: &Vec<Vec<i32>>) {
     println!("start calculation");
     let mut sum: i32 = 0;
@@ -130,7 +130,7 @@ warning: unused label
 
 Для исправления функции `calc_sum()` необходимо использовать метку `'exit` в блоке, с которым она связана. Например, это можно сделать так:
 
-```rust
+```rust {.example_for_playground .example_for_playground_004}
 fn calc_sum(matrix: &Vec<Vec<i32>>) {
     println!("start calculation");
     let mut sum: i32 = 0;
@@ -192,7 +192,7 @@ fn check(matrix: &Vec<Vec<i32>>, min: i32, max: i32) -> bool {
 
 Cвязанное с меткой выражение не обязано содержать цикл. Это может быть любое составное выражение. Например, такой код является корректным:
 
-```rust
+```rust {.example_for_playground .example_for_playground_005}
 let value: u32 = 0;
 let value: u32 = 'init: {
     println!("1: {}", value);

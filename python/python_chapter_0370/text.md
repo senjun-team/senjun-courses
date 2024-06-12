@@ -10,7 +10,7 @@
 ## Что такое метакласс
 Как мы [выяснили](/courses/python/chapters/python_chapter_0180/) в главе про модель данных, все в питоне — это объект. Класс — это объект с типом `type`.
 
-```python
+```python  {.example_for_playground}
 class Dummy:
     ...
 
@@ -37,7 +37,7 @@ print(type(type))
 
 Класс можно присваивать переменной:
 
-```python
+```python  {.example_for_playground}
 class C:
     ...
 
@@ -56,7 +56,7 @@ print(id(C))
 
 Что выведет этот код?  {.task_text}
 
-```python
+```python  {.example_for_playground}
 class C:
     ...
 
@@ -74,7 +74,7 @@ True
 
 Класс можно передавать в функцию и возвращать из функции:
 
-```python
+```python  {.example_for_playground}
 def factory(title):
     if title == "pancake":
         class Pancake:
@@ -112,7 +112,7 @@ obj_type = type(obj)
 
 В таком варианте использования `type()` фактически возвращает значение dunder-поля `__class__`. Например:
 
-```python
+```python  {.example_for_playground}
 val = 104
 print(type(val))
 print(val.__class__)
@@ -165,7 +165,7 @@ print(len(Dummy.__bases__))
 
 Атрибутами класса могут быть, разумеется, и поля, и методы. И вот как свободная функция превращается в метод:
 
-```python
+```python  {.example_for_playground}
 def show_summary(self):
     print(f"object type: {type(self)}")
     print(f"class parents: {type(self).__bases__}")
@@ -240,7 +240,7 @@ print(f"Result: {res}\n")
 ## Кастомные метаклассы
 Рассмотрим основные шаги, исполняемые при инстанцировании объекта класса:
 
-```python
+```python  {.example_for_playground}
 class Dummy:
     ...
 
@@ -253,7 +253,7 @@ d = Dummy()
 
 Если поведение при создании объекта класса вдруг захотелось переопределить, этого можно добиться, присвоив классу новый метод:
 
-```python
+```python  {.example_for_playground}
 class Dummy:
     ...
 
@@ -284,7 +284,7 @@ TypeError: can't set attributes of built-in/extension type 'type'
 
 И вот как это выглядит на примере:
 
-```python
+```python  {.example_for_playground}
 class Meta(type):
     def __new__(cls, name, bases, attrs):
         obj = super().__new__(cls, name, bases, attrs)

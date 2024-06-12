@@ -58,7 +58,7 @@ data Transport = TCP | UDP | SCTP
 
 мы создаём значение типа `Transport` с конкретным содержимым в виде `SCTP`. Конструктор — это и есть содержимое. Данный вид конструктора называется **нульарным** (англ. nullary). Тип `Transport` имеет три нульарных конструктора. И даже столь простой тип уже может быть полезен нам:
 
-```haskell
+```haskell  {.example_for_playground .example_for_playground_001}
 checkProtocol :: Transport -> String
 checkProtocol transport = case transport of
   TCP  -> "That's TCP protocol."
@@ -97,7 +97,7 @@ data Day = Sunday
 
 Что будет, если попытаться вывести значение нашего типа `Day` в консоль? Или сравнить одно значение этого типа с другим?
 
-```haskell
+```haskell  {.example_for_playground}
 module Main where
 
 data Day = Sunday
@@ -124,7 +124,7 @@ No instance for ‘Ord Day’ arising from a use of ‘>’
 
 Однако очень часто мы хотим, чтобы наши типы имели некое поведение по умолчанию, например для проверки на равенство, возможности сортировки, вывода в консоль. Ключевое слово `deriving` как раз используется, чтобы у пользовательского типа появилась такая возможность:
 
-```haskell
+```haskell  {.example_for_playground}
 module Main where
 
 data Day = Sunday
