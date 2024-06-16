@@ -69,7 +69,10 @@ print(s)
 ```
 В конструктор `set()` требуется передать результат работы `map()`. {.task_hint}
 ```python {.task_answer}
+lst = [45, 9, -1, 0, 9, 1024, -1]
+
 s = set(map(lambda n: "s" + str(n), lst))
+print(s)
 ```
 
 Некоторые разработчики предпочитают вместо list comprehension использовать связку `map()` и `list()`: `map()` возвращает генератор, `list()` принимает его на вход и формирует результирующий список.
@@ -140,6 +143,7 @@ products = {"corn": 5.2, "noodle": 6.5, "mayonnaise": 1.0}
 def is_expensive(product):
     return product[1] > 4
 
+products = {"corn": 5.2, "noodle": 6.5, "mayonnaise": 1.0}
 expensive = dict(filter(is_expensive, products.items()))
 ```
 
