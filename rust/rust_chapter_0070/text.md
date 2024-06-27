@@ -228,6 +228,64 @@ v3: 2882400001, 10101011110011011110111100000001, 25363367401, abcdef01
 
 Для арифметические и битовых операций существуют версии с одновременным присваиванием результата операции левому операнду, например: `i += 1`. Битовые операции будут рассмотрены позже в этой главе.
 
+Rust — строготипизированный язык, поэтому выражения, участвующие в операциях, должны быть одного типа. В коде функции `clamp()` нарушается это требование:
+
+```rust {.example_for_playground .example_for_playground_006}
+fn clamp(val: i32, min: i16, max: i16) -> i32 {
+    // ошибка: сравнение i32 c i16
+    if val < min {
+        // ошибка: возврат i16 вместо i32
+        min
+    // ошибка: сравнение i32 c i16
+    } else if val > max {
+        // ошибка: возврат i16 вместо i32
+        max
+    } else {
+        val
+    }
+}
+```
+
+Компиляция `clamp()` завершится с четырмя ошибками на несоответствие типов, для краткости показана только первая ошибка:
+
+```
+error[E0308]: mismatched types
+ --> src/main.rs:3:14
+  |
+3 |     if val < min {
+  |        ---   ^^^ expected `i32`, found `i16`
+  |        |
+  |        expected because this is `i32`
+  |
+help: you can convert an `i16` to an `i32`
+  |
+3 |     if val < min.into() {
+  |                 +++++++
+```
+
+
+Исправить ошибки можно с помощью оператора приведения типа `as` или метода `into()`, как подсказывает компилятор:
+
+```rust {.example_for_playground .example_for_playground_007}
+fn clamp(val: i32, min: i16, max: i16) -> i32 {
+    let min = min as i32;
+    let max: i32 = max.into();
+
+    if val < min {
+        min
+    } else if val > max {
+        max
+    } else {
+        val
+    }
+}
+```
+
+По возможности следует использовать расширяющее приведение, то есть от меньшего типа к большему, в данном случае от `i16` к `i32`. Сужающее приведение может оказаться небезопасным, а поведение программы неожиданным. Так если в условии переменную `val` привести к типу `i16`, то вызов функции `clamp(100000, -9999, 9999)` вернет `-9999` вместо ожидаемого `9999`.
+
+
+### Переполнение
+
 В отличии от языков C и C++ в Rust переполнение целых чисел не приводит в неопределенному поведению (_undefined behavior_). Поведение определено и зависит от типа сборки:
 - в отладочной сборке переполнение, возникшее при вычислении арифметических операций, вызовет панику (_panic_);
 - в релизе проверки на целочисленное переполнение отсутствуют, вместо этого при переполнении происходит возврат к началу диапазона. Так, первое выходящее за диапазон значение превращается в `0` для беззнакового целого, следующее за ним — это уже `1`, потом — `2`, и так далее.
@@ -237,7 +295,7 @@ v3: 2882400001, 10101011110011011110111100000001, 25363367401, abcdef01
 
 Для демонстрации разного поведения при возникновении арифметического переполнения эта программа будет запущена в релизном и отладочном режимах сборки:
 
-```rust {.example_for_playground .example_for_playground_006}
+```rust {.example_for_playground .example_for_playground_008}
 #![allow(arithmetic_overflow)]
 
 fn main() {
@@ -294,7 +352,7 @@ note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose bac
 
 Названия приведены со звездочкой, так как соответствующие функции есть для каждой операции: `checked_add()` — сложения, `checked_sub()` — вычитание, `checked_mul()` — умножение, `checked_div()` — деление и т.д. С [полным списком функций](https://doc.rust-lang.org/std/primitive.i32.html#implementations) можно ознакомиться в описании типа `i32` (или любого другого целого типа). Разница в поведении функций на примере сложения:
 
-```rust {.example_for_playground .example_for_playground_007}
+```rust {.example_for_playground .example_for_playground_009}
 fn main() {
     let max = u8::MAX;
     println!("{}.checked_add(1) = {:?}", max, max.checked_add(1));
@@ -316,7 +374,7 @@ fn main() {
 
 Например, если при переполнении требуется устанавливать определенное значение (в данном случае `u16::MIN`), то можно реализовать это следующим образом:
 
-```rust {.example_for_playground .example_for_playground_008}
+```rust {.example_for_playground .example_for_playground_010}
 fn main() {
     let (result, has_overflow) = u16::MAX.overflowing_mul(50000);
     let fixed = if has_overflow { u16::MIN } else { result };
@@ -447,7 +505,7 @@ fn main() -> Result<(), exec::RuntimeError> {
 
 Порядок байт _big-endian_ является стандартным для протоколов [TCP/IP](https://ru.wikipedia.org/wiki/TCP/IP) и применяется во множестве форматов файлов — например, [EBML](https://ru.wikipedia.org/wiki/EBML), [JPEG](https://ru.wikipedia.org/wiki/.JPEG) и [PNG](https://ru.wikipedia.org/wiki/PNG).
 
-Обычно разработчику не нужно заботится о порядке следования байт. За исключением тех случаев, когда требуется читать «сырые» данные из сети или реализовать библиотеку, поддерживающую бинарный формат данных.
+Обычно разработчику не нужно заботиться о порядке следования байт. За исключением тех случаев, когда требуется читать «сырые» данные из сети или реализовать библиотеку, поддерживающую бинарный формат данных.
 
 
 Реализуйте функцию `switch_endian()`, которая преобразует один порядок байт в другой. {.task_text}
@@ -474,7 +532,7 @@ fn switch_endian(val: u32) -> u32 {
 
 Пример использования:
 
-```rust {.example_for_playground .example_for_playground_009}
+```rust {.example_for_playground .example_for_playground_011}
 fn main() {
     let val1 = 0xDD00CC00_BB00AA00_u64;
     println!("val1 => be: {:016X}", val1.to_be());
@@ -532,7 +590,7 @@ val2 => le: 0111111010000001
 
 Вычисление дополнительного кода можно реализовать так:
 
-```rust {.example_for_playground .example_for_playground_010}
+```rust {.example_for_playground .example_for_playground_012}
 fn main() {
     let val: u8 = 77;
     println!("{0:3} => {0:08b}", val);
@@ -576,15 +634,10 @@ fn to_direct_code(acode: i32) -> (i32, bool) {
 }
 
 fn from_direct_code(dcode: i32) -> i32 {
-    if dcode > 0 {
+    if dcode >= 0 {
         dcode
     } else {
-        let abs_dcode = dcode & i32::MAX;
-        if abs_dcode == 0 {
-            0
-        } else {
-            !abs_dcode + 1
-        }
+        !(dcode & i32::MAX) + 1
     }
 }
 ```
