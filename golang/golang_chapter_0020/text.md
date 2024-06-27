@@ -241,28 +241,28 @@ default:
 }
 ```
 
-Перед проверкой можно также выполнить присвоение, как в примере с официального сайта Go, определяющим операционную систему: 
+Перед проверкой можно также выполнить присвоение:
 
 ```golang 
-package main
-
-import (
-	"fmt"
-	"runtime"
-)
+func login() string {
+	fmt.Println("Здравствуйте! Задайте ваш логин")
+	var name string
+	fmt.Scan(&name) // консольный ввод
+	return name
+}
 
 func main() {
 
-	fmt.Print("Go runs on ")
-	switch os := runtime.GOOS; os {
-	case "darwin":
-		fmt.Println("OS X.")
-	case "linux":
-		fmt.Println("Linux.")
+	switch name := login(); name {
+
+	case "admin":
+		fmt.Println("Добро пожаловать, администратор!")
+	case "moderator":
+		fmt.Println("Добро пожаловать, модератор!")
 	default:
-		// freebsd, openbsd,
-		// plan9, windows...
-		fmt.Printf("%s.\n", os)
+		fmt.Print("Добро пожаловать, ")
+		fmt.Print(name)
+		fmt.Println("!")
 	}
 }
 ```
