@@ -142,7 +142,7 @@ pip3 freeze
 pip3 freeze > requirements.txt
 ```
 
-В файл попадут все установленные в проекте пакеты:
+В requirements.txt попадут абсолютно все установленные в проекте пакеты вместе с версиями:
 
 ```
 asgiref==3.6.0
@@ -151,7 +151,7 @@ charset-normalizer==3.0.1
 ...
 ```
 
-Именем requirements.txt принято называть файл, в котором перечислены зависимости проекта. Так выглядит установка из него всех необходимых пакетов:
+Именем requirements.txt [принято](https://pip.pypa.io/en/stable/user_guide/#requirements-files) называть файл, в котором перечислены зависимости проекта. Установка из него всех необходимых пакетов:
 
 ```shell
 pip3 install -r requirements.txt
@@ -162,7 +162,7 @@ pip3 install -r requirements.txt
 - В requirements.txt могут попасть лишние пакеты, с которыми программист экспериментировал в процессе работы над проектом.
 - Риск ошибок при установке зависимостей в другом окружении.
 
-Первые две проблемы решаются ручным заполнением или корректированием requirements.txt. В некоторых проектах принято визуально разграничивать в файле прямые зависимости и транзитивные, а в некоторых — заводить разные файлы для prod, dev, test окружений. Вы можете познакомиться с разными подходами к управлению зависимостями через pip в таких открытых проектах как [OpenStack,](https://github.com/openstack/nova) [Ansible,](https://github.com/ansible/ansible) [HTTPX.](https://github.com/encode/httpx)
+Первые две проблемы решаются ручным заполнением или корректированием requirements.txt. В некоторых проектах принято визуально разграничивать в файле прямые зависимости и транзитивные, а в некоторых — заводить разные файлы для prod, dev, test окружений. Вы можете познакомиться с разными подходами к управлению зависимостями через pip в таких проектах как [OpenStack,](https://github.com/openstack/nova) [Ansible,](https://github.com/ansible/ansible) [HTTPX.](https://github.com/encode/httpx)
 
 Хоть pip и является официальным менеджером пакетов для питона, имеет смысл посмотреть в сторону более современного способа управления зависимостями.
 Вместо requirements.txt набирает популярность более гибкий и удобный формат: [pyproject.toml.](https://python-poetry.org/docs/pyproject/) С ним умеет работать менеджер пакетов [Poetry.](https://python-poetry.org/) Его используют такие проекты как [watchdog,](https://github.com/gorakhargosh/watchdog) [scrapy,](https://github.com/secdev/scapy) [celery.](https://github.com/celery/celery)
