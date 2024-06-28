@@ -188,7 +188,7 @@ module Main where
 
 main :: IO ()
 main = do
-    print (eqAbs 5.01 5.02 1e-2)
+    print (eqAbs 10010.0 10020.0 1.0e+1)
     print (eqAbs 10.0 10.002 1e-1)
     print (eqAbs 5.01 5.02 1e-4)
     print (eqAbs 37.06 37.059 0.1)
@@ -203,7 +203,7 @@ eqAbs a b eps = abs (a - b) <= eps
 
 main :: IO ()
 main = do
-    print (eqAbs 5.01 5.02 1e-2)
+    print (eqAbs 10010.0 10020.0 1.0e+1)
     print (eqAbs 10.0 10.002 1e-1)
     print (eqAbs 5.01 5.02 1e-4)
     print (eqAbs 37.06 37.059 0.1)
