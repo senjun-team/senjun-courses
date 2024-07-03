@@ -1,0 +1,26 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestCount(t *testing.T) {
+
+	cases := []struct {
+		in   string
+		want int
+	}{
+		{"Язык Go является регистрозависимым языком", 5},
+		{"Go", 1},
+		{"", 0},
+	}
+
+	for _, c := range cases {
+		got := count(c.in)
+
+		if got != c.want {
+			t.Errorf("count(%q) == %d, want %d",
+				c.in, got, c.want)
+		}
+	}
+}

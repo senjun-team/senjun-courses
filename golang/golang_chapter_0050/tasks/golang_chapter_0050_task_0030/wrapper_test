@@ -1,0 +1,27 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestDiff(t *testing.T) {
+
+	cases := []struct {
+		in   []uint16
+		want uint16
+	}{
+		{[]uint16{9, 10, 4, 2}, 8},
+		{[]uint16{1, 2, 3, 4, 5}, 4},
+		{[]uint16{8, 9}, 1},
+		{[]uint16{7}, 0},
+	}
+
+	for _, c := range cases {
+		got := diff(c.in)
+
+		if got != c.want {
+			t.Errorf("diff(%v) == %d, want %d",
+				c.in, got, c.want)
+		}
+	}
+}
