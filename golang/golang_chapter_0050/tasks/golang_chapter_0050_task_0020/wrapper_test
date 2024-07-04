@@ -1,0 +1,26 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestMaxEl(t *testing.T) {
+
+	cases := []struct {
+		in   []uint
+		want uint
+	}{
+		{[]uint{9, 10, 4, 2}, 10},
+		{[]uint{1, 2, 3, 4, 5}, 5},
+		{[]uint{7}, 7},
+	}
+
+	for _, c := range cases {
+		got := maxEl(c.in)
+
+		if got != c.want {
+			t.Errorf("maxEl(%v) == %d, want %d",
+				c.in, got, c.want)
+		}
+	}
+}
