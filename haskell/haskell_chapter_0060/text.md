@@ -54,7 +54,7 @@ if | COND1 -> EXPR1
 module Main where
 
 eqAbs :: Double -> Double -> Double -> Bool
-eqAbs a b eps = abs (a - b) < eps
+eqAbs a b eps = abs (a - b) <= eps
 
 mercuryState :: Double -> String
 mercuryState t = if eqAbs t (-38.83) 1e-2
@@ -82,7 +82,7 @@ main = do
 module Main where
 
 eqAbs :: Double -> Double -> Double -> Bool
-eqAbs a b eps = abs (a - b) < eps
+eqAbs a b eps = abs (a - b) <= eps
 
 mercuryState :: Double -> String
 mercuryState t = if | eqAbs t (-38.83) 1e-2 -> "Solid -> liquid"
