@@ -1,0 +1,19 @@
+package main
+
+import "fmt"
+
+func f() []int {
+
+	const size = 100500 // постоянное значение
+
+	arr := [size]int{}
+
+	for i := 0; i < size; i++ {
+		arr[i] = i
+	}
+
+	slice := arr[100:110]
+	return slice
+}
+
+#INJECT-b585472fa
