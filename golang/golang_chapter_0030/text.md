@@ -10,9 +10,9 @@ for [инициализация счетчика]; [условие]; [измен
 }
 ```
 
-Вот, как выглядит простейший цикл `for`:
+Вот как выглядит простейший цикл `for`:
 
-```golang
+```golang {.example_for_playground .example_for_playground_001}
 for i := 0; i < 100; i++ {
     fmt.Println("Number: ", i)
 }
@@ -35,7 +35,7 @@ for i := 0; i < 100; i++
 Go build failed.
 ```
 
-Вот, как можно написать бесконечный цикл: 
+Вот как можно написать бесконечный цикл: 
 ```golang
 for {
     var s string
@@ -71,7 +71,7 @@ func main() {
 ## Реализация других известных циклов
 Ни инициализация счетчика, ни условие, ни изменение счетчика не являются обязательной частью цикла `for`. Так, опустив инициализацию счетчика и его изменение, можно получить аналог цикла `while`:
 
-```golang
+```golang {.example_for_playground .example_for_playground_002}
 var i int 
 
 for i < 100 {
@@ -114,12 +114,12 @@ func main() {
 ```
 
 ## Операторы `break` и `continue`
-Оператор `break` позволяет досрочно прервать выполнение цикла. 
-Например: 
-```golang
+Оператор `break` позволяет досрочно прервать выполнение цикла:
+
+```golang  {.example_for_playground .example_for_playground_003}
 for i := 0; i < 100; i++ {
     fmt.Println(i)
-    if i > 10{
+    if i > 10 {
         break 
     }
 }
@@ -127,7 +127,7 @@ for i := 0; i < 100; i++ {
 
 Когда есть несколько вложенных циклов, бывает удобно использовать `break` по метке: 
 
-```golang
+```golang  {.example_for_playground .example_for_playground_004}
 loop:
 	for i := 0; i < 10; i++ {
 		fmt.Println("i = ", i)
@@ -145,16 +145,18 @@ loop:
 Как только выполнится условие внутри `if`, произойдет выход из внешнего цикла. `loop` — произвольное имя метки.
 
 Оператор `continue` позволяет досрочно перейти на выполнение следующей итерации цикла.
-Например:
-```golang
+
+```golang  {.example_for_playground .example_for_playground_005}
 for i := 0; i < 100; i++ {
-    if i%10 == 0{
+    if i%10 == 0 {
         continue 
     }
     fmt.Println(i)
 }
 ```
-В данном случае числа, кратные 10, не будут выведены на экран.  
+
+В данном случае числа, кратные 10, не будут выведены на экран.
+
 Аналогично `break` по метке существует и `continue` по метке.
 
 ## Задача на закрепление 
@@ -176,10 +178,7 @@ func main() {
 
 ``` golang {.task_answer}
 package main
-
-import (
-    "fmt"
-)
+import "fmt"
 
 func main() {
     num := 25
