@@ -252,7 +252,7 @@ Missing field in record construction hasInsurance
 - `viewedAdd`: флаг, означающий, была ли показана на странице реклама.
  {.task_text}
 
-В блоке `where` функции `main` создайте экземпляр `q1` типа `UserQuery`, у которого поле `clickCount` равно 2. {.task_text}
+В блоке `where` функции `main` создайте экземпляр `q1` типа `UserQuery`. У него поле `query` равно строке "pancakes", `clickCount` равно 2, `usedSuggest` равно `False`, `viewedAd` равно `True`. {.task_text}
 
 Затем создайте экземпляр `q2`, поля которого равны полям `q1` за исключением `clickCount`: значение этого поля должно быть на 1 больше. {.task_text}
 
