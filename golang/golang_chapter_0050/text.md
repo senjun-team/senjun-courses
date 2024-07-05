@@ -154,6 +154,9 @@ import (
 )
 
 func count(s string) int {
+	if s == "" {
+		return 0
+	}
 	res := strings.Split(s, " ")
 	return len(res)
 }
