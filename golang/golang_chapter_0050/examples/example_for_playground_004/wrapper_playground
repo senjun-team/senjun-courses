@@ -1,0 +1,9 @@
+package main
+
+import "fmt"
+
+func main() {
+    slice := []int{1, 2, 3, 4, 5}
+    #INJECT-b585472fa
+    fmt.Printf("%v", slice)
+}

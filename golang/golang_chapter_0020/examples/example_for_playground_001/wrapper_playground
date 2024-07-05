@@ -1,0 +1,10 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+    #INJECT-b585472fa
+}
