@@ -12,7 +12,7 @@ for [инициализация счетчика]; [условие]; [измен
 
 Вот как выглядит простейший цикл `for`:
 
-```golang {.example_for_playground .example_for_playground_001}
+```go {.example_for_playground .example_for_playground_001}
 for i := 0; i < 100; i++ {
     fmt.Println("Number: ", i)
 }
@@ -21,7 +21,7 @@ for i := 0; i < 100; i++ {
 Важно! Символ `{` в Go обязательно должен стоять в конце данной строчки кода, а не вначале следующей строки. В противном случае вы получите ошибку компиляции.
 Это касается любых предложений на языке Go. Например, следующий синтаксис ошибочен:
 
-```golang
+```go
 for i := 0; i < 100; i++
 {
     fmt.Println("Number: ", i)
@@ -36,7 +36,7 @@ Go build failed.
 ```
 
 Вот как можно написать бесконечный цикл: 
-```golang
+```go
 for {
     var s string
     fmt.Scan(&s)
@@ -46,7 +46,7 @@ for {
 
 Напишите программу с использованием цикла, которая выведет на экран сообщение `Hello, gophers!` 5 раз. {.task_text}
 
-```golang {.task_source #golang_chapter_0030_task_0010}
+```go {.task_source #golang_chapter_0030_task_0010}
 package main
 import "fmt"
 
@@ -71,7 +71,7 @@ func main() {
 ## Реализация других известных циклов
 Ни инициализация счетчика, ни условие, ни изменение счетчика не являются обязательной частью цикла `for`. Так, опустив инициализацию счетчика и его изменение, можно получить аналог цикла `while`:
 
-```golang {.example_for_playground .example_for_playground_002}
+```go {.example_for_playground .example_for_playground_002}
 var i int 
 
 for i < 100 {
@@ -83,7 +83,7 @@ for i < 100 {
 
 В Go отсутствует цикл `do-while`. Однако его можно реализовать с использованием цикла `for`. Смысл такого цикла состоит в том, чтобы тело цикла выполнилось хотя бы один раз, независимо от условия. В приведенном ниже примере цикл не выполнится ни разу, поскольку условие `anExpression` ложно. Измените цикл таким образом, чтобы его тело выполнилось один раз, независимо от условия. Программа должна вывести сообщение `Hello, gophers!` {.task_text}
 
-```golang {.task_source #golang_chapter_0030_task_0020}
+```go {.task_source #golang_chapter_0030_task_0020}
 package main
 
 import "fmt"
@@ -116,7 +116,7 @@ func main() {
 ## Операторы `break` и `continue`
 Оператор `break` позволяет досрочно прервать выполнение цикла:
 
-```golang  {.example_for_playground .example_for_playground_003}
+```go  {.example_for_playground .example_for_playground_003}
 for i := 0; i < 100; i++ {
     fmt.Println(i)
     if i > 10 {
@@ -127,7 +127,7 @@ for i := 0; i < 100; i++ {
 
 Когда есть несколько вложенных циклов, бывает удобно использовать `break` по метке: 
 
-```golang  {.example_for_playground .example_for_playground_004}
+```go  {.example_for_playground .example_for_playground_004}
 loop:
 	for i := 0; i < 10; i++ {
 		fmt.Println("i = ", i)
@@ -146,7 +146,7 @@ loop:
 
 Оператор `continue` позволяет досрочно перейти на выполнение следующей итерации цикла.
 
-```golang  {.example_for_playground .example_for_playground_005}
+```go  {.example_for_playground .example_for_playground_005}
 for i := 0; i < 100; i++ {
     if i%10 == 0 {
         continue 
@@ -165,7 +165,7 @@ for i := 0; i < 100; i++ {
 
  Для вывода без перевода на новую строку можно использовать функцию `fmt.Print`. {.task_text}
 
-```golang {.task_source #golang_chapter_0030_task_0030}
+```go {.task_source #golang_chapter_0030_task_0030}
 package main
 import "fmt"
 
