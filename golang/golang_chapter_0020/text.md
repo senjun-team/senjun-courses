@@ -13,7 +13,7 @@
 
 Переменной типа `bool` может быть присвоен результат сравнения. Вот так можно проверить, является ли сегодняшний день рабочим, без учета праздников:
 
-```golang {.example_for_playground .example_for_playground_001}
+```go {.example_for_playground .example_for_playground_001}
 weekday := time.Now().Weekday()
 working := weekday != time.Sunday && weekday != time.Saturday
 fmt.Println("Is it a working day:", working, "[", weekday, "]")
@@ -24,7 +24,7 @@ fmt.Println("Is it a working day:", working, "[", weekday, "]")
 
 Наудачу бросают 20-ти гранный кубик. Выпавшее значение сохраняется в переменной `coub`. В случае, если значение `coub` больше 10, выведите на экран `true`, иначе — `false`. Для вывода значения на экран воспользуйтесь функцией `fmt.Println()`. {.task_text}
 
-```golang {.task_source #golang_chapter_0020_task_0010}
+```go {.task_source #golang_chapter_0020_task_0010}
 package main
 
 import (
@@ -76,7 +76,7 @@ func main() {
 
 Реализуйте функцию implic(), выполняющую импликацию. Импликацией называется логическая операция `a → b`, которая ложна лишь тогда, когда `a` истинно, а `b` ложно. Функция implic() принимает два значения типа `bool` и возвращает значение того же типа. Для возврата результата используйте ключевое слово `return`. Более подробно функции рассматриваются в последующих главах. {.task_text}
 
-```golang {.task_source #golang_chapter_0020_task_0020}
+```go {.task_source #golang_chapter_0020_task_0020}
 package main
 
 import (
@@ -97,7 +97,7 @@ func main() {
 
 Импликацию можно выразить выражением, принимающем истинное значение, если истинно отрицание `a` или истинно `b`. {.task_hint}
 
-```golang {.task_answer}
+```go {.task_answer}
 package main
 
 import (
@@ -119,7 +119,7 @@ func main() {
 
 Функцией голосования называется функция, которая принимает на вход три аргумента типа `bool` и возвращает истину, если хотя бы два аргумента — истина. В противном случае функция возвращает ложь. Допишите тело функции голосования. {.task_text}
 
-```golang {.task_source #golang_chapter_0020_task_0030}
+```go {.task_source #golang_chapter_0020_task_0030}
 package main
 
 import (
@@ -145,7 +145,7 @@ func main() {
 
 Проверьте попарно истинность конъюнкции всех аргументов. {.task_hint}
 
-```golang {.task_answer}
+```go {.task_answer}
 package main
 
 import (
@@ -178,7 +178,7 @@ func main() {
 
 `if` проверяет условие и выполняет соответствующий блок кода в случае, когда условие истинно. Например:
 
-```golang {.example_for_playground .example_for_playground_002}
+```go {.example_for_playground .example_for_playground_002}
 a := 7
 b := 8
 
@@ -189,7 +189,7 @@ if a != b {
 
 Перед проверкой условия можно выполнить присвоение:
 
-```golang {.example_for_playground .example_for_playground_003}
+```go {.example_for_playground .example_for_playground_003}
 if a := 7; a < 8 {
     fmt.Println("a < 8")
 } 
@@ -198,7 +198,7 @@ if a := 7; a < 8 {
 
 `if-else` проверяет условие и выполняет блок кода внутри `if`, если условие истинно. В противном случае выполняется код внутри `else`. Например:
 
-```golang {.example_for_playground .example_for_playground_004}
+```go {.example_for_playground .example_for_playground_004}
 a := 7
 b := 8
 
@@ -211,7 +211,7 @@ if a == b {
 
 `if-else-if` допускает несколько условий:
 
-```golang  {.example_for_playground .example_for_playground_005}
+```go  {.example_for_playground .example_for_playground_005}
 a := 7
 b := 8
 
@@ -228,7 +228,7 @@ if a < b {
 
 Когда условий много, то в качестве альтернативы `if-else-if` можно использовать `switch-case`:
 
-```golang  {.example_for_playground .example_for_playground_006}
+```go  {.example_for_playground .example_for_playground_006}
 country := "China"
 switch country {
 case "Russia":
@@ -244,7 +244,7 @@ default:
 
 Перед проверкой можно также выполнить присвоение:
 
-```golang
+```go
 package main
 import "fmt"
 
@@ -277,7 +277,7 @@ func main() {
 
 Также существует форма `switch-case`, позволяющая написать произвольные условия:
 
-```golang  {.example_for_playground .example_for_playground_007}
+```go  {.example_for_playground .example_for_playground_007}
 country := "Russia"
 name := "Ivan"
 
@@ -296,7 +296,7 @@ default:
 
 Необходимо реализовать функцию `developerGrade()`, которая возвращает номер грейда разработчика по его названию. Всего есть четыре грейда разработчика: `trainee`, `junior`, `middle`, `senior`. Номер первого грейда `trainee` — 1, номер последнего грейда `senior` — 4. Если передано название, не соответствующее ни одному из перечисленных грейдов, то функция `developerGrade()` возвращает 0. {.task_text}
 
-```golang {.task_source #golang_chapter_0020_task_0040}
+```go {.task_source #golang_chapter_0020_task_0040}
 package main
 import "fmt"
 
@@ -315,7 +315,7 @@ func main() {
 
 Реализуйте классическую форму `switch-case`. {.task_hint}
 
-```golang {.task_answer}
+```go {.task_answer}
 package main
 import "fmt"
 

@@ -11,7 +11,7 @@
 ## Объявление и инициализация среза
 Вот так можно объявить и инициализировать срез:
 
-```golang {.example_for_playground .example_for_playground_001}
+```go {.example_for_playground .example_for_playground_001}
 slice := []int{1, 2, 3, 4, 5} 
 ```
 
@@ -19,7 +19,7 @@ slice := []int{1, 2, 3, 4, 5}
 
 Вот так можно объявить пустой срез из 10 элементов: 
 
-```golang {.example_for_playground .example_for_playground_002}
+```go {.example_for_playground .example_for_playground_002}
 slice := make([]int, 10) 
 ```
 
@@ -28,7 +28,7 @@ slice := make([]int, 10)
 
 Очистить срез можно следующим образом:
 
-```golang 
+```go 
 slice = nil 
 ```
 
@@ -36,7 +36,7 @@ slice = nil
 
 Стоит иметь в виду, что пустой срез необязательно равен `nil`:
 
-```golang  {.example_for_playground .example_for_playground_003}
+```go  {.example_for_playground .example_for_playground_003}
 slice := []int{}
 
 if slice == nil {
@@ -53,20 +53,20 @@ slice is NOT nil
 
 Чтобы добавить элемент к срезу, можно воспользоваться встроенной функцией `append`:
 
-```golang  {.example_for_playground .example_for_playground_004}
+```go  {.example_for_playground .example_for_playground_004}
 slice = append(slice, 125)
 ```
 
 ## Срезы срезов 
 Срезы, как и массивы, могут быть многомерными: 
 
-```golang  {.example_for_playground .example_for_playground_005}
+```go  {.example_for_playground .example_for_playground_005}
 slice := [][]int{{1, 2, 3}, {4, 5, 6}} 
 ```
 
 Доступ к элементу с индексом `i` осуществляется также, как для массива. Через нотацию `[:]` можно выбрать несколько последовательных элементов среза. Вот так можно напечатать срез из элементов со значениями `2` и `3`: 
 
-```golang  {.example_for_playground .example_for_playground_006}
+```go  {.example_for_playground .example_for_playground_006}
 slice := []int{1, 2, 3, 4, 5}
 fmt.Println(slice[1:3])
 ```
@@ -76,7 +76,7 @@ fmt.Println(slice[1:3])
 
 Первый индекс `1` включает данный элемент, второй индекс `3` не включает этот элемент. Таким образом, будут выбраны элементы с индексами `1` и `2`. Такое соглашение принято в языке Go всюду. Если не указать первое число в нотации `[:]`, то вместо него подставится нуль:
 
-```golang    {.example_for_playground .example_for_playground_007}
+```go    {.example_for_playground .example_for_playground_007}
 slice := []int{1, 2, 3, 4, 5}
 fmt.Println(slice[:3])
 ```
@@ -86,7 +86,7 @@ fmt.Println(slice[:3])
 
 Если не указать последнее число, то вместо него подставится длина среза:
 
-```golang    {.example_for_playground .example_for_playground_008}
+```go    {.example_for_playground .example_for_playground_008}
 slice := []int{1, 2, 3, 4, 5}
 fmt.Println(slice[3:])
 ```
@@ -99,7 +99,7 @@ fmt.Println(slice[3:])
 
 Рассмотрим следующий пример. 
 
-```golang    {.example_for_playground .example_for_playground_009}
+```go    {.example_for_playground .example_for_playground_009}
 slice := []int{1, 2, 3, 4, 5}
 slice2 := slice[1:3]
 slice2[1] = 10
@@ -116,7 +116,7 @@ fmt.Println(slice)
 
 Функция `Split` пакета `strings` позволяет разбить текст по некоторому разделителю и получить срез:
 
-```golang   {.example_for_playground .example_for_playground_010}
+```go   {.example_for_playground .example_for_playground_010}
 s := "1,2,3"
 res := strings.Split(s, ",")
 fmt.Println(res) 
@@ -129,7 +129,7 @@ fmt.Println(res)
 
 В переменной `s` типа `string` содержится некоторый текст. Допишите функцию `count`, которая подсчитает число слов в этом тексте. Словом считать любую последовательность символов, разделяемую пробелами. {.task_text}
 
-```golang {.task_source #golang_chapter_0050_task_0010}
+```go {.task_source #golang_chapter_0050_task_0010}
 package main
 import "fmt"
 
@@ -145,7 +145,7 @@ func main() {
 
 Воспользуйтесь функцией `strings.Split`. {.task_hint}
 
-```golang {.task_answer}
+```go {.task_answer}
 package main
 
 import (
@@ -170,7 +170,7 @@ func main() {
 
 В переменной `slice` типа `[]uint` содержится некоторый срез. Реализуйте тело функции `maxEl`, которая принимает на вход срез данного типа и возвращает максимальный элемент. {.task_text}
 
-```golang {.task_source #golang_chapter_0050_task_0020}
+```go {.task_source #golang_chapter_0050_task_0020}
 package main
 import "fmt"
 
@@ -187,7 +187,7 @@ func main() {
 
 Объявите переменную типа `uint`. По умолчанию в ней лежит значение `0`. Это минимальное из возможных значений для переменной данного типа. Реализуйте цикл по всем элементам среза. Если внутри цикла найдется элемент больше, чем значение данной переменной, присвойте переменной это значение. По окончанию цикла верните значений переменной. {.task_hint}
 
-```golang {.task_answer}
+```go {.task_answer}
 package main
 
 import (
@@ -216,7 +216,7 @@ func main() {
 
 В переменной `slice` типа `[]uint16` содержится некоторый срез. Реализуйте тело функции `diff`, которая принимает на вход срез данного типа и возвращает разницу между максимальным и минимальным элементами среза. {.task_text}
 
-```golang {.task_source #golang_chapter_0050_task_0030}
+```go {.task_source #golang_chapter_0050_task_0030}
 package main
 import "fmt"
 
@@ -234,7 +234,7 @@ func main() {
 
 Максимальное значение для переменной типа `uint16` равно `65535`. {.task_hint}
 
-```golang {.task_answer}
+```go {.task_answer}
 package main
 
 import (
@@ -269,7 +269,7 @@ func main() {
 ## Проблема утечки памяти 
 Как упоминалось ранее, срез — это всего лишь указатель, длина и емкость. **Срез не создает копию базового массива или его части.** Рассмотрим следующий пример:
 
-```golang    {.example_for_playground}
+```go    {.example_for_playground}
 package main
 
 import "fmt"
@@ -301,7 +301,7 @@ func main() {
 
 Однако поскольку создан срез на базовый массив размером `100500`, этот базовый массив не может быть очищен сборщиком мусора по выходу из функции. Емкость среза составляет `100400`. Чтобы убедиться в том, что базовый массив по-прежнему в памяти, мы можем расширить срез внутри функции `main` при условии, что не выходим за границу емкости:
 
-```golang   {.example_for_playground .example_for_playground_011}
+```go   {.example_for_playground .example_for_playground_011}
 func main() {
 	s := f()
 	fmt.Println(s[:100400])
@@ -310,7 +310,7 @@ func main() {
 
 Исправить ситуацию с утечкой памяти можно с помощью встроенной функции `copy`, которая позволяет скопировать интересующие элементы одного среза в другой:
 
-```golang   {.example_for_playground}
+```go   {.example_for_playground}
 package main
 
 import (
