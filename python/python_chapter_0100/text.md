@@ -315,12 +315,22 @@ print("String {} has {} letters".format(s, len(s)))
 x = 5
 print(f"{x=}")
 ```
-
-Этот код выведет строку:
-
 ```
 x=5
 ```
+
+Не путайте этот синтаксис с синтаксисом оператора моржа `:=`. Кстати, его тоже можно использовать при форматировании строк:
+
+```python  {.example_for_playground}
+from datetime import datetime
+
+print(f"Today: {(today:=datetime.today()):%Y-%m-%d}, day of week: {today:%A}")
+```
+```
+Today: 2024-06-27, day of week: Thursday
+```
+
+Чтобы внутри f-строки правильно обрабатывалось выражение с оператором моржа, его нужно заключать в круглые скобки.
 
 Напишите функцию `f(user_id, visits)`, которая принимает два целых числа `user_id` и `visits` и возвращает отформатированную строку со статистикой по пользователю: `"User '498258' visited page 2 times"`. {.task_text}
 

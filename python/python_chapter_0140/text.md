@@ -46,7 +46,7 @@ print(hash(tpl))
 - Применять к данным математические операции из теории множеств: пересечение, объединение, разность, симметричная разность.
 - Быстро проверять элемент на вхождение в множество.
 
-## Создание множества
+## Создание множества {#block-create-set}
 Для инициализации множества используется литерал фигурных скобок `{}` либо конструктор `set()`. Так выглядит инициализация через литерал:
 
 ```python   {.example_for_playground}
@@ -295,8 +295,12 @@ objects = ["M", 7.8, True, [9, 9], {1, 2, 2}, None, frozenset([5]), (True, False
 
 Так выглядит проверка на хэшируемость: `isinstance(obj, typing.Hashable)`. {.task_hint}
 ```python {.task_answer}
+import typing
+
+objects = ["M", 7.8, True, [9, 9], {1, 2, 2}, None, frozenset([5]), (True, False)]
+
 for obj in objects:
-    print(type(obj), isinstance(x, typing.Hashable))
+    print(type(obj), isinstance(obj, typing.Hashable))
 ```
 
 ## Резюмируем
