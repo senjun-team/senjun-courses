@@ -50,16 +50,16 @@ if __name__ == "__main__":
 
 FULL_DIR = """test_data
 ├── books
-│   ├── Dukaj_Other_songs.pdf
-│   ├── Jonathan Strange & Mr Norrell.pdf
-│   └── Piranesi.pdf
+│   ├── Dukaj_Other_songs.pdf
+│   ├── Jonathan Strange & Mr Norrell.pdf
+│   └── Piranesi.pdf
 └── movies
     ├── fantasy
-    │   ├── Edward Scissorhands.avi
-    │   └── LOTR
-    │       ├── The Fellowship of the Ring.avi
-    │       ├── The Return of the King.avi
-    │       └── The Two Towers.avi
+    │   ├── Edward Scissorhands.avi
+    │   └── LOTR
+    │       ├── The Fellowship of the Ring.avi
+    │       ├── The Return of the King.avi
+    │       └── The Two Towers.avi
     ├── historical
     └── sci-fy
         ├── 12 Monkeys.avi
@@ -72,7 +72,7 @@ FULL_DIR_DIR_ONLY = """./test_data/
 ├── books
 └── movies
     ├── fantasy
-    │   └── LOTR
+    │   └── LOTR
     ├── historical
     └── sci-fy
 
@@ -100,7 +100,7 @@ DIR_LEVEL_3_DIR_ONLY = """test_data/
 ├── books
 └── movies
     ├── fantasy
-    │   └── LOTR
+    │   └── LOTR
     ├── historical
     └── sci-fy
 

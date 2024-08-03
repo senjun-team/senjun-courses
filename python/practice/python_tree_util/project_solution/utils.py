@@ -66,7 +66,7 @@ def traverse(cur_dir, levels, prefix, dir_only):
             count_dirs_child, count_files_child = traverse(
                 os.path.join(path),
                 levels - 1,
-                prefix + symbol_level(is_last),
+                prefix + symbols_indent(is_last),
                 dir_only,
             )
             count_dirs += count_dirs_child + 1
@@ -86,10 +86,12 @@ def symbol_trailing(is_last):
     return "└──" if is_last else "├──"
 
 
-def symbol_level(is_last):
+def symbols_indent(is_last):
     """
-    Возвращает символ псевдографики для заполнения пространства слева от
-    выводимого имени файла/директории и завершающего символа symbol_trailing().
+    Возвращает 4 символа: 4 пробела либо символ псевдографики и 3 пробела,
+    если директория не последняя в списке. Эти символы используются для
+    заполнения пространства слева от выводимого имени файла/директории и
+    завершающего символа symbol_trailing().
     """
 
-    return "    " if is_last else "│   "
+    return " " * 4 if is_last else "│" + " " * 3
