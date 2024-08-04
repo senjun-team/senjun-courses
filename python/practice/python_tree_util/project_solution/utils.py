@@ -1,13 +1,25 @@
-import os
+from enum import StrEnum
 from pathlib import Path
 
 
-def show_tree(dir, dir_only, level):
+# Пробел и символы псевдографики для изображения в консоли
+# древовидной иерархии
+# https://en.wikipedia.org/wiki/Box-drawing_characters
+
+
+class BoxDrawing(StrEnum):
+    SPACE = " "
+    VERTICAL = "│"
+    UP_AND_RIGHT = "└──"
+    VERTICAL_AND_RIGHT = "├──"
+
+
+def show_tree(dir, dirs_only, level):
     """
     Обходит директорию dir для вывода в консоль ее древовидной
     структуры, а также количества найденных директорий и файлов.
 
-    Флаг dir_only означает, что обрабатывать файлы не надо.
+    Флаг dirs_only означает, что обрабатывать файлы не надо.
     level - это целое число либо None. Указывает, до какого уровня
     вложенности отображать иерархию.
     """
@@ -15,32 +27,35 @@ def show_tree(dir, dir_only, level):
     print(dir)
 
     levels = -1 if level is None else level
-    count_dirs, count_files = traverse(dir, levels, "", dir_only)
+    count_dirs, count_files = traverse(dir, levels, "", dirs_only)
 
-    print(f"\n{dir_str(count_dirs)}{file_str(count_files, dir_only)}")
+    # Мы всегда учитываем корневую директорию, из которой запускается обход
+    # иерархии директорий:
+    count_dirs += 1
+
+    print(f"\n{dir_str(count_dirs)}{file_str(count_files, dirs_only)}")
 
 
 def dir_str(count_dirs):
-    count_dirs += 1
     d = "directory" if count_dirs == 1 else "directories"
     return f"{count_dirs} {d}"
 
 
-def file_str(count_files, dir_only):
-    if dir_only:
+def file_str(count_files, dirs_only):
+    if dirs_only:
         return ""
 
     f = "file" if count_files == 1 else "files"
     return f", {count_files} {f}"
 
 
-def traverse(cur_dir, levels, prefix, dir_only):
+def traverse(cur_dir, levels, prefix, dirs_only):
     """
     Рекурсивно обходит директорию cur_dir.
     Целое число levels нужно, чтобы завершить обход при заданном уровне вложенности.
     Строка prefix необходима, чтобы перед именем директории или файла вывести
     символы псевдографики для изображения древовидной иерархии.
-    Флаг dir_only означает, что нужно обрабатывать только директории (не файлы).
+    Флаг dirs_only означает, что нужно обрабатывать только директории (не файлы).
 
     Функция возвращает количество выведенных в консоль директорий и файлов.
     """
@@ -55,19 +70,16 @@ def traverse(cur_dir, levels, prefix, dir_only):
 
     for i, path in enumerate(contents):
         is_last = i == len(contents) - 1
-        is_dir = os.path.isdir(path)
 
-        if is_dir or not dir_only and os.path.isfile(path):
-            print(
-                f"{prefix}{symbol_trailing(is_last)} {os.path.basename(path)}"
-            )
+        if path.is_dir() or not dirs_only and path.is_file():
+            print(f"{prefix}{symbol_trailing(is_last)} {path.name}")
 
-        if is_dir:
+        if path.is_dir():
             count_dirs_child, count_files_child = traverse(
-                os.path.join(path),
+                path,
                 levels - 1,
-                prefix + symbols_indent(is_last),
-                dir_only,
+                f"{prefix}{symbols_indent(is_last)}",
+                dirs_only,
             )
             count_dirs += count_dirs_child + 1
             count_files += count_files_child
@@ -83,7 +95,9 @@ def symbol_trailing(is_last):
     данный файл/директория последним внутри родительской директории.
     """
 
-    return "└──" if is_last else "├──"
+    return (
+        BoxDrawing.UP_AND_RIGHT if is_last else BoxDrawing.VERTICAL_AND_RIGHT
+    )
 
 
 def symbols_indent(is_last):
@@ -94,4 +108,8 @@ def symbols_indent(is_last):
     завершающего символа symbol_trailing().
     """
 
-    return " " * 4 if is_last else "│" + " " * 3
+    return (
+        BoxDrawing.SPACE * 4
+        if is_last
+        else f"{BoxDrawing.VERTICAL}{BoxDrawing.SPACE * 3}"
+    )

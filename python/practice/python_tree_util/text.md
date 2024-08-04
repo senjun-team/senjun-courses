@@ -98,8 +98,6 @@ python3 tree.py -L 1
 
 `pathlib` — обход директории. [Документация.](https://docs.python.org/3/library/pathlib.html)
 
-`os.path` — работа с путями ФС. [Документация.](https://docs.python.org/3/library/os.path.html)
-
 Постарайтесь не гуглить готовые рецепты. Чтения документации точно хватит, чтобы выполнить этот проект.
 
 ### Работа с консолью

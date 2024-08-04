@@ -1,5 +1,5 @@
 import argparse
-import os
+from pathlib import Path
 
 import utils
 
@@ -14,7 +14,7 @@ def level(raw_val):
 
 
 def directory(raw_path):
-    if os.path.isdir(raw_path):
+    if Path(raw_path).is_dir():
         return raw_path
     raise argparse.ArgumentTypeError(
         f"{raw_path} is an invalid value for directory"
@@ -31,4 +31,4 @@ def parse_args():
 
 if __name__ == "__main__":
     args = parse_args()
-    utils.show_tree(dir=args.dir, dir_only=args.d, level=args.L)
+    utils.show_tree(dir=args.dir, dirs_only=args.d, level=args.L)

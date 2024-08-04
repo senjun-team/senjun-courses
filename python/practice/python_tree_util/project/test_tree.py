@@ -4,9 +4,8 @@ import subprocess
 
 class TestTree(unittest.TestCase):
     def setUp(self):
-
-        # Кадый тест-кейс состоит из названия, ожидаемого консольного вывода 
-        # и аргументов для запуска скрипта tree.py. 
+        # Каждый тест-кейс состоит из названия, ожидаемого консольного вывода
+        # и аргументов для запуска скрипта tree.py.
         self.cases = [
             ("dir without args", FULL_DIR, ["test_data"]),
             ("dir with -d", FULL_DIR_DIR_ONLY, ["./test_data/", "-d"]),
@@ -29,19 +28,18 @@ class TestTree(unittest.TestCase):
             ),
         ]
 
-    def check(self, plan_output, args):
-        cmd_line_args = ["python3", "tree.py"]
-        cmd_line_args.extend(args)
+    def check_case(self, plan_output, args):
+        cmd_line_args = ["python3", "tree.py", *args]
 
         res = subprocess.run(cmd_line_args, stdout=subprocess.PIPE)
         fact_output = res.stdout.decode("utf-8")
 
         self.assertEqual(fact_output, plan_output)
 
-    def test_data(self):
+    def test_tree_util(self):
         for test_name, plan_output, args in self.cases:
             with self.subTest(test_name):
-                self.check(plan_output, args)
+                self.check_case(plan_output, args)
 
 
 if __name__ == "__main__":
