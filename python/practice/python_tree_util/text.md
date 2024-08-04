@@ -96,7 +96,7 @@ python3 tree.py -L 1
 
 `argparse` — разбор аргументов командной строки. [Документация.](https://docs.python.org/3/library/argparse.html)
 
-`pathlib` — обход директории. [Документация.](https://docs.python.org/3/library/pathlib.html)
+`pathlib` — работа с путями и файлами. [Документация.](https://docs.python.org/3/library/pathlib.html)
 
 Постарайтесь не гуглить готовые рецепты. Чтения документации точно хватит, чтобы выполнить этот проект.
 

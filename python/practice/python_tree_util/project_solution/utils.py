@@ -2,12 +2,13 @@ from enum import StrEnum
 from pathlib import Path
 
 
-# Пробел и символы псевдографики для изображения в консоли
-# древовидной иерархии
-# https://en.wikipedia.org/wiki/Box-drawing_characters
-
-
 class BoxDrawing(StrEnum):
+    """
+    Пробел и символы псевдографики для изображения в консоли
+    древовидной иерархии
+    https://en.wikipedia.org/wiki/Box-drawing_characters
+    """
+
     SPACE = " "
     VERTICAL = "│"
     UP_AND_RIGHT = "└──"
