@@ -28,6 +28,7 @@ class TestTree(unittest.TestCase):
             ),
         ]
 
+
     def check_case(self, plan_output, args):
         cmd_line_args = ["python3", "tree.py", *args]
 
