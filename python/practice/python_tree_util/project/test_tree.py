@@ -30,8 +30,7 @@ class TestTree(unittest.TestCase):
         ]
 
     def check(self, plan_output, args):
-        cmd_line_args = ["python3", "tree.py"]
-        cmd_line_args.extend(args)
+        cmd_line_args = ["python3", "tree.py", *args]
 
         res = subprocess.run(cmd_line_args, stdout=subprocess.PIPE)
         fact_output = res.stdout.decode("utf-8")
