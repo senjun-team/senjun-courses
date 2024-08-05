@@ -25,14 +25,8 @@ def show_tree(dir, dirs_only, level):
     вложенности отображать иерархию.
     """
 
-    print(dir)
-
     levels = -1 if level is None else level
     count_dirs, count_files = traverse(dir, levels, "", dirs_only)
-
-    # Мы всегда учитываем корневую директорию, из которой запускается обход
-    # иерархии директорий:
-    count_dirs += 1
 
     print(f"\n{dir_str(count_dirs)}{file_str(count_files, dirs_only)}")
 
@@ -61,7 +55,9 @@ def traverse(cur_dir, levels, prefix, dirs_only):
     Функция возвращает количество выведенных в консоль директорий и файлов.
     """
 
-    count_dirs = 0
+    print(f"{cur_dir if isinstance(cur_dir, str) else cur_dir.name}")
+
+    count_dirs = 1  # count cur_dir
     count_files = 0
 
     if levels == 0:
@@ -72,20 +68,23 @@ def traverse(cur_dir, levels, prefix, dirs_only):
     for i, path in enumerate(contents):
         is_last = i == len(contents) - 1
 
-        if path.is_dir() or not dirs_only and path.is_file():
-            print(f"{prefix}{symbol_trailing(is_last)} {path.name}")
+        if dirs_only and path.is_file():
+            continue
 
-        if path.is_dir():
-            count_dirs_child, count_files_child = traverse(
+        print(f"{prefix}{symbol_trailing(is_last)} ", end="")
+
+        if path.is_file():
+            print(path.name)
+            count_files += 1
+        elif path.is_dir():
+            count_dirs_in_subtree, count_files_in_subtree = traverse(
                 path,
                 levels - 1,
                 f"{prefix}{symbols_indent(is_last)}",
                 dirs_only,
             )
-            count_dirs += count_dirs_child + 1
-            count_files += count_files_child
-        else:
-            count_files += 1
+            count_dirs += count_dirs_in_subtree
+            count_files += count_files_in_subtree
 
     return count_dirs, count_files
 
