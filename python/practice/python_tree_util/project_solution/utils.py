@@ -57,7 +57,7 @@ def traverse(cur_dir, levels, prefix, dirs_only):
 
     print(f"{cur_dir if isinstance(cur_dir, str) else cur_dir.name}")
 
-    count_dirs = 1  # count cur_dir
+    count_dirs = 1  # количество директорий, включая cur_dir
     count_files = 0
 
     if levels == 0:

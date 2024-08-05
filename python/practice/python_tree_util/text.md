@@ -38,12 +38,11 @@ python3 tree.py ./test_data/
     │       ├── The Fellowship of the Ring.avi
     │       ├── The Return of the King.avi
     │       └── The Two Towers.avi
-    ├── historical
     └── sci-fy
         ├── 12 Monkeys.avi
         └── Blade runner.avi
 
-7 directories, 9 files
+6 directories, 9 files
 ```
 
 Запуск утилиты с указанием пути `./test_data/` и опцией для отображения только директорий:
@@ -56,10 +55,9 @@ python3 tree.py -d ./test_data/
 └── movies
     ├── fantasy
     │   └── LOTR
-    ├── historical
     └── sci-fy
 
-7 directories
+6 directories
 ```
 
 Обратите внимание, что если задана опция `-d`, выводить количество файлов не нужно.

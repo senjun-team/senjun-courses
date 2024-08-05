@@ -1,9 +1,25 @@
 import unittest
 import subprocess
+from pathlib import Path
+
+
+def run_tree_util(args):
+    """
+    Запускает скрипт tree.py и возвращает его консольный вывод
+    в виде строки
+    """
+
+    cmd_line_args = ["python3", "tree.py", *args]
+    res = subprocess.run(cmd_line_args, stdout=subprocess.PIPE)
+    return res.stdout.decode("utf-8")
 
 
 class TestTree(unittest.TestCase):
     def setUp(self):
+        # Создаем пустую директорию
+        self.empty_dir = Path("test_data/movies/historical")
+        self.empty_dir.mkdir(parents=True, exist_ok=False)
+
         # Каждый тест-кейс состоит из названия, ожидаемого консольного вывода
         # и аргументов для запуска скрипта tree.py.
         self.cases = [
@@ -26,24 +42,17 @@ class TestTree(unittest.TestCase):
                 DIR_FANTASY_LEVEL_1,
                 ["./test_data/movies/fantasy/", "-L 1"],
             ),
+            ("empty dir", DIR_EMPTY, [str(self.empty_dir)]),
         ]
 
-    def check_case(self, plan_output, args):
-        cmd_line_args = ["python3", "tree.py", *args]
-
-        res = subprocess.run(cmd_line_args, stdout=subprocess.PIPE)
-        fact_output = res.stdout.decode("utf-8")
-
-        self.assertEqual(fact_output, plan_output)
+    def tearDown(self):
+        self.empty_dir.rmdir()
 
     def test_tree_util(self):
         for test_name, plan_output, args in self.cases:
             with self.subTest(test_name):
-                self.check_case(plan_output, args)
-
-
-if __name__ == "__main__":
-    unittest.main()
+                fact_output = run_tree_util(args)
+                self.assertEqual(fact_output, plan_output)
 
 
 FULL_DIR = """test_data
@@ -119,3 +128,11 @@ DIR_FANTASY_LEVEL_1 = """./test_data/movies/fantasy/
 
 2 directories, 1 file
 """
+
+DIR_EMPTY = """test_data/movies/historical
+
+1 directory, 0 files
+"""
+
+if __name__ == "__main__":
+    unittest.main()
