@@ -42,6 +42,11 @@ class TestTree(unittest.TestCase):
                 DIR_FANTASY_LEVEL_1,
                 ["./test_data/movies/fantasy/", "-L 1"],
             ),
+            (
+                "subdir: LOTR",
+                DIR_LOTR,
+                ["test_data/movies/fantasy/LOTR"],
+            ),
             ("empty dir", DIR_EMPTY, [str(self.empty_dir)]),
         ]
 
@@ -63,16 +68,15 @@ FULL_DIR = """test_data
 └── movies
     ├── fantasy
     │   ├── Edward Scissorhands.avi
-    │   └── LOTR
-    │       ├── The Fellowship of the Ring.avi
-    │       ├── The Return of the King.avi
-    │       └── The Two Towers.avi
+    │   ├── LOTR
+    │   │   └── The Two Towers.avi
+    │   └── Time Bandits.avi
     ├── historical
     └── sci-fy
         ├── 12 Monkeys.avi
         └── Blade runner.avi
 
-7 directories, 9 files
+7 directories, 8 files
 """
 
 FULL_DIR_DIR_ONLY = """./test_data/
@@ -124,9 +128,16 @@ DIR_BOOKS = """test_data/books
 
 DIR_FANTASY_LEVEL_1 = """./test_data/movies/fantasy/
 ├── Edward Scissorhands.avi
-└── LOTR
+├── LOTR
+└── Time Bandits.avi
 
-2 directories, 1 file
+2 directories, 2 files
+"""
+
+DIR_LOTR = """test_data/movies/fantasy/LOTR
+└── The Two Towers.avi
+
+1 directory, 1 file
 """
 
 DIR_EMPTY = """test_data/movies/historical

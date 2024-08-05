@@ -28,33 +28,34 @@ python3 tree.py ./test_data/
 
 ./test_data/
 ├── books
-│   ├── Dukaj_Other_songs.pdf
-│   ├── Jonathan Strange & Mr Norrell.pdf
-│   └── Piranesi.pdf
+│   ├── Dukaj_Other_songs.pdf
+│   ├── Jonathan Strange & Mr Norrell.pdf
+│   └── Piranesi.pdf
 └── movies
     ├── fantasy
-    │   ├── Edward Scissorhands.avi
-    │   └── LOTR
-    │       ├── The Fellowship of the Ring.avi
-    │       ├── The Return of the King.avi
-    │       └── The Two Towers.avi
+    │   ├── Edward Scissorhands.avi
+    │   ├── LOTR
+    │   │   ├── The Fellowship of the Ring.avi
+    │   │   ├── The Return of the King.avi
+    │   │   └── The Two Towers.avi
+    │   └── Time Bandits.avi
     └── sci-fy
         ├── 12 Monkeys.avi
         └── Blade runner.avi
 
-6 directories, 9 files
+6 directories, 10 files
 ```
 
 Запуск утилиты с указанием пути `./test_data/` и опцией для отображения только директорий:
 
 ```
-python3 tree.py -d ./test_data/
+python3 tree.py -d test_data
 
-./test_data/
+test_data
 ├── books
 └── movies
     ├── fantasy
-    │   └── LOTR
+    │   └── LOTR
     └── sci-fy
 
 6 directories

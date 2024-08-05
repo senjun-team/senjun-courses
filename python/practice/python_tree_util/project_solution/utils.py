@@ -63,13 +63,10 @@ def traverse(cur_dir, levels, prefix, dirs_only):
     if levels == 0:
         return count_dirs, count_files
 
-    contents = sorted(Path(cur_dir).iterdir())
+    contents = sorted(get_contents(cur_dir, dirs_only))
 
     for i, path in enumerate(contents):
         is_last = i == len(contents) - 1
-
-        if dirs_only and path.is_file():
-            continue
 
         print(f"{prefix}{symbol_trailing(is_last)} ", end="")
 
@@ -87,6 +84,13 @@ def traverse(cur_dir, levels, prefix, dirs_only):
             count_files += count_files_in_subtree
 
     return count_dirs, count_files
+
+
+def get_contents(dir, dirs_only):
+    if dirs_only:
+        return (p for p in Path(dir).iterdir() if p.is_dir())
+
+    return Path(dir).iterdir()
 
 
 def symbol_trailing(is_last):
