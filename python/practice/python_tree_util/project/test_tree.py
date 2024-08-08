@@ -4,13 +4,13 @@ import unittest
 from pathlib import Path
 
 
-def run_tree_util(util_path, args):
+def run_tree_util(args):
     """
     Запускает скрипт tree.py и возвращает его консольный вывод
     в виде строки
     """
 
-    cmd_line_args = ["python3", os.path.join(util_path, "tree.py"), *args]
+    cmd_line_args = ["python3", Path(__file__).parent / "tree.py", *args]
     res = subprocess.run(cmd_line_args, stdout=subprocess.PIPE)
     return res.stdout.decode("utf-8")
 
@@ -65,18 +65,18 @@ class TestTree(unittest.TestCase):
     def tearDown(self):
         self.empty_dir.rmdir()
 
-    def run_test_cases(self, util_path, tests):
+    def run_test_cases(self, tests):
         for test_name, plan_output, args in tests:
             with self.subTest(test_name):
-                fact_output = run_tree_util(util_path, args)
+                fact_output = run_tree_util(args)
                 self.assertEqual(fact_output, plan_output)
 
     def test_tree_util(self):
-        self.run_test_cases("", self.cases)
+        self.run_test_cases(self.cases)
 
         cwd = os.getcwd()
         os.chdir("test_data/movies/fantasy")
-        self.run_test_cases("../../..", self.cases_cur_dir)
+        self.run_test_cases(self.cases_cur_dir)
         os.chdir(cwd)
 
 
