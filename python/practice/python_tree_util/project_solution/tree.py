@@ -8,7 +8,7 @@ def level(raw_val):
     val = int(raw_val)
     if val < 1:
         raise argparse.ArgumentTypeError(
-            f"{raw_val} is an invalid value for level. It must be greater or equal to 1"
+            f"{raw_val} is an invalid value for level. It must be greater than or equal to 1"
         )
     return val
 

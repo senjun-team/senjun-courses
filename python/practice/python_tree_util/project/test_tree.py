@@ -25,16 +25,16 @@ class TestTree(unittest.TestCase):
         # и аргументов для запуска скрипта tree.py.
         self.cases = [
             ("dir without args", FULL_DIR, ["test_data"]),
-            ("dir with -d", FULL_DIR_DIR_ONLY, ["-d", "./test_data/"]),
+            ("dir with -d", FULL_DIR_DIRS_ONLY, ["-d", "./test_data/"]),
             ("dir with -L 1", DIR_LEVEL_1, ["-L 1", "test_data/"]),
             (
                 "dir with -L 2 -d",
-                DIR_LEVEL_2_DIR_ONLY,
+                DIR_LEVEL_2_DIRS_ONLY,
                 ["test_data", "-L 2", "-d"],
             ),
             (
                 "dir with -L 3 -d",
-                DIR_LEVEL_3_DIR_ONLY,
+                DIR_LEVEL_3_DIRS_ONLY,
                 ["test_data/", "-L 3", "-d"],
             ),
             ("subdir: books", DIR_BOOKS, ["test_data/books"]),
@@ -99,7 +99,7 @@ FULL_DIR = """test_data
 7 directories, 8 files
 """
 
-FULL_DIR_DIR_ONLY = """./test_data/
+FULL_DIR_DIRS_ONLY = """./test_data/
 ├── books
 └── movies
     ├── fantasy
@@ -117,7 +117,7 @@ DIR_LEVEL_1 = """test_data/
 3 directories, 0 files
 """
 
-DIR_LEVEL_2_DIR_ONLY = """test_data
+DIR_LEVEL_2_DIRS_ONLY = """test_data
 ├── books
 └── movies
     ├── fantasy
@@ -127,7 +127,7 @@ DIR_LEVEL_2_DIR_ONLY = """test_data
 6 directories
 """
 
-DIR_LEVEL_3_DIR_ONLY = """test_data/
+DIR_LEVEL_3_DIRS_ONLY = """test_data/
 ├── books
 └── movies
     ├── fantasy
