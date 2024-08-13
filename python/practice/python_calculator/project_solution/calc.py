@@ -1,3 +1,4 @@
+# Константы, обозначающие тип токена
 TOKEN_NUMBER = "number"
 TOKEN_OPERATOR = "operator"
 TOKEN_PARENTHESIS = "parenthesis"
@@ -15,14 +16,14 @@ NUMBER_INTEGER_PART = 1
 NUMBER_FRACTIONAL_PART = 2
 ERROR = 3
 
-
+# Поддерживаемые операции в выражении
 OPERATIONS = {
     # Оператор   Имплементация          Приоритет
-    "^": (lambda a, b: a**b, 3),
-    "*": (lambda a, b: a * b, 2),
-    "/": (lambda a, b: a / b, 2),
-    "+": (lambda a, b: a + b, 1),
-    "-": (lambda a, b: a - b, 1),
+    "^":       (lambda a, b: a**b,    3),
+    "*":       (lambda a, b: a * b,   2),
+    "/":       (lambda a, b: a / b,   2),
+    "+":       (lambda a, b: a + b,   1),
+    "-":       (lambda a, b: a - b,   1),
 }
 
 
@@ -62,7 +63,7 @@ def accumulate_parenthesis(char, token, tokens):
     token["value"] = char
 
 
-# КА
+# КА для парсинга строки с алгебраическим выражением
 STM = {
     # Символ
     DIGIT: {
