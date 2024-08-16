@@ -1,53 +1,148 @@
 import unittest
+
 from calc import calc
 
 
 class TestCalculator(unittest.TestCase):
-    def test_valid_cases(self):
-        # Каждый тестовый кейс состоит из двух элементов:
-        # строки с алгебраическим выражением; его значения
+    def run_test_cases(self, cases):
+        for raw_expression, res_plan, case_name in cases:
+            with self.subTest(case_name):
+                res_fact = calc(raw_expression)
+                if res_plan is None:
+                    self.assertIs(res_fact, None)
+                else:
+                    self.assertAlmostEqual(res_plan, res_fact)
+
+    def test_integer_numbers(self):
         cases = (
-            ["12345", 12345],
-            ["12.345", 12.345],
-            ["2.0+3", 5],
-            ["( 1+5.6 )", 6.6],
-            ["(8+2* 5) / (1+3*2-4)", 6],
-            [" 3 + 4 * 2 / (1 - 5)^2 ", 3.5],
-            ["2^ 3", 8],
-            ["1-2*3", -5],
-            ["(1-2)*3", -3],
-            ["(1+(2/2))-(3-5)", 4],
-            ["1/2 - 1/2", 0],
-            ["2 ^ 2 ^ 3", 64],
-            ["8 / 4 / 2", 1],
+            ["0", 0, "zero"],
+            ["8", 8, "non-zero single-digit integer number"],
+            ["12", 12, "many-digit integer number"],
+            ["0123", 123, "many-digit int number starting with zero"],
+            ["008", 8, "several-digit number at the beginning"],
+            ["9876543210", 9876543210, "long integer number"],
+            ["a5", None, "non-digit at the beginning"],
+            ["5$", None, "non-digit at the end"],
+            ["1_2", None, "non-digit in the middle"],
+            ["a", None, "not a digit"],
+            ["abc", None, "several non-digits"],
+            ["-5", None, "negative number"],
+            ["+5", None, "unary plus"],
+        )
+
+        self.run_test_cases(cases)
+
+    def test_floating_point_numbers(self):
+        cases = (
+            ["1.", 1, "floating-point without the fractional part"],
+            [".1", None, "floating-point without integer part"],
+            ["1.2", 1.2, "floating-point with integer and fractional parts"],
             [
-                "15/(7-(1+1))*3-(2+(1+1))*15/(7-(200+1))*3-(2+(1+1))*(15/(7-(1+1))*3-(2+(1+1))+15/(7-(1+1))*3-(2+(1+1)))",
-                -30.0721649485,
+                "0.1",
+                0.1,
+                "floating-point with 0 integer and non-zero fractional part",
+            ],
+            ["00.1", 0.1, "floating-point with leading zeroes"],
+            ["1.1000", 1.1, "floating-point with trailing zeroes"],
+            ["1.a", None, "floating-point with letter in fractional part"],
+            ["1.2e+3", None, "exponential representation"],
+            ["1.2.3", None, "floating-point with 2 dots"],
+        )
+
+        self.run_test_cases(cases)
+
+    def test_operators(self):
+        cases = (
+            ["1+2", 3, "expression with single +"],
+            ["1+22+333", 356, "expression with chain of + operators"],
+            ["9-11", -2, "expression with single - and negative result"],
+            ["11-9", 2, "expression with single - and positive result"],
+            [
+                "58-304-0",
+                -246,
+                "expression with chain of - operators (with 0)",
+            ],
+            ["9-1-1-0.5-1.5", 5, "expression with chain of - operators"],
+            ["3*11", 33, "expression with single *"],
+            [
+                "2*9*100*7",
+                12600,
+                "expression with chain of * operators (integers only)",
+            ],
+            [
+                "2.0*9.0*100.0*7.0",
+                12600,
+                "expression with chain of * operators (floating-points only)",
+            ],
+            ["49/7", 7, "expression with single /"],
+            ["28/2/2/2", 3.5, "expression with chain of / operators"],
+            [
+                "8/4/2",
+                1,
+                "expression with chain of / operators and integer result",
+            ],
+            ["5/0.5", 10, "expression with / operator and floating-point"],
+        )
+
+        self.run_test_cases(cases)
+
+    def test_operators_priority(self):
+        cases = (
+            ["2+5-1", 6, "operators with equal priority: +, -"],
+            ["2-5+1", -2, "operators with equal priority: -, +"],
+            ["4*2*3/11", 2.18181818, "operators with equal priority: *, /"],
+            ["4/2/3*11", 7.33333333, "operators with equal priority: /, *"],
+            ["3-9+8*2", 10, "operators with mixed priority: -, +, *"],
+            ["44*150-45/5", 6591, "operators with mixed priority: *, -, /"],
+            [
+                "6+400/500-1*1",
+                5.8,
+                "operators with mixed priority: +, /, -, *",
+            ],
+            ["1/2-1/2", 0, "operations with mixed priority: /, -, /"],
+        )
+
+        self.run_test_cases(cases)
+
+    def test_parenthesis(self):
+        cases = (
+            ["()", None, "empty parenthesis"],
+            [")()", None, "empty invalid parenthesis"],
+            ["(45.7)", 45.7, "parenthesis with single number"],
+            ["(1)+(2)", 3, "numbers with parenthesis"],
+            ["((62))", 62, "multiple parenthesis"],
+            ["(1+5.6)", 6.6, "expression in parenthesis"],
+            ["(8+2*5)/(1+3*2-4)", 6, "2 expressions in parenthesis"],
+            ["3+4*2/(1-5)*2", -1, "expression in parenthesis (in dividor)"],
+            ["(1-2)*3", -3, "priority of - operator in parenthesis"],
+            [
+                "(1+(2/2))-(3-5)",
+                4,
+                "priority of / and - operators in parenthesis",
             ],
         )
 
-        for raw_expression, res_plan in cases:
-            with self.subTest(raw_expression):
-                res_fact = calc(raw_expression)
-                self.assertAlmostEqual(res_plan, res_fact)
+        self.run_test_cases(cases)
 
-    def test_invalid_cases(self):
-        # Каждый тестовый кейс содержит некорректное алгебраическое выражение,
-        # для которого функция calc() должна вернуть None
+    def test_simple_invalid_expressions(self):
         cases = (
-            "",
-            " ",
-            "()",
-            "76-",
-            "7^^8",
-            "9++2",
-            "1.4.4",
-            "(0+4",
-            "3-5)",
-            ")1+1(",
-            "6-.",
+            ["", None, "empty string"],
+            ["a+b", None, "invalid characters"],
+            ["*", None, "operator-only"],
+            ["/*", None, "two operators without numbers"],
+            ["67--", None, "incorrect placement of - operators"],
+            ["5+-2", None, "incorrect placement of +, - operators"],
         )
 
-        for raw_expression in cases:
-            res_fact = calc(raw_expression)
-            self.assertIs(res_fact, None)
+        self.run_test_cases(cases)
+
+    def test_long_correct_expressions(self):
+        cases = (
+            [
+                "15/(7-(1+1))*3-(2+(1+1))*15/(7-(200+1))*3-(2+(0.5+1.5))*(15/(7-(1+1))*3-(2+(1+1))+15/(7-(1+1))*3-(2+(1+1)))",
+                -30.0721649485,
+                "long expression with parenthesis",
+            ],
+        )
+
+        self.run_test_cases(cases)

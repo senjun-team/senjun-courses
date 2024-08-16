@@ -16,14 +16,13 @@ NUMBER_INTEGER_PART = 1
 NUMBER_FRACTIONAL_PART = 2
 ERROR = 3
 
-# Поддерживаемые операции в выражении
-OPERATIONS = {
-    # Оператор   Имплементация          Приоритет
-    "^":       (lambda a, b: a**b,    3),
-    "*":       (lambda a, b: a * b,   2),
-    "/":       (lambda a, b: a / b,   2),
-    "+":       (lambda a, b: a + b,   1),
-    "-":       (lambda a, b: a - b,   1),
+# Поддерживаемые операторы в выражении вместе с их реализацией и
+# приоритетом. Чем больше значение поля "priority", тем выше приоритет
+OPERATORS = {
+    "*": {"func": lambda a, b: a * b, "priority": 2},
+    "/": {"func": lambda a, b: a / b, "priority": 2},
+    "+": {"func": lambda a, b: a + b, "priority": 1},
+    "-": {"func": lambda a, b: a - b, "priority": 1},
 }
 
 
@@ -63,8 +62,9 @@ def accumulate_parenthesis(char, token, tokens):
     token["value"] = char
 
 
-# КА для парсинга строки с алгебраическим выражением
-STM = {
+# Конечный автомат (finite-state machine) для парсинга строки 
+# с алгебраическим выражением
+FSM = {
     # Символ
     DIGIT: {
         # Текущее состояние        Новое состояние         Действие
@@ -100,16 +100,12 @@ def parse_symbol(c):
         return DIGIT
     if c == ".":
         return POINT
-    if c in OPERATIONS.keys():
+    if c in OPERATORS:
         return OPERATOR
     if c in ["(", ")"]:
         return PARENTHESIS
 
     return OTHER
-
-
-def normalize(s):
-    return s.strip().replace(" ", "")
 
 
 def tokenize(s):
@@ -120,7 +116,7 @@ def tokenize(s):
 
     for c in s:
         symbol = parse_symbol(c)
-        data = STM[symbol][state]
+        data = FSM[symbol][state]
         state = data[0]
         action = data[1]
 
@@ -135,7 +131,7 @@ def tokenize(s):
 
 
 def has_lower_priority(op1, op2):
-    return OPERATIONS[op1][1] < OPERATIONS[op2][1]
+    return OPERATORS[op1]["priority"] < OPERATORS[op2]["priority"]
 
 
 def convert_to_postfix_notation(tokens_infix):
@@ -189,7 +185,7 @@ def convert_to_postfix_notation(tokens_infix):
 
 
 def apply(op, a, b):
-    return OPERATIONS[op][0](a, b)
+    return OPERATORS[op]["func"](a, b)
 
 
 def calculate_expression(tokens_postfix):
@@ -219,7 +215,7 @@ def calculate_expression(tokens_postfix):
 
 
 def calc(raw_expression):
-    tokens = tokenize(normalize(raw_expression))
+    tokens = tokenize(raw_expression)
     if tokens is None:
         return None
 
@@ -236,7 +232,7 @@ if __name__ == "__main__":
         "1-2*3",            # -5
         "(1-2)*3",          # -3
         "(1+(2/2))-(3-5)",  # 4
-        "1/2-1/2"           # 0
+        "1/2-1/2",          # 0
     ]
 
     for expr in expressions:
