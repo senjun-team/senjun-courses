@@ -100,6 +100,17 @@ class TestCalculator(unittest.TestCase):
                 "operators with mixed priority: +, /, -, *",
             ],
             ["1/2-1/2", 0, "operations with mixed priority: /, -, /"],
+            ["15+2*6-8", 19, "operations with mixed priority: +, *, -"],
+            [
+                "2-503*8+1/7",
+                -4021.85714286,
+                "operations with mixed priority: -, *, +, /",
+            ],
+            [
+                "5*2-6/3+5-7-9*0",
+                6,
+                "operators with mixed priority and 0 multipliplication",
+            ],
         )
 
         self.run_test_cases(cases)
@@ -110,7 +121,7 @@ class TestCalculator(unittest.TestCase):
             [")()", None, "empty invalid parenthesis"],
             ["(45.7)", 45.7, "parenthesis with single number"],
             ["(1)+(2)", 3, "numbers with parenthesis"],
-            ["((62))", 62, "multiple parenthesis"],
+            ["((62))", 62, "nested parenthesis with single number"],
             ["(1+5.6)", 6.6, "expression in parenthesis"],
             ["(8+2*5)/(1+3*2-4)", 6, "2 expressions in parenthesis"],
             ["3+4*2/(1-5)*2", -1, "expression in parenthesis (in dividor)"],
@@ -119,6 +130,32 @@ class TestCalculator(unittest.TestCase):
                 "(1+(2/2))-(3-5)",
                 4,
                 "priority of / and - operators in parenthesis",
+            ],
+            [
+                "(2-503)*8.0+1/7",
+                -4007.85714286,
+                "parenthesis around 1st operator",
+            ],
+            [
+                "2-(503*8)+1.0/7",
+                -4021.85714286,
+                "parenthesis around 2nd operator",
+            ],
+            [
+                "2.0-503*(8+1)/7",
+                -644.714285714,
+                "parenthesis around 3rd operator",
+            ],
+            [
+                "2-503.0*8+(1/7)",
+                -4021.85714286,
+                "parenthesis around 4th operator",
+            ],
+            ["((2-503)*8+1)/7", -572.428571429, "nested parenthesis"],
+            [
+                "(((2)-((503)))*8+1)/(7)",
+                -572.428571429,
+                "redundant parenthesis",
             ],
         )
 
