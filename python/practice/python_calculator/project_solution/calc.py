@@ -4,20 +4,20 @@ TOKEN_OPERATOR = "operator"
 TOKEN_PARENTHESIS = "parenthesis"
 
 # Константы, обозначающие класс символа
-DIGIT = 0
-POINT = 1
-OPERATOR = 2
-PARENTHESIS = 3
-OTHER = 4
+DIGIT = "digit"
+POINT = "point"
+OPERATOR = "operator"
+PARENTHESIS = "parenthesis"
+OTHER = "other"
 
 # Константы, обозначающие состояние КА
-NEW_TOKEN = 0
-NUMBER_INTEGER_PART = 1
-NUMBER_FRACTIONAL_PART = 2
-ERROR = 3
+NEW_TOKEN = "new_token"
+NUMBER_INTEGER_PART = "number_integer_part"
+NUMBER_FRACTIONAL_PART = "number_fractional_part"
+ERROR = "error"
 
-# Поддерживаемые операторы в выражении вместе с их реализацией и
-# приоритетом. Чем больше значение поля "priority", тем выше приоритет
+# Поддерживаемые математические операции в выражении вместе с их реализацией
+# и приоритетом. Чем больше значение поля "priority", тем выше приоритет
 OPERATORS = {
     "*": {"func": lambda a, b: a * b, "priority": 2},
     "/": {"func": lambda a, b: a / b, "priority": 2},
@@ -73,7 +73,7 @@ FSM = {
         NUMBER_FRACTIONAL_PART: (NUMBER_FRACTIONAL_PART, accumulate_number),
     },
     POINT: {
-        NEW_TOKEN: (ERROR, None),
+        NEW_TOKEN: (NUMBER_FRACTIONAL_PART, start_accumulating_number),
         NUMBER_INTEGER_PART: (NUMBER_FRACTIONAL_PART, accumulate_number),
         NUMBER_FRACTIONAL_PART: (ERROR, None),
     },

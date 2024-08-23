@@ -35,13 +35,15 @@ class TestCalculator(unittest.TestCase):
     def test_floating_point_numbers(self):
         cases = (
             ["1.", 1, "floating-point without the fractional part"],
-            [".1", None, "floating-point without integer part"],
+            [".03", 0.03, "floating-point without integer part"],
             ["1.2", 1.2, "floating-point with integer and fractional parts"],
             [
                 "0.1",
                 0.1,
                 "floating-point with 0 integer and non-zero fractional part",
             ],
+            ["1.2345", 1.2345, "fractional part with 4 digits"],
+            ["987654.321", 987654.321, "integer part with 6 digits"],
             ["00.1", 0.1, "floating-point with leading zeroes"],
             ["1.1000", 1.1, "floating-point with trailing zeroes"],
             ["1.a", None, "floating-point with letter in fractional part"],
