@@ -3,14 +3,14 @@ TOKEN_NUMBER = "number"
 TOKEN_OPERATOR = "operator"
 TOKEN_PARENTHESIS = "parenthesis"
 
-# Константы, обозначающие символ
+# Константы, обозначающие класс символа
 DIGIT = 0
 POINT = 1
 OPERATOR = 2
 PARENTHESIS = 3
 OTHER = 4
 
-# Константы, обозначающие  состояние КА
+# Константы, обозначающие состояние КА
 NEW_TOKEN = 0
 NUMBER_INTEGER_PART = 1
 NUMBER_FRACTIONAL_PART = 2
