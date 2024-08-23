@@ -36,6 +36,7 @@ class TestCalculator(unittest.TestCase):
         cases = (
             ["1.", 1, "floating-point without the fractional part"],
             [".03", 0.03, "floating-point without integer part"],
+            ["..03", None, "no integer part and 2 dots"],
             ["1.2", 1.2, "floating-point with integer and fractional parts"],
             [
                 "0.1",
