@@ -172,7 +172,8 @@ class TestCalculator(unittest.TestCase):
             ["a+b", None, "invalid characters"],
             ["*", None, "operator-only"],
             ["/*", None, "two operators without numbers"],
-            ["67--", None, "incorrect placement of - operators"],
+            ["67-", None, "incorrect placement of - operator"],
+            ["67--", None, "incorrect placement of two - operators"],
             ["5+-2", None, "incorrect placement of +, - operators"],
         )
 
