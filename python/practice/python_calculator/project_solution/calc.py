@@ -62,7 +62,7 @@ def accumulate_parenthesis(char, token, tokens):
     token["value"] = char
 
 
-# Конечный автомат (finite-state machine) для парсинга строки 
+# Конечный автомат (finite-state machine) для парсинга строки
 # с алгебраическим выражением
 FSM = {
     # Символ

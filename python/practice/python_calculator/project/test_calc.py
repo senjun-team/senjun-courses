@@ -9,7 +9,7 @@ class TestCalculator(unittest.TestCase):
             with self.subTest(case_name):
                 res_fact = calc(raw_expression)
                 if res_plan is None:
-                    self.assertIs(res_fact, None)
+                    self.assertIsNone(res_fact)
                 else:
                     self.assertAlmostEqual(res_plan, res_fact)
 
@@ -186,3 +186,7 @@ class TestCalculator(unittest.TestCase):
         )
 
         self.run_test_cases(cases)
+
+
+if __name__ == "__main__":
+    unittest.main()
