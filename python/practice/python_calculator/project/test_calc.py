@@ -18,8 +18,8 @@ class TestCalculator(unittest.TestCase):
             ["0", 0, "zero"],
             ["8", 8, "non-zero single-digit integer number"],
             ["12", 12, "many-digit integer number"],
-            ["0123", 123, "many-digit int number starting with zero"],
-            ["008", 8, "several-digit number at the beginning"],
+            ["0123", 123, "many-digit int number with leading zero"],
+            ["008", 8, "many-digit int number with several leading zeros"],
             ["9876543210", 9876543210, "long integer number"],
             ["a5", None, "non-digit at the beginning"],
             ["5$", None, "non-digit at the end"],
@@ -45,8 +45,8 @@ class TestCalculator(unittest.TestCase):
             ],
             ["1.2345", 1.2345, "fractional part with 4 digits"],
             ["987654.321", 987654.321, "integer part with 6 digits"],
-            ["00.1", 0.1, "floating-point with leading zeroes"],
-            ["1.1000", 1.1, "floating-point with trailing zeroes"],
+            ["00.1", 0.1, "floating-point with leading zeros"],
+            ["1.1000", 1.1, "floating-point with trailing zeros"],
             ["1.a", None, "floating-point with letter in fractional part"],
             ["1.2e+3", None, "exponential representation"],
             ["1.2.3", None, "floating-point with 2 dots"],
@@ -112,22 +112,24 @@ class TestCalculator(unittest.TestCase):
             [
                 "5*2-6/3+5-7-9*0",
                 6,
-                "operators with mixed priority and 0 multipliplication",
+                "operators with mixed priority and multiplication by 0",
             ],
         )
 
         self.run_test_cases(cases)
 
-    def test_parenthesis(self):
+    def test_parentheses(self):
         cases = (
             ["()", None, "empty parenthesis"],
             [")()", None, "empty invalid parenthesis"],
-            ["(45.7)", 45.7, "parenthesis with single number"],
+            ["(45.7)", 45.7, "parentheses with single number"],
+            ["[45.7]", None, "square brackets"],
+            ["{45.7}", None, "curly braces"],
             ["(1)+(2)", 3, "numbers with parenthesis"],
             ["((62))", 62, "nested parenthesis with single number"],
             ["(1+5.6)", 6.6, "expression in parenthesis"],
             ["(8+2*5)/(1+3*2-4)", 6, "2 expressions in parenthesis"],
-            ["3+4*2/(1-5)*2", -1, "expression in parenthesis (in dividor)"],
+            ["3+4*2/(1-5)*2", -1, "expression in parenthesis (in divider)"],
             ["(1-2)*3", -3, "priority of - operator in parenthesis"],
             [
                 "(1+(2/2))-(3-5)",
