@@ -120,47 +120,47 @@ class TestCalculator(unittest.TestCase):
 
     def test_parentheses(self):
         cases = (
-            ["()", None, "empty parenthesis"],
-            [")()", None, "empty invalid parenthesis"],
+            ["()", None, "empty parentheses"],
+            [")()", None, "empty invalid parentheses"],
             ["(45.7)", 45.7, "parentheses with single number"],
             ["[45.7]", None, "square brackets"],
             ["{45.7}", None, "curly braces"],
-            ["(1)+(2)", 3, "numbers with parenthesis"],
-            ["((62))", 62, "nested parenthesis with single number"],
-            ["(1+5.6)", 6.6, "expression in parenthesis"],
-            ["(8+2*5)/(1+3*2-4)", 6, "2 expressions in parenthesis"],
-            ["3+4*2/(1-5)*2", -1, "expression in parenthesis (in divider)"],
-            ["(1-2)*3", -3, "priority of - operator in parenthesis"],
+            ["(1)+(2)", 3, "numbers with parentheses"],
+            ["((62))", 62, "nested parentheses with single number"],
+            ["(1+5.6)", 6.6, "expression in parentheses"],
+            ["(8+2*5)/(1+3*2-4)", 6, "2 expressions in parentheses"],
+            ["3+4*2/(1-5)*2", -1, "expression in parentheses (in divider)"],
+            ["(1-2)*3", -3, "priority of - operator in parentheses"],
             [
                 "(1+(2/2))-(3-5)",
                 4,
-                "priority of / and - operators in parenthesis",
+                "priority of / and - operators in parentheses",
             ],
             [
                 "(2-503)*8.0+1/7",
                 -4007.85714286,
-                "parenthesis around 1st operator",
+                "parentheses around 1st operator",
             ],
             [
                 "2-(503*8)+1.0/7",
                 -4021.85714286,
-                "parenthesis around 2nd operator",
+                "parentheses around 2nd operator",
             ],
             [
                 "2.0-503*(8+1)/7",
                 -644.714285714,
-                "parenthesis around 3rd operator",
+                "parentheses around 3rd operator",
             ],
             [
                 "2-503.0*8+(1/7)",
                 -4021.85714286,
-                "parenthesis around 4th operator",
+                "parentheses around 4th operator",
             ],
-            ["((2-503)*8+1)/7", -572.428571429, "nested parenthesis"],
+            ["((2-503)*8+1)/7", -572.428571429, "nested parentheses"],
             [
                 "(((2)-((503)))*8+1)/(7)",
                 -572.428571429,
-                "redundant parenthesis",
+                "redundant parentheses",
             ],
         )
 
@@ -184,7 +184,7 @@ class TestCalculator(unittest.TestCase):
             [
                 "15/(7-(1+1))*3-(2+(1+1))*15/(7-(200+1))*3-(2+(0.5+1.5))*(15/(7-(1+1))*3-(2+(1+1))+15/(7-(1+1))*3-(2+(1+1)))",
                 -30.0721649485,
-                "long expression with parenthesis",
+                "long expression with parentheses",
             ],
         )
 
