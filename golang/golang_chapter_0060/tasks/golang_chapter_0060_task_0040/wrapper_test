@@ -1,0 +1,28 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestCountUniq(t *testing.T) {
+
+	cases := []struct {
+		in   string
+		want int
+	}{
+		{"программисты компилируемого языка Go пишут программы на Go с использованием многих удобных возможностей языка", 12},
+		{"", 0},
+		{"Go", 1},
+		{"язык Go", 2},
+		{"язык Go является регистрозависимым языком", 5},
+	}
+
+	for _, c := range cases {
+		got := countUniq(c.in)
+		if got != c.want {
+			t.Errorf("countUniq(%q) == %d, want %d",
+				c.in, got, c.want)
+		}
+	}
+
+}
