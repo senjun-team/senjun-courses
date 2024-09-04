@@ -230,7 +230,6 @@ func calculateConsts(seed int64) map[string]string {
 		digitsNumber := randomGenerator.Intn(maxLen) + 1
 		digitsNumberSlice = append(digitsNumberSlice, digitsNumber)
 	}
-	fmt.Println(digitsNumberSlice)
 
 	return map[string]string{
 		"E":      strconv.FormatFloat(math.E, 'f', maxLen+2, 64)[:digitsNumberSlice[0]+2],

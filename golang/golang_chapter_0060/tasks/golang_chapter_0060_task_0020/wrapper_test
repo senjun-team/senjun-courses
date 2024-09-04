@@ -1,0 +1,53 @@
+package main
+
+import (
+	"testing"
+)
+
+func isEqual(x, y map[string]string) bool {
+	if len(x) != len(y) {
+		return false
+	}
+
+	for key, xv := range x {
+		if yv, ok := y[key]; !ok || yv != xv {
+			return false
+		}
+	}
+
+	return true
+}
+func TestChooseConsts(t *testing.T) {
+
+	cases := []struct {
+		in   map[string]string
+		want map[string]string
+	}{
+		{map[string]string{}, map[string]string{}},
+		{map[string]string{"E": "2.718281", "Ln10": "2.30258509", "Ln2": "0.69315", "Pi": "3.14159265",
+			"Sqrt2": "1.414213562", "SqrtE": "1.6", "SqrtPi": "1.7724"},
+			map[string]string{"E": "2.718281", "Ln10": "2.30258509", "Ln2": "0.69315", "Pi": "3.14159265",
+				"Sqrt2": "1.414213562"}},
+		{map[string]string{"E": "2.718", "Ln10": "2.3", "Ln2": "0.6931", "Pi": "3.14",
+			"Sqrt2": "1.4", "SqrtE": "1.6", "SqrtPi": "1.7724"},
+			map[string]string{}},
+	}
+
+	for _, c := range cases {
+
+		got := make(map[string]string)
+
+		for k, v := range c.in {
+			got[k] = v
+		}
+
+		chooseConsts(got)
+
+		if !isEqual(got, c.want) {
+			t.Errorf("after chooseConsts from\n %v\n got: %v\n want: %v",
+				c.in, got, c.want)
+		}
+
+	}
+
+}
