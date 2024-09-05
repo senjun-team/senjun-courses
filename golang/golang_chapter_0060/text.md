@@ -161,7 +161,9 @@ for key, val := range catsWeights {
 ```
 Порядок, в котором располагаются элементы в отображении, **не определен** и изменяется от одного запуска программы к другому. Это сделано намеренно, поскольку из-за особенностей реализации нельзя гарантировать, что в разных версиях языка порядок окажется одним и тем же. Решение, при котором порядок элементов отображения не определен даже от запуска к запуску, позволяет писать более надежные программы. Если нужен конкретный порядок элементов, то их придется отсортировать самостоятельно. Например, строковые ключи можно отсортировать функцией `Strings` пакета `sort`.
 
-Функция `calculateConsts` возвращает отображение из нескольких констант, каждая из которых содержит некоторое количество цифр после десятичной точки. Количество цифр после десятичной точки каждой из констант генерируется псевдослучайным образом в зависимости от входного аргумента `seed`. Реализуйте тело функции `chooseConsts`, которая принимает на вход отображение и удаляет из него те константы, которые содержат после десятичной точки менее 5 цифр. Константы в отображении представлены строками. Длину строки в байтах позволяет узнать встроенная функция `len()`. {.task_text}
+Функция `calculateConsts()` возвращает отображение, в котором наименованиям констант соотнесены их значения. Значение каждой константы содержит некоторое количество цифр после десятичной точки. Оно генерируется псевдослучайным образом в зависимости от входного аргумента `seed`.  {.task_text}
+
+Реализуйте тело функции `chooseConsts()`, которая принимает на вход это отображение и удаляет из него те константы, которые содержат после десятичной точки менее 5 цифр. Константы в отображении представлены строками. Длину строки в байтах позволяет узнать встроенная функция `len()`. {.task_text}
 
 ```go {.task_source #golang_chapter_0060_task_0020}
 package main
@@ -174,31 +176,33 @@ import (
 	"strings"
 )
 
+func randLenStr(val float64, pseudoRandGen *rand.Rand) string {
+	// дробная часть чисел не длиннее 10 знаков
+	const prec = 10
+	// значение в интервале [1, 11)
+	fractionalPartLen := pseudoRandGen.Intn(prec) + 1
+	strVal := strconv.FormatFloat(val, 'f', prec, 64)
+	integerPartLen := strings.IndexRune(strVal, '.') + 1
+	return strVal[:integerPartLen + fractionalPartLen]
+}
+
 func calculateConsts(seed int64) map[string]string {
-	const constsNum = 7 // постоянное значение
-	const maxLen = 10
-
-	randomGenerator := rand.New(rand.NewSource(seed))
-
-	var digitsNumberSlice []int
-	for i := 0; i < constsNum; i++ {
-		digitsNumber := randomGenerator.Intn(maxLen) + 1
-		digitsNumberSlice = append(digitsNumberSlice, digitsNumber)
-	}
+	// генератор псевдослучайных чисел
+	gen := rand.New(rand.NewSource(seed))
 
 	return map[string]string{
-		"E":      strconv.FormatFloat(math.E, 'f', maxLen+2, 64)[:digitsNumberSlice[0]+2],
-		"Pi":     strconv.FormatFloat(math.Pi, 'f', maxLen+2, 64)[:digitsNumberSlice[1]+2],
-		"Sqrt2":  strconv.FormatFloat(math.Sqrt2, 'f', maxLen+2, 64)[:digitsNumberSlice[2]+2],
-		"SqrtE":  strconv.FormatFloat(math.SqrtE, 'f', maxLen+2, 64)[:digitsNumberSlice[3]+2],
-		"SqrtPi": strconv.FormatFloat(math.SqrtPi, 'f', maxLen+2, 64)[:digitsNumberSlice[4]+2],
-		"Ln2":    strconv.FormatFloat(math.Ln2, 'f', maxLen+2, 64)[:digitsNumberSlice[5]+2],
-		"Ln10":   strconv.FormatFloat(math.Ln10, 'f', maxLen+2, 64)[:digitsNumberSlice[6]+2],
+		"E":      randLenStr(math.E, gen),
+		"Pi":     randLenStr(math.Pi, gen),
+		"Sqrt2":  randLenStr(math.Sqrt2, gen),
+		"SqrtE":  randLenStr(math.SqrtE, gen),
+		"SqrtPi": randLenStr(math.SqrtPi, gen),
+		"Ln2":    randLenStr(math.Ln2, gen),
+		"Ln10":   randLenStr(math.Ln10, gen),
 	}
 }
 
 func chooseConsts(consts map[string]string) {
-	// ваш код здесь 
+	// ваш код здесь
 }
 
 func main() {
@@ -208,10 +212,9 @@ func main() {
 	chooseConsts(consts)
 	fmt.Println(consts)
 }
-
 ```
 
-Чтобы узнать число цифр после десятичной точки, воспользуйтесь функцией `Split` пакета `strings`, разбив строку на две: до точки и после точки, а затем вычислите длину строки после точки через встроенную функцию `len()`. {.task_hint}
+Чтобы узнать количество цифр после десятичной точки, воспользуйтесь функцией `IndexRune()` пакета `strings` для того чтобы определить индекс точки в строке. Затем вычислите длину подстроки после точки. В этом вам поможет встроенная функция `len()`. {.task_hint}
 
 ```go {.task_answer}
 package main
@@ -224,37 +227,39 @@ import (
 	"strings"
 )
 
+func randLenStr(val float64, pseudoRandGen *rand.Rand) string {
+	// дробная часть чисел не длиннее 10 знаков
+	const prec = 10
+	// значение в интервале [1, 11)
+	fractionalPartLen := pseudoRandGen.Intn(prec) + 1
+	strVal := strconv.FormatFloat(val, 'f', prec, 64)
+	integerPartLen := strings.IndexRune(strVal, '.') + 1
+	return strVal[:integerPartLen + fractionalPartLen]
+}
+
 func calculateConsts(seed int64) map[string]string {
-	const constsNum = 7 
-	const maxLen = 10
-
-	randomGenerator := rand.New(rand.NewSource(seed))
-
-	var digitsNumberSlice []int
-	for i := 0; i < constsNum; i++ {
-		digitsNumber := randomGenerator.Intn(maxLen) + 1
-		digitsNumberSlice = append(digitsNumberSlice, digitsNumber)
-	}
+	// генератор псевдослучайных чисел
+	gen := rand.New(rand.NewSource(seed))
 
 	return map[string]string{
-		"E":      strconv.FormatFloat(math.E, 'f', maxLen+2, 64)[:digitsNumberSlice[0]+2],
-		"Pi":     strconv.FormatFloat(math.Pi, 'f', maxLen+2, 64)[:digitsNumberSlice[1]+2],
-		"Sqrt2":  strconv.FormatFloat(math.Sqrt2, 'f', maxLen+2, 64)[:digitsNumberSlice[2]+2],
-		"SqrtE":  strconv.FormatFloat(math.SqrtE, 'f', maxLen+2, 64)[:digitsNumberSlice[3]+2],
-		"SqrtPi": strconv.FormatFloat(math.SqrtPi, 'f', maxLen+2, 64)[:digitsNumberSlice[4]+2],
-		"Ln2":    strconv.FormatFloat(math.Ln2, 'f', maxLen+2, 64)[:digitsNumberSlice[5]+2],
-		"Ln10":   strconv.FormatFloat(math.Ln10, 'f', maxLen+2, 64)[:digitsNumberSlice[6]+2],
+		"E":      randLenStr(math.E, gen),
+		"Pi":     randLenStr(math.Pi, gen),
+		"Sqrt2":  randLenStr(math.Sqrt2, gen),
+		"SqrtE":  randLenStr(math.SqrtE, gen),
+		"SqrtPi": randLenStr(math.SqrtPi, gen),
+		"Ln2":    randLenStr(math.Ln2, gen),
+		"Ln10":   randLenStr(math.Ln10, gen),
 	}
 }
 
 func chooseConsts(consts map[string]string) {
-	digitsNumber := 5
+	const fractionalPartMinLen = 5
 
 	var keysToDelete []string
 
 	for key, val := range consts {
-
-		if len(strings.Split(val, ".")[1]) < digitsNumber {
+		pointIndex := strings.IndexRune(val, '.')
+		if len(val[pointIndex + 1:]) < fractionalPartMinLen {
 			keysToDelete = append(keysToDelete, key)
 		}
 	}
@@ -265,13 +270,12 @@ func chooseConsts(consts map[string]string) {
 }
 
 func main() {
-	consts := calculateConsts(42)
+	// аргумент можно менять для отладки 
+	consts := calculateConsts(42) 
 	fmt.Println(consts)
 	chooseConsts(consts)
 	fmt.Println(consts)
-
 }
-
 ```
 
 ## Проверка наличия элемента в отображении
@@ -295,14 +299,14 @@ catsWeight := catsWeights["Sharik"]
 fmt.Println("catsWeight =", catsWeight)
 ```
 
-Как и срезы, отображения нельзя сравнивать друг с другом. Отображение можно сравнить только со значением `nil`. Напишите тело функции `equalWeights`, которая проверяет, содержат ли два среза типа `map[string]int` одинаковые ключи и связанные с ними значения. Функция `equalWeights` возвращает `true`, если это так, и `false` — в противном случае. {.task_text}
+Как и срезы, отображения нельзя сравнивать друг с другом. Отображение можно сравнить только со значением `nil`. Напишите тело функции `isEqual`, которая проверяет, содержат ли два среза типа `map[string]int` одинаковые ключи и связанные с ними значения. Функция `isEqual` возвращает `true`, если это так, и `false` — в противном случае. {.task_text}
 
 ```go {.task_source #golang_chapter_0060_task_0030}
 package main
 
 import "fmt"
 
-func equalWeights(x, y map[string]int) bool {
+func isEqual(x, y map[string]int) bool {
 	// ваш код здесь 
 }
 
@@ -319,7 +323,7 @@ func main() {
 		"Sharik": 0,
 	}
 
-	fmt.Println(equalWeights(catsWeights, dogsWeights))
+	fmt.Println(isEqual(catsWeights, dogsWeights))
 }
 ```
 
@@ -330,13 +334,13 @@ package main
 
 import "fmt"
 
-func equalWeights(firstWeights, secondWeights map[string]int) bool {
-	if len(firstWeights) != len(secondWeights) {
+func isEqual(x, y map[string]int) bool {
+	if len(x) != len(y) {
 		return false
 	}
 
-	for key, firstValue := range firstWeights {
-		if secondValue, ok := secondWeights[key]; !ok || secondValue != firstValue {
+	for key, xVal := range x {
+		if yVal, ok := y[key]; !ok || yVal != xVal {
 			return false
 		}
 	}
@@ -357,9 +361,8 @@ func main() {
 		"Sharik": 0,
 	}
 
-	fmt.Println(equalWeights(catsWeights, dogsWeights))
+	fmt.Println(isEqual(catsWeights, dogsWeights))
 }
-
 ```
 
 ## Реализация множеств
