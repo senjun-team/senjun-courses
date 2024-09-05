@@ -1,27 +1,42 @@
 import math
 import unittest
 
+import objsize
+
 from search_engine import SearchEngine
 
 
+def assert_size_not_changed(obj):
+    def outer(test_method):
+        def inner(test_case):
+            initial_size = objsize.get_deep_size(obj)
+            test_method(test_case, obj)
+            final_size = objsize.get_deep_size(obj)
+            test_case.assertEqual(initial_size, final_size)
+
+        return inner
+
+    return outer
+
+
 class TestSearchEngine(unittest.TestCase):
-    def test_init_then_search(self):
-        se = SearchEngine([])
+    @assert_size_not_changed(SearchEngine([]))
+    def test_init_then_search(self, se):
         self.assertEqual(len(se.search("python decorators")), 0)
 
-    def test_search_nonexistent_words(self):
-        se = SearchEngine(["docs/a.txt"])
-
+    @assert_size_not_changed(SearchEngine(["docs/a.txt"]))
+    def test_search_nonexistent_words(self, se):
         self.assertEqual(len(se.search("python decorators")), 0)
         self.assertEqual(len(se.search("Lambda functions PEP")), 0)
 
-    def test_search_existing_words(self):
-        se = SearchEngine(["docs/b.txt", "docs/c.txt"])
+    @assert_size_not_changed(SearchEngine(["docs/b.txt", "docs/c.txt"]))
+    def test_search_existing_words(self, se):
         self.assertEqual(len(se.search("science")), 2)
 
-    def test_search_single_word_present_in_two_docs(self):
-        se = SearchEngine(["docs/a.txt", "docs/b.txt", "docs/c.txt"])
-
+    @assert_size_not_changed(
+        SearchEngine(["docs/a.txt", "docs/b.txt", "docs/c.txt"])
+    )
+    def test_search_single_word_present_in_two_docs(self, se):
         search_results = se.search("computer")
         self.assertEqual(len(search_results), 2)
 
@@ -40,9 +55,10 @@ class TestSearchEngine(unittest.TestCase):
         tf = 1 / 25
         self.assertAlmostEqual(second_match.score, tf * idf)
 
-    def test_search_single_word_present_in_one_doc(self):
-        se = SearchEngine(["docs/a.txt", "docs/b.txt", "docs/c.txt"])
-
+    @assert_size_not_changed(
+        SearchEngine(["docs/a.txt", "docs/b.txt", "docs/c.txt"])
+    )
+    def test_search_single_word_present_in_one_doc(self, se):
         search_results = se.search("Central")
         self.assertEqual(len(search_results), 1)
 

@@ -61,8 +61,10 @@ class SearchEngine:
         scores = defaultdict(float)
 
         for word in split_to_words(query):
+            if (docs_with_word := self._index.get(word)) is None:
+                continue
             idf = self._idf(word)
-            for doc_with_word in self._index[word]:
+            for doc_with_word in docs_with_word:
                 tf = self._tf(doc_with_word)
                 scores[doc_with_word.name] += tf * idf
 
