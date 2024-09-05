@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestEqualWeights(t *testing.T) {
+func TestIsEqual(t *testing.T) {
 
 	cases := []struct {
 		in   [2]map[string]int
@@ -43,9 +43,9 @@ func TestEqualWeights(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := equalWeights(c.in[0], c.in[1])
+		got := isEqual(c.in[0], c.in[1])
 		if got != c.want {
-			t.Errorf("equalWeights(%v, %v) == %t, want %t",
+			t.Errorf("isEqual(%v, %v) == %t, expected %t",
 				c.in[0], c.in[1], got, c.want)
 		}
 	}
