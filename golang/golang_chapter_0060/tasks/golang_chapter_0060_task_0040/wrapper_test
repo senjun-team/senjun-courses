@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestCountUniq(t *testing.T) {
+func TestCountUniqWords(t *testing.T) {
 
 	cases := []struct {
 		in   string
@@ -18,9 +18,9 @@ func TestCountUniq(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := countUniq(c.in)
+		got := countUniqWords(c.in)
 		if got != c.want {
-			t.Errorf("countUniq(%q) == %d, want %d",
+			t.Errorf("countUniqWords(%q) == %d, expected %d",
 				c.in, got, c.want)
 		}
 	}

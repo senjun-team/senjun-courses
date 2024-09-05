@@ -370,6 +370,8 @@ func main() {
 
 В переменной `s` типа `string` содержится некоторый текст. Допишите функцию `countUniq`, которая подсчитает число уникальных слов в этом тексте. Словом считать любую последовательность символов, разделяемую пробелами. {.task_text}
 
+В переменной `s` типа `string` содержится некоторый текст. Допишите функцию `countUniqWords()`, которая возвращает количество уникальных слов в тексте. Словом будем считать любую последовательность символов, отделенную пробелами. {.task_text}
+
 ```go {.task_source #golang_chapter_0060_task_0040}
 package main
 
@@ -378,15 +380,15 @@ import (
 	"strings"
 )
 
-func countUniq(s string) int {
+func countUniqWords(s string) int {
 	// ваш код здесь
 }
+
 func main() {
-	s := "программисты компилируемого языка Go пишут программы на Go с использованием многих удобных возможностей языка"
+	s := "Go Rust Go C++ Lisp Lisp"
 
-	fmt.Println(countUniq(s))
+	fmt.Println(countUniqWords(s))
 }
-
 ``` 
 
 Создайте отображение типа `map[string]struct{}`. Добавляйте в цикле каждое слово в качестве ключа отображения, а в качестве его значения — `struct{}{}`. Таким образом, вы получите отображение с уникальными словами. {.task_hint}
@@ -399,25 +401,24 @@ import (
 	"strings"
 )
 
-func countUniq(s string) int {
-
-	if s == "" {
+func countUniqWords(s string) int {
+	if len(s) == 0 {
 		return 0
 	}
 
-	words := strings.Split(s, " ")
-	seen := make(map[string]struct{})
+	uniqWords := make(map[string]struct{})
 
-	for _, word := range words {
-		seen[word] = struct{}{}
+	for _, word := range strings.Split(s, " ") {
+		uniqWords[word] = struct{}{}
 	}
 
-	return len(seen)
+	return len(uniqWords)
 }
-func main() {
-	s := "программисты компилируемого языка Go пишут программы на Go с использованием многих удобных возможностей языка"
 
-	fmt.Println(countUniq(s))
+func main() {
+	s := "Go Rust Go C++ Lisp Lisp"
+
+	fmt.Println(countUniqWords(s))
 }
 ```
 
