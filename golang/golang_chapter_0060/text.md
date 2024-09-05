@@ -66,13 +66,11 @@ fmt.Println(catsWeights["Busa"])
 fmt.Println(catsWeights["Sharik"])
 ```
 
-Функция `piDigit` возвращает очередной знак числа Пи после десятичной точки, начиная с нулевого знака и заканчивая девятым включительно. С использованием `piDigit` реализуйте тело функции `countDigits`, которая принимает на вход количество цифр числа Пи после десятичной точки (`0 <= N < 10`) и возвращает отображение с числом каждой из встретившихся цифр. Цифры, не встретившиеся ни разу, в отображение включать не нужно. Например, для `countDigits(5)` результат следующий:
+Функция `piDigit()` по индексу возвращает очередной знак числа Пи (3.1415926535...) после десятичной точки, начиная с нулевого знака и заканчивая девятым включительно. {.task_text}
 
-```
-map[1:2 4:1 5:1 9:1]
-```
+С использованием `piDigit()` реализуйте тело функции `countDigits()`. Она принимает количество цифр числа Пи после десятичной точки (`0 <= n <= 10`) и возвращает отображение с количестом раз, которое встретилась каждая цифра. Цифры, не встретившиеся ни разу, в отображение включать не нужно. {.task_text}
 
-Таким образом, для последовательности цифр `14159` цифра `1` встречается `2` раза; `4`, `5`,`9` - по одному разу. Другие цифры не встречаются.{.task_text}
+Например, для `countDigits(5)` результат следующий: `map[1:2 4:1 5:1 9:1]`. Таким образом, для последовательности цифр `14159` цифра `1` встречается `2` раза; `4`, `5`, `9` - по одному разу. Другие цифры не встречаются. {.task_text}
 
 ```go {.task_source #golang_chapter_0060_task_0010}
 package main
@@ -83,22 +81,25 @@ import (
 	"strconv"
 )
 
-func piDigit(n int) int {
-	maxLen := 10
-	if n > maxLen-1 {
+func piDigit(index int) int {
+	const maxLen = 10
+	if index < 0 || index >= maxLen {
 		return -1
 	}
-	res, _ := strconv.Atoi(string(strconv.FormatFloat(math.Pi, 'f', maxLen+2, 64)[n+2]))
+
+	const integerPartLen = 2
+	piStr := strconv.FormatFloat(math.Pi, 'f', maxLen+integerPartLen, 64)
+	res, _ := strconv.Atoi(string(piStr[index+integerPartLen]))
 	return res
 }
 
 func countDigits(n int) map[int]int {
 	// ваш код здесь 
 }
+
 func main() {
 	fmt.Println(countDigits(10))
 }
-
 ```
 
 Добавляйте в цикле единицу значению отображения, ключом которого является очередная цифра числа Пи. {.task_hint}
@@ -112,12 +113,15 @@ import (
 	"strconv"
 )
 
-func piDigit(n int) int {
-	maxLen := 10
-	if n > maxLen-1 {
+func piDigit(index int) int {
+	const maxLen = 10
+	if index < 0 || index >= maxLen {
 		return -1
 	}
-	res, _ := strconv.Atoi(string(strconv.FormatFloat(math.Pi, 'f', maxLen+2, 64)[n+2]))
+
+	const integerPartLen = 2
+	piStr := strconv.FormatFloat(math.Pi, 'f', maxLen+integerPartLen, 64)
+	res, _ := strconv.Atoi(string(piStr[index+integerPartLen]))
 	return res
 }
 
@@ -130,6 +134,7 @@ func countDigits(n int) map[int]int {
 
 	return res
 }
+
 func main() {
 	fmt.Println(countDigits(10))
 }
