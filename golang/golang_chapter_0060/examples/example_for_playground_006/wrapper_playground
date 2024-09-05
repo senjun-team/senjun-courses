@@ -1,0 +1,11 @@
+package main
+
+import "fmt"
+
+func main() {
+    catsWeights := map[string]int{
+        "Barsik": 10,
+        "Busa":   2,
+    }
+    #INJECT-b585472fa
+}

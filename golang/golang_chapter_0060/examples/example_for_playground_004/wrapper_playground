@@ -1,0 +1,8 @@
+package main
+
+import "fmt"
+
+func main() {
+    catsWeights := make(map[string]int)
+    #INJECT-b585472fa
+}
