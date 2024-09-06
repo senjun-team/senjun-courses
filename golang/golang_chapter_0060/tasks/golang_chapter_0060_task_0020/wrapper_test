@@ -44,7 +44,7 @@ func TestChooseConsts(t *testing.T) {
 		chooseConsts(got)
 
 		if !isEqual(got, c.want) {
-			t.Errorf("after chooseConsts from\n %v\n got: %v\n expected: %v",
+			t.Errorf("after chooseConsts from\n %v\n got: %v\n want: %v",
 				c.in, got, c.want)
 		}
 

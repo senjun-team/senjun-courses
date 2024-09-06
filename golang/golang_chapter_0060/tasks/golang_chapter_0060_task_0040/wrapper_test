@@ -20,7 +20,7 @@ func TestCountUniqWords(t *testing.T) {
 	for _, c := range cases {
 		got := countUniqWords(c.in)
 		if got != c.want {
-			t.Errorf("countUniqWords(%q) == %d, expected %d",
+			t.Errorf("countUniqWords(%q) == %d, want %d",
 				c.in, got, c.want)
 		}
 	}

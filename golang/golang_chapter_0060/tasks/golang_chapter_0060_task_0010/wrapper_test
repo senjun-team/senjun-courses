@@ -39,7 +39,7 @@ func TestCountDigits(t *testing.T) {
 		got := countDigits(c.in)
 
 		if !isEqual(countDigits(c.in), c.want) {
-			t.Errorf("countDigits(%d) == %v, expected %v",
+			t.Errorf("countDigits(%d) == %v, want %v",
 				c.in, got, c.want)
 		}
 	}

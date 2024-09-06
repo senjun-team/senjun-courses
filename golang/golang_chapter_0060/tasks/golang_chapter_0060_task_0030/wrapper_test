@@ -45,7 +45,7 @@ func TestIsEqual(t *testing.T) {
 	for _, c := range cases {
 		got := isEqual(c.in[0], c.in[1])
 		if got != c.want {
-			t.Errorf("isEqual(%v, %v) == %t, expected %t",
+			t.Errorf("isEqual(%v, %v) == %t, want %t",
 				c.in[0], c.in[1], got, c.want)
 		}
 	}

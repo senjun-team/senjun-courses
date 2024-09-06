@@ -262,7 +262,7 @@ func chooseConsts(consts map[string]string) {
 
 	for key, val := range consts {
 		pointIndex := strings.IndexRune(val, '.')
-		if len(val[pointIndex + 1:]) < fractionalPartMinLen {
+		if pointIndex == -1 || len(val[pointIndex + 1:]) < fractionalPartMinLen {
 			keysToDelete = append(keysToDelete, key)
 		}
 	}
