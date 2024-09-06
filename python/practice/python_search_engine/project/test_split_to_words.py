@@ -19,7 +19,7 @@ class TestSplitToWords(unittest.TestCase):
             with self.subTest(f"text: [{text}]"):
                 self.assertEqual(len(split_to_words(text)), 0)
 
-    def test_spaces_handling(self):
+    def test_whitespace_characters_handling(self):
         text_to_words = [
             ("1", ["1"]),
             ("single", ["single"]),
@@ -29,6 +29,7 @@ class TestSplitToWords(unittest.TestCase):
                 " collections     Container DATATYPES ",
                 ["collections", "container", "datatypes"],
             ),
+            ("\t\tA\nB\tC\n", ["a", "b", "c"])
         ]
 
         for text, words_plan in text_to_words:

@@ -49,7 +49,7 @@ class SearchEngine:
         self._index: dict[str, list[DocWithWord]] = defaultdict(list)
 
         # Ключ - имя документа, значение - количество слов в документе
-        self._doc_wordcount = {}
+        self._doc_wordcount: dict[str, int] = {}
         self._crawl(docs)
 
     def search(self, query: str) -> list[SearchResult]:
@@ -58,7 +58,9 @@ class SearchEngine:
         по релевантности
         """
 
-        scores = defaultdict(float)
+        # Ключ - имя документа, значение - релевантность документа конкретному
+        # слову запроса
+        scores: dict[str, float] = defaultdict(float)
 
         for word in split_to_words(query):
             if (docs_with_word := self._index.get(word)) is None:

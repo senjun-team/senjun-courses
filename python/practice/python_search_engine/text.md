@@ -32,13 +32,13 @@
 
 ### Функция split_to_words()
 
-Вспомогательная функция `split_to_words(text: str) -> list[str]` пригодится и для индексирования документов, и для поиска. Она приводит строку к нижнему регистру, разбивает ее по пробелам и символам пунктуации на отдельные слова.
+Вспомогательная функция `split_to_words(text: str) -> list[str]` пригодится и для индексирования документов, и для поиска. Она приводит строку к нижнему регистру, разбивает ее по пробельным символам и символам пунктуации на отдельные слова.
 
 Символами пунктуации считаем набор: `!"#$%&'()*+,-./:;<=>?@[\]^_``{|}~`.
 
 Например, строку `Search engines.  (COMPUTER SCIENCE!)` функция разобьет на набор слов `search`, `engines`, `computer`, `science`.
 
-**Для реализации вам пригодятся:** константа [string.punctuation,](https://docs.python.org/3/library/string.html#string.punctuation) статический метод класса `str` [maketrans()](https://docs.python.org/3/library/stdtypes.html#str.maketrans) и метод класса `str` [translate().](https://docs.python.org/3/library/stdtypes.html#str.translate)
+**Для реализации вам пригодятся:** константа [string.punctuation,](https://docs.python.org/3/library/string.html#string.punctuation) статический метод [maketrans()](https://docs.python.org/3/library/stdtypes.html#str.maketrans) и метод класса [translate()](https://docs.python.org/3/library/stdtypes.html#str.translate) класса `str`.
 
 ## Детали реализации
 
