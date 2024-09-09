@@ -1,0 +1,3 @@
+Central component.
+
+The inverted index data structure is a central component of a typical search engine indexing algorithm.

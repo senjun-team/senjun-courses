@@ -1,0 +1,1 @@
+The speed of finding an entry in a data structure, compared with how quickly it can be updated, is a crucial focus of computer science.
