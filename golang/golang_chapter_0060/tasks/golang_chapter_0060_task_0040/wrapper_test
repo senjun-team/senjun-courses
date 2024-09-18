@@ -10,6 +10,7 @@ func TestCountUniqWords(t *testing.T) {
 		in   string
 		want int
 	}{
+		{"Go Rust Go C++ Lisp Lisp", 4},
 		{"программисты компилируемого языка Go пишут программы на Go с использованием многих удобных возможностей языка", 12},
 		{"", 0},
 		{"Go", 1},
