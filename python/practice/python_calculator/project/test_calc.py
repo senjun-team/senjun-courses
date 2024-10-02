@@ -130,6 +130,7 @@ class TestCalculator(unittest.TestCase):
             ["(1+5.6)", 6.6, "expression in parentheses"],
             ["(8+2*5)/(1+3*2-4)", 6, "2 expressions in parentheses"],
             ["3+4*2/(1-5)*2", -1, "expression in parentheses (in divider)"],
+            ["3*(4+5)", 27, "multiplying the sum in parentheses by a number"],
             ["(1-2)*3", -3, "priority of - operator in parentheses"],
             [
                 "(1+(2/2))-(3-5)",
@@ -175,6 +176,8 @@ class TestCalculator(unittest.TestCase):
             ["67-", None, "incorrect placement of - operator"],
             ["67--", None, "incorrect placement of two - operators"],
             ["5+-2", None, "incorrect placement of +, - operators"],
+            ["3(4+5)", None, "absent multiply operator before parentheses"],
+            ["(4+5)3", None, "absent multiply operator after parentheses"],
         )
 
         self.run_test_cases(cases)

@@ -3,6 +3,8 @@
     "version": "Python 3.12.0",
     "url": "https://www.python.org/",
     "chapters": "39 глав", 
+    "tasks": "193 задачи",
+    "practice_projects": "3 проекта",
     "projects": [
         {
             "name": "Celery — распределенная очередь задач",

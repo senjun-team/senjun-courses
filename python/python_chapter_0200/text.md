@@ -349,6 +349,7 @@ import utils.fs.filetypes.bin
 **Модули в помощь разработке:**
 - `logging` — [логирование](https://docs.python.org/3/library/logging.html). Даже в небольших скриптах вместо `print()` по очевидным причинам правильнее выводить сообщения в лог.
 - `typing` — [аннотации типов](https://docs.python.org/3/library/typing.html) для типизирования параметров функций, возвращаемых значений, полей класса и других объектов. Это делает код более прозрачным и помогает статическим анализаторам выявлять ошибки.
+- `argparse` — [разбор аргументов командной строки.](https://docs.python.org/3/library/argparse.html)
 - `unittest` — [фреймворк для юнит тестов.](https://docs.python.org/3/library/unittest.html)
 
 **Типы данных:**
