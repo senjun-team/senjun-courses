@@ -63,6 +63,8 @@ def fetch_records(table, ids):
 def print_sum(a, b):
     """Gets a & b arguments, prints sum."""
     print(a+b)
+
+print_sum(3, 8)
 ```
 
 ## Параметры и аргументы функции
