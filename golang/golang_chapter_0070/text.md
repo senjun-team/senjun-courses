@@ -16,7 +16,7 @@ func rectangleSquare(width float64, height float64) float64 {
 }
 ```
 
-Напишите функцию с именем `rectangleSquareByPoints`, которая считает площадь прямоугольника по координатам его левого нижнего и правого верхнего углов {.task_text}
+Напишите функцию с именем `rectangleSquareByPoints`, которая считает площадь прямоугольника по координатам его левого нижнего и правого верхнего углов. В качестве типа данных для координат точек и результата используйте `float64`. {.task_text}
 
 ```go {.task_source #golang_chapter_0070_task_0010}
 package main
@@ -29,5 +29,24 @@ func main() {
 	fmt.Println(rectangleSquareByPoints(3, -4, 15, 10))
 }
 
-// ваш код также может быть здесь 
+// либо здесь
+
 ``` 
+Реализуйте функцию, которая возвращает произведение разности соответствующих координат. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println(rectangleSquareByPoints(15, 10, 3, -4))
+}
+
+func rectangleSquareByPoints(x0 float64, y0 float64, x1 float64, y1 float64) float64 {
+	return (x1 - x0) * (y1 - y0)
+}
+```
+
