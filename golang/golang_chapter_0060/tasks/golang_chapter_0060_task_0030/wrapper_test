@@ -1,0 +1,53 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestIsEqual(t *testing.T) {
+
+	cases := []struct {
+		in   [2]map[string]int
+		want bool
+	}{
+		{[2]map[string]int{{}, {}}, true},
+		{[2]map[string]int{{
+			"Barsik": 10,
+			"Busa":   2,
+			"Murzik": 0,
+		},
+			{
+				"Barsik": 10,
+				"Busa":   2,
+			}}, false},
+		{[2]map[string]int{{
+			"Barsik": 10,
+			"Busa":   2,
+			"Murzik": 0,
+		},
+			{
+				"Barsik": 10,
+				"Busa":   2,
+				"Sharik": 0,
+			}}, false},
+		{[2]map[string]int{{
+			"Barsik": 10,
+			"Busa":   2,
+			"Murzik": 0,
+		},
+			{
+				"Barsik": 10,
+				"Busa":   2,
+				"Murzik": 0,
+			}}, true},
+	}
+
+	for _, c := range cases {
+		got := isEqual(c.in[0], c.in[1])
+		if got != c.want {
+			t.Errorf("isEqual(%v, %v) == %t, want %t",
+				c.in[0], c.in[1], got, c.want)
+		}
+	}
+
+}

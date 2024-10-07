@@ -1,0 +1,46 @@
+package main
+
+import (
+	"testing"
+)
+
+func isEqual(x, y map[int]int) bool {
+	if len(x) != len(y) {
+		return false
+	}
+
+	for key, xv := range x {
+		if yv, ok := y[key]; !ok || yv != xv {
+			return false
+		}
+	}
+
+	return true
+}
+func TestCountDigits(t *testing.T) {
+
+	cases := []struct {
+		in   int
+		want map[int]int
+	}{
+		{0, map[int]int{}},
+		{1, map[int]int{1: 1}},
+		{2, map[int]int{1: 1, 4: 1}},
+		{3, map[int]int{1: 2, 4: 1}},
+		{4, map[int]int{1: 2, 4: 1, 5: 1}},
+		{5, map[int]int{1: 2, 4: 1, 5: 1, 9: 1}},
+		{6, map[int]int{1: 2, 2: 1, 4: 1, 5: 1, 9: 1}},
+		{7, map[int]int{1: 2, 2: 1, 4: 1, 5: 1, 6: 1, 9: 1}},
+		{8, map[int]int{1: 2, 2: 1, 4: 1, 5: 2, 6: 1, 9: 1}},
+		{9, map[int]int{1: 2, 2: 1, 3: 1, 4: 1, 5: 2, 6: 1, 9: 1}},
+	}
+
+	for _, c := range cases {
+		got := countDigits(c.in)
+
+		if !isEqual(countDigits(c.in), c.want) {
+			t.Errorf("countDigits(%d) == %v, want %v",
+				c.in, got, c.want)
+		}
+	}
+}
