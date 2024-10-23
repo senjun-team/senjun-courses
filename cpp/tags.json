@@ -1,0 +1,21 @@
+{
+    "title": "C++",
+    "version": "C++20",
+    "url": "https://isocpp.org/",
+    "chapters": "40 глав", 
+    "projects": [
+        {
+            "name": "Sphinx — поисковый движок", 
+            "url": "https://sphinxsearch.com/"
+        },
+        {
+            "name": "ClickHouse — колоночная база данных", 
+            "url": "https://github.com/ClickHouse/ClickHouse"
+        },
+        {
+            "name": "OpenCV — библиотека для компьютерного зрения",
+            "url": "https://github.com/opencv/opencv"
+        }
+    ],
+    "in_development": true
+}
