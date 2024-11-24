@@ -96,7 +96,7 @@ main = do
 
 Что выведет этот код? В случае ошибки напишите `error`. {.task_text}
 
-```haskell
+```haskell {.example_for_playground}
 {-# LANGUAGE MultiWayIf #-}
 
 module Main where

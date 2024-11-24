@@ -3,6 +3,7 @@
     "version": "Haskell 2010",
     "url": "https://www.haskell.org/",
     "chapters": "24 главы", 
+    "tasks": "72 задачи",
     "projects": [
         {
             "name": "GitHub Semantic — анализатор исходников",
