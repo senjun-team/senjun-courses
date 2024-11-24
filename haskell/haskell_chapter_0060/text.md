@@ -102,7 +102,7 @@ main = do
 
 Не пренебрегайте `otherwise`! Возвращаясь к функции `analyzeGold`: если вы не укажете `otherwise` и при этом примените функцию к значению, отличному от проверяемых:
 
-```haskell {.example_for_playground}
+```haskell {.example_for_playground .example_for_playground_006}
 analyzeGold :: Int -> String
 analyzeGold standard =
   if | standard == 999 -> "Wow! 999 standard!"
