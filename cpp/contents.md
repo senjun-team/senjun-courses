@@ -136,7 +136,10 @@
 - noexcept
 - Ассерты
 - Коды возврата
-- std::optional
+    - std::error_code
+- variant types
+    - std::optional
+    - std::exptected
 
 # Классы: основы
 - Конструкторы, деструкторы, RAII
