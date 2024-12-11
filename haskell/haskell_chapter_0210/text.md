@@ -249,7 +249,7 @@ Missing field in record construction hasInsurance
 - `query`: сам поисковый запрос.
 - `clickCount`: количество кликов по результатам поисковой выдачи.
 - `usedSuggest`: флаг, означающий, воспользовался ли пользователь подсказчиком в строке запроса.
-- `viewedAdd`: флаг, означающий, была ли показана на странице реклама.
+- `viewedAd`: флаг, означающий, была ли показана на странице реклама.
  {.task_text}
 
 В блоке `where` функции `main` создайте экземпляр `q1` типа `UserQuery`. У него поле `query` равно строке "pancakes", `clickCount` равно 2, `usedSuggest` равно `False`, `viewedAd` равно `True`. {.task_text}
