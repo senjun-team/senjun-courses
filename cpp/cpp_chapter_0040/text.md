@@ -3,14 +3,11 @@
 Так же мы затронем шаблоны C++, макросы и выполнение кода на этапе компиляции. 
 # условия
 Для управления потоком исполнения кода есть 3 варианта: `if`, тернарный оператор `?` и `switch`. 
-## if ... else if ... else ...
+## if ... else
 Простой способ проверить а точно ли все у нас в порядке, использовать `if`:
 ```cpp {.example_for_playground ci-wrap=function}
-// там где должно быть условие, мы можем сначала инициализировать переменную,
-// чтобы ее видимость ну уходила дальше тела if
 const int charsInThisChapter = 4000;
-// magic может быть использована только внутри первого блока в фигурных скобках
-if (const int magic=42; charsInThisChapter == magic) {
+if (charsInThisChapter == 42) {
     std::println("University, it that you?");
 } 
 else if (charsInThisChapter == 4000) {
