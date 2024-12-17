@@ -4,36 +4,72 @@
 # условия
 Для управления потоком исполнения кода есть 3 варианта: `if`, тернарный оператор `?` и `switch`. 
 ## if ... else
-Простой способ проверить а точно ли все у нас в порядке, использовать `if`:
+Рассмотрим выражение `if`. В C++, для `if` фигурные скобки не обязательны, но в отличии от Python например, отсуп ни на что не влияет и условие будет влиять на выполнение только одной следующей строки:
+
 ```cpp {.example_for_playground ci-wrap=function}
 const int charsInThisChapter = 4000;
-if (charsInThisChapter == 42) {
+if (charsInThisChapter != 4000) std::println("Huston, we have a problem");
+std::println("You will see that anyway");
+```
+При выполнении примера выше мы увидим только второе сообщение. У Хьюстона нет проблем!
+Конечно мы можем добавить действие в случае "если" и в случае "иначе". 
+```cpp {.example_for_playground ci-wrap=function}
+const int charsInThisChapter = 4000;
+if (charsInThisChapter != 4000) 
+	std::println("Huston, we have a problem");
+else 
+	std::println("Ok then");
+```
+При необходимости произвести несколько действий, если `charsInThisChapter` не равно 4000, придется добавить фигурные скобки:
+```cpp {.example_for_playground ci-wrap=function}
+const int charsInThisChapter = 4000;
+if (charsInThisChapter != 4000) {
+	std::println("Huston, we have a problem");
+	std::println("I repeat, Huston, we have a problem");
+}
+else 
+	std::println("Ok then");
+```
+Когда же понадобится проверить несколько различных условий, то можно "соединять" несколько if, как бы образуя "конструкцию `else if`":
+```cpp {.example_for_playground ci-wrap=function}
+const int charsInThisChapter = 4000;
+if (charsInThisChapter < 42) {
     std::println("University, it that you?");
-} 
-else if (charsInThisChapter == 4000) {
+}
+else 
+if (charsInThisChapter == 4000) {
     std::println("well, that was expected.");
 } 
-else {
-    std::println("there should be some throw, but we don't know how to do it for that moment");
-}
-```
-Конечно, не обязательно всегда писать всю форму целиком. Можно сократить: 
-```cpp {.example_for_playground ci-wrap=function}
-// ожидаемо в этой главе ровно 4000 символом. Проверять не будем.
-const int charsInThisChapter = 4000;
-if (charsInThisChapter == 42) {
-    std::println("University, it that you?");
+else if (charsInThisChapter > 4000) {
+    std::println("Too Long...Don't Read.");
 } 
 else {
     std::println("there should be some throw, but we don't know how to do it for that moment");
 }
 ```
-Можно и в одну строку, отбросив даже фигурные скобки:
-```cpp {.example_for_playground} 
-if (charsInThisChapter != 4000) std::println("Huston, we have a problem");
+Почему "конструкцию `else if`" в кавычках ? Потому что в C++ не выделяется `else if` в какое-то отдельное выражение или составное ключевое слово. Давайте расставим скобки до конца, чтобы было понятнее:
+```cpp {.example_for_playground ci-wrap=function}
+const int charsInThisChapter = 4000;
+if (charsInThisChapter < 42) {
+    std::println("University, it that you?");
+}
+else {
+	if (charsInThisChapter == 4000) {
+	    std::println("well, that was expected.");
+	} 
+	else {
+		if (charsInThisChapter > 4000) {
+		    std::println("Too Long...Don't Read.");
+		} 
+		else {
+		    std::println("there should be some throw, but we don't know how to do it for that moment");
+		}
+	}
+}
 ```
+Как видите, второй `if` как бы вложен внутрь `else` первого. Когда мы убираем скобки, то выглядит это более "плоским", но по факту оно именно так и воспринимается компилятором. 
 
-{.task_text } Вам же, предлагаю посчитать ворон. Представим, что вороны могут образовывать "табуны" (табуны это про коней, но допустим) по 2, 5, 10, 89 и 1000 штук. Напишите код, который напечатает для каждого из вариантов:
+{.task_text } Чтобы размять руки, предлагаем посчитать ворон. Представим, что вороны могут образовывать "табуны" (табуны это про коней, но допустим) по 2, 5, 10, 89 и 1000 штук. Напишите код, который напечатает для каждого из вариантов:
 - 2 - "пара ворон"
 - 5 - "мало ворон"
 - 10 - "группа ворон"
@@ -85,7 +121,7 @@ std::println("{}", message);
 `switch` хорошо работает, когда нам нужно сравнить значение, с более чем 2-3 вариантами и эти варианты хорошо известны. 
 Пример выше, с определением размера вороньего табуна, можно переписать в новом виде:
 ```cpp {.example_for_playground ci-wrap=function}
-const int crowsCount = 89;
+const int crowsCount = ;
 switch(crowsCount) {
 case 2:
 	std::println("пара ворон");
@@ -104,6 +140,15 @@ default:
 # Циклы
 
 ## for
+`for` как и в других СИ-подобных
+```cpp {.example_for_playground ci-wrap=function}
+int chaptersCount = 7;
+int currentChapter = 4;
+std::println("TODO:");
+for (int i = 0; i < chaptersCount; ++i) {
+	std::println("- [x] read chapter {}", i);
+}
+```
 ## range based for
 ## while do
 ## do while
