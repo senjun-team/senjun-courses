@@ -8,7 +8,7 @@
 
 ```cpp {.example_for_playground ci-wrap=function}
 const int charsInThisChapter = 4000;
-if (charsInThisChapter != 4000) std::println("Huston, we have a problem");
+if (charsInThisChapter != 4000) std::println("That doesn't expected");
 std::println("You will see that anyway");
 ```
 При выполнении примера выше мы увидим только второе сообщение. У Хьюстона нет проблем!
@@ -33,11 +33,10 @@ else
 Когда же понадобится проверить несколько различных условий, то можно "соединять" несколько if, как бы образуя "конструкцию `else if`":
 ```cpp {.example_for_playground ci-wrap=function}
 const int charsInThisChapter = 4000;
-if (charsInThisChapter < 42) {
-    std::println("University, it that you?");
+if (charsInThisChapter < 100) {
+    std::println("Is that all you can write?");
 }
-else 
-if (charsInThisChapter == 4000) {
+else if (charsInThisChapter == 4000) {
     std::println("well, that was expected.");
 } 
 else if (charsInThisChapter > 4000) {
@@ -50,8 +49,8 @@ else {
 Почему "конструкцию `else if`" в кавычках ? Потому что в C++ не выделяется `else if` в какое-то отдельное выражение или составное ключевое слово. Давайте расставим скобки до конца, чтобы было понятнее:
 ```cpp {.example_for_playground ci-wrap=function}
 const int charsInThisChapter = 4000;
-if (charsInThisChapter < 42) {
-    std::println("University, it that you?");
+if (charsInThisChapter < 100) {
+    std::println("Is that all you can write?");
 }
 else {
 	if (charsInThisChapter == 4000) {
