@@ -46,7 +46,7 @@ else {
     std::println("there should be some throw, but we don't know how to do it for that moment");
 }
 ```
-Почему "конструкцию `else if`" в кавычках ? Потому что в C++ не выделяется `else if` в какое-то отдельное выражение или составное ключевое слово. Давайте расставим скобки до конца, чтобы было понятнее:
+Почему "конструкцию `else if`" в кавычках ? Потому что в C++ не выделяется `else if` в какую-то отдельную инструкцию. Давайте расставим скобки до конца, чтобы было понятнее:
 ```cpp {.example_for_playground ci-wrap=function}
 const int charsInThisChapter = 4000;
 if (charsInThisChapter < 100) {
@@ -139,7 +139,7 @@ default:
 # Циклы
 
 ## for
-`for` как и в других СИ-подобных
+Один из вариантов итерации - `for`. Его структура: `for (INIT; COND; STEP_ACTION)`. Это не совсем точно, но в общем плане чаще всего оно выглядит именно так. 
 ```cpp {.example_for_playground ci-wrap=function}
 int chaptersCount = 7;
 int currentChapter = 4;
@@ -149,8 +149,6 @@ for (int i = 0; i < chaptersCount; ++i) {
 }
 ```
 ## range based for
-## while do
-## do while
 
 # Функции
 ## Синтаксис. Функции
