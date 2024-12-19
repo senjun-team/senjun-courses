@@ -306,7 +306,7 @@ main = putStrLn $ map toUpper "haskell.org"
 import Data.Text (pack, unpack)
 ```
 
-Перепишите этот импорт на импорт только необходимых определений. {.task_text}
+Перепишите этот импорт на импорт только необходимых определений. При импорте из модулей нескольких определений они через запятую перечисляются в круглых скобках. {.task_text}
 
 ```haskell {.task_source #haskell_chapter_0150_task_0030}
 {-# LANGUAGE OverloadedStrings #-}
