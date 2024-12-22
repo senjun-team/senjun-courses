@@ -1,0 +1,47 @@
+import std;
+
+void clamp_to_pct(int & n);
+std::vector<int> random_vector(std::size_t len);
+
+int main()
+{
+    // Заполняем массив огромным количеством элементов
+    std::vector<int> numbers = random_vector(10'000'000);
+
+    auto start = std::chrono::high_resolution_clock::now();
+    
+    //std::for_each(numbers.begin(), numbers.end(), clamp_to_pct);
+    
+    for (std::size_t i = 0; i < numbers.size(); ++i) {
+        if (numbers[i] < 0) {
+            numbers[i] = 0;
+        } else if (numbers[i] > 100) {
+            numbers[i] = 100;
+        }
+    }
+
+    auto finish = std::chrono::high_resolution_clock::now();
+
+    auto const time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(finish-start).count();
+    std::println("Duration: {} ms", time_ms);
+
+    // std::println("{}", numbers);
+}
+
+void clamp_to_pct(int & n) {
+    n = std::clamp(n, 0, 100);
+}
+
+std::vector<int> random_vector(std::size_t len) {
+    std::random_device rnd_device;
+    std::mt19937 mersenne_engine {rnd_device()};
+    std::uniform_int_distribution<int> dist {-100, 200};
+    
+    auto gen = [&](){
+                   return dist(mersenne_engine);
+               };
+
+    std::vector<int> vec(len);
+    std::generate(vec.begin(), vec.end(), gen);
+    return vec;
+}
