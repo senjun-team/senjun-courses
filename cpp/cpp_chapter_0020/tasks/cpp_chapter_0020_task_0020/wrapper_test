@@ -1,0 +1,12 @@
+#include <catch2/catch_test_macros.hpp>
+
+#include <algorithm>
+#include <string>
+
+
+TEST_CASE("check user input") {
+  std::string str = R"(#INJECT-b585472fa)";
+  str.erase(remove(str.begin(), str.end(), ' '), str.end());
+  CHECK(str == "true");
+}
+

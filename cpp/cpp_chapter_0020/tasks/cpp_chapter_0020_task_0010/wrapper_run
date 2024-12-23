@@ -1,0 +1,7 @@
+#include <string>
+
+#INJECT-b585472fa
+
+int main() {
+
+}

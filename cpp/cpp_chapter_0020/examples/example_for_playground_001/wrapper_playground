@@ -1,6 +1,8 @@
 import std;
 
+
 void clamp_to_pct(int & n);
+
 std::vector<int> random_vector(std::size_t len);
 
 int main()
@@ -9,8 +11,6 @@ int main()
     std::vector<int> numbers = random_vector(10'000'000);
 
     auto start = std::chrono::high_resolution_clock::now();
-    
-    //std::for_each(numbers.begin(), numbers.end(), clamp_to_pct);
     
     for (std::size_t i = 0; i < numbers.size(); ++i) {
         if (numbers[i] < 0) {
@@ -25,6 +25,8 @@ int main()
     auto const time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(finish-start).count();
     std::println("Duration: {} ms", time_ms);
 
+    // Вы можете уменьшить количество элементов в numbers,
+    // а затем раскомментировать эту строку:
     // std::println("{}", numbers);
 }
 
