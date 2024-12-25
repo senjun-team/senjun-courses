@@ -1,9 +1,23 @@
 import std;
 
 
-void clamp_to_pct(int & n);
+void clamp_to_pct(int & n) {
+    n = std::clamp(n, 0, 100);
+}
 
-std::vector<int> random_vector(std::size_t len);
+std::vector<int> random_vector(std::size_t len) {
+    std::random_device rnd_device;
+    std::mt19937 mersenne_engine {rnd_device()};
+    std::uniform_int_distribution<int> dist {-100, 200};
+    
+    auto gen = [&](){
+                   return dist(mersenne_engine);
+               };
+
+    std::vector<int> vec(len);
+    std::generate(vec.begin(), vec.end(), gen);
+    return vec;
+}
 
 int main()
 {
@@ -33,22 +47,4 @@ int main()
     // Вы можете уменьшить количество элементов в numbers,
     // а затем раскомментировать эту строку:
     // std::println("{}", numbers);
-}
-
-void clamp_to_pct(int & n) {
-    n = std::clamp(n, 0, 100);
-}
-
-std::vector<int> random_vector(std::size_t len) {
-    std::random_device rnd_device;
-    std::mt19937 mersenne_engine {rnd_device()};
-    std::uniform_int_distribution<int> dist {-100, 200};
-    
-    auto gen = [&](){
-                   return dist(mersenne_engine);
-               };
-
-    std::vector<int> vec(len);
-    std::generate(vec.begin(), vec.end(), gen);
-    return vec;
 }
