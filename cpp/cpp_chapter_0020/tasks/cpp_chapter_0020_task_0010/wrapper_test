@@ -1,14 +1,19 @@
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_floating_point.hpp>
+#include "ut.hpp"
 
 #INJECT-b585472fa
 
-TEST_CASE("promocode-independent result") {
-  REQUIRE_THAT( get_price_with_discount(0.0, true), Catch::Matchers::WithinRel(0.0, 0.001) );
-  REQUIRE_THAT( get_price_with_discount(0.0, false), Catch::Matchers::WithinRel(0.0, 0.001) );
-}
+namespace ut = boost::ut;
 
-TEST_CASE("promocode-dependent result") {
-  REQUIRE_THAT( get_price_with_discount(100.0, true), Catch::Matchers::WithinRel(90.0, 1e-6) );
-  REQUIRE_THAT( get_price_with_discount(100.0, false), Catch::Matchers::WithinRel(100.0, 1e-6) );
+int main() {
+    using namespace ut;
+
+  "promocode-independent result"_test = [] {
+    expect(0.0_d == get_price_with_discount(0.0, true)) << "epsilon=0.001";
+    expect(0.0_d == get_price_with_discount(0.0, false)) << "epsilon=0.001";
+  };
+
+  "promocode-dependent result"_test = [] {
+    expect(90.0_d == get_price_with_discount(100.0, true)) << "epsilon=0.00001";
+    expect(100.0_d == get_price_with_discount(100.0, false)) << "epsilon=0.00001";
+  };
 }

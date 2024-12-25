@@ -1,7 +1,8 @@
-#include <string>
+import std;
 
 #INJECT-b585472fa
 
 int main() {
-
+    std::println("get_price_with_discount(100.0, true) = {}", get_price_with_discount(100.0, true));
+    std::println("get_price_with_discount(200.0, false) = {}", get_price_with_discount(200.0, false));
 }

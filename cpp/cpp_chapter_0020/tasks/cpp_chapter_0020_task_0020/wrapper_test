@@ -1,12 +1,16 @@
-#include <catch2/catch_test_macros.hpp>
+#include "ut.hpp"
 
 #include <algorithm>
 #include <string>
 
+namespace ut = boost::ut;
 
-TEST_CASE("check user input") {
-  std::string str = R"(#INJECT-b585472fa)";
-  str.erase(remove(str.begin(), str.end(), ' '), str.end());
-  CHECK(str == "true");
+int main() {
+    using namespace ut;
+
+    "check user input"_test = [] {
+        std::string str = R"(#INJECT-b585472fa)";
+        str.erase(remove(str.begin(), str.end(), ' '), str.end());
+        expect(str == "true");
+    };
 }
-

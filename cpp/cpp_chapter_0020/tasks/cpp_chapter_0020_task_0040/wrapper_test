@@ -1,4 +1,4 @@
-#include <catch2/catch_test_macros.hpp>
+#include "ut.hpp"
 
 #include <cstdio>
 #include <iostream>
@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <string>
 #include <array>
+
+namespace ut = boost::ut;
 
 std::string exec(std::string const & cmd) {
     std::array<char, 128> buffer;
@@ -23,7 +25,11 @@ std::string exec(std::string const & cmd) {
     return output;
 }
 
-TEST_CASE("check console output") {
-    std::string const res = exec("./main");
-    CHECK(res == "Hello World" || res == "Hello World\n" || res == "Hello World\r\n");
+int main() {
+    using namespace ut;
+
+    "check user solution console output"_test = [] {
+        std::string const res = exec("./main");
+        expect(res == "Hello World" || res == "Hello World\n" || res == "Hello World\r\n");
+    };
 }
