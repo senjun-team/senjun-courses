@@ -10,7 +10,7 @@ int main() {
 
     "check user input"_test = [] {
         std::string str = R"(#INJECT-b585472fa)";
-        str.erase(remove(str.begin(), str.end(), ' '), str.end());
+        str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
         expect(str == "true");
     };
 }
