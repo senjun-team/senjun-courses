@@ -29,7 +29,7 @@ int main() {
     using namespace ut;
 
     "check user solution console output"_test = [] {
-        std::string const res = exec("./main");
+        std::string const res = exec("./build/main");
         expect(res == "Hello World" || res == "Hello World\n" || res == "Hello World\r\n");
     };
 }
