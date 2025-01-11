@@ -42,18 +42,15 @@ class Group a where
 
 Как и в алгебре, в Haskell классы типов позволяют описывать сущности в терминах определённых на них операций или значений. В примерах мы указываем лишь наличие операций и их типы, так же и в классах типов. Класс типов содержит набор имён его значений с информацией о типах значений.
 
-{.task_text} Напишите класс `Number`, который определит что над типом `i` можно совершить операции сложения (`add`), вычитания (`substract`), деления (`divide`), умножения (`multiply`).  Все эти 4 операции выполняются над двумя значениями типа `i` и возвращают `i`.
+{.task_text} Представьте, что нам нужен расчет скидки на игру для аккаунта игрока. Однако, мы не хотим зависеть от конкретной реализации маркетплейса. Напишите класс `Account`, который имеет операцию `getPlayedTime :: a -> Integer` для некоторого типа `a`, который принадлежит этому классу
 
-```haskell {.task_source
+```haskell {.task_source}
 ```
-{.task_hint} это код должен быть поход на код класса `Group`, но класс называется `Number` и имеет определение 4 методов: `add :: i -> i -> i`, `substract :: i -> i -> i` и аналогично для `divide` и `multiply`. 
+{.task_hint} это код должен быть похож на код класса `Group`, но класс называется `Account` и имеет определение 1 операции: `getPlayedTime :: a -> Integer`.  
 
 ```haskell {.task_answer}
-class Number i where
-    add :: i -> i -> i
-    substract :: i -> i -> i
-    divide :: i -> i -> i
-    multiply :: i -> i -> i
+class Account a where
+    getPlayedTime :: a -> Integer
 ```
 
 Определив класс `Group`, мы можем начать строить различные выражения, которые будут потом интерпретироваться специфическим для типа образом:
@@ -70,6 +67,38 @@ isE x = (x == e)
 
 В первой функции `twice` мы воспользовались методом `(+)` из класса `Group`, поэтому функция имеет контекст `Group a =>`. А во второй функции `isE` мы воспользовались методом `e` из класса `Group` и методом `(==)` из класса `Eq`, поэтому функция имеет контекст `(Group a, Eq a) =>`.
 
+{.task_text} Ранее мы определили класс `Account`. Мы подготовили функцию рассчета скидки, однако она работает только для аккаунтов `steam`, а мы бы хотели для любого маркетплейса. Функция принимает `account`, флаг "черная пятница" `blackFriday` и должна вернуть размер скидки. Скидка будет иметь от 0 до 15% в зависимости от наигранного времени. В случае черной пятницы скидка будет увеличена на 10%. Ваша задача переписать текущую функцию с использованием класса `Account`
+
+
+```haskell {.task_source}
+clamp :: Int -> Int -> Int -> Int
+clamp a val b =  min (max a val) b
+
+data SteamAccount = SteamAccount { 
+        steamPlayedTime :: Int, accountId :: String 
+}
+
+class Account a where
+    getPlayedTime :: a -> Integer
+
+calcDiscount :: SteamAccount -> Bool -> Int
+calcDiscount account isBlackFriday = clamp 0 discount 20
+    where timeModifier = clamp 0 (steamPlayedTime account) 15
+          discount = if isBlackFriday then timeModifier + 10 else timeModifier 
+```
+{.task_hint} Вам нужно заменить `SteamAccount` на тип `a`, о котором мы ничего не знаем. Чтобы обозначить возможность применить функцию `getPlayedTime` над типом `a` добавьте контекст `Account a` в определении функции. 
+```haskell {.task_answer}
+clamp :: Int -> Int -> Int -> Int
+clamp a val b =  min (max a val) b
+
+class Account a where
+    getPlayedTime :: a -> Integer
+
+	calcDiscount :: Account a => a -> Bool -> Int
+calcDiscount account isBlackFriday = clamp 0 discount 20
+    where timeModifier = clamp 0 (getPlayedTime account) 15
+          discount = if isBlackFriday then timeModifier + 10 else timeModifier 
+```
 ## Контекст классов типов. Суперклассы
 
 Класс типов также может содержать контекст. Он указывается между словом `class` и именем класса. Например
