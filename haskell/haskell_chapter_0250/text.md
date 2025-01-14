@@ -67,36 +67,37 @@ isE x = (x == e)
 
 В первой функции `twice` мы воспользовались методом `(+)` из класса `Group`, поэтому функция имеет контекст `Group a =>`. А во второй функции `isE` мы воспользовались методом `e` из класса `Group` и методом `(==)` из класса `Eq`, поэтому функция имеет контекст `(Group a, Eq a) =>`.
 
-{.task_text} Ранее мы определили класс `Account`. Мы подготовили функцию рассчета скидки, однако она работает только для аккаунтов `steam`, а мы бы хотели для любого маркетплейса. Функция принимает `account`, флаг "черная пятница" `blackFriday` и должна вернуть размер скидки. Скидка будет иметь от 0 до 15% в зависимости от наигранного времени. В случае черной пятницы скидка будет увеличена на 10%. Ваша задача переписать текущую функцию с использованием класса `Account`
-
+{.task_text} Ранее мы определили класс `Account`. Мы подготовили функцию рассчета скидки `calcDiscount`, однако она работает только для аккаунтов `SteamAccount`, а мы бы хотели для любого маркетплейса. Функция принимает `account`, флаг "черная пятница" `blackFriday` и должна вернуть размер скидки. Скидка будет иметь от 0 до 15% в зависимости от наигранного времени. В случае черной пятницы скидка будет увеличена на 10%. 
+{.task_text} Ваша задача переписать текущую функцию с использованием класса `SteamAccount`  на функцию, которая может работать с любым аккаунтом, который принадлежит классу `Account`(у функции есть контекст `Account a`). 
 
 ```haskell {.task_source}
 clamp :: Int -> Int -> Int -> Int
 clamp a val b =  min (max a val) b
 
+-- вы можете удалить этот тип, если он мешает
 data SteamAccount = SteamAccount { 
-        steamPlayedTime :: Int, accountId :: String 
+        steamPlayedTime :: Int, accountId :: String
 }
 
 class Account a where
-    getPlayedTime :: a -> Integer
+    playedTime :: a -> Integer
 
 calcDiscount :: SteamAccount -> Bool -> Int
 calcDiscount account isBlackFriday = clamp 0 discount 20
     where timeModifier = clamp 0 (steamPlayedTime account) 15
           discount = if isBlackFriday then timeModifier + 10 else timeModifier 
 ```
-{.task_hint} Вам нужно заменить `SteamAccount` на тип `a`, о котором мы ничего не знаем. Чтобы обозначить возможность применить функцию `getPlayedTime` над типом `a` добавьте контекст `Account a` в определении функции. 
+{.task_hint} Вам нужно заменить `SteamAccount` на тип `a`, о котором мы ничего не знаем. Чтобы обозначить возможность применить функцию `playedTime` над типом `a` добавьте контекст `Account a` в определении функции. 
 ```haskell {.task_answer}
 clamp :: Int -> Int -> Int -> Int
 clamp a val b =  min (max a val) b
 
 class Account a where
-    getPlayedTime :: a -> Integer
+    playedTime :: a -> Integer
 
-	calcDiscount :: Account a => a -> Bool -> Int
+calcDiscount :: Account a => a -> Bool -> Int
 calcDiscount account isBlackFriday = clamp 0 discount 20
-    where timeModifier = clamp 0 (getPlayedTime account) 15
+    where timeModifier = clamp 0 (playedTime account) 15
           discount = if isBlackFriday then timeModifier + 10 else timeModifier 
 ```
 ## Контекст классов типов. Суперклассы
@@ -121,6 +122,54 @@ fun :: HasName a => a -> a
 Это означает, что мы можем пользоваться для значений типа `a` как методами из класса `HasName`, так и методами из класса `IsPerson`. Поскольку если тип принадлежит классу `HasName`, то он также принадлежит и `IsPerson`.
 
 Запись `(IsPerson a => HasName a)` немного обманывает, было бы точнее писать `IsPerson a <= HasName a`, если тип `a` в классе `HasName`, то он точно в классе `IsPerson`, но в Haskell закрепилась другая запись.
+
+В предыдущей задаче мы сделали расчет скидки вне зависимости от маркетплейса. Теперь мы хотим еще поощрять премиальных. Мы могли бы расширить класс `Account`, но библиотеку с этим классом уже используют наши партнеры и мы не хотим ее обновлять. {.task_text}
+Чтобы это все соблюсти, нам нужен новый класс `AccountExtended`, для которого мы сможем узнать, является ли аккаунт премиальным с помощью операции `isVIP :: a -> Bool`. {.task_text} 
+К тому же теперь, мы считаем скидку чуть по-другому - теперь мы к старому расчету добавим дополнительно 10% для премиальных аккаунтов. {.task_text} 
+```haskell {.task_source}
+import Lib
+{-
+-- из этой библиотеки мы получили класс
+class Account a where
+    playedTime :: a -> Integer
+-}
+
+clamp :: Int -> Int -> Int -> Int
+clamp a val b =  min (max a val) b
+
+-- вносите изменения начиная отсуда
+
+calcDiscount :: Account a => a -> Bool -> Int
+calcDiscount account isBlackFriday = clamp 0 discount 20
+    where timeModifier = clamp 0 (playedTime account) 15
+          discount = if isBlackFriday then timeModifier + 10 else timeModifier 
+```
+
+ Напишите класс `AccountExtended` с операцией `isVIP :: a -> Bool`. {.task_hint}
+ Измените функцию `calcDiscount` так, чтобы она могла использовать операции `isVIP` и `playedTime` над первым аргументом `a`. Для этого замените контекст `Account` на `AccountExteded`. {.task_hint}
+ В реализации `calcDiscount` после того, как скидка рассчитана (после применения `clamp 0 discount 20`), добавьте к ней еще 10, если `isVIP account == True`. {.task_hint}
+
+```haskell {.task_answer}
+import Lib
+{-
+-- из этой библиотеки мы получили класс
+class Account a where
+    playedTime :: a -> Integer
+-}
+
+clamp :: Int -> Int -> Int -> Int
+clamp a val b =  min (max a val) b
+
+class Account a => AccountExtended a where
+    isVIP :: a -> Bool
+
+calcDiscount :: AccountExtended a => a -> Bool -> Int
+calcDiscount account isBlackFriday = clamp 0 baseDiscount 20 + vipDiscount
+    where timeModifier = clamp 0 (playedTime account) 15
+          baseDiscount = if isBlackFriday then timeModifier  + 10 else timeModifier
+          vipDiscount = if isVIP account then 10 else 0
+```
+
 
 # Экземпляры классов типов
 
