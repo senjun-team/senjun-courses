@@ -114,18 +114,14 @@ class IsPerson a => HasName a where
 Это определение говорит о том, что мы можем сделать экземпляр класса `HasName` только для тех типов, которые содержатся в `IsPerson`. Мы говорим, что класс `HasName` содержится в `IsPerson`. В этом случае класс из контекста `IsPerson` называют *суперклассом* для данного класса `HasName`.
 
 Это сказывается на контексте объявления типа. Теперь, если мы пишем
-
 ```haskell
 fun :: HasName a => a -> a
 ```
-
 Это означает, что мы можем пользоваться для значений типа `a` как методами из класса `HasName`, так и методами из класса `IsPerson`. Поскольку если тип принадлежит классу `HasName`, то он также принадлежит и `IsPerson`.
-
 Запись `(IsPerson a => HasName a)` немного обманывает, было бы точнее писать `IsPerson a <= HasName a`, если тип `a` в классе `HasName`, то он точно в классе `IsPerson`, но в Haskell закрепилась другая запись.
 
 В предыдущей задаче мы сделали расчет скидки вне зависимости от маркетплейса. Теперь мы хотим еще поощрять премиальных. Мы могли бы расширить класс `Account`, но библиотеку с этим классом уже используют наши партнеры и мы не хотим ее обновлять. {.task_text}
-Чтобы это все соблюсти, нам нужен новый класс `AccountExtended`, для которого мы сможем узнать, является ли аккаунт премиальным с помощью операции `isVIP :: a -> Bool`. {.task_text} 
-К тому же теперь, мы считаем скидку чуть по-другому - теперь мы к старому расчету добавим дополнительно 10% для премиальных аккаунтов. {.task_text} 
+Чтобы это все соблюсти, нам нужен новый класс `AccountExtended`, для которого мы сможем узнать, является ли аккаунт премиальным с помощью операции `isVIP :: a -> Bool`. К тому же теперь, мы считаем скидку чуть по-другому - теперь мы к старому расчету добавим дополнительно 10% для премиальных аккаунтов. {.task_text} 
 ```haskell {.task_source}
 import Lib
 {-
@@ -170,7 +166,6 @@ calcDiscount account isBlackFriday = clamp 0 baseDiscount 20 + vipDiscount
           vipDiscount = if isVIP account then 10 else 0
 ```
 
-
 # Экземпляры классов типов
 
 В *экземплярах* (instance) классов типов мы даём конкретное наполнение для методов класса типов. Определение экземпляра пишется так же, как и определение класса типа, но вместо `class` мы пишем `instance`, вместо некоторого типа наш конкретный тип, а вместо типов методов – уравнения для них.
@@ -198,7 +193,7 @@ instance Show Bool where
 
 Класс `Group`:
 
-```haskell
+```haskell 
 instance Group Bool where
     e       = True
     (+) a b = and a b
@@ -230,3 +225,50 @@ instance Group Bool where
 ```
 
 Проверять свойства очень важно, потому что другие люди, читая ваш код и используя ваши функции, будут на них рассчитывать.
+
+[для вдохновения](https://github.com/haskell/aeson/blob/master/src/Data/Aeson/Types/ToJSON.hs#L291-L296)
+Для нашего сервиса мы выбрали коммуникацию в формате JSON. Т.к. существующие реализации обладают [фатальным недостатком](https://ru.wikipedia.org/wiki/%D0%A1%D0%B8%D0%BD%D0%B4%D1%80%D0%BE%D0%BC_%D0%BD%D0%B5%D0%BF%D1%80%D0%B8%D1%8F%D1%82%D0%B8%D1%8F_%D1%87%D1%83%D0%B6%D0%BE%D0%B9_%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8), мы решили написать свою. Мы предоставим вам класс `ToJSON`, а ваша задача определить его реализацию для заданных ниже наших типов данных (`Category`, `Point`, `SensitivePayload`) и базового `Int` и `Double`.
+`SensitivePayload` должен стать объектом с ключами `category` и `poi`. `Category` - строка `secret` для конструктора `Secret` и `nonsecret` для `NonSecret`. Не забудьте добавить экранированные двойные кавычки (`"\"secret\""`). `Point` будет объектом с ключами `x` (первый аргумент) и `y`. {.task_text}
+
+```haskell {.task_source}
+class ToJSON a where 
+	toJSON :: a -> String
+
+data Point a = Point a a
+data Category = Secret | NonSecret
+data SensitivePayload = SensitivePayload { dataCategory :: Category, poi :: Point Int }
+
+main = do
+	putStrLn $ toJSON $ SensitivePayload Secret (Point 5 3)
+```
+
+Начните с малого - `Int`. В его реализации вам поможет `show`.  {.task_hint} 
+Добавьте инстанс `Category`. Посмотрите на реализацию инстанса `Show Bool` выше - pattern matching может пригодиться. Результатом будет строка в строке, экранирование кавычек снова понадобится {.task_hint}.
+Затем сделайте инстанс для `Point` - сформируйте строку вида `{"x": 12, "y":33}`. Добавьте контекст классу `ToJSON a =>` и вы сможете использовать внутри `toJson` для значений. Так же, не забывайте, что ключи в json надо писать в кавычках, потому имя ключа будет окантовано экранированными кавычками. {.task_hint} 
+И конечно инстанс `SensitivePayload`. Используйте суперклассы снова, не забудьте экранирование ключей. {.task_hint}.
+
+```haskell {.task_answer}
+class ToJSON a where 
+    toJSON :: a -> String
+
+data Point a = Point a a
+data Category = Secret | NonSecret
+-- pov - point of interest
+data SensitivePayload = SensitivePayload { dataCategory :: Category, poi :: Point Int }
+
+instance ToJSON Int where
+    toJSON = show
+
+instance ToJSON a => ToJSON (Point a) where
+    toJSON (Point x y) = "{\"x\":" ++ toJSON x ++ "," ++ "\"y\":" ++ toJSON y ++ "}"
+
+instance ToJSON Category where
+    toJSON Secret = "\"secret\""
+    toJSON NonSecret = "\"nonsecret\""
+
+instance ToJSON SensitivePayload where 
+    toJSON (SensitivePayload cat point) = "{\"category\":" ++ toJSON cat ++ ", \"poi\":" ++ toJSON point ++ "}"
+
+main = do
+	putStrLn $ toJSON $ SensitivePayload Secret (Point 5 3)
+```
