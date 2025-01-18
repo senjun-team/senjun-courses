@@ -104,7 +104,7 @@ int main() {
 404 is error code? true
 ```
 
-Для возврата из функции значения мы использовали оператор `return`.
+Для возврата из функции значения мы использовали [оператор](https://en.wikipedia.org/wiki/Operator_(computer_programming)) `return`.
 
 А для вывода `res` в консоль мы сделали две вещи:
 - Импортировали стандартную библиотеку `std`. В ней содержится функция [println()](https://en.cppreference.com/w/cpp/io/println), отвечающая за форматированный вывод.
@@ -198,10 +198,10 @@ int const winter_avg_temp = -5;
 
 [Фундаментальные типы](https://en.cppreference.com/w/cpp/language/types#Standard_floating-point_types) (fundamental types) — это типы, встроенные в язык. Их имена являются ключевыми словами (keywords). Рассмотрим некоторые из них:
 
-| Тип  | Описание | Примеры литералов |
+| Тип  | Описание | Примеры [литералов](https://en.wikipedia.org/wiki/Literal_(computer_programming)) |
 | ------- | -------- | -------- |
 | `int`  | Знаковое целое  | `93`, `-3`, `0`, `9'100` |
-| `double`  | Число с плавающей точкой [двойной точности](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) | `6.002`, `-45.5`, `1e6`, `0.0` |
+| `double`  | Число с плавающей точкой [двойной точности](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) | `-45.5`, `1e6`, `0.0`, `NAN` (not a number), `INFINITY` |
 | `bool`  | Логическое значение  | `true`, `false` |
 | `char`  | ASCII-символ | `'a'`, `'9'`, `'\t'`, 50 |
 | `void`  | Отсутствие значения  | У типа `void` не может быть значений |
@@ -344,7 +344,7 @@ bool hello_xor() {
 
 ### Составное присваивание
 
-[Операторы составного присваивания](https://en.cppreference.com/w/cpp/language/operator_assignment) (compound assignment) объединяют присваивание переменной с арифметическим действием над ней. Они были введены в язык, чтобы записывать простые арифметические действия более кратко:
+[Операторы составного присваивания](https://en.cppreference.com/w/cpp/language/operator_assignment) (compound assignment) объединяют присваивание переменной с арифметическим действием над ней. Их ввели в язык, чтобы записывать простые арифметические действия более кратко:
 
 ```c++
 x += 5;  // x = x + 5
@@ -467,7 +467,7 @@ int x = a-- - b++ - c--;
 ```
 .  {.task_hint}
 ```cpp {.task_answer}
--12
+12
 ```
 
 ## Резюме
