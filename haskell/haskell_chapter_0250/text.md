@@ -182,8 +182,12 @@ class Account a => AccountExtended a where
 calcDiscount :: AccountExtended a => a -> Bool -> Int
 calcDiscount account isBlackFriday = clamp 0 baseDiscount 20 + vipDiscount
     where timeModifier = clamp 0 (playedTime account) 15
-          baseDiscount = if isBlackFriday then timeModifier  + 10 else timeModifier
-          vipDiscount = if isVIP account then 10 else 0
+          baseDiscount = if isBlackFriday 
+			  then timeModifier  + 10 
+			  else timeModifier
+          vipDiscount = if isVIP account 
+	          then 10 
+	          else 0
 ```
 
 ## Экземпляры классов типов
@@ -256,7 +260,10 @@ class ToJSON a where
 
 data Point a = Point a a
 data Category = Secret | NonSecret
-data SensitivePayload = SensitivePayload { dataCategory :: Category, poi :: Point Int }
+data SensitivePayload = SensitivePayload 
+		{ dataCategory :: Category
+		, poi :: Point Int 
+		}
 
 main = do
 	putStrLn $ toJSON $ SensitivePayload Secret (Point 5 3)
