@@ -1,0 +1,6 @@
+s = r"""
+#INJECT-ESCAPED-b585472fa
+""".strip().lower().replace(" ", "")
+
+if s != "thunknormalwhnf":
+    exit(1)

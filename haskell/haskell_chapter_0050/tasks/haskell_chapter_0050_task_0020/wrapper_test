@@ -1,0 +1,41 @@
+import os.path
+import sys
+
+plan = """'h'
+'a'
+'s'
+'k'
+'e'
+'l'
+"""
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+
+    if s.find('nextLetter::') == -1:
+        print("Please declare 'nextLetter' function")
+        exit(1)
+
+    if s.find('else') == -1:
+        print("Please use 'if-then-else' expression")
+        exit(1)
+
+    if s.find('succ') == -1:
+        print("Please use 'succ' function")
+        exit(1)

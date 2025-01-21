@@ -1,0 +1,10 @@
+data Patient = Patient { firstName
+                       , lastName
+                       , email        :: String
+                       , age
+                       , diseaseId    :: Int
+                       , isIndoor
+                       , hasInsurance :: Bool
+                       }
+                       
+#INJECT-b585472fa

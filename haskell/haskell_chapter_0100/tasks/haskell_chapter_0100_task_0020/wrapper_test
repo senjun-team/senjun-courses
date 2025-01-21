@@ -1,0 +1,33 @@
+import os.path
+import sys
+
+plan = '''6
+25
+-7
+'''
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+    if s.find('progressionSum::') == -1:
+        print("Please declare 'progressionSum' function")
+        exit(1)
+
+    if s.find('..') == -1:
+        print("Please declare range to create progression")
+        exit(1)

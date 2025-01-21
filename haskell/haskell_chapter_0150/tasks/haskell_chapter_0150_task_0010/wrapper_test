@@ -1,0 +1,32 @@
+import os.path
+import sys
+
+plan = '''(1.0,2.0,6.0,4.0)
+'''
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+    if s.find('importData.Tuple.UpdateasU') == -1:
+        print("Please import module 'Data.Tuple.Update' as 'U'")
+        exit(1)
+
+    if s.find('main=print$upd36.0(1.0,2.0,3.0,4.0)') == -1:
+        print("Please use 'main' function: main = print $ upd3 6.0 (1.0, 2.0, 3.0, 4.0)")
+        exit(1)
+

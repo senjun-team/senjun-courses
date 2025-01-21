@@ -1,0 +1,43 @@
+import os.path
+import sys
+
+plan = '''Length 60.5
+'''
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+    if s.find('newtypeGeoId=GeoIdIntderiving') == -1:
+        print("Please use newtype to create 'GeoId'. Derive it from corresponding type classes")
+        exit(1)
+
+    if s.find('newtypeIndex=IndexIntderiving') == -1:
+        print("Please use newtype to create 'Index'. Derive it from corresponding type classes")
+        exit(1)
+
+    if s.find('newtypeLength=LengthDoublederiving') == -1:
+        print("Please use newtype to create 'Length'. Derive it from corresponding type classes")
+        exit(1)
+
+    if s.find('segmentLength::GeoId->Index->Index->Length') == -1:
+        print("Please use GeoId, Index and Length definitions in 'segmentLength' declaration")
+        exit(1)
+
+    if s.find('main=print$segmentLengthgidstartend') == -1:
+        print("Please fix segmentLength call in main body")
+        exit(1)
