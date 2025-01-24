@@ -1,0 +1,30 @@
+import os.path
+import sys
+
+plan = """7.5
+3.0
+4.5
+16.0
+"""
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+    if s.find('triangleArea::Double->Double->Double') == -1:
+        print("Please declare the 'triangleArea' function")
+        exit(1)

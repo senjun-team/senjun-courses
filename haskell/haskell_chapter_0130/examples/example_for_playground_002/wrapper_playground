@@ -1,0 +1,10 @@
+checkLocalhost :: String -> String
+checkLocalhost ip =
+  -- True или False?
+  if ip == "127.0.0.1" || ip == "0.0.0.0"
+    -- Если True - идёт туда...
+    then "It's a localhost"
+    -- А если False - сюда...
+    else "No, it's not a localhost"
+
+#INJECT-b585472fa

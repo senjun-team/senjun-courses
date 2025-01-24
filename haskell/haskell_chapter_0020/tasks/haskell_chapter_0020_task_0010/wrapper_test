@@ -1,0 +1,39 @@
+import os.path
+import sys
+
+plan = """Hello Haskell!
+"""
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+    if s.find("where") == -1:
+        print("Please use 'module Main where' construction to define the main module")
+        exit(1)
+
+    if s.find("moduleMain") == -1:
+        print("Please use 'module Main' construction to define the main module")
+        exit(1)
+
+    if s.find("main::IO()") == -1:
+        print("Please declare the main function with 'main :: IO()'")
+        exit(1)
+
+    if s.find('main=putStrLn"HelloHaskell!"') == -1:
+        print('Please define the main entry point which uses putStrLn function with "Hello Haskell!" argument')
+        exit(1)

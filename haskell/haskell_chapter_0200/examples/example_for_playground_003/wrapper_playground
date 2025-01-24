@@ -1,0 +1,8 @@
+data IPAddress = IPv4 String
+               | IPv4Localhost
+               | IPv6 String
+               | IPv6Localhost
+
+data EndPoint = EndPoint IPAddress Int
+
+#INJECT-b585472fa

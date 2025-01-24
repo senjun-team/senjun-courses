@@ -1,0 +1,37 @@
+import os.path
+import sys
+
+plan = '''20.0
+170.0
+'''
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+
+    if s.find('where') == -1:
+        print("Please use 'where' block")
+        exit(1)
+
+    if s.find('discount=15') == -1:
+        print("Please use 'discount = 15' in 'where'")
+        exit(1)
+
+    if s.find('minPriceForDiscount=150') == -1:
+        print("Please use 'minPriceForDiscount = 150' in 'where'")
+        exit(1)

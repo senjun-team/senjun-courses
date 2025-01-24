@@ -1,0 +1,35 @@
+import os.path
+import sys
+
+plan = '''2
+8
+16
+-1
+'''
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+
+    if s.find('baseToInt::String->Int') == -1:
+        print("Please declare 'baseToInt' function")
+        exit(1)
+
+    if s.find('baseToInt_=-1') == -1:
+        print("Please use 'baseToInt _ = -1' pattern matching to handle all other cases")
+        exit(1)

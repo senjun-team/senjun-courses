@@ -1,0 +1,29 @@
+import os.path
+import sys
+
+plan = '''x = 120
+x = 50
+x = 84
+'''
+
+s = r'''
+#INJECT-ESCAPED-b585472fa
+'''
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+    if s.count("->") < 2:
+        print("Please use lambda function with type declaration in your solution")
+        exit(1)

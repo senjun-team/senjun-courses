@@ -1,0 +1,4 @@
+fakeSum :: Int -> Int -> Int
+fakeSum x _ = x + 100
+
+#INJECT-b585472fa

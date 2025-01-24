@@ -1,0 +1,4 @@
+strange :: Int -> Int
+strange i = 22
+
+#INJECT-b585472fa
