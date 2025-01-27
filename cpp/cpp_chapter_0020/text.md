@@ -117,7 +117,6 @@ int main() {
 - Возвращает градусы по шкале Фаренгейта (`double`). Формула: `°F = °C × 9.0/5.0 + 32.0`. Чтобы ее реализовать, воспользуйтесь операторами для сложения `+`, умножения `*` и деления `/`. {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0020_task_0020}
-// Your code here
 ```
 Возвращаемое функцией значение, если параметр называется `celsius`: `celsius * 9.0 / 5.0 + 32.0`. {.task_hint}
 ```c++ {.task_answer}
@@ -374,7 +373,7 @@ bool d = s.size() == 4; // false
 
 Чему равно значение `b`? {.task_text}
 
-```c++  {.example_for_playground}
+```c++  {.example_for_playground .example_for_playground_005}
 std::string text = "Operator";
 
 bool b = text[text.size() - 1] == text[3];
