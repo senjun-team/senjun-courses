@@ -1,0 +1,7 @@
+#include <print>
+
+#INJECT-b585472fa
+
+int main() {
+    show_multiplication_table(3);
+}

@@ -1,0 +1,10 @@
+#include <string>
+#include <print>
+
+#INJECT-b585472fa
+
+int main() {
+ std::println("is_valid(\"\")={}", is_valid(""));
+ std::println("is_valid(\"test@test.su\")={}", is_valid("test@test.su"));
+ std::println("is_valid(\".@\")={}",is_valid(".@"));
+}
