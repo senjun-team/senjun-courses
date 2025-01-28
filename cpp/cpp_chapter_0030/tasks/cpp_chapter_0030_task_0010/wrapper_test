@@ -1,0 +1,25 @@
+#include "ut.hpp"
+#include <cmath>
+
+#INJECT-b585472fa
+
+namespace ut = boost::ut;
+
+int main() {
+  using namespace ut;
+
+  "NAN vertical_flight_speed"_test = [] {
+    expect(std::isnan(vertical_flight_speed(-1, 1000, 2)));
+    expect(std::isnan(vertical_flight_speed(1000, -0.1, 2)));
+  };
+
+  "INFINITY vertical_flight_speed"_test = [] {
+    expect(std::isinf(vertical_flight_speed(1000, 1000, 0)));
+    expect(std::isinf(vertical_flight_speed(1000, 1000, -2)));
+  };
+
+  "Valid vertical_flight_speed"_test = [] {
+    expect(std::abs(900.0 - 920.0) / 2.0 == vertical_flight_speed(900.0, 920.0, 2))  << "epsilon=0.001";
+    expect(std::abs(3000.0 - 3500.0) / 17.0 == vertical_flight_speed(3000.0, 3500.0, 17))  << "epsilon=0.001";
+  };
+}

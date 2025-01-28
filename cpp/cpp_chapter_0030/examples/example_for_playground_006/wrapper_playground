@@ -1,0 +1,9 @@
+import std;
+
+void show_question() {
+
+}
+
+int main() {
+    #INJECT-b585472fa
+}

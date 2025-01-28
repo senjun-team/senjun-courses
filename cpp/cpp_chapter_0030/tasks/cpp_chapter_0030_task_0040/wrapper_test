@@ -1,0 +1,16 @@
+#include "ut.hpp"
+
+#include <algorithm>
+#include <string>
+
+namespace ut = boost::ut;
+
+int main() {
+    using namespace ut;
+
+    "check user input"_test = [] {
+        std::string str = R"(#INJECT-b585472fa)";
+        str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+        expect(str == "cba");
+    };
+}

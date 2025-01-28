@@ -1,0 +1,7 @@
+#include <print>
+
+#INJECT-b585472fa
+
+int main() {
+ std::println("{}", common_prefix_len("token", "tomorrow"));
+}

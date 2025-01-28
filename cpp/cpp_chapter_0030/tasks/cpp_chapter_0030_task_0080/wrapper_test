@@ -1,0 +1,35 @@
+#include "ut.hpp"
+#include <numeric>
+
+#INJECT-b585472fa
+
+namespace ut = boost::ut;
+
+int main() {
+  using namespace ut;
+
+  "common_prefix_len=0"_test = [] {
+    expect(common_prefix_len("", "") == 0);
+    expect(common_prefix_len("to", "") == 0);
+    expect(common_prefix_len("", "to") == 0);
+    expect(common_prefix_len("x", "m") == 0);
+    expect(common_prefix_len("small", "large") == 0);
+  };
+
+  "common_prefix_len=1"_test = [] {
+    expect(common_prefix_len("t", "t") == 1);
+    expect(common_prefix_len("to", "t") == 1);
+    expect(common_prefix_len("t", "to") == 1);
+  };
+
+  "common_prefix_len=2"_test = [] {
+    expect(common_prefix_len("tomorrow", "town") == 2);
+    expect(common_prefix_len("latest", "last") == 2);
+  };
+
+  "common_prefix_len=3"_test = [] {
+    expect(common_prefix_len("smartest", "small") == 3);
+    expect(common_prefix_len("111", "111") == 3);
+  };
+
+}
