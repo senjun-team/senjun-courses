@@ -26,11 +26,11 @@ if (condition) {
 ```c++ {.example_for_playground .example_for_playground_001}
 const std::string filename = "scale_2400.png";
 
-if (!filename.contains('.')) {
-    std::println("Please provide filename with extension");
-    return;
+if (filename.contains('.')) {
+    std::println("Processing file: {}", filename);
 } else {
-    std::println("Handling file: {}", filename);
+    std::println("Please provide filename with extension");
+    handle_user_input();
 }
 ```
 
@@ -59,7 +59,7 @@ if (cpu_count == 0) {
    elapsed_time — время (с), за которое произошло изменение высоты.
 
    Возвращаемое значение — вертикальная скорость полета, м/c.
-   Если значение одной из высот ниже 0, то возвращается NAN.
+   Если значение одной из высот ниже -500 м, то возвращается NAN.
    Если время меньше либо равно 0, то возвращается INFINITY.
 */
 double vertical_flight_speed(double cur_height,
@@ -75,13 +75,15 @@ double vertical_flight_speed(double cur_height,
    elapsed_time — время (с), за которое произошло изменение высоты..
 
    Возвращаемое значение — вертикальная скорость полета, м/с.
-   Если значение одной из высот ниже 0, то возвращается NAN.
+   Если значение одной из высот ниже -500 м, то возвращается NAN.
    Если время меньше либо равно 0, то возвращается INFINITY.
 */
 double vertical_flight_speed(double cur_height,
                              double prev_height,
                              double elapsed_time) {
-    if (cur_height < 0 || prev_height < 0) {
+    const double min_height = -500.0;
+
+    if (cur_height < min_height || prev_height < min_height) {
         return NAN;
     }
 

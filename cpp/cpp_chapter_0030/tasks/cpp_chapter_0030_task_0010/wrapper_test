@@ -9,8 +9,8 @@ int main() {
   using namespace ut;
 
   "NAN vertical_flight_speed"_test = [] {
-    expect(std::isnan(vertical_flight_speed(-1, 1000, 2)));
-    expect(std::isnan(vertical_flight_speed(1000, -0.1, 2)));
+    expect(std::isnan(vertical_flight_speed(-1000, 1000, 2)));
+    expect(std::isnan(vertical_flight_speed(1000, -1000, 2)));
   };
 
   "INFINITY vertical_flight_speed"_test = [] {
