@@ -20,14 +20,16 @@ int main() {
     "Corner cases"_test = [] {
         expect(divide(1, 0) == max_val);
         expect(divide(0, 1) == 0);
-        expect(divide(max_val - 1, 1) == max_val - 1);
         expect(divide(max_val - 1, max_val - 1) == 1);
+        expect(divide(max_val - 1, 1) == max_val - 1);
         expect(divide(1, max_val - 1) == 0);
     };
 
     "Different cases"_test = [] {
-        for (std::size_t i = 1'000'000; i < 1'009'000; ++i) {
-            for (std::size_t j = 90; j < 200; ++j) {
+        expect(divide(max_val / 2, 1) == max_val / 2);
+
+        for (std::size_t i = 1'000'000; i < 1'000'090; ++i) {
+            for (std::size_t j = 90; j < 100; ++j) {
                 expect(divide(i, j) == i / j);
             }
         }

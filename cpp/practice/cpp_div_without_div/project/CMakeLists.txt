@@ -12,27 +12,19 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Werror -Wall -O2")
 
 project(div_without_div LANGUAGES CXX)
 
-add_executable(main)
+add_executable(main main.cpp)
 
-target_sources(main
-  PRIVATE
-    main.cpp)
+set_property(TARGET main PROPERTY CXX_STANDARD 23)
 
-target_compile_features(main
-  PRIVATE   cxx_std_23
-  INTERFACE cxx_std_23)
+add_executable(tests tests.cpp)
 
-add_executable(tests)
+set_property(TARGET tests PROPERTY CXX_STANDARD 23)
 
-target_sources(tests
-PRIVATE
-    tests.cpp)
+# Чтобы собрать проект локально,
+# убедитесь, что в системе установлены свежие
+# версии cmake, clang, ninja.
 
-target_compile_features(tests
-PRIVATE   cxx_std_23
-INTERFACE cxx_std_23)
-
-# Чтобы собрать проект локально, выполните:
+# Выполните:
 # mkdir build && cd build
 # cmake -Wno-dev -GNinja ..
 # ninja

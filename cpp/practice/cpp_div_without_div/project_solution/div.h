@@ -15,9 +15,13 @@ inline std::size_t divide(std::size_t a, std::size_t b) {
         int n = 0;
 
         // Находим максимальное количество бит, на которое нужно сдвинуть b,
-        // b при этом не должен стать больше a
-        while (a >= (b << (n + 1))) {
+        // b при этом не должен стать больше a:
+
+        std::size_t b_next = b << 1;
+
+        while (a >= b_next && b < b_next) {
             ++n;
+            b_next = b << (n + 1);
         }
 
         // Уменьшаем a на b * 2 ^ n
@@ -25,7 +29,7 @@ inline std::size_t divide(std::size_t a, std::size_t b) {
 
         // К результату деления добавляем 2 ^ n, то есть количество раз,
         // которое b было вычтено из a с помощью побитового сдвига
-        res += 1 << n;
+        res += 1uz << n;
     }
 
     return res;
