@@ -6,15 +6,15 @@ import MachineFormatter (formatter)
 -- ================================================
 import UserCode
 
-newtype Steam = Steam Int deriving (Show)
+newtype Steam = Steam Integer deriving (Show)
 instance Account Steam where
     getPlayedTime (Steam t) = t
 
 spec :: Spec
 spec = do
-    describe "have a good day" $ do
-        it "really that is" $ do
-            getPlayedTime (Steam 15) `shouldBe` 10
+    describe "Класс должен" $ do
+        it "иметь метод getPlayedTime" $ do
+            getPlayedTime (Steam 15) `shouldBe` 15
 -- ================================================
 main :: IO ()
 main = hspecWith (registerFormatter formatter defaultConfig) spec

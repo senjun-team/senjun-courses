@@ -53,12 +53,15 @@ class Group a where
 Напишите класс `Account` с типом-параметром `a` и операцией `getPlayedTime :: a -> Integer`. {.task_text} 
 
 ```haskell {.task_source  #haskell_chapter_0250_task_0010}
+module UserCode where
 -- ваше определение класса Account
 ```
 
 это код должен быть похож на код класса `Group`, но класс называется `Account` и имеет определение 1 операции: `getPlayedTime :: a -> Integer`. {.task_hint}
 
 ```haskell {.task_answer}
+module UserCode where
+
 class Account a where
     getPlayedTime :: a -> Integer
 ```
