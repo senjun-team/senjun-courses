@@ -1,0 +1,20 @@
+module Main where
+import Test.Hspec
+import Test.Hspec.Core.Runner hiding (registerFormatter)
+import Test.Hspec.Api.Format.V2
+import MachineFormatter (formatter)
+-- ================================================
+import UserCode
+
+newtype Steam = Steam Int deriving (Show)
+instance Account Steam where
+    getPlayedTime (Steam t) = t
+
+spec :: Spec
+spec = do
+    describe "have a good day" $ do
+        it "really that is" $ do
+            getPlayedTime (Steam 15) `shouldBe` 10
+-- ================================================
+main :: IO ()
+main = hspecWith (registerFormatter formatter defaultConfig) spec
