@@ -21,7 +21,7 @@ inline std::size_t divide(std::size_t a, std::size_t b) {
 
         while (a >= b_next && b < b_next) {
             ++n;
-            b_next = b << (n + 1);
+            b_next <<= 1;
         }
 
         // Уменьшаем a на b * 2 ^ n
