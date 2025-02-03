@@ -52,10 +52,47 @@ func rectangleSquareByPoints(x0 float64, y0 float64, x1 float64, y1 float64) flo
 }
 ```
 
+## Сокращенная запись типов принимаемых аргументов
+Если у нескольких подряд идущих параметров функции совпадает тип, то его можно указать только для последнего из них. А для остальных пропустить. Вот так могла бы выглядеть функция подсчета площади прямоугольника: 
+
+```go {.example_for_playground .example_for_playground_002}
+func rectangleSquare(width, height float64) float64 {
+	return width * height
+}
+```
+
+## Вариативные функции
+Если необходимо передать переменное число аргументов в функцию, то используются вариативные (*variadic*) функции. Функция `fmt.Printf` является вариативной. Ей можно передать один или большее число аргументов:
+
+```go {.example_for_playground .example_for_playground_003}
+server := "127.0.0.1"
+port := "8080"
+fmt.Printf("Hello from %s:%s!", server, port) 
+```
+
+В данном примере использован прием форматирования строк: на место `%s` вставляются значения переменных `server` и `port`. 
+
+Чтобы объявить вариативную функцию, используют многоточие `...`, которое ставят перед типом последнего аргумента. Функция `addUsers` вариативная:
+
+```go {.example_for_playground .example_for_playground_004}
+var users map[int]string = make(map[int]string)
+var id int
+
+func addUsers(newUsers ...string) {
+	for _, user := range newUsers {
+		users[id] = user
+		id++
+	}
+}
+func main() {
+	addUsers("ivanov", "petrov", "sidorov")
+}
+```
+
 ## Именованные возвращаемые значения
 Чтобы сделать код функции более лаконичным, иногда используют именованные возвращаемые значения: 
 
-```go {.example_for_playground .example_for_playground_002}
+```go {.example_for_playground .example_for_playground_005}
 func average(myslice []float64) (res float64) {
 	for _, el := range myslice {
 		res += el / float64(len(myslice))
@@ -67,18 +104,18 @@ func average(myslice []float64) (res float64) {
 ## Функции без возвращаемых значений
 Функция не обязана возвращать какие-либо значения вообще. В случае, когда в этом нет необходимости, возвращаемые значения не указываются:
 
-```go {.example_for_playground .example_for_playground_003}
+```go {.example_for_playground .example_for_playground_006}
 func hello(name string) {
 	fmt.Printf("Hello, %s!\n", name)
 }
-```
+``` 
 
-В данном примере использован прием форматирования строк: на место `%s` вставляется значение переменной `name`. 
+Кстати, функция `main` пакета `main` как раз является функцией без принимаемых и возвращаемых значений.
 
 ## Функции, возвращающие несколько значений
 Функция может возвращать более одного значения. Часто в качестве последнего значения указывают значение специального типа `error` — ошибки. В случае, когда ошибка произошла, функция вернет значение этого типа с сообщением о том, что пошло не так. Если ошибки не было, то вернется `nil`. Получив ошибку, ее необходимо обработать на месте или вернуть выше. В случае, когда ошибка возникла в следствие неправильного программного кода, вызывают функцию `panic`. Функция `panic` немедленно завершает работу программы с сообщением о том, где произошла паника:
 
-```go {.example_for_playground .example_for_playground_004}
+```go {.example_for_playground .example_for_playground_007}
 func hello(name string) {
 	_, err := fmt.Printf("Hello, %s!\n", name)
 	if err != nil {
@@ -148,7 +185,7 @@ func dist(x0 float64, y0 float64, x1 float64, y1 float64) float64 {
 ## Механизм передачи аргументов в функцию
 Аргументы передаются в функцию **по значению**. Это означает, что изменения копии не влияют на исходный объект. Если аргумент представляет собой ссылку, то функция может влиять на объект через эту ссылку. Например, срез является ссылочным типом. Следующая функция реализует метод сортировки среза пузырьком. Она принимает на вход срез и ничего не возвращает. Срез после вызова такой функции окажется отсортированным, потому что функция косвенно повлияла на срез через эту ссылку. 
 
-```go {.example_for_playground .example_for_playground_005}
+```go {.example_for_playground .example_for_playground_008}
 package main
 
 import (
@@ -175,7 +212,7 @@ func BubbleSort(myslice []int) {
 ## Рекурсивные функции
 Функции называются рекурсивными, если вызывают сами себя. Функция `factorial` в следующем примере рекурсивная:
 
-```go {.example_for_playground .example_for_playground_006}
+```go {.example_for_playground .example_for_playground_009}
 package main
 
 import (
