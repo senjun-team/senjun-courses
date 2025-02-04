@@ -3,10 +3,14 @@ import Test.Hspec
 import Test.Hspec.Core.Runner hiding (registerFormatter)
 import Test.Hspec.Api.Format.V2
 import MachineFormatter (formatter)
--- ================================================
+
 import UserCode
 
-newtype Steam = Steam Integer deriving (Show)
+main :: IO ()
+main = hspecWith (registerFormatter formatter defaultConfig) spec
+
+newtype Steam = Steam Int deriving (Show)
+
 instance Account Steam where
     getPlayedTime (Steam t) = t
 
@@ -15,6 +19,3 @@ spec = do
     describe "Класс должен" $ do
         it "иметь метод getPlayedTime" $ do
             getPlayedTime (Steam 15) `shouldBe` 15
--- ================================================
-main :: IO ()
-main = hspecWith (registerFormatter formatter defaultConfig) spec

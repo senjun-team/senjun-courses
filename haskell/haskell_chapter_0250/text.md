@@ -50,20 +50,20 @@ class Group a where
 
 Представьте, что нам нужен расчет скидки на игру для аккаунта игрока. Однако, мы не хотим зависеть от конкретной реализации маркетплейса.  {.task_text}
 
-Напишите класс `Account` с типом-параметром `a` и операцией `getPlayedTime :: a -> Integer`. {.task_text} 
+Напишите класс `Account` с типом-параметром `a` и операцией `getPlayedTime :: a -> Int`. {.task_text} 
 
 ```haskell {.task_source  #haskell_chapter_0250_task_0010}
 module UserCode where
 -- ваше определение класса Account
 ```
 
-это код должен быть похож на код класса `Group`, но класс называется `Account` и имеет определение 1 операции: `getPlayedTime :: a -> Integer`. {.task_hint}
+это код должен быть похож на код класса `Group`, но класс называется `Account` и имеет определение 1 операции: `getPlayedTime :: a -> Int`. {.task_hint}
 
 ```haskell {.task_answer}
 module UserCode where
 
 class Account a where
-    getPlayedTime :: a -> Integer
+    getPlayedTime :: a -> Int
 ```
 
 Определив класс `Group`, мы можем начать строить различные выражения, которые будут потом интерпретироваться специфическим для типа образом:
@@ -85,6 +85,7 @@ isE x = (x == e)
 Ваша задача переписать текущую функцию с использованием класса `SteamAccount` на функцию, которая может работать с любым аккаунтом из класса `Account`(у функции есть контекст `Account a`). {.task_text}
 
 ```haskell {.task_source #haskell_chapter_0250_task_0020}
+module UserCode where
 clamp :: Int -> Int -> Int -> Int
 clamp a val b =  min (max a val) b
 
@@ -94,7 +95,7 @@ data SteamAccount = SteamAccount {
 }
 
 class Account a where
-    playedTime :: a -> Integer
+    playedTime :: a -> Int
 
 calcDiscount :: SteamAccount -> Bool -> Int
 calcDiscount account isBlackFriday = clamp 0 discount 20
@@ -105,15 +106,16 @@ calcDiscount account isBlackFriday = clamp 0 discount 20
 Вам нужно заменить `SteamAccount` на тип `a`, о котором мы ничего не знаем. Чтобы обозначить возможность применить функцию `playedTime` над типом `a` добавьте контекст `Account a` в определении функции. {.task_hint}
 
 ```haskell {.task_answer}
+module UserCode where
 clamp :: Int -> Int -> Int -> Int
 clamp a val b =  min (max a val) b
 
 class Account a where
-    playedTime :: a -> Integer
+    getPlayedTime :: a -> Int
 
 calcDiscount :: Account a => a -> Bool -> Int
 calcDiscount account isBlackFriday = clamp 0 discount 20
-    where timeModifier = clamp 0 (playedTime account) 15
+    where timeModifier = clamp 0 (getPlayedTime account) 15
           discount = if isBlackFriday then timeModifier + 10 else timeModifier 
 ```
 
@@ -144,12 +146,10 @@ fun :: HasName a => a -> a
 Поэтому, нам нужен новый класс `AccountExtended`, для которого мы сможем узнать, является ли аккаунт премиальным с помощью операции `isVIP :: a -> Bool`. Для этого так же понадобится изменить функцию расчета скидки — теперь мы к старому расчету добавим дополнительно 10% скидки для премиальных аккаунтов. {.task_text}
 
 ```haskell {.task_source  #haskell_chapter_0250_task_0030}
-import Lib
-{-
--- из этой библиотеки мы получили класс
+module UserCode where
+
 class Account a where
-    playedTime :: a -> Integer
--}
+    getPlayedTime :: a -> Int
 
 clamp :: Int -> Int -> Int -> Int
 clamp a val b =  min (max a val) b
@@ -158,7 +158,7 @@ clamp a val b =  min (max a val) b
 
 calcDiscount :: Account a => a -> Bool -> Int
 calcDiscount account isBlackFriday = clamp 0 discount 20
-    where timeModifier = clamp 0 (playedTime account) 15
+    where timeModifier = clamp 0 (getPlayedTime account) 15
           discount = if isBlackFriday then timeModifier + 10 else timeModifier 
 ```
 
@@ -169,12 +169,11 @@ calcDiscount account isBlackFriday = clamp 0 discount 20
 В реализации `calcDiscount` после того, как скидка рассчитана (после применения `clamp 0 discount 20`), добавьте к ней еще 10, если `isVIP account == True`. {.task_hint}
 
 ```haskell {.task_answer}
-import Lib
-{-
--- из этой библиотеки мы получили класс
+module UserCode where
+
+-- из библиотеки InternalLib мы получили класс
 class Account a where
-    playedTime :: a -> Integer
--}
+    getPlayedTime :: a -> Int
 
 clamp :: Int -> Int -> Int -> Int
 clamp a val b =  min (max a val) b
@@ -184,13 +183,13 @@ class Account a => AccountExtended a where
 
 calcDiscount :: AccountExtended a => a -> Bool -> Int
 calcDiscount account isBlackFriday = clamp 0 baseDiscount 20 + vipDiscount
-    where timeModifier = clamp 0 (playedTime account) 15
+    where timeModifier = clamp 0 (getPlayedTime account) 15
           baseDiscount = if isBlackFriday 
-			  then timeModifier  + 10 
-			  else timeModifier
+              then timeModifier + 10
+              else timeModifier
           vipDiscount = if isVIP account 
-	          then 10 
-	          else 0
+              then 10 
+              else 0
 ```
 
 ## Экземпляры классов типов
@@ -258,6 +257,7 @@ instance Group Bool where
 `SensitivePayload` должен стать объектом с ключами `category` и `poi`. `Category` — строка `secret` для конструктора `Secret` и `nonsecret` для `NonSecret`. Не забудьте добавить экранированные двойные кавычки (`"\"secret\""`). `Point` будет объектом с ключами `x` (первый аргумент) и `y`. {.task_text}
 
 ```haskell {.task_source  #haskell_chapter_0250_task_0040}
+module UserCode where
 class ToJSON a where 
 	toJSON :: a -> String
 
@@ -267,22 +267,20 @@ data SensitivePayload = SensitivePayload
 		{ dataCategory :: Category
 		, poi :: Point Int 
 		}
-
-main = do
-	putStrLn $ toJSON $ SensitivePayload Secret (Point 5 3)
 ```
 
 Начните с класса для `Int`. В его реализации вам поможет функция `show`. {.task_hint}
 
 Добавьте инстанс `Category`. Посмотрите на реализацию инстанса `Show Bool` выше - pattern matching может пригодиться. Результатом будет строка в строке, экранирование кавычек снова понадобится. {.task_hint}
 
-Затем сделайте инстанс для `Point` - сформируйте строку вида `{"x": 12, "y":33}`. {.task_hint} 
+Затем сделайте инстанс для `Point` - сформируйте строку вида `{"x":12, "y":33}`. Не вставляйте символов пробела. {.task_hint} 
 
 Добавьте контекст классу `ToJSON a =>` и вы сможете использовать внутри `toJson` для значений. Так же, не забывайте, что ключи в json надо писать в кавычках, потому имя ключа будет окантовано экранированными кавычками. {.task_hint}
 
 И конечно инстанс `SensitivePayload`. Используйте суперклассы снова, не забудьте экранирование ключей. {.task_hint}
 
 ```haskell {.task_answer}
+module UserCode where
 class ToJSON a where 
     toJSON :: a -> String
 
@@ -302,9 +300,6 @@ instance ToJSON Category where
     toJSON NonSecret = "\"nonsecret\""
 
 instance ToJSON SensitivePayload where 
-    toJSON (SensitivePayload cat point) = "{\"category\":" ++ toJSON cat ++ ", \"poi\":" ++ toJSON point ++ "}"
-
-main = do
-	putStrLn $ toJSON $ SensitivePayload Secret (Point 5 3)
+    toJSON (SensitivePayload cat point) = "{\"category\":" ++ toJSON cat ++ ",\"poi\":" ++ toJSON point ++ "}"
 ```
 
