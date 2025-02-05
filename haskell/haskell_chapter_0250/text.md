@@ -67,7 +67,7 @@ module UserCode where
 -- ваше определение класса Account
 ```
 
-Это код должен быть похож на код класса `Group`, но класс называется `Account` и содержит определение 1 операции: `getPlayedTime :: a -> Int`. {.task_hint}
+Этот код должен быть похож на код класса `Group`, но класс называется `Account` и содержит определение 1 операции: `getPlayedTime :: a -> Int`. {.task_hint}
 
 ```haskell {.task_answer}
 module UserCode where
