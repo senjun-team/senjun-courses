@@ -1,0 +1,35 @@
+import os.path
+import sys
+
+plan = '''["1.2","1.4","1.6"]
+'''
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+    if s.find('toStr::[Double]->[String]') == -1:
+        print("Please declare 'toStr' function")
+        exit(1)
+
+    if s.find('=mapshow') == -1:
+        print("Please use 'map' and 'show' in 'toStr' body")
+        exit(1)
+
+    if s.find('main=print.toStr$') == -1:
+        print("Please use '.' and '$' in 'main' body")
+        exit(1)

@@ -1,0 +1,36 @@
+import os.path
+import sys
+
+plan = '''"Solid"
+"Solid -> liquid"
+"Liquid"
+"Liquid -> gas"
+"Gas"
+'''
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+
+    if s.find('mercuryState::Double->String') == -1:
+        print("Please declare 'mercuryState' function")
+        exit(1)
+
+    if s.find('|otherwise->') == -1:
+        print("Please use multiway if with 'otherwise' condition")
+        exit(1)

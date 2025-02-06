@@ -1,0 +1,38 @@
+import os.path
+import sys
+
+plan = '''[Monday,Tuesday,Wednesday,Thursday,Friday]
+[Monday,Tuesday,Wednesday,Thursday,Friday,Saturday]
+'''
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+    if s.find('dataDay=') == -1:
+        print("Please define 'Day' type")
+        exit(1)
+
+    
+    if s.find('dataWorkMode=') == -1:
+        print("Please define 'WorkMode' type")
+        exit(1)
+
+
+    if s.find('workingDays::WorkMode->[Day]') == -1:
+        print("Please declare 'workingDays' function")
+        exit(1)

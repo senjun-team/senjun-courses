@@ -1,0 +1,47 @@
+import os.path
+import sys
+
+plan = '''"Route from point {56.981; 43.12} by Bicycle"
+'''
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+    if s.find('dataNaviType=') == -1:
+        print("Please define 'NaviType' type")
+        exit(1)
+
+    if s.find('dataLoc=') == -1:
+        print("Please define 'Loc' type")
+        exit(1)
+
+    if s.find('dataRoute=') == -1:
+        print("Please define 'Route' type")
+        exit(1)
+
+    if s.find('showLoc::Loc->String') == -1:
+        print("Please declare 'showLoc' function")
+        exit(1)
+
+    if s.find('showRoute::Route->String') == -1:
+        print("Please declare 'showRoute' function")
+        exit(1)
+
+    if s.find('deriving') == -1:
+        print("Please use 'deriving' keyword so that 'NaviType' type could be serialized to string")
+        exit(1)

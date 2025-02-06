@@ -1,0 +1,4 @@
+square :: Int -> Int
+square v = v * v
+
+#INJECT-b585472fa

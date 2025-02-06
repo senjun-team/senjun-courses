@@ -1,0 +1,6 @@
+s = r"""
+#INJECT-ESCAPED-b585472fa
+""".strip()
+
+if s != "23":
+    exit(1)

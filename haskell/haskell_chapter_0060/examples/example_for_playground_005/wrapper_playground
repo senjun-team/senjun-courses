@@ -1,0 +1,9 @@
+{-# LANGUAGE MultiWayIf #-}
+
+module Main where
+
+analyzeGold :: Int -> String
+#INJECT-b585472fa
+
+main :: IO ()
+main = putStrLn (analyzeGold 999)

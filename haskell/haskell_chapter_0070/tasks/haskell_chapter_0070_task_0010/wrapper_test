@@ -1,0 +1,34 @@
+import os.path
+import sys
+
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find("98.1") == -1 or fact.find("492.462") == -1:
+        print(f"Invalid console output.")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+
+    if s.find('f::Double->Double') == -1:
+        print("Please declare 'f' function.")
+        exit(1)
+
+    if s.find('let') == -1 or s.find('in') == -1:
+        print("Please use 'let-in' block.")
+        exit(1)
+
+    if s.find('g=9.81') == -1:
+        print("Please use 'g' expression.")
+        exit(1)

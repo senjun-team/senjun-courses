@@ -1,0 +1,5 @@
+{-# LANGUAGE MultiWayIf #-}
+
+module Main where
+
+#INJECT-b585472fa

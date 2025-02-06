@@ -1,0 +1,53 @@
+import os.path
+import sys
+
+plan = '''2
+3
+"pancakes"
+'''
+
+s = r"""
+#INJECT-ESCAPED-b585472fa
+"""
+
+if __name__ == "__main__":
+    if not os.path.isfile(sys.argv[1]):
+        print(f"Empty console output. Expected:\n{plan}")
+        exit(1)
+
+    with open(sys.argv[1]) as f:
+        fact = f.read()
+
+    if fact.find(plan) == -1:
+        print(f"Invalid console output. Expected:\n{plan}")
+        exit(1)
+        
+    s = s.replace(" ", "")
+
+    if s.find('dataUserQuery=UserQuery') == -1:
+        print("Please define 'UserQuery' type")
+        exit(1)
+
+    if s.find('query::String') == -1:
+        print("Please define 'query' of type String in 'UserQuery'")
+        exit(1)
+
+    if s.find('clickCount') == -1:
+        print("Please define 'clickCount' of type Int in 'UserQuery'")
+        exit(1)
+
+    if s.find('usedSuggest') == -1:
+        print("Please define 'usedSuggest' of type Bool in 'UserQuery'")
+        exit(1)
+
+    if s.find('viewedAd') == -1:
+        print("Please define 'viewedAd' of type Bool in 'UserQuery'")
+        exit(1)
+
+    if s.find('q2=q1{') == -1:
+        print("Please define 'q2' expression which is equal to 'q1' with incremented clickCount value")
+        exit(1)
+
+    if s.find('clickCountq1+1') == -1:
+        print("To set 'q2' clickCount label you should get it from 'q1': clickCount q1 + 1")
+        exit(1)

@@ -1,0 +1,19 @@
+#include "ut.hpp"
+
+#INJECT-b585472fa
+
+namespace ut = boost::ut;
+
+int main() {
+    using namespace ut;
+
+  "promocode-independent result"_test = [] {
+    expect(0.0_d == get_price_with_discount(0.0, true)) << "epsilon=0.001";
+    expect(0.0_d == get_price_with_discount(0.0, false)) << "epsilon=0.001";
+  };
+
+  "promocode-dependent result"_test = [] {
+    expect(90.0_d == get_price_with_discount(100.0, true)) << "epsilon=0.00001";
+    expect(100.0_d == get_price_with_discount(100.0, false)) << "epsilon=0.00001";
+  };
+}
