@@ -105,7 +105,7 @@ data SteamAccount = SteamAccount {
 }
 
 class Account a where
-    playedTime :: a -> Int
+    getPlayedTime :: a -> Int
 
 calcDiscount :: SteamAccount -> Bool -> Int
 calcDiscount account isBlackFriday = clamp 0 discount 20
