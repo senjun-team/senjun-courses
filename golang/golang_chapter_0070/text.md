@@ -61,34 +61,6 @@ func rectangleSquare(width, height float64) float64 {
 }
 ```
 
-## Вариативные функции
-Если необходимо передать переменное число аргументов в функцию, то используются вариативные (*variadic*) функции. Функция `fmt.Printf` является вариативной. Ей можно передать один или большее число аргументов:
-
-```go {.example_for_playground .example_for_playground_003}
-server := "127.0.0.1"
-port := "8080"
-fmt.Printf("Hello from %s:%s!", server, port) 
-```
-
-В данном примере использован прием форматирования строк: на место `%s` вставляются значения переменных `server` и `port`. 
-
-Чтобы объявить вариативную функцию, используют многоточие `...`, которое ставят перед типом последнего аргумента. Функция `addUsers` вариативная:
-
-```go {.example_for_playground .example_for_playground_004}
-var users map[int]string = make(map[int]string)
-var id int
-
-func addUsers(newUsers ...string) {
-	for _, user := range newUsers {
-		users[id] = user
-		id++
-	}
-}
-func main() {
-	addUsers("ivanov", "petrov", "sidorov")
-}
-```
-
 ## Именованные возвращаемые значения
 Чтобы сделать код функции более лаконичным, иногда используют именованные возвращаемые значения: 
 
@@ -128,7 +100,7 @@ func hello(name string) {
 
 Напишите функцию с именем `printTriangleType`, которая определяет тип треугольника по координатам его вершин: остроугольный, тупоугольный, прямоугольный или вырожденный. Функция `printTriangleType` принимает шесть аргументов типа `float64` и печатает одно из четырех сообщений на экран: `acute triangle`, `obtuse triangle`, `right triangle` или `degenerate triangle`. В качестве первого аргумента передается `x0`, в качестве второго — `y0`, третий — `x1`, четвертый — `y1`, пятый — `x2`, шестой — `y2`. {.task_text}
 
-```go {.task_source #golang_chapter_0070_task_0020}
+```go {.task_source #golang_chapter_0070_task_0030}
 package main
 import "fmt"
 
@@ -181,6 +153,90 @@ func dist(x0 float64, y0 float64, x1 float64, y1 float64) float64 {
 }
 
 ```
+
+## Вариативные функции
+Если необходимо передать переменное число аргументов в функцию, то используются вариативные (*variadic*) функции. Функция `fmt.Printf` является вариативной. Ей можно передать один или большее число аргументов:
+
+```go {.example_for_playground .example_for_playground_003}
+server := "127.0.0.1"
+port := "8080"
+fmt.Printf("Hello from %s:%s!", server, port) 
+```
+
+В данном примере использован прием форматирования строк: на место `%s` вставляются значения переменных `server` и `port`. 
+
+Чтобы объявить вариативную функцию, используют многоточие `...`, которое ставят перед типом последнего аргумента. Функция `addUsers` вариативная:
+
+```go {.example_for_playground .example_for_playground_004}
+var users map[int]string = make(map[int]string)
+var id int
+
+func addUsers(newUsers ...string) {
+	for _, user := range newUsers {
+		users[id] = user
+		id++
+	}
+}
+func main() {
+	addUsers("ivanov", "petrov", "sidorov")
+}
+```
+
+Фунция `valid` проверяет, является ли строка допустимым email адресом. Напишите функцию с именем `findMails`, которая принимает на вход произвольное количество строк и возвращает слайс, в котором находятся только строки с почтой. {.task_text}
+
+```go {.task_source #golang_chapter_0070_task_0020}
+package main
+
+import (
+	"fmt"
+	"net/mail"
+)
+
+func main() {
+	fmt.Println(findMails("ivanov@yandex.ru", "magic-string", "petrov@gmail.com", "sidorov@mail.ru", "go-programmer.com"))
+}
+
+// ваш код здесь 
+
+func valid(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
+}
+
+``` 
+
+Функция `findMail` должна быть вариатиавной. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"fmt"
+	"net/mail"
+)
+
+func main() {
+	fmt.Println(findMails("ivanov@yandex.ru", "magic-string", "petrov@gmail.com", "sidorov@mail.ru", "go-programmer.com"))
+}
+
+func findMails(mails ...string) []string {
+	var res []string
+
+	for _, m := range mails {
+		if valid(m) {
+			res = append(res, m)
+		}
+	}
+
+	return res
+}
+
+func valid(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
+}
+```
+
 
 ## Механизм передачи аргументов в функцию
 Аргументы передаются в функцию **по значению**. Это означает, что изменения копии не влияют на исходный объект. Если аргумент представляет собой ссылку, то функция может влиять на объект через эту ссылку. Например, срез является ссылочным типом. Следующая функция реализует метод сортировки среза пузырьком. Она принимает на вход срез и ничего не возвращает. Срез после вызова такой функции окажется отсортированным, потому что функция косвенно повлияла на срез через эту ссылку. 
@@ -260,7 +316,7 @@ func mul64(left, right uint64) (uint64, error) {
 
  Реализуйте функцию `mergeSort` сортировки слиянием для среза целых чисел. Функция должна принимать срез из элементов типа `[]int` и возвращать отсортированный срез элементов типа `[]int`. {.task_text}
 
-```go {.task_source #golang_chapter_0070_task_0030}
+```go {.task_source #golang_chapter_0070_task_0040}
 package main
 import "fmt"
 
