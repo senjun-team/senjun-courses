@@ -1,0 +1,15 @@
+module Main where
+import Test.Hspec
+
+import UserCode
+
+newtype Steam = Steam Int deriving (Show)
+
+instance Account Steam where
+    getPlayedTime (Steam t) = t
+
+main :: IO ()
+main = hspec $ do
+    describe "Класс должен" $ do
+        it "иметь метод getPlayedTime" $ do
+            getPlayedTime (Steam 15) `shouldBe` 15

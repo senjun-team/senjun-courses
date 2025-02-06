@@ -1,0 +1,18 @@
+module Main where
+import Test.Hspec
+import Test.QuickCheck
+
+import UserCode
+
+main :: IO ()
+main = hspec $ do
+    describe "ToJSON должен быть реализован для" $ do
+        it "Int" $ property
+            (\x -> toJSON (x :: Int) `shouldBe` (show x))
+        it "Point" $ property
+            (\x y -> toJSON (Point (x::Int) (y::Int)) `shouldBe` "{\"x\":" ++ toJSON x ++ ",\"y\":" ++ toJSON y ++ "}")
+        it "Category" $ do
+            toJSON Secret `shouldBe` "\"secret\""
+            toJSON NonSecret `shouldBe` "\"nonsecret\""
+        it "SensitivePayload" $ do
+            toJSON (SensitivePayload Secret (Point 0 0)) `shouldBe` "{\"category\":\"secret\",\"poi\":{\"x\":0,\"y\":0}}"

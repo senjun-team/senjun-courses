@@ -1,0 +1,36 @@
+module Main where
+import Test.Hspec
+import Test.QuickCheck
+
+import UserCode hiding (clamp)
+
+clamp :: Int -> Int -> Int -> Int
+clamp a val = min (max a val)
+
+data Steam = Steam Int Bool deriving (Show)
+data EpicGames = EpicGames Int Bool deriving (Show)
+
+instance Account Steam where
+    getPlayedTime (Steam t _) = t
+
+instance Account EpicGames where
+    getPlayedTime (EpicGames t _) = t
+
+instance AccountExtended EpicGames where
+    isVIP (EpicGames _ v) = v
+
+instance AccountExtended Steam where
+    isVIP (Steam _ v) = v
+
+main :: IO ()
+main = hspec $ do
+    describe "calcDiscount должен" $ do
+        it "считать скидку правильно" $ property
+            (\playTime isBF isVIP' -> let baseMod = clamp 0 playTime 15 
+                                          baseDiscount = clamp 0 (if isBF then baseMod + 10 else baseMod) 20
+                                          expected = baseDiscount + (if isVIP' then 10 else 0)
+                                     in calcDiscount (Steam playTime isVIP') isBF `shouldBe` expected)
+        it "работать с любым классом" $ do
+            calcDiscount (Steam 0 False) False `shouldBe` 0
+            calcDiscount (EpicGames 0 False) False `shouldBe` 0
+

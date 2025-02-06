@@ -1,0 +1,29 @@
+module Main where
+import Test.Hspec
+import Test.QuickCheck
+
+import UserCode hiding (clamp)
+
+clamp :: Int -> Int -> Int -> Int
+clamp a val = min (max a val)
+
+newtype Steam = Steam Int deriving (Show)
+newtype EpicGames = EpicGames Int deriving (Show)
+
+instance Account Steam where
+    getPlayedTime (Steam t) = t
+
+instance Account EpicGames where
+    getPlayedTime (EpicGames t) = t
+
+main :: IO ()
+main = hspec $ do
+    describe "calcDiscount" $ do
+        it "скидка считается верно" $ property
+            (\playTime isBF -> let baseMod = clamp 0 playTime 15 
+                                   expected = clamp 0 (if isBF then baseMod + 10 else baseMod) 20
+                               in calcDiscount (Steam playTime) isBF `shouldBe` expected)
+                                         
+        it "работает с любым классом" $ do
+            calcDiscount (Steam 0) False `shouldBe` 0
+            calcDiscount (EpicGames 0) False `shouldBe` 0
