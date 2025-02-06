@@ -264,6 +264,121 @@ func BubbleSort(myslice []int) {
 	}
 }
 ```
+## Значения-функции
+Функции, подобно другим значениям, присваивают переменным: 
+```go {.example_for_playground .example_for_playground_008}
+package main
+
+import (
+	"fmt"
+)
+
+func hello(user string) {
+	fmt.Printf("Hello %s!\n", user)
+}
+
+func goodbuy(user string) {
+	fmt.Printf("Goodbuy %s!\n", user)
+}
+
+func main() {
+	userMessage := hello
+	userMessage("gopher")
+	userMessage = goodbuy
+	userMessage("gopher")
+}
+```
+
+В данном случае `userMessage` имеет тип `func(string)`. Попытка присвоить в эту переменную функцию с другой сигнатурой приведет к ошибке компиляции:
+
+```go {.example_for_playground .example_for_playground_008}
+package main
+
+import (
+	"fmt"
+	"net/mail"
+)
+
+func hello(user string) {
+	fmt.Printf("Hello %s!\n", user)
+}
+
+func goodbuy(user string) {
+	fmt.Printf("Goodbuy %s!\n", user)
+}
+
+func valid(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
+}
+
+func main() {
+	userMessage := hello
+	userMessage("gopher")
+	userMessage = goodbuy
+	userMessage("gopher")
+	// нельзя присвоить значение типа func(string) bool
+	// переменной типа func(string)
+	userMessage = valid // ошибка компиляции! 
+}
+```
+
+Нулевым значением типа функции является `nil`. 
+
+## Анонимные функции
+Анонимные функции — это функции без имени:
+
+```go {.example_for_playground .example_for_playground_008}
+func main() {
+	func() {
+		fmt.Println("Hello from anonymous world!")
+	}()
+}
+```
+
+В данном случае мы создали анонимную функцию внутри `main` и вызвали ее через символы скобочек `()`.  
+Если нужно использовать анонимную функцию в другом месте, то ее присваивают переменной: 
+
+```go {.example_for_playground .example_for_playground_008}
+func main() {
+	const sep = "============================"
+	hello := func() {
+		fmt.Println("Hello from anonymous world!")
+	}
+	fmt.Println(sep)
+	hello()
+	fmt.Println(sep)
+}
+```
+
+Вот так передают анонимную функцию в качестве параметра другой функции: 
+
+```go {.example_for_playground .example_for_playground_008}
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	const sep = "==================================="
+	startServer(sep, "127.0.0.1", "8080", []string{"192.168.23.48:4040", "192.168.23.48:6060"},
+		func(host string, port string) {
+			fmt.Printf("Hello from %s:%s!\n", host, port)
+		})
+}
+
+func startServer(sep string, servHost string, servPort string,
+	clients []string,
+	helloFrom func(host string, port string)) {
+	for _, client := range clients {
+		fmt.Println(sep)
+		fmt.Printf("%s:%s-->%s\n", servHost, servPort, client)
+		helloFrom(servHost, servPort)
+	}
+	fmt.Println(sep)
+}
+```
 
 ## Рекурсивные функции
 Функции называются рекурсивными, если вызывают сами себя. Функция `factorial` в следующем примере рекурсивная:
