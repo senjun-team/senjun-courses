@@ -1,14 +1,8 @@
 module Main where
 import Test.Hspec
-import Test.Hspec.Core.Runner hiding (registerFormatter)
-import Test.Hspec.Api.Format.V2
 import Test.QuickCheck
-import MachineFormatter (formatter)
 
 import UserCode hiding (clamp)
-
-main :: IO ()
-main = hspecWith (registerFormatter formatter defaultConfig) spec
 
 clamp :: Int -> Int -> Int -> Int
 clamp a val = min (max a val)
@@ -22,8 +16,8 @@ instance Account Steam where
 instance Account EpicGames where
     getPlayedTime (EpicGames t) = t
 
-spec :: Spec
-spec = do
+main :: IO ()
+main = hspec $ do
     describe "calcDiscount" $ do
         it "скидка считается верно" $ property
             (\playTime isBF -> let baseMod = clamp 0 playTime 15 

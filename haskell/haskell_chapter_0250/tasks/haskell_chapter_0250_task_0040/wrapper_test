@@ -1,18 +1,11 @@
 module Main where
 import Test.Hspec
-import Test.Hspec.Core.Runner hiding (registerFormatter)
-import Test.Hspec.Api.Format.V2
 import Test.QuickCheck
-import MachineFormatter (formatter)
 
 import UserCode
 
 main :: IO ()
-main = hspecWith (registerFormatter formatter defaultConfig) spec
-
-
-spec :: Spec
-spec = do
+main = hspec $ do
     describe "ToJSON должен быть реализован для" $ do
         it "Int" $ property
             (\x -> toJSON (x :: Int) `shouldBe` (show x))
