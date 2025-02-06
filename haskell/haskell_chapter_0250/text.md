@@ -113,7 +113,7 @@ calcDiscount account isBlackFriday = clamp 0 discount 20
           discount = if isBlackFriday then timeModifier + 10 else timeModifier 
 ```
 
-Требуется заменить `SteamAccount` на тип `a`, о котором мы ничего не знаем. Чтобы обозначить возможность применить функцию `playedTime` над типом `a`, добавьте контекст `Account a` в определении функции. {.task_hint}
+Требуется заменить `SteamAccount` на тип `a`, о котором мы ничего не знаем. Чтобы обозначить возможность применить функцию `playedTime` к типу `a`, добавьте контекст `Account a` в определении функции. {.task_hint}
 
 ```haskell {.task_answer}
 module UserCode where
