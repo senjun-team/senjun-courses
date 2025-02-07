@@ -181,6 +181,12 @@ if (request_body_len > max_len) {
 const int status_code = (request_body_len > max_len) ? -1 : handle_request();
 ```
 
+Скомпилируется ли этот код? Зависит от того, какой тип возвращает `handle_request()`! Дело в том, что типы возвращаемых тернарным оператором значений должны быть приводимы один к другому. Поэтому если `handle_request()` возвращает `int` или `bool`, код скомпилируется. А если `void`, то нет:
+
+```
+error: right operand to ? is void, but left operand is of type 'int'
+```
+
 Перепишите функцию `max()` с использованием тернарного оператора. Тело функции должно состоять из единственной инструкции. {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0030_task_0030}
