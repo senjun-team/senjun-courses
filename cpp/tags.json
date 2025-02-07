@@ -1,8 +1,8 @@
 {
-    "title": "C++",
-    "version": "C++20",
+    "title": "C++ по спирали",
+    "version": "C++23",
     "url": "https://isocpp.org/",
-    "chapters": "40 глав", 
+    "chapters": "57 глав", 
     "projects": [
         {
             "name": "Sphinx — поисковый движок", 
