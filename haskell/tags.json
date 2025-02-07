@@ -1,9 +1,9 @@
 {
-    "title": "О Haskell по-человечески",
+    "title": "Haskell",
     "version": "Haskell 2010",
     "url": "https://www.haskell.org/",
-    "chapters": "24 главы", 
-    "tasks": "72 задачи",
+    "chapters": "38 глав",
+    "tasks": "102 задачи",
     "projects": [
         {
             "name": "GitHub Semantic — анализатор исходников",
@@ -17,5 +17,6 @@
             "name": "Freckle — площадка для онлайн-обучения",
             "url": "https://freckle.com/en-us/"
         }
-    ]
+    ],
+    "in_development": true
 }
