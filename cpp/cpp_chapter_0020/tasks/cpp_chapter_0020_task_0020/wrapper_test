@@ -2,18 +2,16 @@
 
 #INJECT-b585472fa
 
-namespace ut = boost::ut;
-
 int main() {
-    using namespace ut;
+    using namespace boost::ut;
 
-  "zero temperature"_test = [] {
-    expect(32.0_d == to_fahrenheit(0.0)) << "epsilon=0.001";
-    expect(0.0_d == to_fahrenheit(-17.7778)) << "epsilon=0.001";
-  };
+    "zero temperature"_test = [] {
+      expect(32.0_d == to_fahrenheit(0.0)) << "epsilon=0.001";
+      expect(0.0_d == to_fahrenheit(-17.7778)) << "epsilon=0.001";
+    };
 
-  "non-zero temperature"_test = [] {
-    expect(113.0_d == to_fahrenheit(45.0)) << "epsilon=0.001";
-    expect(15.8_d == to_fahrenheit(-9.0)) << "epsilon=0.001";
-  };
+    "non-zero temperature"_test = [] {
+      expect(113.0_d == to_fahrenheit(45.0)) << "epsilon=0.001";
+      expect(15.8_d == to_fahrenheit(-9.0)) << "epsilon=0.001";
+    };
 }

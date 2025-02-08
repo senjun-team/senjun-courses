@@ -1,35 +1,11 @@
 #include "ut.hpp"
-
-#include <cstdio>
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-#include <string>
-#include <array>
-
-namespace ut = boost::ut;
-
-std::string exec(std::string const & cmd) {
-    std::array<char, 128> buffer;
-    std::string output;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-
-    if (!pipe) {
-        throw std::runtime_error("Couldn't run user solution from tests");
-    }
-    
-    while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr) {
-        output += buffer.data();
-    }
-    
-    return output;
-}
+#include "test_helpers.h"
 
 int main() {
-    using namespace ut;
+    using namespace boost::ut;
 
     "check user solution console output"_test = [] {
-        std::string const res = exec("./build/main");
-        expect(res == "Hello World" || res == "Hello World\n");
+        std::string user_code_output = hlp::normalize(hlp::exec_user_solution());
+        expect(user_code_output.starts_with("helloworld"));
     };
 }

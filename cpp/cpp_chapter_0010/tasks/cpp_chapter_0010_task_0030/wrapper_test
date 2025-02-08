@@ -1,18 +1,11 @@
 #include "ut.hpp"
-
-#include <algorithm>
-#include <string>
-
-namespace ut = boost::ut;
+#include "test_helpers.h"
 
 int main() {
-    using namespace ut;
+    using namespace boost::ut;
 
     "check user input"_test = [] {
-        std::string str = R"(#INJECT-b585472fa)";
-        str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
-        std::transform(str.begin(), str.end(), str.begin(),
-        [](unsigned char c){ return std::tolower(c); });
-        expect(str == "c++26");
+        std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
+        expect(user_input == "c++26");
     };
 }

@@ -2,15 +2,13 @@
 
 #INJECT-b585472fa
 
-namespace ut = boost::ut;
-
 int main() {
-    using namespace ut;
+    using namespace boost::ut;
 
-  "all a, b combinations"_test = [] {
-    expect(hello_xor(true, false) == true);
-    expect(hello_xor(false, true) == true);
-    expect(hello_xor(true, true) == false);
-    expect(hello_xor(false, false) == false);
-  };
+    "all a, b combinations"_test = [] {
+        expect(hello_xor(true, false) == true);
+        expect(hello_xor(false, true) == true);
+        expect(hello_xor(true, true) == false);
+        expect(hello_xor(false, false) == false);
+    };
 }
