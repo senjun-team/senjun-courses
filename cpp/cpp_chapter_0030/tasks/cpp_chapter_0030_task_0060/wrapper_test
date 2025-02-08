@@ -1,45 +1,23 @@
 #include "ut.hpp"
+#include "test_helpers.h"
 
-#include <cstdio>
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-#include <string>
-#include <array>
-
-namespace ut = boost::ut;
-
-std::string exec(std::string const & cmd) {
-    std::array<char, 128> buffer;
-    std::string output;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-
-    if (!pipe) {
-        throw std::runtime_error("Couldn't run user solution from tests");
-    }
-    
-    while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr) {
-        output += buffer.data();
-    }
-    
-    return output;
-}
 
 int main() {
-    using namespace ut;
+    using namespace boost::ut;
 
     "check user solution console output"_test = [] {
-        std::string const res = exec("./build/main");
+        std::string const res = hlp::exec_user_solution();
         expect(res == 
-     "Code=-1\n"
-     "State of user's operation: Invalid state\n"
-     "Code=0\n"
-     "State of user's operation: Operation succeded\n"
-     "Code=1\n"
-     "State of user's operation: Still in progress\n"
-     "Code=2\n"
-     "State of user's operation: Aborted\n"
-     "Code=3\n"
-     "State of user's operation: Invalid state\n");
+            "Code=-1\n"
+            "State of user's operation: Invalid state\n"
+            "Code=0\n"
+            "State of user's operation: Operation succeded\n"
+            "Code=1\n"
+            "State of user's operation: Still in progress\n"
+            "Code=2\n"
+            "State of user's operation: Aborted\n"
+            "Code=3\n"
+            "State of user's operation: Invalid state\n"
+        );
     };
 }
