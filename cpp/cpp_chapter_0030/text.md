@@ -72,7 +72,7 @@ double vertical_flight_speed(double cur_height,
 ```c++ {.task_answer}
 /* cur_height   — текущая высота, м.
    prev_height  — предыдущая высота, м.
-   elapsed_time — время (с), за которое произошло изменение высоты..
+   elapsed_time — время (с), за которое произошло изменение высоты.
 
    Возвращаемое значение — вертикальная скорость полета, м/с.
    Если значение одной из высот ниже -500 м, то возвращается NAN.
@@ -605,21 +605,26 @@ void show_multiplication_table(int n) {
 
 ### Цикл range-for
 
-С помощью `for` можно организовать еще один вариант циклов. Он известен как `range-for` и применяется для итерации по диапазону значений. Например, по контейнеру.
+С помощью `for` можно организовать еще один вариант циклов. Он известен как `range-for` и применяется для итерации по диапазону (range) значений. Например, по контейнеру.
+
+Так выглядит подсчет гласных букв английского алфавита в строке с помощью `range-for`:
 
 ```c++  {.example_for_playground .example_for_playground_013}
-std::string s = "MAX";
+const std::string vowels = "aeiou";
+const std::string text = "what are vowels?";
 
-for (char c: s) {
-    if (std::tolower(c) == 'a') {
-        std::println("Found char!");
+std::size_t count = 0;
+
+for (char c: text) {
+    if (vowels.contains(c)) {
+        ++count;
     }
 }
+
+std::println("Number of vowels in text: {}", count);
 ```
 ```
-M
-A
-X
+Number of vowels in text: 5
 ```
 
 Общий вид цикла `range-for`:
