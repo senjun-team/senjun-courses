@@ -323,7 +323,25 @@ func main() {
 }
 ```
 
-Нулевым значением типа функции является `nil`. 
+Нулевым значением типа функции является `nil`. Вызов функции со значением `nil` приведет у панике:
+```go {.example_for_playground .example_for_playground_008}
+func main() {
+	var f func() string
+	fmt.Println(f())
+}
+```
+
+Если вы не уверены в том, что функция не нулевая, то перед вызовом ее нужно сравнить со значением `nil`:
+```go {.example_for_playground .example_for_playground_008}
+func main() {
+	var f func() string
+	if f != nil {
+		fmt.Println(f())
+	}
+}
+```
+
+Сами значения-функции не сравнимы друг с другом, поэтому, например, их нельзя использовать в качестве ключей отображения.
 
 ## Анонимные функции
 Анонимные функции — это функции без имени:
@@ -377,6 +395,117 @@ func startServer(sep string, servHost string, servPort string,
 		helloFrom(servHost, servPort)
 	}
 	fmt.Println(sep)
+}
+```
+## Замыкания 
+Когда мы возвращаем некоторую функцию из другой фукнции, нам может потребоваться запомнить некоторое значение. Когда мы вернем эту функцию снова, то мы воспользуемся старым значением. Говоря более строго, некоторые функции имеют *состояние*. Такой прием предоставляют нам *замыкания (closures)*. Следующая программа вычисляет числа Фибоначчи с использованием замыкания:
+
+```go {.example_for_playground .example_for_playground_008}
+func main() {
+	fib := nextFibonacci()
+	for i := 0; i < 10; i++ {
+		fmt.Printf("%d\t", fib())
+	}
+}
+
+func nextFibonacci() func() int {
+	a1 := -1
+	a2 := 1
+
+	return func() int {
+		a3 := a1 + a2
+		a1 = a2
+		a2 = a3
+		return a3
+	}
+}
+```
+
+При каждом вызове `fib()` мы помним о предыдущих значениях `a1`и `a2`.
+
+Реализовано три функции: `verySlowFunc()`, `slowFunc()` и `fastFunc()`. Напишите функцию `bestFunc()`, которая принимает на вход одну из этих фунций и ее псевдоним, а возвращает псевдоним наиболее быстрой из них. Так, для кода ниже должен быть следующий вывод:
+```
+firstFunc
+firstFunc
+thirdFunc
+```
+
+Для того, чтобы узнать время выполнения функции в миллисекундах, воспользуйтесь стандартным пакетом `time`. Засеките текущее время с помощью `start := time.Now()`, а затем посчитайте количество миллисекунд с этой отметки: `time.Since(start).Milliseconds()`.{.task_text}
+
+```go {.task_source #golang_chapter_0070_task_0020}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	measure := bestFunc()
+	fmt.Println(measure(slowFunc, "firstFunc"))
+	fmt.Println(measure(verySlowFunc, "secondFunc"))
+	fmt.Println(measure(fastFunc, "thirdFunc"))
+}
+
+// ваш код здесь 
+
+func verySlowFunc() {
+	time.Sleep(500 * time.Millisecond)
+}
+
+func slowFunc() {
+	time.Sleep(200 * time.Millisecond)
+}
+
+func fastFunc() {
+	time.Sleep(1 * time.Millisecond)
+}
+``` 
+
+Реализуйте идею замыкания. Функция `bestFunc` должна хранить наименьшее время выполнения и псевдонимы функций-аргументов, которые ей передают при каждом запуске. Возвращает `bestFunc` последний псевдоним, который она запомнила. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	measure := bestFunc()
+	fmt.Println(measure(slowFunc, "firstFunc"))
+	fmt.Println(measure(verySlowFunc, "secondFunc"))
+	fmt.Println(measure(fastFunc, "thirdFunc"))
+}
+
+func bestFunc() func(f func(), alias string) string {
+	var maxInt64 int64 = 9223372036854775807
+	var res int64 = maxInt64
+	var fastestAlias string
+
+	return func(f func(), alias string) string {
+		start := time.Now()
+		f()
+		res2 := time.Since(start).Milliseconds()
+		if res2 < res {
+			res = res2
+			fastestAlias = alias
+		}
+		return fastestAlias
+	}
+}
+
+func verySlowFunc() {
+	time.Sleep(500 * time.Millisecond)
+}
+
+func slowFunc() {
+	time.Sleep(200 * time.Millisecond)
+}
+
+func fastFunc() {
+	time.Sleep(1 * time.Millisecond)
 }
 ```
 
