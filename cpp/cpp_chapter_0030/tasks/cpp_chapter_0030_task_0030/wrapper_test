@@ -1,0 +1,15 @@
+#include "ut.hpp"
+
+#INJECT-b585472fa
+
+int main() {
+    using namespace boost::ut;
+
+    "Max"_test = [] {
+        expect(max(-1, 1) == 1);
+        expect(max(1, -1) == 1);
+        expect(max(0, 0) == 0);
+        expect(max(1000, 2) == 1000);
+        expect(max(999, 9999) == 9999);
+    };
+}

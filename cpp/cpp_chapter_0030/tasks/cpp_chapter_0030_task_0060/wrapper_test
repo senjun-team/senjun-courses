@@ -1,0 +1,23 @@
+#include "ut.hpp"
+#include "test_helpers.h"
+
+
+int main() {
+    using namespace boost::ut;
+
+    "check user solution console output"_test = [] {
+        std::string const res = hlp::exec_user_solution();
+        expect(res == 
+            "Code=-1\n"
+            "State of user's operation: Invalid state\n"
+            "Code=0\n"
+            "State of user's operation: Operation succeded\n"
+            "Code=1\n"
+            "State of user's operation: Still in progress\n"
+            "Code=2\n"
+            "State of user's operation: Aborted\n"
+            "Code=3\n"
+            "State of user's operation: Invalid state\n"
+        );
+    };
+}

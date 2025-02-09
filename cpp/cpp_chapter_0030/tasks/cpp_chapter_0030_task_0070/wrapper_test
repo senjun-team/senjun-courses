@@ -1,0 +1,16 @@
+#include "ut.hpp"
+#include <numeric>
+
+#INJECT-b585472fa
+
+int main() {
+    using namespace boost::ut;
+
+    "gcd"_test = [] {
+        for (int i = 1; i < 100; ++i) {
+            for (int j = 1; j < 100; j++) {
+                expect(gcd(i, j) == std::gcd(i, j));
+            }
+        }
+    };
+}

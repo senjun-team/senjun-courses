@@ -1,0 +1,24 @@
+#include "ut.hpp"
+#include <string>
+
+#INJECT-b585472fa
+
+int main() {
+    using namespace boost::ut;
+
+    "Invalid e-mails"_test = [] {
+        expect(!is_valid(""));
+        expect(!is_valid("1"));
+        expect(!is_valid("@"));
+        expect(!is_valid("."));
+        expect(!is_valid(".@"));
+        expect(!is_valid("@kjl.su"));
+        expect(!is_valid("kjl@"));
+        expect(!is_valid("kjl@t"));
+    };
+
+    "Valid e-mails"_test = [] {
+        expect(is_valid("test@test.su"));
+        expect(is_valid("t@t.t"));
+    };
+}
