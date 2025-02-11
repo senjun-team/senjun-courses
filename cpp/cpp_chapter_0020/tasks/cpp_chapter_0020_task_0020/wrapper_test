@@ -2,7 +2,8 @@
 
 #INJECT-b585472fa
 
-int main() {
+int main()
+{
     using namespace boost::ut;
 
     "zero temperature"_test = [] {

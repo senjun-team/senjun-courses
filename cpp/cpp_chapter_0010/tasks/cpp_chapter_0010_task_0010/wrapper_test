@@ -4,7 +4,8 @@
 
 namespace ut = boost::ut;
 
-int main() {
+int main()
+{
     using namespace ut;
 
   "promocode-independent result"_test = [] {

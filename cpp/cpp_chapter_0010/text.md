@@ -54,10 +54,13 @@ C++ предоставляет широкий арсенал возможнос�
 ```cpp  {.example_for_playground .example_for_playground_001}
 std::vector<int> numbers = random_vector();
 
-for (std::size_t i = 0; i < numbers.size(); ++i) {
-    if (numbers[i] < 0) {
+for (std::size_t i = 0; i < numbers.size(); ++i)
+{
+    if (numbers[i] < 0)
+    {
         numbers[i] = 0;
-    } else if (numbers[i] > 100) {
+    } else if (numbers[i] > 100)
+    {
         numbers[i] = 100;
     }
 }
@@ -73,7 +76,8 @@ std::println("{}", numbers);
 А теперь решим эту задачу с применением абстракций. Напишем функцию `clamp_to_pct()`, которая изменяет целое число по заданным правилам. Внутри она вызывает функцию стандартной библиотеки `std::clamp()`. Ознакомьтесь с ее описанием [на сайте cppreference.com.](https://en.cppreference.com/w/cpp/algorithm/clamp) Это лучший справочник по C++, и вы часто будете в него заглядывать.
 
 ```cpp
-void clamp_to_pct(int & n) {
+void clamp_to_pct(int & n)
+{
     n = std::clamp(n, 0, 100);
 }
 ```
@@ -124,8 +128,10 @@ error: invalid conversion from 'const char*' to 'int'
 Исправьте тип возвращаемого значения. {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0010_task_0010}
-std::string get_price_with_discount(double price, bool has_promocode) {
-    if (has_promocode) {
+std::string get_price_with_discount(double price, bool has_promocode)
+{
+    if (has_promocode)
+    {
         return price * 0.9;
     }
 
@@ -134,8 +140,10 @@ std::string get_price_with_discount(double price, bool has_promocode) {
 ```
 Судя по сигнатуре, функция возвращает строку. Но в теле функции видно, что намерением было вернуть число с плавающей точкой. {.task_hint}
 ```c++ {.task_answer}
-double get_price_with_discount(double price, bool has_promocode) {
-    if (has_promocode) {
+double get_price_with_discount(double price, bool has_promocode)
+{
+    if (has_promocode)
+    {
         return price * 0.9;
     }
 
@@ -212,7 +220,8 @@ C++ — язык, на котором можно _генерировать и в
 ```cpp  {.example_for_playground}
 import std;
 
-int main() {
+int main()
+{
     std::println("Hello World");
 }
 ```
@@ -224,7 +233,8 @@ int main() {
 ```cpp  {.example_for_playground}
 #include <iostream>
 
-int main() {
+int main()
+{
     std::cout << "Hello World" << std::endl;
 }
 ```
@@ -383,7 +393,8 @@ C++ — удачный выбор для:
 
 // Определите функцию main — точку входа в программу:
 
-// тип_возвращаемого_значения имя_функции() {
+// тип_возвращаемого_значения имя_функции() 
+// {
 //     тело функции
 // }
 
@@ -398,7 +409,8 @@ C++ — удачный выбор для:
 ```c++ {.task_answer}
 import std;
 
-int main() {
+int main()
+{
     std::println("Hello World");
 }
 ```

@@ -3,7 +3,8 @@
 #include "div.h"
 
 // Юнит-тесты
-int main() {
+int main()
+{
     using namespace boost::ut;
 
     const std::size_t max_val = std::numeric_limits<std::size_t>::max();

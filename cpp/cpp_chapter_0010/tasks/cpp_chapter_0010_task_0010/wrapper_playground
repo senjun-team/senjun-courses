@@ -2,6 +2,7 @@ import std;
 
 #INJECT-b585472fa
 
-int main() {
+int main()
+{
     std::println("{}", get_price_with_discount(100.0, true));
 }

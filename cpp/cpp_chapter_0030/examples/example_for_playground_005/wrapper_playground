@@ -1,6 +1,7 @@
 import std;
 
-int main() {
+int main()
+{
     const int price = 421;
     
     #INJECT-b585472fa

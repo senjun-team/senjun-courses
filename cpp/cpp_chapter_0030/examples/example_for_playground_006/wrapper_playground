@@ -1,9 +1,11 @@
 import std;
 
-void show_question() {
+void show_question()
+{
 
 }
 
-int main() {
+int main()
+{
     #INJECT-b585472fa
 }

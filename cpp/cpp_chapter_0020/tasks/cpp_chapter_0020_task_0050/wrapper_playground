@@ -2,7 +2,8 @@ import std;
 
 #INJECT-b585472fa
 
-int main() {
+int main()
+{
     std::println("{}", hello_xor(true, false));  // true
     std::println("{}", hello_xor(false, true));  // true
     std::println("{}", hello_xor(false, false)); // false

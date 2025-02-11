@@ -3,9 +3,11 @@
 
 #INJECT-b585472fa
 
-int main() {
- for (int i = -1; i < 4; ++i) {
-    std::println("Code={}", i);
-    log_state(i);
- }
+int main()
+{
+   for (int i = -1; i < 4; ++i)
+   {
+      std::println("Code={}", i);
+      log_state(i);
+   }
 }
