@@ -1,11 +1,14 @@
 import std;
 
-int main() {
+int main()
+{
     const std::string filename = "scale_2400.png";
 
-    if (filename.contains('.')) {
+    if (filename.contains('.'))
+    {
         std::println("Processing file: {}", filename);
-    } else {
+    } else
+    {
         std::println("Please provide filename with extension");
     }
 }

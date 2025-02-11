@@ -2,7 +2,8 @@
 
 #INJECT-b585472fa
 
-int main() {
+int main()
+{
     using namespace boost::ut;
 
     "common_prefix_len=0"_test = [] {

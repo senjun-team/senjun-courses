@@ -2,15 +2,18 @@
 
 import std;
 
-inline std::size_t divide(std::size_t a, std::size_t b) {
-    if (b == 0) {
+inline std::size_t divide(std::size_t a, std::size_t b)
+{
+    if (b == 0)
+    {
         return std::numeric_limits<std::size_t>::max();
     }
 
     // Результат целочисленного деления a на b
     std::size_t res = 0;
 
-    while (a >= b) {
+    while (a >= b)
+    {
         // На сколько бит влево нужно сдвинуть b
         int n = 0;
 
@@ -19,7 +22,8 @@ inline std::size_t divide(std::size_t a, std::size_t b) {
 
         std::size_t b_next = b << 1;
 
-        while (a >= b_next && b < b_next) {
+        while (a >= b_next && b < b_next)
+        {
             ++n;
             b_next <<= 1;
         }

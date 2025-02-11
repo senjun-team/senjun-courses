@@ -70,7 +70,8 @@ int main() { }
 В нашем примере тело функции пустое: `{ }`. Но как же тогда формируется статус завершения? Функция `main()` — особая: при отсутствии явно возвращаемого значения она возвращает 0. Для наглядности мы можем вернуть его явно:
 
 ```c++  {.example_for_playground}
-int main() { 
+int main()
+{ 
     return 0;
 }
 ```
@@ -81,7 +82,7 @@ int main() {
 
 При объявлении функции после ее сигнатуры указывается тело, обрамленное фигурными скобками:
 
-![Функции в C++](https://raw.githubusercontent.com/senjun-team/senjun-courses/cpp_course_chapter_func/illustrations/cpp/function.jpg) {.illustration}
+![Функции в C++](https://raw.githubusercontent.com/senjun-team/senjun-courses/cpp-formatting/illustrations/cpp/function.jpg) {.illustration}
 
 Напомним, что **параметр** — это имя в определении функции. А **аргумент** — это фактическое значение, переданное функции при вызове.
 
@@ -90,11 +91,13 @@ int main() {
 ```c++  {.example_for_playground}
 import std;
 
-bool is_error(int http_code) {
+bool is_error(int http_code)
+{
     return http_code >= 300;
 }
 
-int main() { 
+int main()
+{ 
     bool res = is_error(404);
     std::println("404 is error code? {}", res);
     return 0;
@@ -120,7 +123,8 @@ int main() {
 ```
 Возвращаемое функцией значение, если параметр называется `celsius`: `celsius * 9.0 / 5.0 + 32.0`. {.task_hint}
 ```c++ {.task_answer}
-double to_fahrenheit(double celsius) {
+double to_fahrenheit(double celsius)
+{
     return celsius * 9.0 / 5.0 + 32.0;
 }
 ```
@@ -262,7 +266,8 @@ char letter = 83;
 Используйте тип `void` в качестве типа возвращаемого значения функции, если она ничего не возвращает:
 
 ```c++ {.example_for_playground}
-void show_warning() {
+void show_warning()
+{
     std::println("Something went wrong");
 }
 ```
@@ -270,7 +275,8 @@ void show_warning() {
 Кстати, вызывать `return` в конце такой функции не обязательно. Но его можно использовать для раннего выхода (early exit):
 
 ```c++
-if (!is_connection_opened) {
+if (!is_connection_opened)
+{
     return;
 }
 ```
@@ -296,7 +302,8 @@ if (!is_connection_opened) {
 ```c++
 import std;
 
-int main() {
+int main()
+{
     const std::size_t i = 9;
     std::println("{}", i);
 }
@@ -314,7 +321,8 @@ int main() {
 ```c++
 import std;
 
-int main() {
+int main()
+{
     std::string s = "The standard string class";
 
     // Получение символа по его индексу:
@@ -410,7 +418,8 @@ XOR — это булева функция, также известная как
 ```
 Функция возвращает `true` тогда и только тогда, когда один из аргументов равен `true`, а другой — `false`. {.task_hint}
 ```c++ {.task_answer}
-bool hello_xor(bool a, bool b) {
+bool hello_xor(bool a, bool b)
+{
     return (!a && b) || (a && !b);
 }
 ```

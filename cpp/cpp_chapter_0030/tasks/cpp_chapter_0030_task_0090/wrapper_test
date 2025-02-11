@@ -1,7 +1,8 @@
 #include "ut.hpp"
 #include "test_helpers.h"
 
-int main() {
+int main()
+{
     using namespace boost::ut;
 
     "check user solution console output"_test = [] {

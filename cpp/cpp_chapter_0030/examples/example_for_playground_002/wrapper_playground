@@ -4,7 +4,8 @@ int main()
 {
     std::size_t cpu_count = 0;
 
-    if (cpu_count == 0) {
+    if (cpu_count == 0)
+    {
         std::println("Setting CPU count to default value");
         cpu_count = 4;
     }

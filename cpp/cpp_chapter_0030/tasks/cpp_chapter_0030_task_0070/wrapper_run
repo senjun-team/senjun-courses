@@ -2,6 +2,7 @@
 
 #INJECT-b585472fa
 
-int main() {
- std::println("gcd(25, 5)={}", gcd(25, 5));
+int main()
+{
+    std::println("gcd(25, 5)={}", gcd(25, 5));
 }

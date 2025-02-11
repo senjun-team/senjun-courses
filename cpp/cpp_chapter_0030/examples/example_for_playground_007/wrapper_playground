@@ -1,6 +1,6 @@
 import std;
 
-int main() {
-    
+int main()
+{
     #INJECT-b585472fa
 }
