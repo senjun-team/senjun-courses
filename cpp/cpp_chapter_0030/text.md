@@ -14,9 +14,11 @@
 Чтобы выполнять различные действия в зависимости от условия, используется конструкция `if-else`. Условие — это выражение, приводимое к `bool`:
 
 ```c++
-if (condition) {
+if (condition)
+{
     // Обработка condition == true
-} else {
+} else
+{
     // Обработка condition == false
 }
 ```
@@ -26,9 +28,11 @@ if (condition) {
 ```c++ {.example_for_playground .example_for_playground_001}
 const std::string filename = "scale_2400.png";
 
-if (filename.contains('.')) {
+if (filename.contains('.'))
+{
     std::println("Processing file: {}", filename);
-} else {
+} else
+{
     std::println("Please provide filename with extension");
     handle_user_input();
 }
@@ -39,7 +43,8 @@ if (filename.contains('.')) {
 ```c++ {.example_for_playground .example_for_playground_002}
 std::size_t cpu_count = 0;
 
-if (cpu_count == 0) {
+if (cpu_count == 0)
+{
     std::println("Setting CPU count to default value");
     cpu_count = 4;
     return;
@@ -64,7 +69,8 @@ if (cpu_count == 0) {
 */
 double vertical_flight_speed(double cur_height,
                              double prev_height,
-                             double elapsed_time) {
+                             double elapsed_time)
+{
 
 }
 ```
@@ -80,14 +86,17 @@ double vertical_flight_speed(double cur_height,
 */
 double vertical_flight_speed(double cur_height,
                              double prev_height,
-                             double elapsed_time) {
+                             double elapsed_time)
+{
     const double min_height = -500.0;
 
-    if (cur_height < min_height || prev_height < min_height) {
+    if (cur_height < min_height || prev_height < min_height)
+    {
         return NAN;
     }
 
-    if (elapsed_time <= 0) {
+    if (elapsed_time <= 0)
+    {
         return INFINITY;
     }
 
@@ -119,9 +128,11 @@ else
 ```
 Пример проверки индекса символа: `email.find('.', i) != std::string::npos`. {.task_hint}
 ```c++ {.task_answer}
-bool is_valid(std::string email) {
+bool is_valid(std::string email)
+{
     const std::size_t i = email.find('@');
-    if (i == std::string::npos || i == 0) {
+    if (i == std::string::npos || i == 0)
+    {
         return false;
     }
 
@@ -134,13 +145,17 @@ bool is_valid(std::string email) {
 Перед вами цепочка `if-else` для сравнения цвета из RGB-палитры с тремя значениями. Префикс `0x` нужен для обозначения шестнадцатеричных чисел:
 
 ```c++ {.example_for_playground .example_for_playground_004}
-if (color_code == 0x80ED99) {
+if (color_code == 0x80ED99)
+{
     std::println("Light green");
-} else if (color_code == 0x22577A) {
+} else if (color_code == 0x22577A)
+{
     std::println("Lapis Lazuli");
-} else if (color_code == 0xC7F9CC) {
+} else if (color_code == 0xC7F9CC)
+{
     std::println("Tea green");
-} else {
+} else
+{
     std::println("Color not in this palette");
 }
 ```
@@ -168,9 +183,11 @@ std::println("{}", price < 250 ? "cheap" : "expensive");
 ```c++
 int status_code = 0;
 
-if (request_body_len > max_len) {
+if (request_body_len > max_len)
+{
     status_code = -1;
-} else {
+} else
+{
     status_code = handle_request();
 }
 ```
@@ -190,8 +207,10 @@ error: right operand to ? is void, but left operand is of type 'int'
 Перепишите функцию `max()` с использованием тернарного оператора. Тело функции должно состоять из единственной инструкции. {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0030_task_0030}
-int max(int a, int b) {
-    if (a > b) {
+int max(int a, int b)
+{
+    if (a > b)
+    {
         return a;
     }
 
@@ -200,7 +219,8 @@ int max(int a, int b) {
 ```
 Оператор `return` должен вернуть результат применения тернарного оператора к условию `a > b`. {.task_hint}
 ```c++ {.task_answer}
-bool max() {
+bool max()
+{
     return a > b ? a : b;
 }
 ```
@@ -212,7 +232,8 @@ bool max() {
 Конструкция `switch-case` удобна, когда требуется сравнивать выражение с набором константных значений. Это [более читабельная](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-switch-if) замена вложенных `if-else`:
 
 ```c++
-switch(expression) {
+switch(expression)
+{
     case val_1: 
         instructions_1;
         break;
@@ -239,7 +260,8 @@ switch(expression) {
 ```c++  {.example_for_playground .example_for_playground_006}
 char user_input = 'y';
 
-switch(user_input) {
+switch(user_input)
+{
     case '\n': 
         std::println("User pressed enter. Repeating question.");
         show_question();
@@ -270,7 +292,8 @@ Yes
 ```c++   {.example_for_playground .example_for_playground_007}
 const std::size_t number_system = 10;
 
-switch(number_system) {
+switch(number_system)
+{
     case 2: 
         std::println("Binary");
     
@@ -297,7 +320,8 @@ Other
 ```c++ {.example_for_playground .example_for_playground_008}
 const std::size_t mark = 3;
 
-switch(mark) {
+switch(mark)
+{
     case 1:
         std::print("e");
     case 2:
@@ -325,7 +349,8 @@ cba
 ```c++  {.example_for_playground .example_for_playground_009}
 const std::size_t mark = 1;
 
-switch(mark) {
+switch(mark)
+{
     case 1:
     case 2:
     case 3:
@@ -352,14 +377,18 @@ bad
 Перепишите эту функцию с применением `switch-case`. {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0030_task_0060}
-void log_state(int code) {
+void log_state(int code)
+{
     std::string state = "";
 
-    if (code == 0) {
+    if (code == 0)
+    {
         state = "Operation succeded";
-    } else if (code == 1) {
+    } else if (code == 1)
+    {
         state = "Still in progress";
-    } else if (code == 2) {
+    } else if (code == 2)
+    {
         state = "Aborted";
     } else {
         state = "Invalid state";
@@ -370,10 +399,12 @@ void log_state(int code) {
 ```
 Не забудьте про `break` и `default`. {.task_hint}
 ```c++ {.task_answer}
-void log_state(int code) {
+void log_state(int code)
+{
     std::string state = "";
 
-    switch(code) {
+    switch(code)
+    {
         case 0:
             state = "Operation succeded";
             break;
@@ -402,7 +433,8 @@ void log_state(int code) {
 Тело цикла `while` выполняется, пока справедливо условие:
 
 ```c++
-while(condition) {
+while(condition)
+{
     // Тело цикла
 }
 ```
@@ -410,7 +442,8 @@ while(condition) {
 Его используют, если в теле цикла требуется изменять его условие. Либо если количество итераций не известно заранее:
 
 ```c++
-while (!user_pressed_stop && !end_of_playlist) {
+while (!user_pressed_stop && !end_of_playlist)
+{
     play_next_song();
 }
 ```
@@ -418,14 +451,17 @@ while (!user_pressed_stop && !end_of_playlist) {
 Еще один распространенный сценарий применения `while` — вечный цикл:
 
 ```c++
-while(true) {
+while(true)
+{
     cmd = read_console_command();
 
-    if (!is_valid(cmd)) {
+    if (!is_valid(cmd))
+    {
         continue;
     }
 
-    if (is_exit(cmd)) {
+    if (is_exit(cmd))
+    {
         break;
     }
 
@@ -446,11 +482,15 @@ while(true) {
 ```
 В цикле `while` проверяйте условие `a != b`. Внутри цикла изменяйте значения `a` и `b`. После выхода из цикла `a` будет равен наибольшему общему делителю. {.task_hint}
 ```c++ {.task_answer}
-std::size_t gcd(std::size_t a, std::size_t b) {
-    while (a != b) {
-        if (a > b) {
+std::size_t gcd(std::size_t a, std::size_t b)
+{
+    while (a != b)
+    {
+        if (a > b)
+        {
             a -= b;
-        } else {
+        } else
+        {
             b -= a;
         }
     }
@@ -467,7 +507,8 @@ std::size_t gcd(std::size_t a, std::size_t b) {
 std::string s = "341453TNY";
 std::size_t i = 0;
 
-while (i < s.size() && std::isdigit(s[i])) {
+while (i < s.size() && std::isdigit(s[i]))
+{
     s[i] = 'X';
     ++i;
 }
@@ -483,7 +524,8 @@ XXXXXXTNY
 Цикл `do-while` отличается от `while` порядком действий: сначала исполняется тело цикла, а затем проверяется условие. Это означает, что вне зависимости от условия тело выполнится хотя бы один раз.
 
 ```c++
-do {
+do
+{
     // Тело цикла
 } while(condition);
 ```
@@ -493,7 +535,8 @@ do {
 ```c++
 int data_size = 0;
 
-do {
+do
+{
     data_size = read_chunked_data();
 } while (data_size > 0);
 ```
@@ -507,7 +550,8 @@ do {
 ```c++  {.example_for_playground .example_for_playground_011}
 int i = 5;
 
-while(i <= 25) {
+while(i <= 25)
+{
     std::print("{} ", i);
     i += 5;
 }
@@ -519,7 +563,8 @@ while(i <= 25) {
 Так выглядит цикл `for`, делающий то же самое:
 
 ```c++  {.example_for_playground .example_for_playground_012}
-for (int i = 5; i <= 25; i += 5) {
+for (int i = 5; i <= 25; i += 5)
+{
     std::print("{} ", i);
 }
 ```
@@ -532,7 +577,8 @@ for (int i = 5; i <= 25; i += 5) {
 Так цикл `for` выглядит в общем виде:
 
 ```c++
-for (initialization; condition; iteration) {
+for (initialization; condition; iteration)
+{
     // Тело цикла
 }
 ```
@@ -540,7 +586,8 @@ for (initialization; condition; iteration) {
 Любое из этих выражений может отсутствовать. Если опустить все три, то получится вечный цикл:
 
 ```c++
-for(;;) {
+for(;;)
+{
     // Бесконечный цикл
 }
 ```
@@ -555,11 +602,14 @@ for(;;) {
 ```
 В инициализаторе цикла заведите счетчик. В условии цикла проверьте, что он меньше длин обеих строк. В теле цикла сравните символы строк по этому индексу. {.task_hint}
 ```c++ {.task_answer}
-std::size_t common_prefix_len(std::string s1, std::string s2) {
+std::size_t common_prefix_len(std::string s1, std::string s2)
+{
     std::size_t len = 0;
 
-    for (std::size_t i = 0; i < std::min(s1.size(), s2.size()); ++i) {
-        if (s1[i] != s2[i]) {
+    for (std::size_t i = 0; i < std::min(s1.size(), s2.size()); ++i)
+    {
+        if (s1[i] != s2[i])
+        {
             break;
         }
 
@@ -585,15 +635,19 @@ std::size_t common_prefix_len(std::string s1, std::string s2) {
 ```
 
 ```c++ {.task_source #cpp_chapter_0030_task_0090}
-void show_multiplication_table(int n) {
+void show_multiplication_table(int n)
+{
 
 }
 ```
 Организуйте вложенный цикл. {.task_hint}
 ```c++ {.task_answer}
-void show_multiplication_table(int n) {
-    for (int i = 1; i <= n; ++i) {
-        for (int j = 1; j <= n; ++j) {
+void show_multiplication_table(int n)
+{
+    for (int i = 1; i <= n; ++i)
+    {
+        for (int j = 1; j <= n; ++j)
+        {
             const std::string trailing_symbol = (j == n) ? "" : " ";
             std::print("{}*{}={}{}", j, i, j*i, trailing_symbol);
         }
@@ -615,8 +669,10 @@ const std::string text = "what are vowels?";
 
 std::size_t count = 0;
 
-for (char c: text) {
-    if (vowels.contains(c)) {
+for (char c: text)
+{
+    if (vowels.contains(c))
+    {
         ++count;
     }
 }
@@ -630,7 +686,8 @@ Number of vowels in text: 5
 Общий вид цикла `range-for`:
 
 ```c++
-for(item-initialization: range-initialization) {
+for(item-initialization: range-initialization)
+{
     // Тело цикла
 }
 ```
@@ -646,11 +703,14 @@ for(item-initialization: range-initialization) {
 ```
 Пример цикла: `for (char letter: s)`. {.task_hint}
 ```c++ {.task_answer}
-std::size_t count_letter(std::string s, char c) {
+std::size_t count_letter(std::string s, char c)
+{
     std::size_t count = 0;
 
-    for (char letter: s) {
-        if (letter == c) {
+    for (char letter: s)
+    {
+        if (letter == c)
+        {
             ++count;
         }
     }
