@@ -266,7 +266,7 @@ int main()
 
 В наши дни новые стандарты выходят раз в 3 года.
 
-![Таймлайн развития C++](https://raw.githubusercontent.com/senjun-team/senjun-courses/cpp_course_chapter_2/illustrations/cpp/cpp_timeline.jpg) {.illustration}
+![Таймлайн развития C++](https://raw.githubusercontent.com/senjun-team/senjun-courses/yottafuber-review-fixes/illustrations/cpp/cpp_timeline.jpg) {.illustration}
 
 Начиная с версии C++11 можно говорить о зарождении **современного C++** (Modern C++). Это понятие включает в себя три аспекта:
 - Языковые средства.
