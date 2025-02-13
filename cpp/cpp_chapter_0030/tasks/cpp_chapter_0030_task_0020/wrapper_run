@@ -1,5 +1,4 @@
-#include <string>
-#include <print>
+import std;
 
 #INJECT-b585472fa
 
