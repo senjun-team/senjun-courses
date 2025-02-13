@@ -350,7 +350,7 @@ h 25
 У класса `std::string` есть [множество](https://en.cppreference.com/w/cpp/string/basic_string) полезных методов. Вот некоторые из них с примерами для строки `s="example"`:
 - `size()` возвращает длину строки: `s.size() // 7`.
 - `empty()` возвращает `true`, если строка пустая: `s.empty() // false`.
-- `insert()` вставляет заданное количество символов после указанного индекса: `s.insert(1, 2, '8') // e88xample`.
+- `insert()` вставляет заданное количество символов по указанному индексу: `s.insert(1, 2, '8') // e88xample`.
 - `contains()` проверяет, присутствует ли в строке подстрока или символ: `s.contains("am") // true`, `s.contains('y') // false`. Этот метод появился в C++23.
 
 ## Операторы {#block-operators}
@@ -515,7 +515,7 @@ error: expression is not assignable
 
 Таблицу с приоритетом _всех_ операторов C++ вы можете [посмотреть на cppreference.](https://en.cppreference.com/w/cpp/language/operator_precedence)
 
-Нужны ли в этом выражении скобки? `y/n`. {.task_text}
+Нужны ли скобки, чтобы это выражение вычислилось как ожидается? `y/n`. {.task_text}
 
 ```c++
 a < 0 || a / b <= max
@@ -527,6 +527,8 @@ a < 0 || a / b <= max
 ```cpp {.task_answer}
 n
 ```
+
+Как быть, если вы сомневаетесь, нужны ли в выражении скобки? [Если без скобок код трудно читать, то ставьте их!](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-parens) Например, выражение из задачи выше со скобками выглядит проще: `(a < 0) || (a / b <= max)`.
 
 Какое значение у переменной `x`? {.task_text}
 
