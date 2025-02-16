@@ -85,7 +85,7 @@ std::size_t gcd(std::size_t a, std::size_t b)
 std::string s = "341453TNY";
 std::size_t i = 0;
 
-while (i < s.size() && std::isdigit(s[i]))
+while (i < s.size() && s[i] >= '0' && s[i] <= '9')
 {
     s[i] = 'X';
     ++i;
@@ -302,6 +302,6 @@ std::size_t count_letter(std::string s, char c)
 ## Резюме
 
 - Организовать цикл можно с помощью конструкций: `while`, `do-while`, `for`.
-- У цикла `for` есть вариация: `range-for` для итерирования по диапазонам.
+- У цикла `for` есть вариация: `range-for` для прохода по диапазонам.
 - Оператор `break` нужен для досрочного выхода из цикла.
 - Оператор `continue` прерывает итерацию цикла и запускает следующую.
