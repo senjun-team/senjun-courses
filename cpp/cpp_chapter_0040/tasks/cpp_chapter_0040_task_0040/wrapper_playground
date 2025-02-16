@@ -1,0 +1,8 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::println("count_letter(\"letter\", 'e')={}", count_letter("letter", 'e'));
+}
