@@ -211,7 +211,8 @@ else
         if (color_code == 0xC7F9CC)
         {
             std::println("Tea green");
-        } else
+        }
+        else
         {
             std::println("Color not in this palette");
         }
@@ -263,7 +264,8 @@ int status_code = 0;
 if (request_body_len > max_len)
 {
     status_code = -1;
-} else
+}
+else
 {
     status_code = handle_request();
 }

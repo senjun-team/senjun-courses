@@ -67,7 +67,8 @@ std::size_t gcd(std::size_t a, std::size_t b)
         if (a > b)
         {
             a -= b;
-        } else
+        }
+        else
         {
             b -= a;
         }
