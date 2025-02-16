@@ -206,11 +206,9 @@ std::size_t common_prefix_len(std::string s1, std::string s2)
 
 Пример вывода для `n=3`: {.task_text}
 
-```
-1*1=1 2*1=2 3*1=3
-1*2=2 2*2=4 3*2=6
-1*3=3 2*3=6 3*3=9
-```
+1x1=1 2x1=2 3x1=3  
+1x2=2 2x2=4 3x2=6  
+1x3=3 2x3=6 3x3=9   {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0040_task_0030}
 void show_multiplication_table(int n)
@@ -227,7 +225,7 @@ void show_multiplication_table(int n)
         for (int j = 1; j <= n; ++j)
         {
             const std::string trailing_symbol = (j == n) ? "" : " ";
-            std::print("{}*{}={}{}", j, i, j*i, trailing_symbol);
+            std::print("{}x{}={}{}", j, i, j*i, trailing_symbol);
         }
 
         std::println();
@@ -277,6 +275,7 @@ for(инициализация переменной: диапазон)
 В своем решении воспользуйтесь циклом range-for. {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0040_task_0040}
+
 
 ```
 Пример цикла: `for (char letter: s)`. {.task_hint}

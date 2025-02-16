@@ -296,7 +296,7 @@ int max(int a, int b)
 ```
 Оператор `return` должен вернуть результат применения тернарного оператора к условию `a > b`. {.task_hint}
 ```c++ {.task_answer}
-bool max()
+int max(int a, int b)
 {
     return a > b ? a : b;
 }
