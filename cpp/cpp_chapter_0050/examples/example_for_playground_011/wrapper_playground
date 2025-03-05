@@ -1,0 +1,11 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    Task t;
+    t.update_state(State::DONE);
+    t.log_work_hours(5);
+    t.show_work_hours();
+}
