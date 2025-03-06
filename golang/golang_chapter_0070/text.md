@@ -110,6 +110,7 @@ func addUsers(newUsers ...string) {
 		id++
 	}
 }
+
 func main() {
 	addUsers("ivanov", "petrov", "sidorov")
 }
