@@ -78,6 +78,116 @@ func main() {
 
 Сами значения-функции не сравнимы друг с другом, поэтому, например, их нельзя использовать в качестве ключей хеш-таблицы.
 
+Иногда, чтобы избежать множественного ветвления, бывает удобно вместо `switch-case` использовать срез функций, каждая из которых возвращает `bool`. Если условие внутри функции выполнилось, то она вернет `true`, иначе — `false`. Перебирая функции внутри этого среза, можно реализовать ветвление без использования `switch-case`. Попробуйте реализовать эту идею в данной задаче. {.task_text}  
+
+Функции `Sun`, `Rain` и `Snow` предсказывают солнце, дождь и снег соответственно, в зависимости от города. Например, если в городе идет снег, то фукнция `Snow` печатает сообщение об этом и возвращает `true`. В противном случае она ничего не печатает и возвращает `false`. Реализуйте функцию `predictWeather`, которая принимает на вход название города и печатает погоду в нем. Если погода неизвестна, то напечатайте `Unknown`. {.task_text}
+
+```go {.task_source #golang_chapter_0070_task_0040}
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	predictWeather("London")
+}
+
+func predictWeather(city string) {
+	weather := []func(string) bool{Sun, Rain, Snow}
+	var isFound bool
+
+	for _, f := range weather {
+		if f(city) {
+			isFound = true
+			break
+		}
+	}
+
+	if !isFound {
+		fmt.Println("Unknown")
+	}
+}
+
+func Sun(city string) bool {
+	if city == "Moscow" {
+		fmt.Println("Sun")
+		return true
+	}
+	return false
+}
+
+func Rain(city string) bool {
+	if city == "London" {
+		fmt.Println("Rain")
+		return true
+	}
+	return false
+}
+
+func Snow(city string) bool {
+	if city == "Novosibirsk" {
+		fmt.Println("Snow")
+		return true
+	}
+	return false
+}
+``` 
+
+Реализуйте идею замыкания. Функция `bestFunc` должна хранить наименьшее время выполнения и соответствующий псевдоним функции-аргумента. Возвращает `bestFunc` последний псевдоним, который она запомнила. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	predictWeather("London")
+}
+
+func predictWeather(city string) {
+	weather := []func(string) bool{Sun, Rain, Snow}
+	var isFound bool
+
+	for _, f := range weather {
+		if f(city) {
+			isFound = true
+			break
+		}
+	}
+
+	if !isFound {
+		fmt.Println("Unknown")
+	}
+}
+
+func Sun(city string) bool {
+	if city == "Moscow" {
+		fmt.Println("Sun")
+		return true
+	}
+	return false
+}
+
+func Rain(city string) bool {
+	if city == "London" {
+		fmt.Println("Rain")
+		return true
+	}
+	return false
+}
+
+func Snow(city string) bool {
+	if city == "Novosibirsk" {
+		fmt.Println("Snow")
+		return true
+	}
+	return false
+}
+```
+
 ## Анонимные функции
 Анонимные функции — это функции без имени:
 
