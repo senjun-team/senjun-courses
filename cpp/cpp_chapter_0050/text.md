@@ -39,7 +39,7 @@ int main()
 
 ```consoleoutput {.task_source #cpp_chapter_0050_task_0010}
 ```
-. {.task_hint}
+Функции 2 и 3 отличаются именем параметра и типом возвращаемого значения. На основании только этого невозможно создать перегрузку. {.task_hint}
 ```cpp {.task_answer}
 2 3
 ```
@@ -111,9 +111,9 @@ catch(const std::runtime_error & e)
 
 Функция `handle_daily_stats()` обрабатывает статистику действий пользователей на сайте. Функции подготовки статистики, которые она вызывает, в случае неудачи возвращают `false`. {.task_text}
 
-Было принято решение отказаться от обработки возвращаемого из функций флага в пользу обработки исключений. Теперь функции `filter()`, `sort()` и `count()` ничего не возвращают, а в случае ошибки бросают `std::exception` с соответствующим текстом. {.task_text}
+Было принято решение отказаться от обработки возвращаемого из функций флага в пользу обработки исключений. Теперь функции `filter()`, `sort()` и `count()` ничего не возвращают, а в случае ошибки бросают `std::runtime_error` с соответствующим текстом. {.task_text}
 
-Требуется переписать код таким образом, чтобы исключение обрабатывалось в функции `handle_daily_stats()`, и в консоль выводилась ошибка, возвращаемая методом `what()`. {.task_text}
+Требуется переписать код таким образом, чтобы исключение обрабатывалось в функции `handle_daily_stats()`: в консоль должна выводиться ошибка, возвращаемая методом `what()`. {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0050_task_0020}
 void handle_daily_stats()
@@ -140,9 +140,22 @@ void handle_daily_stats()
 }
 
 ```
-. {.task_hint}
+В функцию `handle_daily_stats()` добавьте конструкцию `try-catch`. В блоке `try` последовательно вызовите функции `filter()`, `sort()`, `count()`, а также выведите в консоль строку `"success"`. В блоке `catch` перехватите исключение `const std::runtime_error & e` и выведите в консоль строку, возвращаемую методом `e.what()`. {.task_hint}
 ```c++ {.task_answer}
-
+void handle_daily_stats()
+{
+    try
+    {
+        filter();
+        sort();
+        count();
+        std::println("success");
+    }
+    catch(const std::runtime_error & e)
+    {
+        std::println("{}", e.what()); 
+    }
+}
 ```
 
 Механизм исключений позволяет:
@@ -245,7 +258,7 @@ enum Compression
 
 В современном C++ коде такая практика практически не встречается.
 
-Значение константы внутри перечисления можно определить явно после оператора `=`. Если этого не сделано, константа равна значению предыдущей, увеличенному на 1. Первая константа по умолчанию равно нулю.
+Значение константы внутри перечисления можно определить явно после оператора `=`. Если этого не сделано, константа равна значению предыдущей, увеличенному на 1. Первая константа по умолчанию равна нулю.
 
 Каковы целочисленные значения, принимаемые перечислением `State`? Укажите их через пробел. {.task_text}
 
@@ -298,7 +311,7 @@ int n = ByteOrder::NATIVE;         // Ошибка
 
 // Функция to_string()
 ```
-. {.task_hint}
+После объявления `enum class` не забудьте точку с запятой. Объявление `Rarity` должно идти до объявления функции `to_string()`. Все возвращаемые функцией строки начинаются с заглавной буквы. {.task_hint}
 ```c++ {.task_answer}
 enum class Rarity
 {
@@ -306,6 +319,19 @@ enum class Rarity
     RARE,
     LEGENDARY
 };
+
+std::string to_string(Rarity rarity)
+{
+    switch(rarity)
+    {
+        case Rarity::COMMON:
+            return "Common";
+        case Rarity::RARE:
+            return "Rare";
+        case Rarity::LEGENDARY:
+            return "Legendary";
+    }
+}
 ```
 
 ## Классы
@@ -410,17 +436,53 @@ t.show_work_hours();
 ```
 
 Напишите класс `Device` с публичными методами: {.task_text}
-- `void start(std::time_t time)` — помечает устройство как запущенное. Сохраняет время включения. По умолчанию (если метод `start()` ни разу не вызывался) устройство считается выключенным. Во всех методах время задается в секундах.
-- `void stop(std::time_t time)`— помечает устройство как выключенное.
-- `void set_latest_healthcheck(std::time_t time)` — сохраняет время последнего хэлсчека — аудита «здоровья». Если на этот момент устройство было выключено, кидает исключение `std::logic_error`.
-- `bool is_active(std::time_t time)` — возвращает `true`, если в указанное время устройство было включено и с момента последнего хэлсчека прошло не больше 1 минуты.
-- `std::time_t uptime(std::time_t time)` — возвращает время работы на заданный момент. Если устройство было выключено, возвращает 0.
+- `void start()` — помечает устройство как запущенное. Сохраняет время включения в секундах (`std::time_t`). Для получения текущего времени воспользуйтесь функцией `std::time_t get_cur_time()`. Она уже есть в проекте. 
+- `void stop()`— помечает устройство как выключенное. По умолчанию (если метод `start()` ни разу не вызывался) устройство считается выключенным.
+- `void set_latest_healthcheck()` — сохраняет время последнего хэлсчека — аудита «здоровья». Если на этот момент устройство выключено, кидает исключение `std::logic_error`.
+- `bool is_active()` — возвращает `true`, если устройство включено и с момента последнего хэлсчека прошло не больше 1 минуты.
+- `std::time_t uptime()` — возвращает время работы. Если устройство выключено, возвращает 0.
 
 ```c++ {.task_source #cpp_chapter_0050_task_0060}
 ```
-. {.task_hint}
+Чтобы хранить состояние устройства, заведите 3 приватных поля: `bool is_on` — включено устройство или нет; `time_started` — время запуска; `time_checked` — время последнего хэлсчека. Метод `start()` должен устанавливать поле `is_on` в `true`, а `time_started` в `get_cur_time()`. Метод `stop()` должен устанавливать `is_on` в `false`. Метод `set_latest_healthcheck()` должен проверять `is_on` и бросать `std::logic_error`. А если устройство включено, устанавливать `time_checked` в `get_cur_time()`. Метод `is_acitve()` должен возвращать результат выражения `is_on && get_cur_time() < time_checked + 60`. А метод `uptime()` — результат выражения `is_on ? get_cur_time() - time_started : 0`. {.task_hint}
 ```c++ {.task_answer}
+class Device
+{
+public:
+    void start()
+    {
+        is_on = true;
+        time_started = get_cur_time();
+    }
 
+    void stop()
+    {
+        is_on = false;
+    }
+
+    void set_latest_healthcheck()
+    {
+        if (!is_on)
+            throw std::logic_error("device is off");
+        
+        time_checked = get_cur_time();
+    }
+
+    bool is_active()
+    {
+        return is_on && get_cur_time() < time_checked + 60;
+    }
+
+    std::time_t uptime()
+    {
+        return is_on ? get_cur_time() - time_started : 0;
+    }
+
+private:
+    std::time_t time_checked = 0;
+    std::time_t time_started = 0;
+    bool is_on = false;
+};
 ```
 
 ### Конструкторы и деструкторы
@@ -493,10 +555,15 @@ public:
         if (is_open())
             return false;
 
+        // Метод строки c_str() возвращает 
+        // указатель на строку в сишном стиле.
+        // Про указатели вы узнаете позже.
         m_handle = open_db(conn_str.c_str());
         return is_open();
     }
 
+    // После переписывания класса на RAII этот
+    // метод больше не будет не нужен.
     bool is_open()
     {
         return m_handle != INVALID_DB_HANDLE;
@@ -519,9 +586,11 @@ public:
 
 private:
     db_handle m_handle = INVALID_DB_HANDLE;
-}
+};
 
 
+// Перехватывать исключения в этом методе не нужно.
+// Пусть они пробрасываются дальше.
 void handle_metrics()
 {
     DBConn db_conn;
@@ -533,15 +602,46 @@ void handle_metrics()
     {
         // Упс! Здесь забыт вызов db_conn.close().
         // Открытое соединение продолжит висеть.
+        // С RAII подобные ошибки исключены.
         return;
     }
     
     db_conn.close();
 }
 ```
-. {.task_hint}
+Заведите конструктор `DBConn(std::string conn_str)`, открывающий подключение к БД. Закрывайте подключение в деструкторе `~DBConn()`. {.task_hint}
 ```c++ {.task_answer}
+class DBConn
+{
+public:
+    DBConn(std::string conn_str)
+    {
+        m_handle = open_db(conn_str.c_str());
+        
+        if (m_handle == INVALID_DB_HANDLE)
+            throw std::runtime_error("Couldn't connect");
+    }
 
+    ~DBConn()
+    {
+        close_db(m_handle);
+    }
+
+    bool exec(std::string query)
+    {
+        return exec_db_query(m_handle, query.c_str());
+    }
+
+private:
+    db_handle m_handle = INVALID_DB_HANDLE;
+};
+
+
+void handle_metrics()
+{
+    DBConn db_conn("postgresql://user:secret@localhost");
+    db_conn.exec("select * from metrics");
+}
 ```
 
 Идиома RAII — один из столпов современного C++. Мы не раз к ней вернемся.
@@ -586,14 +686,14 @@ p.y = -2.0;
 
 ```consoleoutput {.task_source #cpp_chapter_0050_task_0080}
 ```
-. {.task_hint}
+Только в классе `Message` изменение одного из полей на произвольное значение приведет объект в неконсистентное состояние. {.task_hint}
 ```cpp {.task_answer}
 Message UnixTimestamp
 ```
 
 ## Шаблоны
 
-[Шаблоны](https://en.cppreference.com/w/cpp/language/templates) (templates) позволяют писать обобщенные алгоритмы без привязки к конкретным типам и константам. Это эффективный способ переиспользования кода.
+[Шаблоны](https://en.cppreference.com/w/cpp/language/templates) (templates) позволяют писать обобщенный код без привязки к конкретным типам и константам. Это эффективный способ переиспользования кода.
 
 [Помните](/courses/cpp/chapters/cpp_chapter_0030/#block-max) функцию `max()`?
 
@@ -655,9 +755,19 @@ max<double>(1.01, 1.02);
 
 ```c++ {.task_source #cpp_chapter_0050_task_0090}
 ```
-. {.task_hint}
+У шаблона должен быть единственный параметр, например `class Fn`. Тогда функция будет выглядеть так: `bool str_none_of(std::string s, Fn pred)`. В ней в цикле по каждому символу `c` строки `s` нужно применить предикат: `pred(c)`. Если он хотя бы раз вернул `true`, функция возвращает `false`. {.task_hint}
 ```c++ {.task_answer}
+template<class Fn>
+bool str_none_of(std::string s, Fn pred)
+{
+    for (char c: s)
+    {
+        if (pred(c))
+            return false;
+    }
 
+    return true;
+}
 ```
 
 Шаблонными могут быть не только функции, но и классы. Например, все контейнеры из стандартной библиотеки — это шаблоны!
@@ -673,4 +783,4 @@ max<double>(1.01, 1.02);
 - Классы позволяют описывать абстракции, отделять интерфейс для работы с ними от внутренней реализации, объединять данные и методы их обработки.
 - Конструкторы и деструкторы классов позволяют реализовать идиому RAII.
 - Структуры подходят для группировки полей, изменение которых по отдельности не приведет объект в неконсистентное состояние.
-- Шаблоны нужны для написания обобщенных алгоритмов без привязки к конкретным типам.
+- Шаблоны нужны для написания обобщенного кода без привязки к конкретным типам.
