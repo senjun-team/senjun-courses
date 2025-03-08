@@ -115,7 +115,7 @@ if (++a < 4)
 16
 ```
 
-Дана сигнатура функции `vertical_flight_speed()`. Она вычисляет вертикальную скорость полета самолета. Для этого она принимает два показания высотомера и прошедшее между ними время. {.task_text}
+Нужно реализовать функцию `vertical_flight_speed()`. Она вычисляет вертикальную скорость полета самолета. Для этого она принимает два показания высотомера и прошедшее между ними время. {.task_text}
 
 Напишите тело этой функций, соответствующее многострочному комментарию в коде. Вам пригодятся: {.task_text}
 - Константа `NAN` — not a number, [нечисло](https://en.cppreference.com/w/c/numeric/math/NAN).
@@ -283,7 +283,7 @@ const int status_code = (request_body_len > max_len) ? -1 : handle_request();
 error: right operand to ? is void, but left operand is of type 'int'
 ```
 
-Перепишите функцию `max()` с использованием тернарного оператора. Тело функции должно состоять из единственной инструкции. {.task_text}
+Перепишите функцию `max()` с использованием тернарного оператора. Тело функции должно состоять из единственной инструкции. {.task_text #block-max}
 
 ```c++ {.task_source #cpp_chapter_0030_task_0030}
 int max(int a, int b)
@@ -306,7 +306,7 @@ int max(int a, int b)
 
 Кстати, в стандартной библиотеке C++ есть функции [std::max()](https://en.cppreference.com/w/cpp/algorithm/max) и [std::min()](https://en.cppreference.com/w/cpp/algorithm/min). При работе над реальными проектами руководствуйтесь правилом: [используй готовое.](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-lib) То есть прежде чем писать функцию самостоятельно, проверьте — вдруг она уже реализована в стандартной библиотеке?
 
-## Конструкция switch-case
+## Конструкция switch-case {#switch-case}
 
 Конструкция `switch-case` удобна, когда требуется сравнивать выражение с набором константных значений. Это [более читабельная](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-switch-if) замена вложенных `if-else`:
 
@@ -330,7 +330,7 @@ switch(выражение)
 Но у `switch-case` есть ограничения. Выражение для `switch` должно быть:
 - целочисленным (например, `int`),
 - символьного типа (например, `char`),
-- либо перечислением `enum` (о котором вы скоро узнаете).
+- либо перечислением `enum`, о котором вы скоро [узнаете.](/courses/cpp/chapters/cpp_chapter_0050/#block-enum)
 
 То есть сравнивать строку `std::string` с использованием `switch` не получится.
 
