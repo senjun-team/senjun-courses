@@ -1,0 +1,169 @@
+#include "ut.hpp"
+#include "test_helpers.h"
+
+namespace case1 
+{
+    bool is_sort_called = false;
+    bool is_count_called = false;
+
+    void filter()
+    {
+        throw std::runtime_error("couldn't filter queries");
+    }
+
+    void sort()
+    {
+        is_sort_called = true;
+    }
+
+    void count()
+    {
+        is_count_called = true;
+    }
+
+    #INJECT-b585472fa
+}
+
+namespace case2
+{
+    bool is_filter_called = false;
+    bool is_count_called = false;
+
+    void filter()
+    {
+        is_filter_called = true;
+    }
+
+    void sort()
+    {
+        throw std::runtime_error("couldn't sort queries");
+    }
+
+    void count()
+    {
+        is_count_called = true;
+    }
+
+    #INJECT-b585472fa
+}
+
+namespace case3
+{
+    bool is_filter_called = false;
+    bool is_sort_called = false;
+    bool is_count_called = false;
+
+    void filter()
+    {
+        is_filter_called = true;
+    }
+
+    void sort()
+    {
+        is_sort_called = true;
+    }
+
+    void count()
+    {
+        throw std::runtime_error("couldn't count queries");
+    }
+
+    #INJECT-b585472fa
+}
+
+namespace case4
+{
+    bool is_filter_called = false;
+    bool is_sort_called = false;
+    bool is_count_called = false;
+
+    void filter()
+    {
+        is_filter_called = true;
+    }
+
+    void sort()
+    {
+        is_sort_called = true;
+    }
+
+    void count()
+    {
+        is_count_called = true;
+    }
+
+    #INJECT-b585472fa
+}
+
+int main()
+{
+    using namespace boost::ut;
+
+    "filter throws"_test = [] {
+        using namespace case1;
+
+        std::string captured_text;
+        auto stdout_receiver = [&captured_text](std::string&& txt) { captured_text = std::move(txt); };
+
+        {
+            hlp::stdout_capture_t capture(stdout_receiver);
+            handle_daily_stats();
+        }
+
+        expect(captured_text == "couldn't filter queries\n");
+
+        expect(!is_sort_called);
+        expect(!is_count_called);
+    };
+
+    "sort throws"_test = [] {
+        using namespace case2;
+
+        std::string captured_text;
+        auto stdout_receiver = [&captured_text](std::string&& txt) { captured_text = std::move(txt); };
+
+        {
+            hlp::stdout_capture_t capture(stdout_receiver);
+            handle_daily_stats();
+        }
+
+        expect(captured_text == "couldn't sort queries\n");
+        expect(is_filter_called);
+        expect(!is_count_called);
+    };
+
+    "count throws"_test = [] {
+        using namespace case3;
+
+        std::string captured_text;
+        auto stdout_receiver = [&captured_text](std::string&& txt) { captured_text = std::move(txt); };
+
+        {
+            hlp::stdout_capture_t capture(stdout_receiver);
+            handle_daily_stats();
+        }
+
+        expect(captured_text == "couldn't count queries\n");
+
+        expect(is_filter_called);
+        expect(is_sort_called);
+    };
+
+    "success"_test = [] {
+        using namespace case4;
+
+        std::string captured_text;
+        auto stdout_receiver = [&captured_text](std::string&& txt) { captured_text = std::move(txt); };
+
+        {
+            hlp::stdout_capture_t capture(stdout_receiver);
+            handle_daily_stats();
+        }
+
+        expect(captured_text == "success\n");
+
+        expect(is_filter_called);
+        expect(is_sort_called);
+        expect(is_count_called);
+    };
+}
