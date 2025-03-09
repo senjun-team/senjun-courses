@@ -1,0 +1,35 @@
+import std;
+
+class File
+{
+public:
+    // Конструктор по умолчанию
+    File()
+    { 
+        std::println("Default constructor");
+    }
+
+    // Конструктор с параметром
+    File(std::string path)
+    { 
+        std::println("Constructor with parameter: {}", path);
+    }
+
+    // Деструктор
+    ~File()
+    {
+        std::println("Destructor");
+    }
+};
+
+int main()
+{
+    // Создание объекта с помощью конструктора по умолчанию
+    File f1;
+
+    // Создание объекта с помощью конструктора с параметром
+    File f2("/tmp/dump.csv");
+
+    // При выходе из main() для f1 и f2 будут вызваны
+    // деструкторы
+}

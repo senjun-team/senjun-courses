@@ -80,9 +80,9 @@ int main()
 
 ## Функции
 
-При объявлении функции после ее сигнатуры указывается тело, обрамленное фигурными скобками:
+При объявлении функции сначала указывается тип возвращаемого значения, потом имя функции, после него параметры. А затем тело функции, обрамленное фигурными скобками:
 
-![Функции в C++](https://raw.githubusercontent.com/senjun-team/senjun-courses/cpp-formatting/illustrations/cpp/function.jpg) {.illustration}
+![Функции в C++](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/function.jpg) {.illustration}
 
 Напомним, что **параметр** — это имя в определении функции. А **аргумент** — это фактическое значение, переданное функции при вызове.
 

@@ -1,0 +1,8 @@
+import std;
+
+int main()
+{
+    #INJECT-b585472fa
+
+    std::println("{}", hash_type == MD5);
+}

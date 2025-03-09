@@ -1,0 +1,11 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    UnixTimestamp ts;
+
+    ts.seconds = 1153044000;
+    ts.show_days();
+}

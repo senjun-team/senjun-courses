@@ -1,0 +1,36 @@
+import std;
+
+std::time_t get_cur_time()
+{
+    // Получение текущего времени
+    std::chrono::time_point now = std::chrono::system_clock::now();
+    // Приведение к формату std::time_t
+    return std::chrono::system_clock::to_time_t(now);
+}
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::print("Initializing an instance of Device named 'meteostation'... ");
+    Device d;
+    std::println("DONE");
+    std::print("Turning on 'meteostation'... ");
+    d.start();
+    std::println("DONE");
+    std::print("Running health check... ");
+    d.set_latest_healthcheck();
+    std::println("DONE");
+    std::print("Probing readiness... ");
+    const bool is_active = d.is_active();
+    if (is_active)
+    {
+        std::println("READY (correct)");
+    } else
+    {
+        std::println("NOT READY (error)");
+    }
+     std::print("Turning off 'meteostation'... ");
+    d.stop();
+    std::println("DONE");
+}

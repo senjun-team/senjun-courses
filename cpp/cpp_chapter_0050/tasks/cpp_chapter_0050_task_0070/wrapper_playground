@@ -1,0 +1,29 @@
+import std;
+
+using db_handle = int;
+
+const db_handle INVALID_DB_HANDLE = -1;
+
+// Вы можете изменить эти функции для тестирования класса DBConn
+db_handle open_db(char * conn_str)
+{
+    return 1;
+}
+
+void close_db(db_handle h)
+{
+
+}
+
+bool exec_db_query(db_handle h, char * query)
+{
+    return true;
+}
+
+
+#INJECT-b585472fa
+
+int main()
+{
+    
+}

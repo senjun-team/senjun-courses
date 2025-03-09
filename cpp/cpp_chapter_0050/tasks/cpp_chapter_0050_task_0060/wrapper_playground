@@ -1,0 +1,18 @@
+import std;
+
+std::time_t get_cur_time()
+{
+    // Получение текущего времени
+    std::chrono::time_point now = std::chrono::system_clock::now();
+    // Приведение к формату std::time_t
+    return std::chrono::system_clock::to_time_t(now);
+}
+
+#INJECT-b585472fa
+
+int main()
+{
+    Device meteostation;
+    meteostation.start();
+    std::println("{}", meteostation.uptime());
+}

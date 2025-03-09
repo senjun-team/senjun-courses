@@ -1,0 +1,57 @@
+import std;
+
+using db_handle = int;
+
+const db_handle INVALID_DB_HANDLE = -1;
+
+// Вы можете изменить эти функции для тестирования класса DBConn
+db_handle open_db(const char * conn_str)
+{
+    return 1;
+}
+
+void close_db(db_handle h)
+{
+
+}
+
+bool exec_db_query(db_handle h, const char * query)
+{
+    return true;
+}
+
+
+#INJECT-b585472fa
+
+int main()
+{
+    try
+    {
+        std::print("Creating an instance of DBConn 'db_conn'... ");
+        DBConn c("postgresql://user:secret@localhost");
+        std::println("DONE");
+
+        std::print("Executing query with 'db_conn'... ");
+        const bool ok = c.exec("exec * from table");
+        if (ok)
+        {
+            std::println("DONE");
+        }
+        else
+        {
+            std::println("ERROR");
+        }
+
+        std::print("Running 'handle_metrics()'... ");
+        handle_metrics();
+        std::println("DONE");
+
+        std::print("Destroying 'db_conn'... ");
+    }
+    catch(...)
+    {
+       std::println("Exception is thrown");
+       return 1;
+    }
+    std::println("DONE");
+}

@@ -1,0 +1,10 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::println("{}", max(5, 6));
+    std::println("{}", max('z', 'a'));
+    std::println("{}", max(1.01, 1.02));
+}
