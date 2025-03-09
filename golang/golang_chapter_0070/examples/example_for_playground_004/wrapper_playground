@@ -1,0 +1,5 @@
+package main
+
+import "fmt"
+
+#INJECT-b585472fa
