@@ -179,7 +179,7 @@ func main() {
 }
 
 func findMails(mails ...string) []string {
-	var res []stringint
+	var res []string
 
 	for _, m := range mails {
 		if valid(m) {
