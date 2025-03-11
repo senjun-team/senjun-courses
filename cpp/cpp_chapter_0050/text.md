@@ -404,12 +404,15 @@ enum class State { TODO = 1, INPROGRESS = 2, DONE = 3 };
 class Task
 {
 public:
-    void log_work_hours(std::size_t hours)
+    bool log_work_hours(std::size_t hours)
     {
         if (m_state == State::TODO)
             m_state = State::INPROGRESS;
 
-        m_workHours += hours;
+        if (m_state == State::INPROGRESS)
+            m_workHours += hours;
+
+        return m_state == State::INPROGRESS;
     }
 
     void update_state(State s)
