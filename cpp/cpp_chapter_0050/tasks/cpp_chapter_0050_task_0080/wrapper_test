@@ -1,0 +1,15 @@
+#include "ut.hpp"
+#include "test_helpers.h"
+
+int main()
+{
+    using namespace boost::ut;
+
+    "check user input"_test = [] {
+        std::string plan = hlp::normalize("Message UnixTimestamp");
+        std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
+        std::sort(plan.begin(), plan.end());
+        std::sort(user_input.begin(), user_input.end());
+        expect(user_input == plan);
+    };
+}

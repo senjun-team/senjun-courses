@@ -1,0 +1,16 @@
+import std;
+
+#INJECT-b585472fa
+
+bool is_a(char c)
+{
+    return c == 'a';
+}
+
+int main()
+{
+    std::println("str_none_of(\"b\",       is_a) = {}", str_none_of("b", is_a));
+    std::println("str_none_of(\"generic\", is_a) = {}", str_none_of("generic", is_a));
+    std::println("str_none_of(\"latest\",  is_a) = {}", str_none_of("latest", is_a));
+    std::println("str_none_of(\"a\",       is_a) = {}", str_none_of("a", is_a));
+}
