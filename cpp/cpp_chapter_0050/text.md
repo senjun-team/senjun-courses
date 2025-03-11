@@ -415,10 +415,12 @@ public:
         return m_state == State::INPROGRESS;
     }
 
-    void update_state(State s)
+    bool update_state(State new_state)
     {
         if (s > m_state)
-            m_state = s;
+            m_state = new_state;
+
+        return m_state == new_state;
     }
 
   void show_work_hours() { std::println("{}", m_workHours); }
