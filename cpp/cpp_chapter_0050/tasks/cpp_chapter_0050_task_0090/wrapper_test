@@ -26,6 +26,8 @@ int main()
         expect(str_none_of("b", is_digit));
         expect(str_none_of("number", is_digit));
         expect(!str_none_of("12345", is_digit));
+        expect(!str_none_of("abcd12345", is_digit));
+        expect(!str_none_of("12345abcd", is_digit));
         expect(!str_none_of("1", is_digit));
     };
 }
