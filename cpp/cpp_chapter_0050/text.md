@@ -182,13 +182,15 @@ namespace Net
 
 ```c++  {.example_for_playground .example_for_playground_003}
 std::println(Net::loopback);
+
+std::println(Net::get_hostname("192.0.2.1"));
 ```
 
 Пространства имен решают две основные задачи:
 - Предотвращение конфликта имен. Например, если завести два пространства имен `crt` (cartesian) и `geo` (geography), то в них можно создавать функции с одинаковыми именами. Их вызов будет выглядеть так: `crt::distance(point1, point2)`, `geo::distance(point1, point2)`.
 - Управление сложностью проекта: пространства имен упрощают организацию кода. Они структурируют проект на отдельные компоненты.
 
-Пространства имен могут быть вложенными: `data::ODBC`. Чтобы к ним было удобно обращаться, имена лучше делать короткими: `std`, `Core`, `io`.
+Пространства имен могут быть вложенными: `data::ODBC::bind()`. Чтобы к ним было удобно обращаться, имена лучше делать короткими: `std`, `Core`, `io`.
 
 Все содержимое [коллекции библиотек boost](https://www.boost.org/) находится в одноименном пространстве имен. Внутри него есть пространство имен `asio` библиотеки для работы с сетью. Внутри него — пространство `ip`, и уже внутри него — `tcp`. В этом пространстве имен есть класс `acceptor`. {.task_text}
 
@@ -417,7 +419,7 @@ public:
 
     bool update_state(State new_state)
     {
-        if (s > m_state)
+        if (new_state > m_state)
             m_state = new_state;
 
         return m_state == new_state;
@@ -435,7 +437,7 @@ private:
 
 ```c++ {.example_for_playground .example_for_playground_012}
 Task t;
-t.update_state(State::DONE);
+t.update_state(State::INPROGRESS);
 t.log_work_hours(5);
 t.show_work_hours();
 ```

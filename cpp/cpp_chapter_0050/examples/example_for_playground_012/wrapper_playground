@@ -5,18 +5,23 @@ enum class State { TODO = 1, INPROGRESS = 2, DONE = 3 };
 class Task
 {
 public:
-    void log_work_hours(std::size_t hours)
+    bool log_work_hours(std::size_t hours)
     {
         if (m_state == State::TODO)
             m_state = State::INPROGRESS;
 
-        m_workHours += hours;
+        if (m_state == State::INPROGRESS)
+            m_workHours += hours;
+
+        return m_state == State::INPROGRESS;
     }
 
-    void update_state(State s)
+    bool update_state(State new_state)
     {
-        if (s > m_state)
-            m_state = s;
+        if (new_state > m_state)
+            m_state = new_state;
+
+        return m_state == new_state;
     }
 
   void show_work_hours() { std::println("{}", m_workHours); }
