@@ -5,7 +5,7 @@ import std;
 int main()
 {
     Task t;
-    t.update_state(State::DONE);
+    t.update_state(State::INPROGRESS);
     t.log_work_hours(5);
     t.show_work_hours();
 }
