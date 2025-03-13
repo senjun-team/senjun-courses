@@ -48,7 +48,7 @@ import (
 )
 
 func main() {
-	fmt.Println(rectangleSquareByPoints(15, 10, 3, -4))
+	fmt.Println(rectangleSquareByPoints(3, -4, 15, 10))
 }
 
 func rectangleSquareByPoints(x0 float64, y0 float64, x1 float64, y1 float64) float64 {
