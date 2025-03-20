@@ -7,10 +7,10 @@ int main()
     using namespace boost::ut;
 
     "Max"_test = [] {
-        expect(max(-1, 1) == 1);
-        expect(max(1, -1) == 1);
-        expect(max(0, 0) == 0);
-        expect(max(1000, 2) == 1000);
-        expect(max(999, 9999) == 9999);
+        expect(max(-1, 1) == 1) << "\nmax(-1, 1) must return 1\n" << fatal;
+        expect(max(1, -1) == 1) << "\nmax(1, -1) must return 1\n" << fatal;
+        expect(max(0, 0) == 0) << "\nmax(0, 0) must return 0\n" << fatal;
+        expect(max(1000, 2) == 1000) << "\nmax(1000, 2) must return 1000\n" << fatal;
+        expect(max(999, 9999) == 9999) << "\nmax(999, 9999) must return 9999\n" << fatal;
     };
 }

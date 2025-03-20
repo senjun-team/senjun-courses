@@ -1,5 +1,6 @@
 #include "ut.hpp"
 #include "test_helpers.h"
+#include <format>
 
 #INJECT-b585472fa
 
@@ -13,21 +14,22 @@ int main()
     using namespace boost::ut;
 
     "str_none_of is_a"_test = [] {
-        expect(str_none_of("b", is_a));
-        expect(str_none_of("generic", is_a));
-        expect(!str_none_of("latest", is_a));
-        expect(!str_none_of("a", is_a));
+        expect(str_none_of("b", is_a)) << "\nstr_none_of(\"b\", is_a) must return true\n" << fatal;
+        expect(str_none_of("generic", is_a)) << "\nstr_none_of(\"generic\", is_a) must return true\n" << fatal;
+        expect(!str_none_of("latest", is_a)) << "\nstr_none_of(\"latest\", is_a) must return false\n" << fatal;
+        expect(!str_none_of("a", is_a)) << "\nstr_none_of(\"a\", is_a) must return false\n" << fatal;
     };
-
 
     "str_none_of lambda"_test = [] {
         auto is_digit = [](char c) { return c >= '0' && c <= '9'; };
 
-        expect(str_none_of("b", is_digit));
-        expect(str_none_of("number", is_digit));
-        expect(!str_none_of("12345", is_digit));
-        expect(!str_none_of("abcd12345", is_digit));
-        expect(!str_none_of("12345abcd", is_digit));
-        expect(!str_none_of("1", is_digit));
+        const std::string text = "\nwhere is_digit is a variable name for lambda-function: auto is_digit = [](char c){ return c >= '0' && c <= '9'; };\n";
+        
+        expect(str_none_of("b", is_digit)) <<  "\nstr_none_of(\"b\", is_digit) must return true" << text << fatal;
+        expect(str_none_of("number", is_digit)) <<  "\nstr_none_of(\"number\", is_digit) must return true" << text << fatal;
+        expect(!str_none_of("12345", is_digit)) <<  "\nstr_none_of(\"12345\", is_digit) must return false" << text << fatal;
+        expect(!str_none_of("abcd12345", is_digit)) << "\nstr_none_of(\"abcd12345\", is_digit) must return false" << text << fatal;
+        expect(!str_none_of("12345abcd", is_digit)) <<  "\nstr_none_of(\"12345abcd\", is_digit) must return false" << text << fatal;
+        expect(!str_none_of("1", is_digit)) <<  "\nstr_none_of(\"ё\", is_digit) must return false" << text << fatal;
     };
 }

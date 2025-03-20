@@ -7,26 +7,26 @@ int main()
     using namespace boost::ut;
 
     "count_letter=0"_test = [] {
-        expect(count_letter("", 'i') == 0);
-        expect(count_letter("to", 'i') == 0);
-        expect(count_letter("i", 'j') == 0);
-        expect(count_letter("example", 't') == 0);
-        expect(count_letter("numeric", '8') == 0);
+        expect(count_letter("", 'i') == 0) << "\ncount_letter(\"\", 'i') must return 0\n" << fatal;
+        expect(count_letter("to", 'i') == 0) << "\ncount_letter(\"to\", 'i') must return 0\n" << fatal;
+        expect(count_letter("i", 'j') == 0) << "\ncount_letter(\"i\", 'j') must return 0\n" << fatal;
+        expect(count_letter("example", 't') == 0) << "\ncount_letter(\"example\", 't') must return 0\n" << fatal;
+        expect(count_letter("numeric", '8') == 0) << "\ncount_letter(\"numeric\", '8') must return 0\n" << fatal;
     };
 
     "count_letter=1"_test = [] {
-        expect(count_letter("abyss", 'a') == 1);
-        expect(count_letter("toster", 'o') == 1);
-        expect(count_letter("young", 'g') == 1);
+        expect(count_letter("abyss", 'a') == 1) << "\ncount_letter(\"abyss\", 'a') must return 1\n" << fatal;
+        expect(count_letter("toster", 'o') == 1) << "\ncount_letter(\"toster\", 'o') must return 1\n" << fatal;
+        expect(count_letter("young", 'g') == 1) << "\ncount_letter(\"young\", 'g') must return 1\n" << fatal;
     };
 
     "count_letter=2"_test = [] {
-        expect(count_letter("tomorrow", 'r') == 2);
-        expect(count_letter("latest", 't') == 2);
+        expect(count_letter("tomorrow", 'r') == 2) << "\ncount_letter(\"tomorrow\", 'r') must return 2\n" << fatal;
+        expect(count_letter("latest", 't') == 2) << "\ncount_letter(\"latest\", 't') must return 2\n" << fatal;
     };
 
     "count_letter=3"_test = [] {
-        expect(count_letter("smallest ladder", 'l') == 3);
-        expect(count_letter("111", '1') == 3);
+        expect(count_letter("smallest ladder", 'l') == 3) << "\ncount_letter(\"smallest ladder\", 'l') must return 3\n" << fatal;
+        expect(count_letter("111", '1') == 3)  << "\ncount_letter(\"111\", '1') must return 3\n" << fatal;
     };
 }

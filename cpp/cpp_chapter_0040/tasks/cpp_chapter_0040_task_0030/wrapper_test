@@ -6,10 +6,11 @@ int main()
     using namespace boost::ut;
 
     "check user solution console output"_test = [] {
-        std::string user_code_output = hlp::exec_user_solution();
-        expect(user_code_output == 
+        const std::string plan=
         "1x1=1 2x1=2 3x1=3\n"
         "1x2=2 2x2=4 3x2=6\n"
-        "1x3=3 2x3=6 3x3=9\n");
+        "1x3=3 2x3=6 3x3=9\n"
+        std::string user_code_output = hlp::exec_user_solution();
+        expect(user_code_output == plan) << "\nExpected output:\n" << plan << "\n";
     };
 }
