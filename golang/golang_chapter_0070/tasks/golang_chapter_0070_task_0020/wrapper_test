@@ -1,0 +1,53 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestFindMails(t *testing.T) {
+	cases := []struct {
+		in   []string
+		want []string
+	}{
+		{[]string{"ivanov@yandex.ru",
+			"magic-string",
+			"petrov@gmail.com",
+			"sidorov@mail.ru",
+			"go-programmer.com"},
+			[]string{"ivanov@yandex.ru",
+				"petrov@gmail.com",
+				"sidorov@mail.ru",
+			}},
+		{
+			[]string{},
+			[]string{},
+		},
+		{[]string{"ivanov@yandex.ru"},
+			[]string{"ivanov@yandex.ru"},
+		},
+		{
+			[]string{"magic-string"},
+			[]string{},
+		},
+	}
+
+	for _, c := range cases {
+		got := findMails(c.in...)
+
+		if !testEq(got, c.want) {
+			t.Errorf("findMails(%v) == %v, want %v", c.in, got, c.want)
+		}
+	}
+}
+
+func testEq(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := 0; i < len(a); i++ {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
