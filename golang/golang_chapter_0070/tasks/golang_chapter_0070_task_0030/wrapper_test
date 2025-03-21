@@ -1,0 +1,48 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestPrintTriangleType(t *testing.T) {
+	cases := []struct {
+		in   [6]float64
+		want string
+	}{
+		{[6]float64{5, 7, 5, 17, 10, 7}, "right triangle"},
+		{[6]float64{4, 3, 7, 4, 5, 7}, "acute triangle"},
+		{[6]float64{5, 4, 8, 5, 17, 10}, "obtuse triangle"},
+		{[6]float64{5, 4, 5, 14, 5, 28}, "degenerate triangle"},
+	}
+
+	for _, c := range cases {
+		old := os.Stdout // keep backup of the real stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+
+		outC := make(chan string)
+		// copy the output in a separate goroutine so printing can't block indefinitely
+		go func() {
+			var buf bytes.Buffer
+			io.Copy(&buf, r)
+			outC <- buf.String()
+		}()
+
+		printTriangleType(c.in[0], c.in[1], c.in[2], c.in[3], c.in[4], c.in[5])
+
+		// back to normal state
+		w.Close()
+		os.Stdout = old // restoring the real stdout
+		out := <-outC
+
+		// reading our temp stdout
+		if strings.TrimSpace(out) != c.want {
+			t.Fatalf("printTriangleType(%f, %f, %f, %f, %f, %f) prints \"%s\", not \"%s\"",
+				c.in[0], c.in[1], c.in[2], c.in[3], c.in[4], c.in[5], strings.TrimSpace(out), c.want)
+		}
+	}
+}

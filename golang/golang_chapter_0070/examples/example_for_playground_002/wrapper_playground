@@ -1,0 +1,9 @@
+package main
+
+import "fmt"
+
+#INJECT-b585472fa
+
+func main() {
+    fmt.Println(rectangleSquare(3, 10))
+}

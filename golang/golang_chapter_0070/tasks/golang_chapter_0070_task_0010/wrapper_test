@@ -1,0 +1,26 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestRectangleSquareByPoints(t *testing.T) {
+
+	cases := []struct {
+		in   []float64
+		want float64
+	}{
+		{[]float64{15, 10, 3, -4}, 168},
+		{[]float64{3, -4, 15, 10}, 168},
+		{[]float64{15, 10, 15, 10}, 0},
+		{[]float64{0, 0, 0, 0}, 0},
+	}
+
+	for _, c := range cases {
+		got := rectangleSquareByPoints(c.in[0], c.in[1], c.in[2], c.in[3])
+
+		if got != c.want {
+			t.Errorf("rectangleSquareByPoints(%f, %f, %f, %f) == %f, want %f", c.in[0], c.in[1], c.in[2], c.in[3], got, c.want)
+		}
+	}
+}

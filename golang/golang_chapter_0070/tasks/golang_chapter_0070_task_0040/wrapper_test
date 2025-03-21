@@ -1,0 +1,40 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestMergeSort(t *testing.T) {
+
+	cases := []struct {
+		in   []int
+		want []int
+	}{
+		{[]int{4, 7, 10, 1}, []int{1, 4, 7, 10}},
+		{[]int{4, 7, 10, 1, 5}, []int{1, 4, 5, 7, 10}},
+		{[]int{1, 4, 7, 10}, []int{1, 4, 7, 10}},
+		{[]int{4}, []int{4}},
+		{[]int{7, 4}, []int{4, 7}},
+		{[]int{}, []int{}},
+	}
+
+	for _, c := range cases {
+		got := mergeSort(c.in)
+
+		if !testEq(got, c.want) {
+			t.Errorf("mergeSort(%v) == %v, want %v", c.in, got, c.want)
+		}
+	}
+}
+
+func testEq(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := 0; i < len(a); i++ {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
