@@ -240,14 +240,20 @@ func hello(name string) error {
 
 В качестве первого аргумента передается `x0`, в качестве второго — `y0`, третий — `x1`, четвертый — `y1`, пятый — `x2`, шестой — `y2`. {.task_text}
 
+Для расчета расстояния между точками вы можете использовать функции `Math.Pow()` и `Math.Sqrt()` из [пакета math.](https://pkg.go.dev/math) {.task_text}
+
 ```go {.task_source #golang_chapter_0070_task_0030}
 package main
-import "fmt"
+
+import (
+    "fmt"
+    "math"
+)
 
 // ваш код здесь 
 
 func main() {
-	printTriangleType(5, 7, 5, 17, 10, 7)	
+	printTriangleType(5, 7, 5, 17, 10, 7)
 }
 
 // либо здесь
@@ -257,6 +263,13 @@ func main() {
 Если сумма меньших сторон треугольника равна большей стороне, то треугольник вырожденный. В остальных случаях рассмотрим квадрат большей стороны и сумму квадратов меньших. Если квадрат большей стороны равен сумме квадратов меньших, то треугольник прямоугольный. Если больше, то тупоугольный. Если меньше, то остроугольный. Учтите также, что архитектура компьютера не позволяет точно представить результат вычислений с вещественными переменными. Проверка на строгое равенство не сработает, нужно учитывать небольшую погрешность. {.task_hint}
 
 ```go {.task_answer}
+package main
+
+import (
+    "fmt"
+    "math"
+)
+
 func printTriangleType(x0 float64, y0 float64, x1 float64, y1 float64, x2 float64, y2 float64) {
 
 	a := dist(x0, y0, x1, y1)
@@ -289,6 +302,10 @@ func printTriangleType(x0 float64, y0 float64, x1 float64, y1 float64, x2 float6
 
 func dist(x0 float64, y0 float64, x1 float64, y1 float64) float64 {
 	return math.Sqrt(math.Pow(x0-x1, 2) + math.Pow(y0-y1, 2))
+}
+
+func main() {
+	printTriangleType(5, 7, 5, 17, 10, 7)
 }
 
 ```
@@ -373,9 +390,7 @@ func main() {
 ```go {.task_answer}
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
 	a := []int{4, 7, 10, 1}
