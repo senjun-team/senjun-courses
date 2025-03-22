@@ -106,7 +106,7 @@ int main()
             return;
         }
 
-        expect(false);
+        expect(false) << "\nIf open_db() returns INVALID_DB_HANDLE, DBConn constructor must throw std::runtime_error\n" << fatal;
     };
 
     "Destructor closes conn"_test = [] {
@@ -114,20 +114,20 @@ int main()
 
         {
             DBConn c("postgresql://user:secret@localhost");
-            expect(!is_closed);
+            expect(!is_closed)  << "\nDBConn constructor must call open_db()\n" << fatal;
         }
 
-        expect(is_closed);
+        expect(is_closed)  << "\nDBConn destructor must call close_db()\n" << fatal;
     };
 
     "Exec query"_test = [] {
         using namespace case3;
 
         DBConn c("postgresql://user:secret@localhost");
-        expect(c.exec("select * from table"));
+        expect(c.exec("select * from table")) << "\nDBConn exec() method must call exec_db_query()\n" << fatal;
         is_query_successful = false;
 
-        expect(!c.exec("select * from table"));
+        expect(!c.exec("select * from table")) << "\nDBConn exec() method must call exec_db_query()\n" << fatal;
     };
 
     "handle_metrics() throws"_test = [] {
@@ -142,7 +142,7 @@ int main()
             return;
         }
 
-        expect(false);
+        expect(false)  << "\nhandle_metrics() must throw std::runtime_error in case of some error\n" << fatal;
     };
 
     "handle_metrics() runs query"_test = [] {
@@ -150,6 +150,6 @@ int main()
         
         handle_metrics();
 
-        expect(queried);
+        expect(queried) << "\nhandle_metrics() must call DBConn exec() method\n" << fatal;
     };
 }

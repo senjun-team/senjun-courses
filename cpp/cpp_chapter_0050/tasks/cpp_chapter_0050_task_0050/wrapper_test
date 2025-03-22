@@ -1,7 +1,22 @@
 #include "ut.hpp"
 #include "test_helpers.h"
+#include "format"
 
 #INJECT-b585472fa
+
+
+std::string test_to_string(Rarity rarity)
+{
+    switch(rarity)
+    {
+        case Rarity::COMMON:
+            return "Rarity::COMMON";
+        case Rarity::RARE:
+            return "Rarity::RARE";
+        case Rarity::LEGENDARY:
+            return "Rarity::LEGENDARY";
+    }
+}
 
 int main()
 {
@@ -17,7 +32,7 @@ int main()
         for (std::size_t i = 0; i < plan_vals.size(); ++i)
         {
             const Rarity fact = static_cast<Rarity>(i);
-            expect(fact == plan_vals[i]);
+            expect(fact == plan_vals[i]) << std::format("\n{} in integer representation must equal to {}\n", test_to_string(plan_vals[i]), i) << fatal;
         }
     };
 
@@ -30,7 +45,8 @@ int main()
 
         for (const auto & [in, out]: in_out)
         {
-            expect(to_string(in) == out);
+            const std::string s = to_string(in);
+            expect(s == out) << std::format("\nto_string({}) must return \"{}\"\n", test_to_string(in), out) << fatal;
         }
     };
 }
