@@ -27,7 +27,7 @@ int main()
     };
 
     "Different cases"_test = [] {
-        expect(divide(max_val / 2, 1) == max_val / 2);
+        expect(divide(max_val / 2, 1) == max_val / 2) << "divide(std::numeric_limits<std::size_t>::max() / 2, 1) must return std::numeric_limits<std::size_t>::max() / 2" << fatal;
 
         for (std::size_t i = 1'000'000; i < 1'000'090; ++i) {
             for (std::size_t j = 90; j < 100; ++j) {
