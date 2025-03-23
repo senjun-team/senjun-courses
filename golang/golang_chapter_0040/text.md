@@ -148,10 +148,23 @@ Oberon
 Pascal
 ```
 
+В случае с range, если вторая переменная не нужна, то ее можно вообще не указывать:
+
+```go {.example_for_playground .example_for_playground_006}
+rooms := [5]string{"Ivan", "Nikolay", "Anna", "Viacheslav", "Petr"}
+
+fmt.Println("Pepople with even room ids:")
+for key := range rooms {
+	if key%2 == 0 {
+		fmt.Println(rooms[key])
+	}
+}
+```
+
 ## Многомерные массивы
 Массивы могут быть многомерными. Вот как можно объявить двумерный массив (матрицу) из чисел типа `int` и задать элементу этой матрицы с индексами `2`, `3` значение `250`:
 
-```go {.example_for_playground .example_for_playground_006}
+```go {.example_for_playground .example_for_playground_007}
 var arr [4][5]int
 
 arr[2][3] = 250
