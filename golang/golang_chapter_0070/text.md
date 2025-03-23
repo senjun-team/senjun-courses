@@ -112,21 +112,21 @@ fmt.Printf("Hello from %s:%s!", server, port)
 
 Чтобы объявить вариативную функцию, используют многоточие `...`, которое ставят перед типом последнего аргумента.
 
-Функция `addUsers` вариативная:
+Функция `registerUsers` вариативная:
 
 ```go {.example_for_playground .example_for_playground_004}
-var users map[int]string = make(map[int]string)
-var id int
-
-func addUsers(newUsers ...string) {
+func registerUsers(newUsers ...string) map[int]string {
+	var users map[int]string = make(map[int]string)
+	var id int
 	for _, user := range newUsers {
 		users[id] = user
 		id++
 	}
+	return users
 }
 
 func main() {
-	addUsers("ivanov", "petrov", "sidorov")
+	users := registerUsers("ivanov", "petrov", "sidorov")
 	fmt.Println(users)
 }
 ```
