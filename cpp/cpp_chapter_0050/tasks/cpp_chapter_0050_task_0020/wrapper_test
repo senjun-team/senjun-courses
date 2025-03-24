@@ -110,10 +110,10 @@ int main()
             handle_daily_stats();
         }
 
-        expect(captured_text == "couldn't filter queries\n");
+        expect(captured_text == "couldn't filter queries\n") << "\nIf filter() throws, handle_daily_stats() must capture exception and print its message\n" << fatal;
 
-        expect(!is_sort_called);
-        expect(!is_count_called);
+        expect(!is_sort_called) << "\nIf filter() throws, handle_daily_stats() must not call sort()\n" << fatal;
+        expect(!is_count_called) << "\nIf filter() throws, handle_daily_stats() must not call count()\n" << fatal;
     };
 
     "sort throws"_test = [] {
@@ -127,9 +127,9 @@ int main()
             handle_daily_stats();
         }
 
-        expect(captured_text == "couldn't sort queries\n");
-        expect(is_filter_called);
-        expect(!is_count_called);
+        expect(captured_text == "couldn't sort queries\n")  << "\nIf sort() throws, handle_daily_stats() must capture exception and print its message\n" << fatal;
+        expect(is_filter_called) << "\nhandle_daily_stats() must call filter() before sort()\n" << fatal;
+        expect(!is_count_called) << "\nIf sort() throws, handle_daily_stats() must not call count()\n" << fatal;
     };
 
     "count throws"_test = [] {
@@ -143,10 +143,10 @@ int main()
             handle_daily_stats();
         }
 
-        expect(captured_text == "couldn't count queries\n");
+        expect(captured_text == "couldn't count queries\n") << "\nIf count() throws, handle_daily_stats() must capture exception and print its message\n" << fatal;
 
-        expect(is_filter_called);
-        expect(is_sort_called);
+        expect(is_filter_called) << "\nhandle_daily_stats() must call filter() before count()\n" << fatal;
+        expect(is_sort_called) << "\nhandle_daily_stats() must call sort() before count()\n" << fatal;
     };
 
     "success"_test = [] {
@@ -160,10 +160,10 @@ int main()
             handle_daily_stats();
         }
 
-        expect(captured_text == "success\n");
+        expect(captured_text == "success\n") << "\nhandle_daily_stats() must print \"success\" if no exception was captured\n" << fatal;
 
-        expect(is_filter_called);
-        expect(is_sort_called);
-        expect(is_count_called);
+        expect(is_filter_called) << "\nhandle_daily_stats() must call filter()\n" << fatal;
+        expect(is_sort_called) << "\nhandle_daily_stats() must call sort()\n" << fatal;
+        expect(is_count_called) << "\nhandle_daily_stats() must call count()\n" << fatal;
     };
 }

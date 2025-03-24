@@ -17,17 +17,17 @@ int main()
     "No action"_test = [] {
         fake_cur_time = 0;
         Device d;
-        expect(!d.is_active());
-        expect(d.uptime() == 0);
+        expect(!d.is_active())  << "\nAfter creation of Device d, d.is_active() must return false\n" << fatal;
+        expect(d.uptime() == 0)  << "\nAfter creation of Device d, d.uptime() must return 0\n" << fatal;
     };
 
     "Turn on - off"_test = [] {
         fake_cur_time = 0;
         Device d;
         d.start();
-        expect(d.is_active());
+        expect(d.is_active()) << "\nAfter start() of Device d, d.is_active() must return true\n" << fatal;
         d.stop();
-        expect(!d.is_active());
+        expect(!d.is_active()) << "\nAfter stop() of Device d, d.is_active() must return false\n" << fatal;
     };
 
     "Uptime"_test = [] {
@@ -35,10 +35,10 @@ int main()
         Device d;
         d.start();
         fake_cur_time = 11;
-        expect(d.uptime() == 11 - 1);
+        expect(d.uptime() == 11 - 1) << "\nMethod uptime() must return time in seconds between start() and current timestamp\n" << fatal;
 
         fake_cur_time = 15;
-        expect(d.uptime() == 15 - 1);
+        expect(d.uptime() == 15 - 1) << "\nMethod uptime() must return time in seconds between start() and current timestamp\n" << fatal;
     };
 
     "Healthcheck throws"_test = [] {
@@ -47,14 +47,17 @@ int main()
         try
         {
             d.set_latest_healthcheck();
-            expect(false);
+            expect(false)  << "\nMethod set_latest_healthcheck() must throw std::logic_error if called for stopped device\n" << fatal;
         }
         catch(const std::logic_error & e)
         {
             // expected scenario
             return;
         }
-        expect(false);
+        catch(...)
+        {
+            expect(false) << "\nMethod set_latest_healthcheck() must throw std::logic_error\n" << fatal;
+        }
     };
 
     "Healthcheck"_test = [] {
@@ -64,17 +67,17 @@ int main()
         d.set_latest_healthcheck();
         fake_cur_time = 2;
 
-        expect(d.is_active());
+        expect(d.is_active())  << "\nAfter start(), set_latest_healthcheck() and 2 seconds of waiting is_active() must return true\n" << fatal;
         fake_cur_time = 30;
 
-        expect(d.is_active());
+        expect(d.is_active()) << "\nAfter start(), set_latest_healthcheck() and 32 seconds of waiting is_active() must return true\n" << fatal;
         fake_cur_time = 70;
-        expect(!d.is_active());
+        expect(!d.is_active()) << "\nAfter start(), set_latest_healthcheck() and 70 seconds of waiting is_active() must return true\n" << fatal;
 
         d.set_latest_healthcheck();
-        expect(d.is_active());
+        expect(d.is_active()) << "\nAfter set_latest_healthcheck() and 0 seconds of waiting is_active() must return true\n" << fatal;
 
         d.stop();
-        expect(!d.is_active());
+        expect(!d.is_active()) << "\nAfter stop() is_active() must return false\n" << fatal;
     };
 }

@@ -518,7 +518,7 @@ error: expression is not assignable
 Нужны ли скобки, чтобы это выражение вычислилось как ожидается? `y/n`. {.task_text}
 
 ```c++
-a < 0 || a / b <= max
+width < 0 || volume / length <= max_val
 ```
 
 ```consoleoutput {.task_source #cpp_chapter_0020_task_0060}
@@ -528,7 +528,7 @@ a < 0 || a / b <= max
 n
 ```
 
-Как быть, если вы сомневаетесь, нужны ли в выражении скобки? [Если без скобок код трудно читать, то ставьте их!](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-parens) Например, выражение из задачи выше со скобками выглядит проще: `(a < 0) || (a / b <= max)`.
+Как быть, если вы сомневаетесь, нужны ли в выражении скобки? [Если без скобок код трудно читать, то ставьте их!](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-parens) Например, выражение из задачи выше со скобками выглядит проще: `(width < 0) || (volume / length <= max_val)`.
 
 Какое значение у переменной `x`? {.task_text}
 
