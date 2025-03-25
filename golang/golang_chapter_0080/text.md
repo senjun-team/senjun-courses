@@ -80,7 +80,7 @@ func main() {
 
 Иногда, чтобы избежать множественного ветвления, бывает удобно вместо `switch-case` использовать срез функций, каждая из которых возвращает `bool`. Если условие внутри функции выполнилось, то она вернет `true`, иначе — `false`. Перебирая функции внутри этого среза, можно реализовать ветвление без использования `switch-case`. Попробуйте реализовать эту идею в данной задаче. {.task_text}  
 
-Функции `Sun`, `Rain` и `Snow` предсказывают солнце, дождь и снег соответственно, в зависимости от города. Например, если в городе идет снег, то фукнция `Snow` печатает сообщение об этом и возвращает `true`. В противном случае она ничего не печатает и возвращает `false`. Реализуйте функцию `predictWeather`, которая принимает на вход название города и печатает погоду в нем. Если погода неизвестна, то напечатайте `Unknown`. {.task_text}
+Функции `Sun`, `Rain` и `Snow` предсказывают солнце, дождь и снег соответственно, в зависимости от города. Например, если в городе идет снег, то функция `Snow` печатает сообщение об этом и возвращает `true`. В противном случае она ничего не печатает и возвращает `false`. Реализуйте функцию `predictWeather`, которая принимает на вход название города и печатает погоду в нем. Если погода неизвестна, то напечатайте `Unknown`. {.task_text}
 ```go {.task_source #golang_chapter_0070_task_0010}
 package main
 
@@ -226,6 +226,89 @@ func startServer(sep string, servHost string, servPort string,
         helloFrom(servHost, servPort)
     }
     fmt.Println(sep)
+}
+```
+
+Функция initGame инициализирует двумерную игру. Она принимает переменную типа функции `hero`, которая должна возвращать местоположение героя и символа, которым он обозначен на игровой карте. Передайте функции `initGame` в качестве параметра анонимную функцию, которая возвращает местоположение `1, 2` и значок `^`. Напечатайте результат `res` игровой карты с героем, который вернет функция `initGame`, на экран. {.task_text}
+
+```go {.task_source #golang_chapter_0070_task_0020}
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+func main() {
+	// ваш код здесь 
+}
+
+func initGame(hero func() ([2]int, string)) (res string, err error) {
+	rows := 3
+	cols := 4
+
+	pos, h := hero()
+
+	if pos[0] < 0 || pos[0] >= rows || pos[1] < 0 || pos[1] >= cols {
+		return "", errors.New("hero out of map")
+	}
+
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			if i == pos[0] && j == pos[1] {
+				res += h
+			} else {
+				res += "*"
+			}
+		}
+		res += "\n"
+	}
+
+	return res, nil
+}
+```
+
+Не забудьте обработать ошибку, которую возвращает функция `initGame`. Напечатайте ее на экран в случае, если ошибка произойдет. В случае, если ошибка не произойдет, напечатайте на экран результат `res`. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+func main() {
+	g, err := initGame(func() ([2]int, string) { return [2]int{1, 2}, "^" })
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(g)
+	}
+}
+
+func initGame(hero func() ([2]int, string)) (res string, err error) {
+	rows := 3
+	cols := 4
+
+	pos, h := hero()
+
+	if pos[0] < 0 || pos[0] >= rows || pos[1] < 0 || pos[1] >= cols {
+		return "", errors.New("hero out of map")
+	}
+
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			if i == pos[0] && j == pos[1] {
+				res += h
+			} else {
+				res += "*"
+			}
+		}
+		res += "\n"
+	}
+
+	return res, nil
 }
 ```
 ## Замыкания 
