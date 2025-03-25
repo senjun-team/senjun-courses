@@ -293,6 +293,7 @@ package main
 
 import (
     "fmt"
+    "math"
     "time"
 )
 
@@ -304,8 +305,7 @@ func main() {
 }
 
 func bestFunc() func(f func(), alias string) string {
-    var maxInt64 int64 = 9223372036854775807
-    var res int64 = maxInt64
+    var res int64 = math.MaxInt64
     var fastestAlias string
 
     return func(f func(), alias string) string {
