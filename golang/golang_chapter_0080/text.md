@@ -1,7 +1,7 @@
 # Глава 8. Функции как объекты
 ## Значения-функции
 Функции, подобно другим значениям, присваивают переменным: 
-```go {.example_for_playground .example_for_playground_012}
+```go {.example_for_playground .example_for_playground_001}
 package main
 
 import (
@@ -26,7 +26,7 @@ func main() {
 
 В данном случае `userMessage` имеет тип `func(string)`. Попытка присвоить в переменную `userMessage` функцию с другой сигнатурой приведет к ошибке компиляции:
 
-```go {.example_for_playground .example_for_playground_013}
+```go {.example_for_playground .example_for_playground_002}
 package main
 
 import (
@@ -59,7 +59,7 @@ func main() {
 ```
 
 По умолчанию переменная типа функции содержит значение `nil`. Вызов функции со значением `nil` приведет к панике:
-```go {.example_for_playground .example_for_playground_014}
+```go {.example_for_playground .example_for_playground_003}
 func main() {
     var f func() string
     fmt.Println(f())
@@ -67,7 +67,7 @@ func main() {
 ```
 
 Если вы не уверены в том, что функция не нулевая, то перед вызовом ее нужно сравнить со значением `nil`:
-```go {.example_for_playground .example_for_playground_015}
+```go {.example_for_playground .example_for_playground_004}
 func main() {
     var f func() string
     if f != nil {
@@ -81,7 +81,7 @@ func main() {
 Иногда, чтобы избежать множественного ветвления, бывает удобно вместо `switch-case` использовать срез функций, каждая из которых возвращает `bool`. Если условие внутри функции выполнилось, то она вернет `true`, иначе — `false`. Перебирая функции внутри этого среза, можно реализовать ветвление без использования `switch-case`. Попробуйте реализовать эту идею в данной задаче. {.task_text}  
 
 Функции `Sun`, `Rain` и `Snow` предсказывают солнце, дождь и снег соответственно, в зависимости от города. Например, если в городе идет снег, то функция `Snow` печатает сообщение об этом и возвращает `true`. В противном случае она ничего не печатает и возвращает `false`. Реализуйте функцию `predictWeather`, которая принимает на вход название города и печатает погоду в нем. Если погода неизвестна, то напечатайте `Unknown`. {.task_text}
-```go {.task_source #golang_chapter_0070_task_0010}
+```go {.task_source #golang_chapter_0080_task_0010}
 package main
 
 import (
@@ -178,7 +178,7 @@ func Snow(city string) bool {
 ## Анонимные функции
 Анонимные функции — это функции без имени:
 
-```go {.example_for_playground .example_for_playground_016}
+```go {.example_for_playground .example_for_playground_005}
 func main() {
     func() {
         fmt.Println("Hello from anonymous world!")
@@ -188,7 +188,7 @@ func main() {
 
 В данном случае мы создали анонимную функцию внутри `main` и вызвали ее через символы скобочек `()`. Если нужно использовать анонимную функцию в другом месте, то ее присваивают переменной: 
 
-```go {.example_for_playground .example_for_playground_017}
+```go {.example_for_playground .example_for_playground_006}
 func main() {
     const sep = "============================"
     hello := func() {
@@ -202,7 +202,7 @@ func main() {
 
 Вот так передают анонимную функцию в качестве параметра другой функции: 
 
-```go {.example_for_playground .example_for_playground_018}
+```go {.example_for_playground .example_for_playground_007}
 package main
 
 import (
@@ -231,7 +231,7 @@ func startServer(sep string, servHost string, servPort string,
 
 Функция initGame инициализирует двумерную игру. Она принимает переменную типа функции `hero`, которая должна возвращать местоположение героя и символа, которым он обозначен на игровой карте. Передайте функции `initGame` в качестве параметра анонимную функцию, которая возвращает местоположение `1, 2` и значок `^`. Напечатайте результат `res` игровой карты с героем, который вернет функция `initGame`, на экран. {.task_text}
 
-```go {.task_source #golang_chapter_0070_task_0020}
+```go {.task_source #golang_chapter_0080_task_0020}
 package main
 
 import (
@@ -314,7 +314,7 @@ func initGame(hero func() ([2]int, string)) (res string, err error) {
 ## Замыкания 
 Когда мы возвращаем некоторую функцию из другой функции, нам может потребоваться запомнить некоторое значение. Когда мы вернем эту функцию снова, то мы воспользуемся старым значением. Говоря более строго, некоторые функции имеют *состояние*. Такой прием предоставляют нам *замыкания (closures)*. Следующая программа вычисляет числа Фибоначчи с использованием замыкания:
 
-```go {.example_for_playground .example_for_playground_019}
+```go {.example_for_playground .example_for_playground_008}
 func main() {
     fib := nextFibonacci()
     for i := 0; i < 10; i++ {
@@ -339,7 +339,7 @@ func nextFibonacci() func() int {
 
 Реализовано три функции: `verySlowFunc()`, `slowFunc()` и `fastFunc()`. Напишите функцию `bestFunc()`, которая принимает на вход одну из этих функций и ее псевдоним, а возвращает псевдоним наиболее быстрой функции из тех, что были переданы ранее. Так, код ниже должен вывести три значения: `firstFunc`, `firstFunc`, `thirdFunc`. Для того, чтобы узнать время выполнения функции в миллисекундах, воспользуйтесь стандартным пакетом `time`. Запомните текущее время с помощью `start := time.Now()`, а затем посчитайте количество миллисекунд с этой момента: `time.Since(start).Milliseconds()`.{.task_text}
 
-```go {.task_source #golang_chapter_0070_task_0040}
+```go {.task_source #golang_chapter_0080_task_0030}
 package main
 
 import (
