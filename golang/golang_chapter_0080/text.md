@@ -335,7 +335,7 @@ func nextFibonacci() func() int {
 }
 ```
 
-При каждом вызове `fib()` мы помним о предыдущих значениях `a1`и `a2`.
+При каждом вызове `fib()` мы помним о предыдущих значениях `firstNumber`и `secondNumber`.
 
 Замыкания часто используют, когда необходимо написать промежуточную логику `middleware`, при вызове обработчика сервера:
 
@@ -405,44 +405,44 @@ func fastFunc() {
 package main
 
 import (
-    "fmt"
-    "math"
-    "time"
+	"fmt"
+	"math"
+	"time"
 )
 
 func main() {
-    measure := bestFunc()
-    fmt.Println(measure(slowFunc, "firstFunc"))
-    fmt.Println(measure(verySlowFunc, "secondFunc"))
-    fmt.Println(measure(fastFunc, "thirdFunc"))
+	measure := bestFunc()
+	fmt.Println(measure(slowFunc, "firstFunc"))
+	fmt.Println(measure(verySlowFunc, "secondFunc"))
+	fmt.Println(measure(fastFunc, "thirdFunc"))
 }
 
 func bestFunc() func(f func(), alias string) string {
-    var res int64 = math.MaxInt64
-    var fastestAlias string
+	var res int64 = math.MaxInt64
+	var fastestAlias string
 
-    return func(f func(), alias string) string {
-        start := time.Now()
-        f()
-        res2 := time.Since(start).Milliseconds()
-        if res2 < res {
-            res = res2
-            fastestAlias = alias
-        }
-        return fastestAlias
-    }
+	return func(f func(), alias string) string {
+		start := time.Now()
+		f()
+		localRes := time.Since(start).Milliseconds()
+		if localRes < res {
+			res = localRes
+			fastestAlias = alias
+		}
+		return fastestAlias
+	}
 }
 
 func verySlowFunc() {
-    time.Sleep(500 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 }
 
 func slowFunc() {
-    time.Sleep(200 * time.Millisecond)
+	time.Sleep(200 * time.Millisecond)
 }
 
 func fastFunc() {
-    time.Sleep(1 * time.Millisecond)
+	time.Sleep(1 * time.Millisecond)
 }
 ```
 
