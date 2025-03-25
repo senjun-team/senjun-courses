@@ -312,30 +312,60 @@ func initGame(hero func() ([2]int, string)) (res string, err error) {
 }
 ```
 ## Замыкания 
-Когда мы возвращаем некоторую функцию из другой функции, нам может потребоваться запомнить некоторое значение. Когда мы вернем эту функцию снова, то мы воспользуемся старым значением. Говоря более строго, некоторые функции имеют *состояние*. Такой прием предоставляют нам *замыкания (closures)*. Следующая программа вычисляет числа Фибоначчи с использованием замыкания:
+Когда мы возвращаем некоторую функцию из другой функции, нам может потребоваться запомнить внешнее значение. Когда мы вернем эту функцию снова, то мы воспользуемся старым значением.  Говоря иначе, некоторые функции имеют *состояние*. Такой прием предоставляют нам *замыкания (closures)*. Мы как бы замыкаем в себя контекст. Следующая программа вычисляет числа Фибоначчи с использованием замыкания:
 
 ```go {.example_for_playground .example_for_playground_008}
 func main() {
-    fib := nextFibonacci()
-    for i := 0; i < 10; i++ {
-        fmt.Printf("%d\t", fib())
-    }
+	fib := nextFibonacci()
+	for i := 0; i < 10; i++ {
+		fmt.Printf("%d\t", fib())
+	}
 }
 
 func nextFibonacci() func() int {
-    a1 := -1
-    a2 := 1
+	firstNumber := -1
+	secondNumber := 1
 
-    return func() int {
-        a3 := a1 + a2
-        a1 = a2
-        a2 = a3
-        return a3
-    }
+	return func() int {
+		resNumber := firstNumber + secondNumber
+		firstNumber = secondNumber
+		secondNumber = resNumber
+		return resNumber
+	}
 }
 ```
 
 При каждом вызове `fib()` мы помним о предыдущих значениях `a1`и `a2`.
+
+Замыкания часто используют, когда необходимо написать промежуточную логику `middleware`, при вызове обработчика сервера:
+
+```go {.example_for_playground .example_for_playground_009}
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+// основна логика обработчика 
+func logic(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Execute the logic")
+}
+func main() {
+	handlerLogic := http.HandlerFunc(logic)
+	mainHandler := middleware(handlerLogic)
+	mainHandler.ServeHTTP(nil, nil)
+}
+
+// промежточная логика 
+func middleware(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Middleware execution before request")
+		handler.ServeHTTP(w, r)
+		fmt.Println("Middleware execution after response")
+	})
+}
+```
 
 Реализовано три функции: `verySlowFunc()`, `slowFunc()` и `fastFunc()`. Напишите функцию `bestFunc()`, которая принимает на вход одну из этих функций и ее псевдоним, а возвращает псевдоним наиболее быстрой функции из тех, что были переданы ранее. Так, код ниже должен вывести три значения: `firstFunc`, `firstFunc`, `thirdFunc`. Для того, чтобы узнать время выполнения функции в миллисекундах, воспользуйтесь стандартным пакетом `time`. Запомните текущее время с помощью `start := time.Now()`, а затем посчитайте количество миллисекунд с этой момента: `time.Since(start).Milliseconds()`.{.task_text}
 
