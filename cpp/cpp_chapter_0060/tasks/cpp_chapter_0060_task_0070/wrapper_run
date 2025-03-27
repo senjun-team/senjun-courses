@@ -1,0 +1,8 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::println("hide_password(\"admin:7cf1+4AA6\") = {}", hide_password("admin:7cf1+4AA6"));
+}

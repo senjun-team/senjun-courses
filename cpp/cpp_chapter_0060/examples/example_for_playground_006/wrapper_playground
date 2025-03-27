@@ -1,0 +1,8 @@
+import std;
+
+int main()
+{
+    const std::string s = "string";
+    
+    #INJECT-b585472fa
+}
