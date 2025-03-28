@@ -1,0 +1,10 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::println("rearrange_words(\"1\") = {}", rearrange_words("1"));
+    std::println("rearrange_words(\"rearrange words\") = {}", rearrange_words("rearrange words"));
+    std::println("rearrange_words(\"not a bug\") = {}", rearrange_words("not a bug"));
+}
