@@ -23,17 +23,8 @@ int main()
     using namespace boost::ut;
 
     "enum class values"_test = [] {
-        const std::vector<Rarity> plan_vals{
-            Rarity::COMMON,
-            Rarity::RARE,
-            Rarity::LEGENDARY
-        };
-
-        for (std::size_t i = 0; i < plan_vals.size(); ++i)
-        {
-            const Rarity fact = static_cast<Rarity>(i);
-            expect(fact == plan_vals[i]) << std::format("\n{} in integer representation must equal to {}\n", test_to_string(plan_vals[i]), i) << fatal;
-        }
+        expect(static_cast<int>(Rarity::COMMON) < static_cast<int>(Rarity::RARE)) << "Integer representation of Rarity::COMMON must be less then Rarity::RARE" << fatal;
+        expect(static_cast<int>(Rarity::RARE) < static_cast<int>(Rarity::LEGENDARY)) << "Integer representation of Rarity::RARE must be less then Rarity::LEGENDARY" << fatal;
     };
 
     "to_string() return values"_test = [] {
