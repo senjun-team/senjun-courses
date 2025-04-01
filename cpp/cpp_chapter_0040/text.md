@@ -86,7 +86,7 @@ std::size_t gcd(std::size_t a, std::size_t b)
 std::string s = "341453TNY";
 std::size_t i = 0;
 
-// При сравнении символов char сравниваются ASCII-коды.
+// При сравнении символов char сопоставляются ASCII-коды.
 // Цифры 0, 1, ... 9 расположены в ASCII-таблице последовательно.
 while (i < s.size() && s[i] >= '0' && s[i] <= '9')
 {
