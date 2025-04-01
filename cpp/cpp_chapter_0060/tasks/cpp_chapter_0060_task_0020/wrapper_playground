@@ -1,0 +1,12 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::println("is_palindrome(\"eve\") = {}",  is_palindrome("eve"));
+    std::println("is_palindrome(\"tennet\") = {}",  is_palindrome("tennet"));
+    
+    std::println("is_palindrome(\"12\") = {}",  is_palindrome("12"));
+    std::println("is_palindrome(\"122\") = {}",  is_palindrome("122"));
+}

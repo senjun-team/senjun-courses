@@ -1,0 +1,15 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::string s = "reverse iterators";
+    auto it = find_last(s.rbegin(), s.rend(), 'e');
+
+    const std::string res = it == s.end() ? 
+    "s.end()" :
+    std::format("element with index {}", std::distance(s.begin(), it));
+
+    std::println("find_last(s.rbegin(), s.rend(), 'e') returns iterator pointing to {}.\nHere string s is \"reverse iterators\"", res);
+}

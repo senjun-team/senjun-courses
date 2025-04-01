@@ -1,0 +1,31 @@
+#include "ut.hpp"
+#include <format>
+
+#INJECT-b585472fa
+
+int main()
+{
+    using namespace boost::ut;
+
+    "rearrange_words()"_test = [] {
+        std::vector<std::pair<std::string, std::string>> cases {
+            {"", ""},
+            {"a", "a"},
+            {"be", "be"},
+            {"one", "one"},
+            {"1 thousand", "thousand 1"},
+            {"two km", "km two"},
+            {"last x", "x last"},
+            {"not a bug", "bug a not"},
+            {"many more test cases", "cases test more many"},
+            {"binary search et al", "al et search binary"},
+            {"merge and inplace merge algorithms", "algorithms merge inplace and merge"}
+        };
+
+        for (const auto & [s, plan]: cases)
+        {
+            const std::string fact = rearrange_words(s);
+            expect(fact == plan) << std::format("rearrange_words(\"{}\") returned \"{}\" but expected result is \"{}\"", s, fact, plan) << fatal;
+        }
+    };
+}

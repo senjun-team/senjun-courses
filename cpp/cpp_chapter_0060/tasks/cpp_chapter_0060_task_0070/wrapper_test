@@ -1,0 +1,26 @@
+#include "ut.hpp"
+#include <format>
+
+#INJECT-b585472fa
+
+int main()
+{
+    using namespace boost::ut;
+
+    "rearrange_words()"_test = [] {
+        std::vector<std::pair<std::string, std::string>> cases {
+            {"1:1", "1:*"},
+            {"1:22", "1:**"},
+            {"22:1", "22:*"},
+            {"22:22", "22:**"},
+            {"333:1", "333:*"},
+            {"admin:7cf1+4AA6", "admin:*********"},
+        };
+
+        for (const auto & [s, plan]: cases)
+        {
+            const std::string fact = hide_password(s);
+            expect(fact == plan) << std::format("hide_password(\"{}\") returned \"{}\" but expected result is \"{}\"", s, fact, plan) << fatal;
+        }
+    };
+}

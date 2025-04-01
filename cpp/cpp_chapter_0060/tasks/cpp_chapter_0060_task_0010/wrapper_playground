@@ -1,0 +1,15 @@
+import std;
+
+#INJECT-b585472fa
+
+bool is_opening_brace(char c)
+{
+    return c == '(' || c == '{' || c == '[';
+}
+
+int main()
+{
+    std::println("index_of(\"at()\", is_opening_brace) = {}", 
+                index_of("at()", 
+                is_opening_brace));
+}
