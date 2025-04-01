@@ -9,10 +9,15 @@ int main()
 
     "find_last() must return end()"_test = [] {
         std::string empty_s = "";
-        expect(find_last(empty_s, 'a') == empty_s.end()) << "find_last(s, 'a') where s is empty must return s.end()" << fatal;
+        expect(find_last(empty_s.rbegin(), empty_s.rend(), 'a') == empty_s.end()) << "find_last(s.rbegin(), s.rend(), 'a') where s is empty must return s.end()" << fatal;
 
         std::string s = "test";
-        expect(find_last(s, 'a') == s.end()) << "find_last(s, 'a') where s=\"test\" must return s.end()" << fatal;
+        auto it_fact = find_last(s.rbegin(), s.rend(), 'a');
+            const std::string res = std::format("it points to {}", 
+            it_fact == s.end() ? "s.end()" : std::to_string(std::distance(s.begin(), it_fact)));
+
+        expect(find_last(s.rbegin(), s.rend(), 'a') == s.end()) << 
+        std::format("find_last(s.rbegin(), s.rend(), 'a') where s=\"test\" must return s.end() but {}", res) << fatal;
     };
 
 
@@ -27,11 +32,11 @@ int main()
 
         for (auto & [c, it_plan] : cases)
         {
-            auto it_fact = find_last(s, c);
+            auto it_fact = find_last(s.rbegin(), s.rend(), c);
             const std::string res = std::format("it points to {}", 
             it_fact == s.end() ? "s.end()" : std::to_string(std::distance(s.begin(), it_fact)));
 
-            expect(it_fact == it_plan) << std::format("find_last(s, '{}') where s=\"latest\" must return iteartor pointing to character with index {} but {}", 
+            expect(it_fact == it_plan) << std::format("find_last(s.rbegin(), s.rend(), '{}') where s=\"latest\" must return iteartor pointing to character with index {} but {}", 
             c, std::distance(s.begin(), it_plan), res) << fatal;
         }
     };
