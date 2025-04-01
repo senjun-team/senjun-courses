@@ -314,7 +314,7 @@ func initGame(hero func() ([2]int, string)) (res string, err error) {
 ## Захват переменных значениями-функциями 
 До версии Go 1.22 существовала проблема. Рассмотрим следующий код. 
 
-```go {.example_for_playground .example_for_playground_006}
+```go {.example_for_playground .example_for_playground_008}
 var printers []func()
 for i := 0; i < 5; i++ {
 	printers = append(printers, func() {
@@ -332,7 +332,7 @@ for _, printer := range printers {
 
 Чтобы избежать этого, раньше необходимо было создавать еще одну переменную внутри цикла. Чаще всего делали переменную с тем же именем:
 
-```go {.example_for_playground .example_for_playground_006}
+```go {.example_for_playground .example_for_playground_009}
 var printers []func()
 for i := 0; i < 5; i++ {
 	i := i // нужно, чтобы решить проблему захвата
@@ -351,7 +351,7 @@ for _, printer := range printers {
 ## Замыкания 
 Когда мы возвращаем некоторую функцию из другой функции, нам может потребоваться запомнить внешнее значение. Когда мы вернем эту функцию снова, то мы воспользуемся старым значением.  Говоря иначе, некоторые функции имеют *состояние*. Такой прием предоставляют нам *замыкания (closures)*. Мы как бы замыкаем в себя контекст. Следующая программа вычисляет числа Фибоначчи с использованием замыкания:
 
-```go {.example_for_playground .example_for_playground_008}
+```go {.example_for_playground .example_for_playground_010}
 func main() {
 	fib := nextFibonacci()
 	for i := 0; i < 10; i++ {
@@ -376,7 +376,7 @@ func nextFibonacci() func() int {
 
 Замыкания часто используют, когда необходимо написать промежуточную логику `middleware`, при вызове обработчика сервера:
 
-```go {.example_for_playground .example_for_playground_009}
+```go {.example_for_playground .example_for_playground_011}
 package main
 
 import (
@@ -402,6 +402,26 @@ func middleware(handler http.Handler) http.Handler {
 		fmt.Println("Middleware execution after response")
 	})
 }
+```
+
+Следующий код показывает еще один способ применения замыканий:
+```go {.example_for_playground .example_for_playground_012}
+func receiver(protocol string) func(client string) string {
+	return func(client string) string {
+		return fmt.Sprintf("Getting mail via %s with clients %s", protocol, client)
+	}
+}
+
+func main() {
+	receive_via_imap := receiver("IMAP")
+	receive_via_pop3 := receiver("POP3")
+
+	// Getting mail via IMAP with client Thunderbird
+	fmt.Println(receive_via_imap("Thunderbird"))
+	// Getting mail via POP3 with client kmail
+	fmt.Println(receive_via_pop3("kmail"))
+
+} 
 ```
 
 Реализовано три функции: `verySlowFunc()`, `slowFunc()` и `fastFunc()`. Напишите функцию `bestFunc()`, которая принимает на вход одну из этих функций и ее псевдоним, а возвращает псевдоним наиболее быстрой функции из тех, что были переданы ранее. Так, код ниже должен вывести три значения: `firstFunc`, `firstFunc`, `thirdFunc`. Для того, чтобы узнать время выполнения функции в миллисекундах, воспользуйтесь стандартным пакетом `time`. Запомните текущее время с помощью `start := time.Now()`, а затем посчитайте количество миллисекунд с этой момента: `time.Since(start).Milliseconds()`.{.task_text}
@@ -486,7 +506,7 @@ func fastFunc() {
 
 Рассмотрим следующий код. 
 
-```go {.task_source #golang_chapter_0080_task_0030}
+```go {.example_for_playground .example_for_playground_013}
 const size = 100500
 
 func newClosure() func(val int) [size]int {
@@ -503,7 +523,7 @@ func newClosure() func(val int) [size]int {
 }
 ```
 
-Если мы вызовем функцию `newClosure` из `main`, то в памяти образуется массив длиной `100500` элементов. Сборщик мусора никогда не узнает о том, в какой момент этот массив больше вам не нужен. Поэтому он будет в памяти все время, до окончания работы программы. Использйте замыкания осторожно. 
+Если мы вызовем функцию `newClosure` из `main`, то в памяти образуется массив длиной `100500` элементов. Сборщик мусора никогда не узнает о том, в какой момент этот массив больше вам не нужен. Поэтому он будет в памяти все время, до окончания работы программы. Используйте замыкания осторожно. 
 
 ## Резюме.
 1. Функции используются в качестве значений, как обычные переменные.
@@ -511,4 +531,3 @@ func newClosure() func(val int) [size]int {
 3. До версии Go 1.22 существовала проблема захвата переменных значениями-функциями. Она была решена в новых версиях Go. Отметим, что для сохранения обратной совместимости новые компиляторы Go также поддерживают и старое поведение. Если в файле `go.mod` стоит версия Go ниже 1.22, а программа собирается новым компилятором, то будет использовано старое поведение.
 4. Функции способны хранить *состояние*, т.е. обладать некоторой памятью. Такие функции называются замыканиями.
 5. Замыкания могут приводить к утечкам памяти. Не используйте в качестве контекста переменные, требующие большого объема памяти.
-
