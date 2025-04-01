@@ -48,6 +48,49 @@ func main() {
 }
 ```
 
+Строки сравниваемы. Сравниваются они байт за байтом, в лексиграфическом порядке. Так строка `abda` больше строки `abcd`, поскольку третий символ первой строки `d` имеет больший номер, чем третий символ второй строки `c`.
+
+Напишите тело функции `isPalindrome`, которая проверяет, читается ли строка в обоих направлениях однинаково. Так, для слова `kayak` фунция должна вернуть `true`, а для слова `blabla` — `false`. {.task_text}
+
+```go {.task_source #golang_chapter_0100_task_0010}
+package main
+
+import "fmt"
+
+func isPalindrome(s string) bool {
+	// ваш код здесь
+}
+
+func main() {
+	fmt.Println(isPalindrome("kayak"))
+	fmt.Println(isPalindrome("blabla"))
+}
+```
+
+Функцию `isPalindrome` удобно реализовать как рекурсивную функцию. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import "fmt"
+
+func isPalindrome(s string) bool {
+	if len(s) < 2 {
+		return true
+	}
+	if s[0] != s[len(s)-1] {
+		return false
+	}
+	return isPalindrome(s[1 : len(s)-1])
+}
+
+func main() {
+	fmt.Println(isPalindrome("kayak"))
+	fmt.Println(isPalindrome("blabla"))
+	fmt.Println(isPalindrome("level"))
+}
+```
+
 Допустима конкатенация строк черз символ «+»:
 
 ```go {.example_for_playground .example_for_playground_005}
@@ -69,7 +112,7 @@ fmt.Printf("%s, %s!\n", helloMesage, name)
 
 Чтобы не обрабатывать управляющие последовательности, а напечатать строку как есть, используют обратные одинарные кавычки:
 
-```go
+```go {.example_for_playground .example_for_playground_007}
 	helloMesage := `Hello, gopher!
 Here we use raw string. 
 This won't work: \n`
@@ -82,11 +125,10 @@ This won't work: \n`
 Строки являются неизмняемыми. Даже если вы используете конкатенацию для строки, то на месте старой строки оказывается новая. Попытка изменить конкретный байт ведет к ошибке компиляции:
 
 
-```go {.example_for_playground .example_for_playground_007}
+```go {.example_for_playground .example_for_playground_008}
 helloMessage := "hello"
 helloMessage[1] = "b"
 ```
 
 Такое решение было принято для увеличения быстродействия. Если строки неизменяемы, то они могут разделять общую память. Например, для получения подстроки никакой новой памяти выделено не будет. 
-
 
