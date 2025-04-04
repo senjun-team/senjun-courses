@@ -540,20 +540,16 @@ Y
 std::string rearrange_words(std::string s)
 {
     std::reverse(s.begin(), s.end());
-    auto it_word_start = s.begin();
+    auto it_word = s.begin();
     
-    while (it_word_start != s.end())
+    while (true)
     {
-        auto it_word_end = std::find(it_word_start, s.end(), ' ');
-        const bool is_end = it_word_end == s.end();
-        const std::size_t word_len = std::distance(it_word_start, it_word_end);
-        
-        std::reverse(it_word_start, it_word_end);
-        
-        if (is_end)
+        auto it_space = std::find(it_word, s.end(), ' ');
+        std::reverse(it_word, it_space);
+        if (it_space == s.end())
             break;
-        
-        it_word_start += word_len + 1;
+        else
+            it_word = ++it_space;
     }
 
     return s;
