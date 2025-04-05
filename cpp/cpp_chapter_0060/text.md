@@ -548,8 +548,8 @@ std::string rearrange_words(std::string s)
         std::reverse(it_word, it_space);
         if (it_space == s.end())
             break;
-        else
-            it_word = ++it_space;
+
+        it_word = it_space + 1;
     }
 
     return s;
