@@ -1,0 +1,47 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestPredictWeather(t *testing.T) {
+	cases := []struct {
+		in   string
+		want string
+	}{
+		{"Moscow", "Sun"},
+		{"London", "Rain"},
+		{"Novosibirsk", "Snow"},
+		{"Paris", "Unknown"},
+	}
+
+	for _, c := range cases {
+		old := os.Stdout // keep backup of the real stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+
+		outC := make(chan string)
+		// copy the output in a separate goroutine so printing can't block indefinitely
+		go func() {
+			var buf bytes.Buffer
+			io.Copy(&buf, r)
+			outC <- buf.String()
+		}()
+
+		predictWeather(c.in)
+
+		// back to normal state
+		w.Close()
+		os.Stdout = old // restoring the real stdout
+		out := <-outC
+
+		// reading our temp stdout
+		if strings.TrimSpace(out) != c.want {
+			t.Fatalf("predictWeather(\"%s\") prints \"%s\", not \"%s\"", c.in, strings.TrimSpace(out), c.want)
+		}
+	}
+}
