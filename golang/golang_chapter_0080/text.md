@@ -2,7 +2,7 @@
 
 ## Значения-функции
 Функции, подобно другим значениям, присваивают переменным: 
-```go {.example_for_playground .example_for_playground_001}
+```go {.example_for_playground}
 package main
 
 import "fmt"
@@ -25,7 +25,7 @@ func main() {
 
 В данном случае `userMessage` имеет тип `func(string)`. Попытка присвоить в переменную `userMessage` функцию с другой сигнатурой приведет к ошибке компиляции:
 
-```go {.example_for_playground .example_for_playground_002}
+```go {.example_for_playground}
 package main
 
 import (
@@ -58,7 +58,11 @@ func main() {
 ```
 
 По умолчанию переменная типа функции содержит значение `nil`. Вызов функции со значением `nil` приведет к панике:
-```go {.example_for_playground .example_for_playground_003}
+```go {.example_for_playground}
+package main
+
+import "fmt"
+
 func main() {
     var f func() string
     fmt.Println(f())
@@ -66,7 +70,11 @@ func main() {
 ```
 
 Если вы не уверены в том, что функция не нулевая, то перед вызовом ее нужно сравнить со значением `nil`:
-```go {.example_for_playground .example_for_playground_004}
+```go {.example_for_playground}
+package main
+
+import "fmt"
+
 func main() {
     var f func() string
     if f != nil {
@@ -173,7 +181,11 @@ func Snow(city string) bool {
 ## Анонимные функции
 Анонимные функции — это функции без имени:
 
-```go {.example_for_playground .example_for_playground_005}
+```go {.example_for_playground}
+package main
+
+import "fmt"
+
 func main() {
     func() {
         fmt.Println("Hello from anonymous world!")
@@ -183,7 +195,11 @@ func main() {
 
 В данном случае мы создали анонимную функцию внутри `main` и вызвали ее через символы скобочек `()`. Если нужно использовать анонимную функцию в другом месте, то ее присваивают переменной: 
 
-```go {.example_for_playground .example_for_playground_006}
+```go {.example_for_playground}
+package main
+
+import "fmt"
+
 func main() {
     const sep = "============================"
     hello := func() {
@@ -197,7 +213,7 @@ func main() {
 
 Вот так передают анонимную функцию в качестве параметра другой функции: 
 
-```go {.example_for_playground .example_for_playground_007}
+```go {.example_for_playground}
 package main
 
 import "fmt"
@@ -307,23 +323,29 @@ func initGame(hero func() ([2]int, string)) (res string, err error) {
 ## Захват переменных значениями-функциями 
 До версии Go 1.22 переменные, объявленные в цикле `for`, создавались при входе в цикл и обновлялись на каждой итерации. Это приводило к ошибкам при использовании таких переменных в замыканиях:
 
-```go {.example_for_playground .example_for_playground_008}
-users := make(map[int]string)
-var makeUsers []func(userName string)
-const usersNumber = 5
+```go {.example_for_playground}
+package main
 
-for idx := 0; idx < usersNumber; idx++ {
-	makeUsers = append(makeUsers, func(userName string) {
-		users[idx] = userName
-	})
+import "fmt"
+
+func main() {
+	users := make(map[int]string)
+	var makeUsers []func(userName string)
+	const usersNumber = 5
+
+	for idx := 0; idx < usersNumber; idx++ {
+		makeUsers = append(makeUsers, func(userName string) {
+			users[idx] = userName
+		})
+	}
+
+	userNames := []string{"Ivanov", "Petrov", "Sidorov", "Nikolaeva", "Avgustinov"}
+
+	for i, makeUser := range makeUsers {
+		makeUser(userNames[i])
+	}
+	fmt.Println(users)
 }
-
-userNames := []string{"Ivanov", "Petrov", "Sidorov", "Nikolaeva", "Avgustinov"}
-
-for i, makeUser := range makeUsers {
-	makeUser(userNames[i])
-}
-fmt.Println(users)
 ```
 
 Вероятно, вы ожидаете, что код выведет хеш-таблицу `map[0:Ivanov 1:Petrov 2:Sidorov 3:Nikolaeva 4:Avgustinov]`. Это может показаться удивительным, но программа, собранная компилятором Go до версии 1.22, выведет `map[5:Avgustinov]`.
@@ -331,24 +353,30 @@ fmt.Println(users)
 
 Чтобы избежать этого, раньше необходимо было создавать еще одну переменную внутри цикла. Чаще всего делали переменную с тем же именем:
 
-```go {.example_for_playground .example_for_playground_009}
-users := make(map[int]string)
-var makeUsers []func(userName string)
-const usersNumber = 5
+```go {.example_for_playground}
+package main
 
-for idx := 0; idx < usersNumber; idx++ {
-	idx := idx // нужно, чтобы избежать «захвата» переменной!
-	makeUsers = append(makeUsers, func(userName string) {
-		users[idx] = userName
-	})
+import "fmt"
+
+func main() {
+	users := make(map[int]string)
+	var makeUsers []func(userName string)
+	const usersNumber = 5
+
+	for idx := 0; idx < usersNumber; idx++ {
+		idx := idx // нужно, чтобы избежать «захвата» переменной!
+		makeUsers = append(makeUsers, func(userName string) {
+			users[idx] = userName
+		})
+	}
+
+	userNames := []string{"Ivanov", "Petrov", "Sidorov", "Nikolaeva", "Avgustinov"}
+
+	for i, makeUser := range makeUsers {
+		makeUser(userNames[i])
+	}
+	fmt.Println(users)
 }
-
-userNames := []string{"Ivanov", "Petrov", "Sidorov", "Nikolaeva", "Avgustinov"}
-
-for i, makeUser := range makeUsers {
-	makeUser(userNames[i])
-}
-fmt.Println(users)
 ```
 
 Начиная с версии Go 1.22, такой проблемы больше нет. Теперь переменные, объявленные в цикле с использованием `:=`, являются разными экземплярами на каждой итерации. Последующие ссылки на них видят значения на момент итерации, в которой они были объявлены, а не значения на момент более поздней итерации. Изначальный код выводит `map[0:Ivanov 1:Petrov 2:Sidorov 3:Nikolaeva 4:Avgustinov]`, как и ожидается. 
@@ -356,7 +384,11 @@ fmt.Println(users)
 ## Замыкания 
 Когда мы возвращаем некоторую функцию из другой функции, нам может потребоваться запомнить внешнее значение. Когда мы вернем эту функцию снова, то мы воспользуемся старым значением.  Говоря иначе, некоторые функции имеют *состояние*. Такой прием предоставляют нам *замыкания (closures)*. Мы как бы замыкаем в себя контекст. Следующая программа вычисляет числа Фибоначчи с использованием замыкания:
 
-```go {.example_for_playground .example_for_playground_010}
+```go {.example_for_playground}
+package main
+
+import "fmt"
+
 func main() {
 	fib := nextFibonacci()
 	for i := 0; i < 10; i++ {
@@ -381,7 +413,7 @@ func nextFibonacci() func() int {
 
 Замыкания часто используют, когда необходимо написать промежуточную логику `middleware`, при вызове обработчика сервера:  
 
-```go {.example_for_playground .example_for_playground_011}
+```go
 package main
 
 import (
@@ -412,7 +444,11 @@ func middleware(handler http.Handler) http.Handler {
 
 Следующий код показывает еще один способ применения замыканий:
 
-```go {.example_for_playground .example_for_playground_012}
+```go {.example_for_playground}
+package main
+
+import "fmt"
+
 func receiver(protocol string) func(client string) string {
 	return func(client string) string {
 		return fmt.Sprintf("Getting mail via %s with clients %s", protocol, client)
@@ -425,6 +461,7 @@ func main() {
 
 	// Getting mail via IMAP with client Thunderbird
 	fmt.Println(receive_via_imap("Thunderbird"))
+
 	// Getting mail via POP3 with client kmail
 	fmt.Println(receive_via_pop3("kmail"))
 
@@ -515,7 +552,7 @@ func fastFunc() {
 
 С замыканиями также связана проблема утечки памяти. Допустим, мы оперируем страницами памяти и используем для этого замыкание:
 
-```go {.example_for_playground .example_for_playground_013}
+```go
 const size = 1024
 
 func page() func(valToSet int) [size]int {
