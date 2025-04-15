@@ -1,0 +1,37 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestMain(t *testing.T) {
+	want := "****\n**^*\n****"
+
+	old := os.Stdout // keep backup of the real stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	outC := make(chan string)
+	// copy the output in a separate goroutine so printing can't block indefinitely
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+		outC <- buf.String()
+	}()
+
+	main()
+
+	// back to normal state
+	w.Close()
+	os.Stdout = old // restoring the real stdout
+	out := <-outC
+
+	// reading our temp stdout
+	if strings.TrimSpace(out) != want {
+		t.Fatalf("initGame() prints \n\"%s\", \n\nnot \n\"%s\"", strings.TrimSpace(out), want)
+	}
+}
