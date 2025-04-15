@@ -1,0 +1,34 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestBestFunc(t *testing.T) {
+	cases := []struct {
+		inFuncs []func()
+		inAlias []string
+		want    string
+	}{
+		{[]func(){slowFunc},
+			[]string{"verySlowFunc"},
+			"verySlowFunc"},
+		{[]func(){slowFunc, verySlowFunc},
+			[]string{"slowFunc", "verySlowFunc"},
+			"slowFunc"},
+		{[]func(){slowFunc, verySlowFunc, fastFunc},
+			[]string{"verySlowFunc", "slowFunc", "fastFunc"},
+			"fastFunc"},
+	}
+
+	for _, c := range cases {
+		measure := bestFunc()
+		var out string
+		for idx := range c.inFuncs {
+			out = measure(c.inFuncs[idx], c.inAlias[idx])
+		}
+		if out != c.want {
+			t.Errorf("bestFunc from %v gets %s, wants %s", c.inAlias, out, c.want)
+		}
+	}
+}
