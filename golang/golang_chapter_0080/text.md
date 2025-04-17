@@ -1,6 +1,7 @@
 # Глава 8. Функции как объекты
 ## Значения-функции
-Функции, подобно другим значениям, присваивают переменным: 
+В переменных можно хранить значения разных типов. Строки, числа... и даже функции!
+
 ```go {.example_for_playground .example_for_playground_001}
 package main
 
@@ -206,26 +207,27 @@ func main() {
 package main
 
 import (
-    "fmt"
+	"fmt"
 )
 
 func main() {
-    const sep = "==================================="
-    startServer(sep, "127.0.0.1", "8080", []string{"192.168.23.48:4040", "192.168.23.48:6060"},
-        func(host string, port string) {
-            fmt.Printf("Hello from %s:%s!\n", host, port)
-        })
+	const sep = "==================================="
+	startServer(sep, "127.0.0.1", "8080",
+		[]string{"192.168.23.48:4040", "192.168.23.48:6060"},
+		func(host string, port string) {
+			fmt.Printf("Hello from %s:%s!\n", host, port)
+		})
 }
 
 func startServer(sep string, servHost string, servPort string,
-    clients []string,
-    helloFrom func(host string, port string)) {
-    for _, client := range clients {
-        fmt.Println(sep)
-        fmt.Printf("%s:%s-->%s\n", servHost, servPort, client)
-        helloFrom(servHost, servPort)
-    }
-    fmt.Println(sep)
+	clients []string,
+	helloFrom func(host string, port string)) {
+	for _, client := range clients {
+		fmt.Println(sep)
+		fmt.Printf("%s:%s-->%s\n", servHost, servPort, client)
+		helloFrom(servHost, servPort)
+	}
+	fmt.Println(sep)
 }
 ```
 
@@ -325,7 +327,7 @@ for idx := 0; idx < usersNumber; idx++ {
 	})
 }
 
-userNames := []string{"Ivanov", "Petrov", "Sidorov", "Nikolaeva", "Avgustinov"}
+userNames := []string{"Znakov", "Dorogniy", "Akulin", "Nikolaeva", "Avgustinov"}
 
 for i, makeUser := range makeUsers {
 	makeUser(userNames[i])
