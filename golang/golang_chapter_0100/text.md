@@ -2,7 +2,7 @@
 
 В Go строка `string` — это срез байтов, доступный только для чтения. Строки необязательно содержат читаемый для человека текст, однако чаще всего это так. Встроенная функция `len` возвращает количество байтов (**не символов!**) в строке. Так, программа ниже выведет на экран число `6`.
 
-```go {.example_for_playground .example_for_playground_001}
+```go {.example_for_playground}
 func main() {
 	s := "hello!"
 	fmt.Println(len(s))
@@ -11,7 +11,7 @@ func main() {
 
 Однако вот эта программа выведет на экран число `13`:
 
-```go {.example_for_playground .example_for_playground_002}
+```go {.example_for_playground}
 func main() {
 	s := "привет!"
 	fmt.Println(len(s))
@@ -20,7 +20,7 @@ func main() {
 
 Попытка обратиться к байту за пределами строки приведет к панике:
 
-```go {.example_for_playground .example_for_playground_003}
+```go {.example_for_playground}
 func main() {
 	s := "привет!"
 	fmt.Println(s[13])
@@ -29,7 +29,7 @@ func main() {
 
 Чтобы получить подстроку строки, поступают следующим образом:
 
-```go {.example_for_playground .example_for_playground_004}
+```go {.example_for_playground}
 func main() {
 	s := "hello!"
 	fmt.Println(s[0:4])
@@ -40,7 +40,7 @@ func main() {
 
 Если задать левую границу больше правой, то возникает паника. В случае, когда не задана левая граница, то подставляется число `0`. Когда не задана правая граница, подставляется длина строки:
 
-```go {.example_for_playground .example_for_playground_004}
+```go {.example_for_playground}
 func main() {
 	s := "hello!"
 	fmt.Print(s[:4])
@@ -93,7 +93,7 @@ func main() {
 
 Допустима конкатенация строк черз символ «+»:
 
-```go {.example_for_playground .example_for_playground_005}
+```go {.example_for_playground}
 helloMessage := "hello"
 name := "gopher"
 fmt.Println(helloMessage + ", " + name + "!")
@@ -101,7 +101,7 @@ fmt.Println(helloMessage + ", " + name + "!")
 
 Однако для этого рекоменуется использовать возможности пакета `fmt`.
 
-```go {.example_for_playground .example_for_playground_006}
+```go {.example_for_playground}
 helloMesage := "hello"
 name := "gopher"
 fmt.Printf("%s, %s!\n", helloMesage, name)
@@ -112,7 +112,7 @@ fmt.Printf("%s, %s!\n", helloMesage, name)
 
 Чтобы не обрабатывать управляющие последовательности, а напечатать строку как есть, используют обратные одинарные кавычки:
 
-```go {.example_for_playground .example_for_playground_007}
+```go {.example_for_playground}
 	helloMesage := `Hello, gopher!
 Here we use raw string. 
 This won't work: \n`
@@ -125,7 +125,7 @@ This won't work: \n`
 Строки являются неизмняемыми. Даже если вы используете конкатенацию для строки, то на месте старой строки оказывается новая. Попытка изменить конкретный байт ведет к ошибке компиляции:
 
 
-```go {.example_for_playground .example_for_playground_008}
+```go {.example_for_playground}
 helloMessage := "hello"
 helloMessage[1] = "b"
 ```
