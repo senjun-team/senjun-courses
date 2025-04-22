@@ -1,5 +1,5 @@
 # Глава 10. Строки
-
+## Приемы по работе со строками
 В Go строка `string` — это срез байтов, доступный только для чтения. Строки необязательно содержат читаемый для человека текст, однако чаще всего это так. Встроенная функция `len` возвращает количество байтов (**не символов!**) в строке. Так, программа ниже выведет на экран число `6`.
 
 ```go {.example_for_playground}
@@ -130,6 +130,108 @@ helloMessage[1] = "b"
 ```
 
 Такое решение было принято для увеличения быстродействия. Если строки неизменяемы, то они могут разделять общую память. Например, для получения подстроки никакой новой памяти выделено не будет. 
+
+
+Необходимо разобрать адрес `address`, состоящий из `ip` и порта `port`. Реализуйте тело функции `parseAddress`, которая их возвращает. Например, для строки `127.0.0.1:4040` необходимо вернуть `127.0.0.1` в качестве `ip` и `4040` — в качетсве порта. Четыре числа `ip` ограничены от `0` до `255` включительно. Порт ограничен значениями от `0` до `65535` включительно. В случае неправильной строки с помощью функции `errors.New` верните ошибку с сообщением `invalid address`.  {.task_text}
+
+```go {.task_source #golang_chapter_0100_task_0020}
+package main
+
+import (
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
+)
+
+func parseAddress(address string) (ip string, port string, err error) {
+	// ваш код здесь 
+}
+
+func main() {
+	fmt.Println(parseAddress("192.168.23.48:6060"))
+	fmt.Println(parseAddress("127.0.0.1:4040"))
+	fmt.Println(parseAddress("192.168.256.48:6060"))
+	fmt.Println(parseAddress("192.168.23.48:60b8"))
+}
+```
+
+Индекс подстроки в строке позволяет найти функция `strings.Index`. Чтобы преобразовать строку в число, воспользуйтесь функцией `strconv.Atoi`. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
+)
+
+func parseAddress(address string) (ip string, port string, err error) {
+	invalid := errors.New("invalid address")
+
+	i := strings.Index(address, ":")
+	if i == -1 {
+		err = invalid
+		return
+	}
+	ip = address[:i]
+	port = address[i+1:]
+	rest := ip
+	counter := 0
+
+	// check ip
+	for {
+		idx := strings.Index(rest, ".")
+		if idx == -1 {
+			idx = len(rest)
+		}
+
+		var number int
+		number, err = strconv.Atoi(rest[:idx])
+		if err != nil {
+			err = invalid
+			return
+		}
+		if number < 0 || number > 255 {
+			err = invalid
+			return
+		}
+		counter++
+
+		if idx == len(rest) {
+			break
+		}
+		rest = rest[idx+1:]
+	}
+	const ipSize = 4
+
+	if counter != ipSize {
+		err = invalid
+		return
+	}
+	// check port
+	number, err := strconv.Atoi(port)
+	if err != nil {
+		err = invalid
+		return
+	}
+
+	if number < 0 || number > 65535 {
+		err = invalid
+		return
+	}
+	return
+}
+
+func main() {
+	fmt.Println(parseAddress("192.168.23.48:6060"))
+	fmt.Println(parseAddress("127.0.0.1:4040"))
+	fmt.Println(parseAddress("192.168.256.48:6060"))
+	fmt.Println(parseAddress("192.168.23.48:60b8"))
+}
+```
 
 # Кодировки
 Первоначально на все случаи жизни использовалась одна кодировка — **ASCII**. Она расшифровывается как American Standard Code for Information Interchange — Американский стандартный код для обмена информацией. В ней каждому символу поставлен в соответствие некоторый код. Всего — 128 символов. В ней собраны английские буквы, цифры, знаки пунктуации и управляющие символы.  
