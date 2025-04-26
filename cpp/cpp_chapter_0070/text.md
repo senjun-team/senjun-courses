@@ -80,7 +80,7 @@ for (std::size_t i = 0; i <= buffer.size(); ++i)
 
 ```consoleoutput {.task_source #cpp_chapter_0070_task_0010}
 ```
-. {.task_hint}
+Обратите внимание на максимальное значение, которое индекс `i` принимает в цикле. {.task_hint}
 ```cpp {.task_answer}
 Y
 ```
@@ -253,14 +253,39 @@ std::println("{}", d);
 - Список: `100 -> 50 -> 25 -> 12`. Результат: 100. Это единственный элемент, для которого сумма _до_ меньше суммы _после._
 
 ```c++ {.task_source #cpp_chapter_0070_task_0030}
-int get_equator(std::forward_list<int> list)
+int get_equator(std::forward_list<int> lst)
 {
 
 }
 ```
-. {.task_hint}
+Заведите вектор и заполните его в процессе итерирования по списку `lst`. Сохраняйте в вектор сумму элементов, включая данный. Длина вектора будет совпадать с длиной списка. Например, для списка `5 -> 2 -> 4 -> 8 -> 1` вы получите вектор `5, 7, 11, 19, 20`. В этом же проходе по списку сохраните в переменную сумму всех элементов. Затем проитеритуйтесь по вектору. Зная общую сумму элементов списка и частичную сумму, хранящуюся в элементе вектора, легко вычислить сумму элементов до данного и после данного. {.task_hint}
 ```c++ {.task_answer}
+int get_equator(std::forward_list<int> lst)
+{
+    std::vector<int> sums;
+    int sum = 0;
 
+    for (auto it = lst.cbegin(); it != lst.cend(); ++it)
+    {
+        sum += *it;
+        sums.push_back(sum);
+    }
+
+    int sum_left = 0;
+    int equator = 0;
+    
+    for (std::size_t i = 0; i < sums.size(); ++i)
+    {
+        const int sum_right = sum - sums[i];
+        
+        if (sum_left < sum_right)
+            equator = sum - sum_right - sum_left;
+        
+        sum_left = sums[i];
+    }
+
+    return equator;
+}
 ```
 
 ### Алгоритмическая сложность работы с последовательными контейнерами
@@ -471,7 +496,7 @@ else
     std::println("Key {} exists. Value: {}", it->first, it->second);
 ```
 
-Чтобы в случае существования ключа обновить его значение, есть метод [insert_or_assign()](https://en.cppreference.com/w/cpp/container/map/insert).
+Чтобы в случае существования ключа обновить его значение, есть метод [insert_or_assign()](https://en.cppreference.com/w/cpp/container/map/insert_or_assign).
 
 ```c++
 auto [it, inserted] = server_names.insert_or_assign(server_id, name);
@@ -492,24 +517,71 @@ else
 bool removed = server_names.erase("stage") > 0;
 ```
 
-Реализуйте функцию `print_sorted_frequency()`. Она принимает вектор слов и выводит в консоль частоту, с которой в нем встречается каждое слово. Вывод должен быть отсортирован по убыванию частоты слова. {.task_text}
+Реализуйте функцию `print_frequency()`. Она принимает вектор слов и выводит в консоль частоту, с которой встречается каждое слово. Вывод должен быть отсортирован по убыванию частоты. Слова с одинаковой частотой должны быть отсортированы по алфавиту. {.task_text}
 
-Пример вывода для вектора `{"two", "one", "two"}`: {.task_text}
+В своем решении используйте `std::map`, `std::vector` и функцию для сортировки [std::sort()](https://en.cppreference.com/w/cpp/algorithm/sort), перегрузка которой принимает итераторы на диапазон и предикат. Функция сортирует элементы диапазона, попарно применяя предикат к его элементам: если предикат вернул `true` для элементов `a` и `b`, то в отсортированном диапазоне элемент `a` будет идти перед `b`. В качестве предиката используйте функцию `is_less()`. {.task_text}
+
+Пример консольного вывода функции `print_frequency()` для вектора `{"login", "register", "login", "start_course"}`: {.task_text}
 
 ```
-2 two  
-1 one
+2 login  
+1 register
+1 start_course
 ```
 
 ```c++ {.task_source #cpp_chapter_0070_task_0040}
-void print_sorted_frequency(std::vector<std::string> words)
+bool is_less(std::pair<std::string, std::size_t> left,
+             std::pair<std::string, std::size_t> right)
+{
+    if (left.second > right.second)
+        return true;
+    if (left.second < right.second)
+        return false;
+    
+    return left.first < right.first;
+}
+
+void print_frequency(std::vector<std::string> words)
 {
 
 }
 ```
-. {.task_hint}
+Заполните контейнер `std::map`, ключами которого будут слова, а значениями — их частоты. Затем заполните вектор, хранящий пары со словами и частотами. К вектору примените функцию сортировки с предикатом `is_less()`. Например: `std::sort(v.begin(), v.end(), is_less)`. {.task_hint}
 ```c++ {.task_answer}
+bool is_less(std::pair<std::string, std::size_t> left,
+             std::pair<std::string, std::size_t> right)
+{
+    if (left.second > right.second)
+        return true;
+    if (left.second < right.second)
+        return false;
+    
+    return left.first < right.first;
+}
 
+void print_frequency(std::vector<std::string> words)
+{
+    std::map<std::string, std::size_t> words_count;
+
+    for(std::string word: words)
+    {
+        auto [it, inserted] = words_count.try_emplace(word, 1);
+
+        if (!inserted)
+            ++it->second;    
+    }
+
+    std::vector<std::pair<std::string, std::size_t>> words_with_freq;
+    words_with_freq.reserve(words_count.size());
+    
+    for (auto it = words_count.begin(); it != words_count.end(); ++it)
+        words_with_freq.push_back(*it);
+
+    std::sort(words_with_freq.begin(), words_with_freq.end(), is_less);
+
+    for (auto & word_freq: words_with_freq)
+        std::println("{} {}", word_freq.second, word_freq.first);
+}
 ```
 
 Для **поиска** элемента по ключу есть метод `find()`. Он возвращает итератор на нужный элемент. Если такового не нашлось, итератор указывает на позицию после последнего элемента.
@@ -636,19 +708,51 @@ Set: {"SDP", "RFCOMM"} Size: 2
 
 А классы [std::unordered_multimap](https://en.cppreference.com/w/cpp/container/unordered_multimap) и [std::unordered_multiset](https://en.cppreference.com/w/cpp/container/unordered_multiset) не требуют уникальности ключа. 
 
-Реализуйте функцию `consists_of()`, которая принимает текст послания `message` и текст журнала `magazine_text`. Функция возвращает `true`, если текст послания может быть составлен из вырезанных из журнала букв.
+Реализуйте функцию `consists_of()`, которая принимает текст послания `message` и текст журнала `magazine`. Функция возвращает `true`, если текст послания может быть составлен из вырезанных из журнала букв. Все буквы только латинские в нижнем регистре. Пробелы учитывать не нужно. {.task_text}
 
-Напимер, `consists_of("bab", "abbc")` вернет `true`, а `consists_of("bab", "abc")` — `false`.
+Напимер, `consists_of("bab", "abbc")` вернет `true`, а `consists_of("bab", "abc")` — `false`. {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0070_task_0050}
-bool consists_of(std::string message, std::string magazine_text)
+bool consists_of(std::string message, std::string magazine)
 {
 
 }
 ```
-. {.task_hint}
+Заведите вспомогательную функцию, которая принимает строку и возвращает `std::map`, ключи которого — символы, а значения — их частота в строке. Это частотный словарь. Примените эту функцию к посланию и тексту журнала. Затем проитерируйтесь по частотному словарю послания и проверьте, что каждый ключ в нем содержится в словаре журнала. И значения по этому ключу в словаре послания больше или равны значениям в словаре журнала. {.task_hint}
 ```c++ {.task_answer}
+std::unordered_map<char, std::size_t> to_dict(std::string text)
+{
+    std::unordered_map<char, std::size_t> dict;
 
+    for(char c: text)
+    {
+        if (c == ' ')
+            continue;
+
+        auto [it, inserted] = dict.try_emplace(c, 1);
+
+        if (!inserted)
+            ++it->second;    
+    }
+
+    return dict;
+}
+
+bool consists_of(std::string message, std::string magazine)
+{
+    const auto dict_message = to_dict(message);
+    const auto dict_magazine = to_dict(magazine);
+
+    for (auto it = dict_message.cbegin(); it != dict_message.cend(); ++it)
+    {
+        const auto it_mag = dict_magazine.find(it->first);
+        
+        if (it_mag == dict_magazine.end() || it_mag->second < it->second)
+            return false;
+    }
+
+    return true;
+}
 ```
 
 ### Алгоритмическая сложность работы с неупорядоченными ассоциативными контейнерами
@@ -780,13 +884,13 @@ int main()
 std::deque
 ```
 
-Требуется хранить список задач для исполнения в тред-пуле. Когда поток заканчивает задачу, он переходит к следующей с максимальным приоритетом. Задачи попадают в этот список с уже указанным приоритетом.  Какой контейнер или адаптер подойдет лучше всего? {.task_text}
+Требуется хранить список задач для исполнения в тред-пуле. Когда поток заканчивает задачу, он переходит к следующей с максимальным приоритетом. Задачи попадают в этот список с уже указанным приоритетом. Какой контейнер или адаптер подойдет лучше всего? {.task_text}
 
 Напишите полное название вместе с неймспейсом. {.task_text}
 
 ```consoleoutput {.task_source #cpp_chapter_0070_task_0080}
 ```
-. {.task_hint}
+Лучше всего подойдет очередь с приоритетами. {.task_hint}
 ```cpp {.task_answer}
 std::priority_queue
 ```

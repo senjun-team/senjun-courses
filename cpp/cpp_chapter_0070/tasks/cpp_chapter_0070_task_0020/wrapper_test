@@ -1,0 +1,86 @@
+#include "ut.hpp"
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+struct testcase
+{
+    std::vector<int> left;
+    std::vector<int> right;
+};
+
+void check(const std::vector<int> & v1, const std::vector<int> & v2, const std::vector<int> & plan)
+{
+    try
+    {
+        const std::vector<int> fact = merge(v1, v2);
+        expect(fact == plan) << std::format("merge({}, {}) returns wrong result. Plan: {}, Fact: {}", v1, v2, plan, fact) << fatal;
+    }
+    catch(const std::exception& e)
+    {
+        expect(false) << std::format("merge({}, {}) throws an exception: {}", v1, v2, e.what()) << fatal;
+    }
+    catch(...)
+    {
+        expect(false) << std::format("merge({}, {}) terminates with error", v1, v2) << fatal;
+    }
+}
+
+void check_testcase(const testcase & c)
+{
+    std::vector<int> plan = c.left;
+    plan.insert(std::end(plan), std::begin(c.right), std::end(c.right));
+    std::sort(plan.begin(), plan.end());
+
+    check(c.left, c.right, plan);
+    check(c.right, c.left, plan);
+}
+
+std::vector<int> random_sorted_vector(std::size_t len)
+{
+    std::random_device rnd_device;
+    std::mt19937 mersenne_engine {rnd_device()};
+    std::uniform_int_distribution<int> dist {-100, 200};
+    
+    auto gen = [&](){ return dist(mersenne_engine); };
+
+    std::vector<int> vec(len);
+    std::generate(vec.begin(), vec.end(), gen);
+    std::sort(vec.begin(), vec.end());
+    return vec;
+}
+
+int main()
+{
+    "simple cases"_test = [] {
+        std::vector<testcase> cases
+        {
+            testcase{.left={}, .right={}},
+            testcase{.left={}, .right={1}},
+            testcase{.left={}, .right={1, 2}},
+            testcase{.left={1}, .right={1}},
+            testcase{.left={1, 2}, .right={1, 2}},
+            testcase{.left={1, 2, 3}, .right={10, 20, 30}},
+            testcase{.left={1, 2, 3, 4}, .right={100}},
+            testcase{.left={0}, .right={100, 200}},
+            testcase{.left={1, 3, 3, 7}, .right={0, 1, 3, 4}},
+        };
+
+        for(const testcase & c: cases)
+            check_testcase(c);
+    };
+
+    "random vectors"_test = [] {
+        for(std::size_t len1 = 1; len1 <= 5; ++ len1)
+        {
+            for(std::size_t len2 = 1; len2 <= 10; ++ len2)
+            {
+                testcase c{.left=random_sorted_vector(len1), .right=random_sorted_vector(len2)};
+                check_testcase(c);
+            }
+        }
+    };
+}
