@@ -17,7 +17,7 @@
 
 ## Классификация контейнеров
 
-Контейнеры стандартной библиотеки делятся на три категории, по одной на каждый из основных сценариев использования.
+Контейнеры делятся на три категории, по одной на каждый из основных сценариев использования.
 
 ![Классификация контейнеров](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-7/illustrations/cpp/containers.jpg) {.illustration}
 
@@ -35,7 +35,7 @@
 
 Класс `std::string`, [как вы помните,](/courses/cpp/chapters/cpp_chapter_0060/#block-string) не считается контейнером из-за ограничений на типы данных, которые позволяет хранить строка. Да, она может состоять не только из символов `char`! Но об этом позже. Внутри строка организована примерно так же, как `std::vector`, о котором вы узнаете прямо сейчас.
 
-Также к стандартным контейнерам _не_ относятся [std::bitset](https://en.cppreference.com/w/cpp/utility/bitset) и [std::valarray](https://en.cppreference.com/w/cpp/numeric/valarray). Класс `std::bitset` — это статический массив битов. А `std::valaray` — динамический массив, заточенный под математические вычисления. Этот класс не пользуется популярностью: он появился в C++98 и не отличается удобным интерфейсом. Вместо него для математических расчетов обычно подключают классы из специализированных библиотек, таких как [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) и [Armadillo](https://arma.sourceforge.net/).
+Также контейнерами _не_ являются [std::bitset](https://en.cppreference.com/w/cpp/utility/bitset) и [std::valarray](https://en.cppreference.com/w/cpp/numeric/valarray). Класс `std::bitset` — это статический массив битов. А `std::valaray` — динамический массив, заточенный под математические вычисления. Этот класс не пользуется популярностью: он появился в C++98 и не отличается удобным интерфейсом. Вместо него для математических расчетов обычно подключают классы из специализированных библиотек, таких как [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) и [Armadillo](https://arma.sourceforge.net/).
 
 ## Последовательные контейнеры
 
@@ -58,7 +58,7 @@ std::vector<std::string> directions = {"left", "backward", "right"};
 
 Для доступа к элементам по индексу используется оператор `[]`:
 
-```c++
+```c++ {.example_for_playground .example_for_playground_001}
 std::vector<double> fractions = {0.05, 0.20, 0.80, 0.95};
 
 double a = fractions[3]; // ok
@@ -87,7 +87,7 @@ Y
 
 Чтобы не писать проверок, но при этом избежать UB, предусмотрен метод `at()`. Если индекс выходит за границы массива, метод бросает исключение `std::out_of_range`:
 
-```c++
+```c++ {.example_for_playground .example_for_playground_002}
 const std::vector<std::string> headers = {"Accept", "Cookie", "Expires"};
 
 try
@@ -97,7 +97,7 @@ try
 }
 catch(const std::out_of_range & e)
 {
-    std::println("{}", e.what());
+    std::println("Exception in {}", e.what());
 }
 ```
 
@@ -112,7 +112,7 @@ catch(const std::out_of_range & e)
 - `erase()` — удаляет один или несколько элементов. Вызов `v.erase(it)` удалит элемент, на который указывает итератор `it`. А `v.erase(it_start, it_end)` удалит элементы в диапазоне. У метода несколько [перегрузок.](https://en.cppreference.com/w/cpp/container/vector/erase) Метод возвращает итератор за последним удаленным элементом.
 - `clear()` — удаляет все элементы.
 
-```c++
+```c++  {.example_for_playground .example_for_playground_003}
 std::vector<std::string> column_names = {"id", "username", "date_joined"};
 
 column_names.push_back("is_superuser");
@@ -132,7 +132,7 @@ id email username date_joined is_superuser
 
 Выделение нового блока памяти, перенос в него элементов и освобождение старого блока — это медленные операции. Их можно избежать, если максимальное количество элементов известно заранее. Для этого используйте метод `reserve()`. Он принимает количество элементов и сразу выделяет память нужного объема.
 
-```c++
+```c++ {.example_for_playground .example_for_playground_004}
 std::vector<int> data;
 std::println("size: {}, capacity: {}", data.size(), data.capacity());
 
@@ -215,8 +215,8 @@ std::array<double, 4> interpolated_data = {77.0, 77.2, 76.99, 77.3};
 
 Заведем дек `d` и поработаем с ним:
 
-```c++
-std::deque<int> d = {7, 6, 2, 0, 3, 9, 0, 1, 5, 3, 5, 5};
+```c++  {.example_for_playground .example_for_playground_005}
+std::deque<int> d = {7, 6, 2};
 std::println("   {}", d); // Пробелы для отступа слева
 
 d.push_front(4);
@@ -226,8 +226,8 @@ d.push_back(3);
 std::println("{}", d);
 ```
 ```
-   [7, 6, 2, 0, 3, 9, 0, 1, 5, 3, 5, 5]
-[4, 7, 6, 2, 0, 3, 9, 0, 1, 5, 3, 5, 5, 8, 3]
+   [7, 6, 2]
+[4, 7, 6, 2, 8, 3]
 ```
 
 Если допустить, что выделяемые под дек массивы содержат по 6 элементов, дек `d` можно представить так:
@@ -243,6 +243,17 @@ std::println("{}", d);
 Класс [std::list](https://en.cppreference.com/w/cpp/container/list) реализует [структуру данных «двусвязный список»](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA#%D0%94%D0%B2%D1%83%D1%81%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA_(%D0%B4%D0%B2%D1%83%D0%BD%D0%B0%D0%BF%D1%80%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%81%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA)) и поддерживает обход контейнера в обе стороны.
 
 Класс [std::forward_list](https://en.cppreference.com/w/cpp/container/forward_list) реализует [односвязный список](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA#%D0%9E%D0%B4%D0%BD%D0%BE%D1%81%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA_(%D0%BE%D0%B4%D0%BD%D0%BE%D0%BD%D0%B0%D0%BF%D1%80%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%BD%D1%8B%D0%B9_%D1%81%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA)) и поддерживает обход только от начала к концу.
+
+В прошлой главе вы [узнали,](/courses/cpp/chapters/cpp_chapter_0060/#block-iterator-categories) что итераторы в C++ делятся на несколько категорий. {.task_text}
+
+Как считаете, к какой из них относятся итераторы по `std::forward_list`? Напишите `random access`, `bidirectional` или `forward`. {.task_text}
+
+```consoleoutput {.task_source #cpp_chapter_0070_task_0090}
+```
+В односвязном списке можно перебирать элементы только от начала к концу. {.task_hint}
+```cpp {.task_answer}
+forward
+```
 
 Реализуйте функцию `get_equator()`. Она принимает не пустой односвязный список и возвращает значение элемента, стоящего на экваторе. {.task_text}
 
@@ -350,7 +361,7 @@ bool is_diagonal(std::array<std::array<int, N>, N> matrix)
 
 Шаблонный класс `std::pair` позволяет хранить пару объектов. Типы объектов задаются двумя параметрами шаблона. Типы могут отличаться. А доступ к объектам осуществляется через поля `first` и `second`.
 
-```c++
+```c++  {.example_for_playground .example_for_playground_006}
 std::pair<std::size_t, std::string> user = {507, "bot_master"};
 
 std::size_t id = user.first;
@@ -361,7 +372,7 @@ std::string login = user.second;
 
 Контейнер [std::map](https://ru.cppreference.com/w/cpp/container/map) предназначен для хранения пар ключ-значение с уникальным ключом. Элементы `std::map` — это объекты класса `std::pair`. Шаблон класса `std::map` принимает два параметра: тип ключа и тип значения. Ключи хранятся отсортированными по возрастанию.
 
-```c++
+```c++  {.example_for_playground .example_for_playground_007}
 // Ключ - имя пользователя.
 // Значение - Unix timestamp последнего логина
 std::map<std::string, std::time_t> user_last_login = {
@@ -380,7 +391,7 @@ std::println("{}", user_last_login);
 
 Обращение через `[]` _создает_ ключ, если он отсутствует, и к нему привязывается значение по умолчанию.
 
-```c++
+```c++  {.example_for_playground .example_for_playground_008}
 // Ключ существует, получаем его значение
 std::time_t login_time_a = user_last_login["Alice"];
 
@@ -395,11 +406,12 @@ std::println("{}", user_last_login);
 
 Добавление ключа в случае его отсутствия может быть нежелательным. Если по логике программы ключ _обязан_ присутствовать в контейнере, используйте метод `at()`. Он вернет значение по ключу либо в случае его отсутствия бросит исключение. 
 
-```c++
+```c++  {.example_for_playground .example_for_playground_009}
 try
 {
     std::time_t login_time_e = user_last_login.at("Eve");
-    // ...
+    std::println("{}", login_time_e);
+}
 catch(const std::out_of_range & e)
 {
     std::println("Not found");
@@ -408,18 +420,18 @@ catch(const std::out_of_range & e)
 
 А на случаи, когда уверенности в присутствии ключа нет, предусмотрен метод `find()`. Он принимает ключ и возвращает итератор.
 
-```c++
+```c++  {.example_for_playground .example_for_playground_010}
 auto it = user_last_login.find("Eve");
 
 if (it == user_last_login.end())
 {
     std::println("Not found");
-    return;
 }
-
-std::pair<const std::string, std::time_t> record = *it;
-
-std::println("Key: {}. Value: {}", record.first, record.second);
+else
+{
+    std::pair<const std::string, std::time_t> record = *it;
+    std::println("Key: {}. Value: {}", record.first, record.second);
+}
 ```
 
 Оператор разыменования `*` применяется к итератору для получения элемента, на который он указывает. Обратите внимание, что в паре ключ-значение ключ константен: `std::pair<const std::string, std::time_t>`. Это говорит о том, что у элемента нельзя изменить ключ. Вместо этого можно удалить элемент и создать новый с другим ключом, но тем же значением.
@@ -446,28 +458,28 @@ it->first
 
 Цикл по итераторам:
 
-```c++
+```c++  {.example_for_playground .example_for_playground_011}
 for (auto it = user_last_login.begin(); it != user_last_login.end(); ++it)
     std::println("Key: {}. Value: {}", it->first, it->second);
 ```
 
 Цикл `range-for`:
 
-```c++
+```c++  {.example_for_playground .example_for_playground_012}
 for (std::pair<std::string, std::time_t> record: user_last_login)
-    std::println("Key: {}. Value: {}", record->first, record->second);
+    std::println("Key: {}. Value: {}", record.first, record.second);
 ```
 
 При обходе контейнера через `range-for` мы работаем с парами ключ-значение. Вместо явного указания типа можно использовать `auto`:
 
-```c++
+```c++  {.example_for_playground .example_for_playground_013}
 for (auto record: user_last_login)
     std::println("Key: {}. Value: {}", record.first, record.second);
 ```
 
 Чтобы в цикле _изменять_ значения по ключу, используйте цикл с итераторами. В главе про ссылки вы узнаете, как это делать в цикле `range-for`.
 
-```c++
+```c++  {.example_for_playground .example_for_playground_014}
 for (auto it = user_last_login.begin(); it != user_last_login.end(); ++it)
     it->second = 0;
 ```
@@ -476,13 +488,16 @@ for (auto it = user_last_login.begin(); it != user_last_login.end(); ++it)
 
 Оператор `[]` добавляет значение по ключу либо перезаписывает уже существующее. Используйте его, если вам не требуется отличать вставку от перезаписи:
 
-```c++
-server_names[server_id] = name;
+```c++   {.example_for_playground .example_for_playground_015}
+// Ключ - id сервера, значение - имя
+std::map<std::size_t, std::string> server_names;
+
+server_names[902] = "stage";
 ```
 
 Метод [try_emplace()](https://en.cppreference.com/w/cpp/container/map/try_emplace) принимает ключ и значение. Он возвращает пару из итератора и флага. Флаг равен `true`, если вставка произошла, и `false`, если элемент по ключу уже существовал. Замены значения существующего элемента на новое не происходит. А возвращаемый итератор в любом случае указывает на элемент по ключу.
 
-```c++
+```c++   {.example_for_playground .example_for_playground_016}
 std::map<std::size_t, std::string> server_names;
 
 std::size_t server_id = 902;
@@ -498,7 +513,7 @@ else
 
 Чтобы в случае существования ключа обновить его значение, есть метод [insert_or_assign()](https://en.cppreference.com/w/cpp/container/map/insert_or_assign).
 
-```c++
+```c++ {.example_for_playground .example_for_playground_017}
 auto [it, inserted] = server_names.insert_or_assign(server_id, name);
 
 if (inserted)
@@ -590,7 +605,7 @@ void print_frequency(std::vector<std::string> words)
 
 Класс [std::set](https://en.cppreference.com/w/cpp/container/set) нужен, чтобы работать со множеством уникальных ключей. В отличие от `std::map`, значения к ним не привязаны. В остальном эти контейнеры схожи.
 
-```c++
+```c++ {.example_for_playground .example_for_playground_018}
 std::set<std::string> words = {"a", "the"};
 
 words.emplace("then");
@@ -610,7 +625,7 @@ a then
 
 В C++17 в `std::set` был добавлен метод `merge()`. Он нужен, чтобы объединять два множества:
 
-```c++
+```c++ {.example_for_playground .example_for_playground_019}
 std::set<int> a = {1, 2, 3};
 std::set<int> b = {0, 2, 4};
 
@@ -626,24 +641,25 @@ std::println("{}", a);
 
 В классах [std::multimap](https://en.cppreference.com/w/cpp/container/multimap) и [std::multiset](https://en.cppreference.com/w/cpp/container/multiset) ключи могут повторяться. Допустим, у нас есть несколько серверов, на которых выполняются задания. Мы могли бы представить это через `std::map` с ключом — именем сервера и значением — вектором заданий:
 
-```c++
+```c++ {.example_for_playground .example_for_playground_020}
 std::map<std::string, std::vector<std::string>> server_jobs;
 
-
-auto [it, inserted] = server_jobs.try_emplace("stage", {"db_replication"});
-
+auto [it, inserted] = server_jobs.try_emplace("stage", 
+                                            std::vector<std::string>
+                                            {"db_replication"}
+                                            );
 if (!inserted)
     it->second.push_back("db_replication"); // Вызываем push_back() у вектора
 ```
 
-А можно использовать `std::multimap`. Его метод [equal_range()](https://en.cppreference.com/w/cpp/container/multimap/equal_range) принимает ключ и возвращает итераторы на начало и конец диапазона элементов с этим ключом.
+А можно использовать `std::multimap`. Его метод [equal_range()](https://en.cppreference.com/w/cpp/container/multimap/equal_range) принимает ключ и возвращает итераторы на начало и конец диапазона элементов с этим ключом. У `std::multimap` нет метода `try_emplace()`, потому что пара ключ-значение может быть добавлена, даже если ключ уже существует в контейнере. Вместо него испоьзуется метод [emplace()](https://en.cppreference.com/w/cpp/container/multimap/emplace).
 
-```c++
+```c++ {.example_for_playground .example_for_playground_021}
 std::multimap<std::string, std::string> server_jobs;
 
-server_jobs.try_emplace("stage", "db_replication");
-server_jobs.try_emplace("stage", "file_storage_backup");
-server_jobs.try_emplace("prod", "packages_update");
+server_jobs.emplace("stage", "db_replication");
+server_jobs.emplace("stage", "file_storage_backup");
+server_jobs.emplace("prod", "packages_update");
 
 for (auto[it, it_end] = server_jobs.equal_range("stage"); it != it_end; ++it)
     std::println("Job {}", it->second);
@@ -685,7 +701,7 @@ i = hash(key) % n
 
 Множество ключей [std::unordered_set](https://en.cppreference.com/w/cpp/container/unordered_set) используется для быстрой проверки на уникальность и для подсчета уникальных объектов.
 
-```c++
+```c++ {.example_for_playground .example_for_playground_022}
 std::unordered_set<std::string> bluetooth_protocols = {"BNEP"};
 
 bluetooth_protocols.insert("RFCOMM");
@@ -769,7 +785,7 @@ bool consists_of(std::string message, std::string magazine)
 
 Класс [std::queue](https://en.cppreference.com/w/cpp/container/queue) — это структура данных [очередь](https://ru.wikipedia.org/wiki/%D0%9E%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D1%8C_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)), в которой элементы добавляются с одного конца, а удаляются с другого.
 
-```c++
+```c++ {.example_for_playground .example_for_playground_023}
 std::queue<int> orders;
 
 orders.push(152);
@@ -797,7 +813,7 @@ std::queue<int, std::list<int>> orders;
 
 Заведем очередь с приоритетами из задач на исполнение. Задача — это пара из приоритета типа `int` и названия типа `std::string`. Опертор `<` вначале сравнивает поля `first` двух объектов типа `std::pair`, затем — поля `second`. Для простой демонстрации работы контейнера нас это устраивает. 
 
-```c++
+```c++ {.example_for_playground}
 import std;
 
 void execute_task(std::pair<int, std::string> task)
