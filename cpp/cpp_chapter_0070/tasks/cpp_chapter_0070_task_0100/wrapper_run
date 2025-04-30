@@ -1,0 +1,303 @@
+import std;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// class IPv4
+////////////////////////////////////////////////////////////////////////////////////////////////////
+class IPv4
+{
+public:
+    IPv4() noexcept = default;
+    IPv4(std::initializer_list<std::uint8_t> octets) noexcept;
+    ~IPv4() = default;
+
+    static IPv4 from_raw_ip(std::uint32_t raw_ip) noexcept;
+    auto operator<=>(const IPv4&) const noexcept = default;
+
+    std::uint32_t raw() const noexcept;
+    std::pair<IPv4, bool> next(std::uint32_t n) const noexcept;
+
+    template <int N>
+    std::uint8_t octet() const noexcept;
+
+private:
+    static std::uint32_t make_raw_ip(std::initializer_list<std::uint8_t> octets) noexcept;
+
+    std::uint32_t m_raw = 0;
+};
+
+inline IPv4::IPv4(std::initializer_list<std::uint8_t> octets) noexcept
+    : m_raw(make_raw_ip(octets))
+{
+}
+
+inline IPv4 IPv4::from_raw_ip(std::uint32_t raw_ip) noexcept
+{
+    IPv4 ip;
+    ip.m_raw = raw_ip;
+    return ip;
+}
+
+inline std::uint32_t IPv4::raw() const noexcept
+{
+    return static_cast<std::size_t>(m_raw);
+}
+
+inline std::pair<IPv4, bool> IPv4::next(std::uint32_t n) const noexcept
+{
+    constexpr std::uint32_t max_u32 = std::numeric_limits<std::uint32_t>::max();
+    return max_u32 - n < m_raw
+        ? std::make_pair(from_raw_ip(max_u32), false)
+        : std::make_pair(from_raw_ip(m_raw + n), true);
+}
+
+template <int N>
+inline std::uint8_t IPv4::octet() const noexcept
+{
+    static_assert(N < 4);
+
+    constexpr int shift = 8 * N;
+    constexpr std::uint32_t mask = 0x000000FF << shift;
+    return static_cast<std::uint8_t>((m_raw & mask) >> shift);
+};
+
+std::uint32_t IPv4::make_raw_ip(std::initializer_list<std::uint8_t> octets) noexcept
+{
+    std::uint32_t raw_ip = 0;
+    int i_octet = 4;
+
+    for (auto it = octets.begin(), end = octets.end(); it != end && i_octet > 0; ++it)
+    {
+        raw_ip |= *it << --i_octet * 8;
+    }
+
+    return raw_ip;
+}
+
+template<>
+struct std::hash<IPv4>
+{
+    std::size_t operator()(const IPv4& ip) const noexcept
+    {
+        return static_cast<std::size_t>(ip.raw());
+    }
+};
+
+template <>
+struct std::formatter<IPv4>
+{
+    constexpr auto parse(std::format_parse_context& ctx)
+    {
+        return ctx.begin();
+    }
+
+    auto format(const IPv4& ip, std::format_context& ctx) const
+    {
+        return std::format_to(
+            ctx.out(), "{}.{}.{}.{}",
+            ip.octet<3>(), ip.octet<2>(), ip.octet<1>(), ip.octet<0>());
+    }
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// class IPv4Range
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct IPv4RangeConstIterator;
+
+class IPv4Range
+{
+public:
+    using const_iterator = IPv4RangeConstIterator;
+
+    IPv4Range() = default;
+    IPv4Range(IPv4 start_ip, std::uint8_t mask_bits) noexcept;
+    ~IPv4Range() = default;
+
+    std::size_t size() const noexcept;
+    std::uint8_t mask_bits_count() const noexcept;
+    IPv4 front() const noexcept;
+
+    bool operator==(const IPv4Range&) const noexcept = default;
+
+    const_iterator begin() const noexcept;
+    const_iterator end() const noexcept;
+
+    const_iterator cbegin() const noexcept;
+    const_iterator cend() const noexcept;
+
+    const_iterator find(IPv4 ip) const noexcept;
+
+    friend struct IPv4RangeConstIterator;
+private:
+    static constexpr std::uint8_t ip4_max_mask_bits = 32;
+
+    static std::uint32_t ip_count(std::uint8_t mask_bits) noexcept;
+    std::pair<IPv4, bool> next_ip(IPv4 ip) const noexcept;
+
+    IPv4 m_start;
+    std::uint32_t m_count = 1;
+};
+
+struct IPv4RangeConstIterator
+{
+    using difference_type = std::ptrdiff_t;
+    using value_type = IPv4;
+
+    value_type operator*() const noexcept;
+
+    IPv4RangeConstIterator& operator++() noexcept;
+    IPv4RangeConstIterator operator++(int) noexcept;
+
+    bool operator==(const IPv4RangeConstIterator&) const noexcept;
+
+    IPv4Range range;
+    IPv4 ip;
+    bool end_flag = false;
+};
+
+inline IPv4Range::IPv4Range(IPv4 start_ip, std::uint8_t mask_bits) noexcept
+    : m_start(start_ip)
+    , m_count(ip_count(mask_bits))
+{
+}
+
+inline std::size_t IPv4Range::size() const noexcept
+{
+    const auto [last_ip, _] = m_start.next(m_count - 1);
+    return last_ip.raw() - m_start.raw() + 1;
+}
+
+inline std::uint8_t IPv4Range::mask_bits_count() const noexcept
+{
+    return ip4_max_mask_bits - static_cast<std::uint8_t>(std::countr_zero(m_count));
+}
+
+inline IPv4 IPv4Range::front() const noexcept
+{
+    return m_start;
+}
+
+inline IPv4Range::const_iterator IPv4Range::begin() const noexcept
+{
+    return cbegin();
+}
+
+inline IPv4Range::const_iterator IPv4Range::end() const noexcept
+{
+    return cend();
+}
+
+inline IPv4Range::const_iterator IPv4Range::cbegin() const noexcept
+{
+    return const_iterator(*this, front(), false);
+}
+
+inline IPv4Range::const_iterator IPv4Range::cend() const noexcept
+{
+    return const_iterator(*this, IPv4(), true);
+}
+
+inline IPv4Range::const_iterator IPv4Range::find(IPv4 ip) const noexcept
+{
+    const auto& [end_ip, _] = m_start.next(m_count);
+    if (ip < m_start || ip > end_ip)
+        return cend();
+
+    return const_iterator(*this, ip, true);
+}
+
+
+inline std::pair<IPv4, bool>IPv4Range::next_ip(IPv4 ip) const noexcept
+{
+    const auto& [end_ip, reachable] = m_start.next(m_count);
+    if (ip < m_start || ip > end_ip)
+        return { IPv4(), false };
+
+    const auto& [next_ip, no_overflow] = ip.next(1);
+
+    return (next_ip < end_ip && no_overflow) || (next_ip != ip && !reachable)
+        ? std::make_pair(next_ip, true)
+        : std::make_pair(IPv4(), false);
+}
+
+inline std::uint32_t IPv4Range::ip_count(std::uint8_t mask_bits) noexcept
+{
+    const std::uint8_t shift = mask_bits > ip4_max_mask_bits ? 0 : ip4_max_mask_bits - mask_bits;
+    return 1u << shift;
+}
+
+inline IPv4RangeConstIterator::value_type IPv4RangeConstIterator::operator*() const noexcept
+{
+    return ip;
+}
+
+inline IPv4RangeConstIterator& IPv4RangeConstIterator::operator++() noexcept
+{
+    const auto [next_ip, flag] = range.next_ip(ip);
+    ip = next_ip;
+    end_flag = !flag;
+    return *this;
+}
+
+inline IPv4RangeConstIterator IPv4RangeConstIterator::operator++(int) noexcept
+{
+    const IPv4RangeConstIterator prev = *this;
+    ++*this;
+    return prev;
+}
+
+bool IPv4RangeConstIterator::operator==(const IPv4RangeConstIterator& other) const noexcept
+{
+    return std::tie(range, ip, end_flag) == std::tie(other.range, other.ip, other.end_flag);
+}
+
+static_assert(std::input_iterator<IPv4Range::const_iterator>);
+
+template <>
+struct std::formatter<IPv4Range>
+{
+    constexpr auto parse(std::format_parse_context& ctx)
+    {
+        return ctx.begin();
+    }
+
+    auto format(const IPv4Range& range, std::format_context& ctx) const
+    {
+        return std::format_to(ctx.out(), "{}/{}", range.front(), range.mask_bits_count());
+    }
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// class IPv4Pool
+////////////////////////////////////////////////////////////////////////////////////////////////////
+#INJECT-b585472fa
+
+
+
+int main()
+{
+    IPv4Range range{ {192, 168, 74}, 29 };
+    IPv4Pool pool{ range };
+
+    std::println("ip range [{}]:", range);
+    std::size_t i = 0;
+
+    while (true)
+    {
+        auto [ip, flag] = pool.reserve_ip();
+        if (!flag)
+            break;
+
+        std::println("{} - [{}]", i, ip);
+        ++i;
+    }
+
+    const IPv4 ip = range.front();
+    std::println("\n# release the first ip [{}] from range [{}]", ip, range);
+    pool.release_ip(ip);
+
+    const auto& [same_ip, flag] = pool.reserve_ip();
+    std::println("# ip [{}] is reserved again: {}", same_ip, flag && same_ip == ip);
+}

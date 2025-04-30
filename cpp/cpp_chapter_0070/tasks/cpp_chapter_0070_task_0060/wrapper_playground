@@ -1,0 +1,18 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::array<std::array<int, 3>, 3> matrix {
+        std::array<int, 3>{5,  0,  0},
+        std::array<int, 3>{0, -1,  0},
+        std::array<int, 3>{0,  0,  2}
+    };
+
+    std::println("Matrix:");
+    for (auto & arr : matrix)
+        std::println("{}", arr);
+    
+    std::println("\nis_diagonal returns {} for this matrix.", is_diagonal<3>(matrix));
+}

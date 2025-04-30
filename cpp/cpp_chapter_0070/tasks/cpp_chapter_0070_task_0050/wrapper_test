@@ -1,0 +1,56 @@
+#include "ut.hpp"
+#include "test_helpers.h"
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+void check_case(const std::string & letter, const std::string & magazine, bool plan)
+{
+    try
+    {
+        const bool fact = consists_of(letter, magazine);
+        expect(fact == plan) << std::format("consists_of(\"{}\", \"{}\") returns wrong result. Plan: {}, Fact: {}", letter, magazine, plan, fact) << fatal;
+    }
+    catch(const std::exception & e)
+    {
+        expect(false) << std::format("consists_of({}, {}) throws an exception: {}", letter, magazine, e.what()) << fatal;
+    }
+    catch(...)
+    {
+        expect(false) << std::format("consists_of({}, {}) throws an exception", letter, magazine) << fatal;
+    }
+}
+
+struct testcase
+{
+    std::string message;
+    std::string magazine;
+    bool consists = false;
+};
+
+int main()
+{
+    "simple cases"_test = [] {
+        std::vector<testcase> cases {
+            {"a", "", false},
+            {"", "a", true},
+            {"", "", true},
+            {"a", "a", true},
+            {"a", "b", false},
+            {"aa", "a", false},
+            {"ab", "b aab", true},
+            {"abbc", "cab", false},
+            {"abbc", "ccaab", false},
+            {"a b b c", "ccb baa", true},
+            {"bab", "abbc", true},
+            {"b a b", "abc ", false},
+            {"sea view", "containers overview", true}
+        };
+
+        for (const auto & c: cases)
+            check_case(c.message, c.magazine, c.consists);
+    };
+}

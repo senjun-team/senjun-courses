@@ -1,0 +1,7 @@
+import std;
+
+int main()
+{
+    #INJECT-b585472fa
+    std::println("{}", server_jobs);
+}

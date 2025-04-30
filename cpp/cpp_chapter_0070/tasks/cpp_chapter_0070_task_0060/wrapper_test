@@ -1,0 +1,82 @@
+#include "ut.hpp"
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+template<std::size_t N>
+std::string to_str(const std::array<std::array<int, N>, N> & matrix)
+{
+    std::string res;
+    for (auto & arr : matrix)
+        res += std::format("{}\n", arr);
+
+    return res;
+}
+
+template<std::size_t N>
+void check(bool plan, const std::array<std::array<int, N>, N> & matrix)
+{
+    try
+    {
+        const bool fact = is_diagonal(matrix);
+        expect(fact == plan) << std::format("is_diagonal() returned {} for matrix:\n{}", fact, to_str(matrix)) << fatal;
+    }
+    catch(const std::exception& e)
+    {
+        expect(false) << std::format("is_diagonal() throws an exception {} for matrix:\n{}", e.what(), to_str(matrix)) << fatal;
+    }
+    catch(...)
+    {
+        expect(false) << std::format("is_diagonal() throws an exception for matrix:\n{}", to_str(matrix)) << fatal;
+    }
+}
+
+int main()
+{
+    "Example from task text and its modifications"_test = [] {
+        std::array<std::array<int, 3>, 3> matrix {
+            std::array<int, 3>{5,  0,  0},
+            std::array<int, 3>{0, -1,  0},
+            std::array<int, 3>{0,  0,  2}
+        };
+
+        check(true, matrix);
+
+        matrix[0][0] = 0;
+        matrix[1][1] = 0;
+        matrix[2][2] = 0;
+
+        check(true, matrix);
+
+        matrix[0][1] = 1;
+        check(false, matrix);
+    };
+
+    "Matrix 1x1"_test = [] {
+        std::array<std::array<int, 1>, 1> matrix {
+            std::array<int, 1>{0}
+        };
+
+        check(true, matrix);
+
+        matrix[0][0] = 1;
+
+        check(true, matrix);
+    };
+
+    "Matrix 2x2"_test = [] {
+        std::array<std::array<int, 2>, 2> matrix {
+            std::array<int, 2>{1, 0},
+            std::array<int, 2>{0, 1},
+        };
+
+        check(true, matrix);
+
+        matrix[1][0] = 1;
+
+        check(false, matrix);
+    };
+}

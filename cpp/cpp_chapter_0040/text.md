@@ -236,7 +236,7 @@ void show_multiplication_table(int n)
 }
 ```
 
-## Цикл range-for
+## Цикл range-for {#block-range-for}
 
 С помощью `for` можно организовать еще один вариант циклов. Он известен как `range-for` и применяется для итерации по диапазону (range) значений. Например, по контейнеру.
 
