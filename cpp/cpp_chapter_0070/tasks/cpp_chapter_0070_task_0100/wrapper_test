@@ -9,10 +9,10 @@ class IPv4
 {
 public:
     IPv4() noexcept = default;
-    explicit IPv4(std::uint32_t raw_ip) noexcept;
     IPv4(std::initializer_list<std::uint8_t> octets) noexcept;
     ~IPv4() = default;
 
+    static IPv4 from_raw_ip(std::uint32_t raw_ip) noexcept;
     auto operator<=>(const IPv4&) const noexcept = default;
 
     std::uint32_t raw() const noexcept;
@@ -27,14 +27,16 @@ private:
     std::uint32_t m_raw = 0;
 };
 
-inline IPv4::IPv4(std::uint32_t raw_ip) noexcept
-    : m_raw(raw_ip)
-{
-}
-
 inline IPv4::IPv4(std::initializer_list<std::uint8_t> octets) noexcept
     : m_raw(make_raw_ip(octets))
 {
+}
+
+inline IPv4 IPv4::from_raw_ip(std::uint32_t raw_ip) noexcept
+{
+    IPv4 ip;
+    ip.m_raw = raw_ip;
+    return ip;
 }
 
 inline std::uint32_t IPv4::raw() const noexcept
@@ -46,8 +48,8 @@ inline std::pair<IPv4, bool> IPv4::next(std::uint32_t n) const noexcept
 {
     constexpr std::uint32_t max_u32 = std::numeric_limits<std::uint32_t>::max();
     return max_u32 - n < m_raw
-        ? std::make_pair(IPv4(max_u32), false)
-        : std::make_pair(IPv4(m_raw + n), true);
+        ? std::make_pair(from_raw_ip(max_u32), false)
+        : std::make_pair(from_raw_ip(m_raw + n), true);
 }
 
 template <int N>
@@ -102,37 +104,23 @@ struct std::formatter<IPv4>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // class IPv4Range
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+struct IPv4RangeConstIterator;
+
 class IPv4Range
 {
 public:
-    enum class flag_t { ok = 0, range_end, wrong_ip };
+    using const_iterator = IPv4RangeConstIterator;
 
     IPv4Range() = default;
     IPv4Range(IPv4 start_ip, std::uint8_t mask_bits) noexcept;
     ~IPv4Range() = default;
 
-    std::size_t capacity() const noexcept;
+    std::size_t size() const noexcept;
     std::uint8_t mask_bits_count() const noexcept;
     IPv4 front() const noexcept;
 
     bool operator==(const IPv4Range&) const noexcept = default;
-
-    struct const_iterator
-    {
-        using difference_type = std::ptrdiff_t;
-        using value_type = IPv4;
-
-        value_type operator*() const noexcept;
-
-        const_iterator& operator++() noexcept;
-        const_iterator operator++(int) noexcept;
-
-        bool operator==(const const_iterator&) const noexcept;
-
-        std::reference_wrapper<const IPv4Range> range;
-        IPv4 ip;
-        bool end_flag = false;
-    };
 
     const_iterator begin() const noexcept;
     const_iterator end() const noexcept;
@@ -140,14 +128,34 @@ public:
     const_iterator cbegin() const noexcept;
     const_iterator cend() const noexcept;
 
+    const_iterator find(IPv4 ip) const noexcept;
+
+    friend struct IPv4RangeConstIterator;
 private:
     static constexpr std::uint8_t ip4_max_mask_bits = 32;
 
     static std::uint32_t ip_count(std::uint8_t mask_bits) noexcept;
-    std::pair<IPv4, flag_t> next_ip(IPv4 ip) const noexcept;
+    std::pair<IPv4, bool> next_ip(IPv4 ip) const noexcept;
 
     IPv4 m_start;
-    std::uint32_t m_count;
+    std::uint32_t m_count = 1;
+};
+
+struct IPv4RangeConstIterator
+{
+    using difference_type = std::ptrdiff_t;
+    using value_type = IPv4;
+
+    value_type operator*() const noexcept;
+
+    IPv4RangeConstIterator& operator++() noexcept;
+    IPv4RangeConstIterator operator++(int) noexcept;
+
+    bool operator==(const IPv4RangeConstIterator&) const noexcept;
+
+    IPv4Range range;
+    IPv4 ip;
+    bool end_flag = false;
 };
 
 inline IPv4Range::IPv4Range(IPv4 start_ip, std::uint8_t mask_bits) noexcept
@@ -156,7 +164,7 @@ inline IPv4Range::IPv4Range(IPv4 start_ip, std::uint8_t mask_bits) noexcept
 {
 }
 
-inline std::size_t IPv4Range::capacity() const noexcept
+inline std::size_t IPv4Range::size() const noexcept
 {
     const auto [last_ip, _] = m_start.next(m_count - 1);
     return last_ip.raw() - m_start.raw() + 1;
@@ -184,12 +192,35 @@ inline IPv4Range::const_iterator IPv4Range::end() const noexcept
 
 inline IPv4Range::const_iterator IPv4Range::cbegin() const noexcept
 {
-    return const_iterator(std::cref(*this), front(), false);
+    return const_iterator(*this, front(), false);
 }
 
 inline IPv4Range::const_iterator IPv4Range::cend() const noexcept
 {
-    return const_iterator(std::cref(*this), IPv4(), true);
+    return const_iterator(*this, IPv4(), true);
+}
+
+inline IPv4Range::const_iterator IPv4Range::find(IPv4 ip) const noexcept
+{
+    const auto& [end_ip, _] = m_start.next(m_count);
+    if (ip < m_start || ip > end_ip)
+        return cend();
+
+    return const_iterator(*this, ip, true);
+}
+
+
+inline std::pair<IPv4, bool>IPv4Range::next_ip(IPv4 ip) const noexcept
+{
+    const auto& [end_ip, reachable] = m_start.next(m_count);
+    if (ip < m_start || ip > end_ip)
+        return { IPv4(), false };
+
+    const auto& [next_ip, no_overflow] = ip.next(1);
+
+    return (next_ip < end_ip && no_overflow) || (next_ip != ip && !reachable)
+        ? std::make_pair(next_ip, true)
+        : std::make_pair(IPv4(), false);
 }
 
 inline std::uint32_t IPv4Range::ip_count(std::uint8_t mask_bits) noexcept
@@ -198,42 +229,29 @@ inline std::uint32_t IPv4Range::ip_count(std::uint8_t mask_bits) noexcept
     return 1u << shift;
 }
 
-inline std::pair<IPv4, IPv4Range::flag_t>IPv4Range::next_ip(IPv4 ip) const noexcept
-{
-    const auto& [end_ip, reachable] = m_start.next(m_count);
-    if (ip < m_start || ip > end_ip)
-        return { IPv4(), flag_t::wrong_ip };
-
-    const auto& [next_ip, no_overflow] = ip.next(1);
-
-    return (next_ip < end_ip && no_overflow) || (next_ip != ip && !reachable)
-        ? std::make_pair(next_ip, flag_t::ok)
-        : std::make_pair(IPv4(), flag_t::range_end);
-}
-
-inline IPv4Range::const_iterator::value_type IPv4Range::const_iterator::operator*() const noexcept
+inline IPv4RangeConstIterator::value_type IPv4RangeConstIterator::operator*() const noexcept
 {
     return ip;
 }
 
-inline IPv4Range::const_iterator& IPv4Range::const_iterator::operator++() noexcept
+inline IPv4RangeConstIterator& IPv4RangeConstIterator::operator++() noexcept
 {
-    const auto [next_ip, flag] = range.get().next_ip(ip);
+    const auto [next_ip, flag] = range.next_ip(ip);
     ip = next_ip;
-    end_flag = flag != IPv4Range::flag_t::ok;
+    end_flag = !flag;
     return *this;
 }
 
-inline IPv4Range::const_iterator IPv4Range::const_iterator::operator++(int) noexcept
+inline IPv4RangeConstIterator IPv4RangeConstIterator::operator++(int) noexcept
 {
-    const const_iterator prev = *this;
+    const IPv4RangeConstIterator prev = *this;
     ++*this;
     return prev;
 }
 
-bool IPv4Range::const_iterator::operator==(const const_iterator& other) const noexcept
+bool IPv4RangeConstIterator::operator==(const IPv4RangeConstIterator& other) const noexcept
 {
-    return std::tie(range.get(), ip, end_flag) == std::tie(other.range.get(), other.ip, other.end_flag);
+    return std::tie(range, ip, end_flag) == std::tie(other.range, other.ip, other.end_flag);
 }
 
 static_assert(std::input_iterator<IPv4Range::const_iterator>);
@@ -260,10 +278,10 @@ struct std::formatter<IPv4Range>
 
 using namespace boost::ut;
 
-
 void basic_pool_test(IPv4Range range, IPv4 ip_out_of_range)
 {
     IPv4Pool pool { range };
+    const std::size_t range_size = range.size();
     std::set<IPv4> reserved_ips;
 
     std::size_t i = 0;
@@ -275,13 +293,13 @@ void basic_pool_test(IPv4Range range, IPv4 ip_out_of_range)
 
         expect(reserved) << std::format(
             "Pool is initialized with range {} consisting of {} addresses. Couldn't reserve the {}'th ip",
-            range, range.capacity(), i) << fatal;
+            range, range_size, i) << fatal;
 
         const auto [_, added] = reserved_ips.emplace(ip_fact);
         expect(added) << std::format(
             "Pool is initialized with range {} consisting of {} addresses. "
             "The {}'th call to reserve_ip() returned the already reserved ip {}.",
-            range, range.capacity(), i, ip_fact) << fatal;
+            range, range_size, i, ip_fact) << fatal;
 
     }
 
@@ -292,30 +310,39 @@ void basic_pool_test(IPv4Range range, IPv4 ip_out_of_range)
         expect(!reserved && ip_fact == IPv4()) << std::format(
             "Pool is initialized with range {} consisting of {} addresses. "
             "If all addresses are already reserved reserve_ip() must return {{{}, {}}}. But it returned {{{}, {}}}.",
-            range, range.capacity(), IPv4(), false, ip_fact, reserved) << fatal;
+            range, range_size, IPv4(), false, ip_fact, reserved) << fatal;
     }
 
     // release a non-existent ip
     {
-        pool.release_ip(ip_out_of_range);
+        const bool released = pool.release_ip(ip_out_of_range);
+        expect(!released) << std::format(
+            "Pool is initialized with range {} consisting of {} addresses. "
+            "An unexpected release was performed for the non-existent ip {}. "
+            "Expected result of release_ip(): {}.",
+            range, range_size, ip_out_of_range, false) << fatal;
         const auto [ip_fact, reserved] = pool.reserve_ip();
 
         expect(!reserved && ip_fact == IPv4()) << std::format(
             "Pool is initialized with range {} consisting of {} addresses. "
             "An unexpected reserve of the ip {} was performed after releasing the non-existent ip {} for a fully used pool. "
-            "Expected result: {{{}, {}}}.", range, range.capacity(), ip_fact, ip_out_of_range, IPv4(), false) << fatal;
+            "Expected result of reserve_ip(): {{{}, {}}}.",
+            range, range_size, ip_fact, ip_out_of_range, IPv4(), false) << fatal;
     }
 
     // release and reserve same ip
-    auto release_and_reserve = [&range, &pool](IPv4 ip_plan)
+    auto release_and_reserve = [&range, &pool, range_size](IPv4 ip_plan)
     {
-        pool.release_ip(ip_plan);
+        const bool released = pool.release_ip(ip_plan);
+        expect(released) << std::format(
+            "Pool is initialized with range {} consisting of {} addresses. The existing ip address {} could not be released. "
+            "Expected result of release_ip(): {}.", range, range_size, ip_plan, true) << fatal;
         const auto [ip_fact, reserved] = pool.reserve_ip();
 
         expect(reserved && ip_fact == ip_plan) << std::format(
             "Pool is initialized with range {} consisting of {} addresses. "
             "Calling reserve_ip() after release_ip() should return the same ip address for a fully used pool {{{}, {}}}. "
-            "But it returned {{{}, {}}}.", range, range.capacity(), ip_plan, true, ip_fact, reserved) << fatal;
+            "But it returned {{{}, {}}}.", range, range_size, ip_plan, true, ip_fact, reserved) << fatal;
     };
 
 

@@ -626,11 +626,11 @@ a then
 
 `std::pair<IPv4, bool> reserve_ip()` — находит первый свободный `IPv4` адрес и резервирует его. Возвращает `true` в случае успеха. Если свободных адресов не осталось, то возвращает пару `{IPv4(), false}`.  {.task_text}
 
-`void release_ip(IPv4 ip4)` — освобождает зарезервированный ip-адрес. Если переданный адрес отсутствует в пуле, метод ничего не делает. {.task_text}
+`bool release_ip(IPv4 ip4)` — освобождает зарезервированный ip-адрес и возвращает `true`. Если переданный адрес отсутствует в пуле, то метод возвращает `false`. {.task_text}
 
 Классы `IPv4` и `IPv4Range` уже есть в проекте. `IPv4` реализует ip-адрес. Для его объектов доступны все виды сравнения и форматированный вывод. {.task_text}
 
-Класс диапазона `IPv4Range` позволяет перечислить все входяшие в него ip-адреса. Он пригоден для обхода циклом [range-for](/courses/cpp/chapters/cpp_chapter_0040/#block-range-for). Также можно воспользоваться методами `cbegin()`, `cend()` и `capacity()`, который возвращает количество адресов диапазона.
+Класс диапазона `IPv4Range` позволяет перечислить все входяшие в него ip-адреса. Он пригоден для обхода циклом [range-for](/courses/cpp/chapters/cpp_chapter_0040/#block-range-for). Также можно воспользоваться методами `cbegin()`, `cend()` и `find()`, которые возвращают `IPv4Range::const_iterator` на начало, конец и на указанный ip-адрес соответственно. Размер диапазона можно получить с помощью метода `size()`.
 
 ```c++ {.task_source #cpp_chapter_0070_task_0100}
 class IPv4Pool
@@ -646,7 +646,7 @@ public:
 
     }
 
-    void release_ip(IPv4 ip4)
+    bool release_ip(IPv4 ip4)
     {
 
     }
@@ -655,7 +655,7 @@ private:
 
 };
 ```
-Заведите множество `std::set` для хранения зарезервированных ip-адресов. Для поиска свободного ip-адреса обойдите диапазон, переданный в конструкторе пула. В цикле проверяйте наличие текущего адреса в множестве зарезервированных. Верните первый не найденный среди зарезервированных адресов. Для освобождения ip-адреса достаточно удалить его из множества зарезервированных. {.task_hint}
+Заведите множество `std::set` для хранения зарезервированных ip-адресов. Для поиска свободного ip-адреса обойдите диапазон, переданный в конструкторе пула. В цикле проверяйте наличие текущего адреса в множестве зарезервированных. Верните первый не найденный среди зарезервированных адресов. Для освобождения ip-адреса достаточно удалить его из множества зарезервированных. Предложенное решение неэффективно при резервировании большого количества ip-адресов сразу. Подумайте над более оптимальным вариантом. {.task_hint}
 ```c++ {.task_answer}
 class IPv4Pool
 {
@@ -663,32 +663,43 @@ public:
     explicit IPv4Pool(IPv4Range range)
     {
         m_range = range;
+        m_cursor = m_range.cbegin();
     }
 
     std::pair<IPv4, bool> reserve_ip()
     {
-        if (m_range.capacity() == m_reserved.size())
-            return {IPv4(), false};
+        if (m_range.size() == m_reserved.size())
+            return { IPv4(), false };
 
-        for (IPv4 ip : m_range)
+        const auto end = m_range.cend();
+
+        while (true)
         {
-            auto emplaced = m_reserved.emplace(ip);
+            if (m_cursor == end)
+                m_cursor = m_range.cbegin();
+
+            auto emplaced = m_reserved.emplace(*m_cursor);
 
             if (emplaced.second)
-                return {ip, true};
-        }
+                return { *m_cursor, true };
 
-        return {IPv4(), false};
+            ++m_cursor;
+        }
     }
 
-    void release_ip(IPv4 ip4)
+    bool release_ip(IPv4 ip4)
     {
-        m_reserved.erase(ip4);
+        const bool released = m_reserved.erase(ip4) > 0;
+        if (released)
+            m_cursor = m_range.find(ip4);
+
+        return released;
     }
 
 private:
     IPv4Range m_range;
     std::set<IPv4> m_reserved;
+    IPv4Range::const_iterator m_cursor;
 };
 ```
 
