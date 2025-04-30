@@ -71,7 +71,6 @@ import (
 
 func main() {
 	fmt.Println(MustIndex("banana", "nan"))
-	fmt.Println(MustIndex("apple", "orange"))
 }
 
 func MustIndex(s string, substr string) int {
