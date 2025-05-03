@@ -5,7 +5,7 @@ import std;
 int main()
 {
     std::vector<int> a = std::vector<int>{1, 2, 4};
-    std::vector<int> b = std::vector<int>{10, 20, 30, 3};
+    std::vector<int> b = std::vector<int>{3, 10, 20, 30};
     
     std::println("merge({}, {}) = {}", a, b, merge(a, b));
 }
