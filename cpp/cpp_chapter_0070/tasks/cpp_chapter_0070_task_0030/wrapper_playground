@@ -4,12 +4,7 @@ import std;
 
 int main()
 {
-    std::string s = "reverse iterators";
-    auto it = find_last(s.rbegin(), s.rend(), 'e');
+    std::forward_list<int> lst = {5, 2, 4, 8, 1};
 
-    const std::string res = it == s.end() ? 
-    "s.end()" :
-    std::format("element with index {}", std::distance(s.begin(), it));
-
-    std::println("find_last(s.rbegin(), s.rend(), 'e') returns iterator pointing to {}.", res);
+    std::println("get_equator({}) == {}", lst, get_equator({5, 2, 4, 8, 1}));
 }
