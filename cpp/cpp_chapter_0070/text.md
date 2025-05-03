@@ -316,7 +316,7 @@ int get_equator(std::forward_list<int> lst)
 
 ```c++ {.task_source #cpp_chapter_0070_task_0060}
 template<std::size_t N>
-bool is_diagonal(std::array<std::array<int, N>> matrix)
+bool is_diagonal(std::array<std::array<int, N>, N> matrix)
 {
 
 }
