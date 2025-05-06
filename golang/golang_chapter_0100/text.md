@@ -98,7 +98,7 @@ name := "gopher"
 fmt.Println(helloMessage + ", " + name + "!")
 ```
 
-Однако для этого рекомендуется использовать возможности пакета `fmt`.
+Однако для этого рекомендуется использовать возможности пакета `fmt`:
 
 ```go {.example_for_playground}
 helloMesage := "hello"
