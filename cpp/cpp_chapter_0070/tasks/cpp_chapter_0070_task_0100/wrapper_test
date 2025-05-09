@@ -87,19 +87,20 @@ struct std::hash<IPv4>
 template <>
 struct std::formatter<IPv4>
 {
-    constexpr auto parse(std::format_parse_context& ctx)
+    template <class ParseContext>
+    constexpr auto parse(ParseContext& ctx)
     {
         return ctx.begin();
     }
 
-    auto format(const IPv4& ip, std::format_context& ctx) const
+    template <class FormatContext>
+    auto format(const IPv4& ip, FormatContext& ctx) const
     {
         return std::format_to(
             ctx.out(), "{}.{}.{}.{}",
             ip.octet<3>(), ip.octet<2>(), ip.octet<1>(), ip.octet<0>());
     }
 };
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // class IPv4Range
@@ -259,12 +260,14 @@ static_assert(std::input_iterator<IPv4Range::const_iterator>);
 template <>
 struct std::formatter<IPv4Range>
 {
-    constexpr auto parse(std::format_parse_context& ctx)
+    template <class ParseContext>
+    constexpr auto parse(ParseContext& ctx)
     {
         return ctx.begin();
     }
 
-    auto format(const IPv4Range& range, std::format_context& ctx) const
+    template <class FormatContext>
+    auto format(const IPv4Range& range, FormatContext& ctx) const
     {
         return std::format_to(ctx.out(), "{}/{}", range.front(), range.mask_bits_count());
     }
