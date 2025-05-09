@@ -34,7 +34,9 @@ int main()
     "simple cases"_test = [] {
         std::vector<testcase> cases {
             { {5, 2, 4, 8, 1}, 4},
-            { {100, 50, 25, 12}, 100}
+            { {100, 50, 25, 12}, 100},
+            { {12, 25, 50, 100}, 50},
+            { {11, 25, -50, 26, 13, 10}, 26},
         };
 
         for (const auto & c: cases)
