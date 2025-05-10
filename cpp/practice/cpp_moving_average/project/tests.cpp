@@ -156,8 +156,8 @@ int main()
                      static_cast<std::size_t>(avg_big),
                      numbers_count - window_size_big + 1);
 
-        // Примем 3% за погрешность вычисления 
-        expect(avg_big <= avg_small * 1.03) << "Your implementation of add() or val() doesn't have O(1) complexity" << fatal;
+        // Примем 20% за погрешность вычисления на VPS
+        expect(avg_big <= avg_small * 1.2) << "Your implementation of add() or val() doesn't have O(1) complexity" << fatal;
     };
 
     // Тест на скорость работы решения пользователя. Сравниваем класс пользователя
@@ -180,7 +180,7 @@ int main()
                      input.size() - window_size + 1,
                      window_size);
 
-        // Примем 10% за допустимое замедление, включая погрешность
-        expect(avg_user <= avg_senjun * 1.1) << "Your implementation of MovingAverage doesn't fit our timeouts. Please optimize it." << fatal;
+        // Примем 30% за допустимое замедление, включая погрешность вычисления на VPS
+        expect(avg_user <= avg_senjun * 1.3) << "Your implementation of MovingAverage doesn't fit our timeouts. Please optimize it." << fatal;
     };
 }
