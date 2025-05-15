@@ -284,12 +284,12 @@ func printTriangleType(x0 float64, y0 float64, x1 float64, y1 float64, x2 float6
 		b, c = c, b
 	}
 
-	const errorVelue = 1e-9
+	const errorValue = 1e-9
 
 	switch {
-	case c-errorVelue < a+b && c+errorVelue > a+b:
+	case c-errorValue < a+b && c+errorValue > a+b:
 		fmt.Println("degenerate triangle")
-	case c*c-errorVelue < a*a+b*b && c*c+errorVelue > a*a+b*b:
+	case c*c-errorValue < a*a+b*b && c*c+errorValue > a*a+b*b:
 		fmt.Println("right triangle")
 	case c*c > a*a+b*b:
 		fmt.Println("obtuse triangle")
