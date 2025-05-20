@@ -215,7 +215,6 @@ a := 5
 b := 10
 a, b = b, a
 ```
-{.task_text}
 
 ```go {.task_source #golang_chapter_0010_task_0010}
 package main
