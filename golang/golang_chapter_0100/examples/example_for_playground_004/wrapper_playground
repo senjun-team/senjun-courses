@@ -1,0 +1,11 @@
+package main
+
+import "fmt"
+
+func main() {
+	helloMesage := `Hello, gopher!
+Here we use raw string. 
+This won't work: \n`
+
+	fmt.Println(helloMesage)
+}
