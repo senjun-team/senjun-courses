@@ -1,0 +1,25 @@
+package main
+
+import "testing"
+
+func TestIsPalindrome(t *testing.T) {
+	cases := []struct {
+		in   string
+		want bool
+	}{
+		{"kayak", true},
+		{"level", true},
+		{"radar", true},
+		{"deified", true},
+		{"mom", true},
+		{"blabla", false},
+		{"golang", false},
+		{"deifeed", false},
+	}
+	for _, c := range cases {
+		got := isPalindrome(c.in)
+		if got != c.want {
+			t.Errorf("isPalindrome(%s) == %t, want %t", c.in, got, c.want)
+		}
+	}
+}
