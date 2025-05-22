@@ -53,7 +53,7 @@ func main() {
 1074:	в
 1077:	е
 1090:	т
-33:		!
+33:	!
 ```
 Здесь мы печатаем код символа и сам символ.  
 Чтобы превратить срез из рун в строку UTF-8, достаточно сконструировать из него объект типа `string`:
@@ -219,7 +219,7 @@ hello, gopher!
 
 Если нет необходимости печатать строку, то воспользуйтесь функцией `fmt.Sprintf`:
 
-```go {.example_for_playground}
+```go
 user := "Buba"
 app := "telegram"
 s := fmt.Sprintf("Get message from %s user with %s!", user, app)
