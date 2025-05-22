@@ -1,0 +1,49 @@
+package main
+
+// В Go есть встроенная возможность проводить бенчмарки
+// https://pkg.go.dev/testing#hdr-Benchmarks
+
+import (
+	"fmt"
+	"strings"
+    "testing"
+)
+
+func runBuilder() {
+    var str strings.Builder
+
+    for i := 0; i < 100; i++ {
+    	str.WriteString("a")
+    }
+}
+
+func runNaiveConcat() {
+    str := ""
+
+    for i := 0; i < 100; i++ {
+    	str += "a"
+    }
+}
+
+func StringBuilder(b *testing.B) {
+    for i := 0; i < b.N; i++ {
+        runBuilder()
+    }
+}
+
+func NaiveConcat(b *testing.B) {
+    for i := 0; i < b.N; i++ {
+        runNaiveConcat()
+    }
+}
+
+func main() {
+    // В выводе вы увидите 2 числа: 
+    // - Количество итераций бенчмарка (слева).
+    //   Чем больше итераций успело выполниться, тем код эффективнее.
+    // - Среднее время каждой итерации (справа). Оно измеряется
+    //   в наносекундах на операцию.
+    //   Чем быстрее итерация, тем код эффективнее.
+    fmt.Printf("String builder bench: %s\n", testing.Benchmark(StringBuilder))
+    fmt.Printf("Naive concat bench:   %s\n", testing.Benchmark(NaiveConcat))
+}
