@@ -46,6 +46,56 @@ type hero struct {
 
 *Совет*: старайтесь объединять такие имена полей, которые логически связаны между собой.
 
+Полем для одной структуры может быть другая структура:
+
+```go {.example_for_playground}
+func main() {
+	var config configuration
+	config.name = "test"
+	config.settings.address = "192.168.23.48"
+	config.settings.port = "4040"
+	fmt.Println(config)
+}
+
+type configuration struct {
+	name     string
+	settings proxy
+}
+
+type proxy struct {
+	address string
+	port    string
+}
+```
+```
+{test {192.168.23.48 4040}}
+```
+
+Такой прием называется встраиванием структур. Чтобы не писать лишнюю сущность `settings` при обращении к `config`, используют анонимные поля:
+
+```go {.example_for_playground}
+func main() {
+	var config configuration
+	config.name = "test"
+	config.address = "192.168.23.48"
+	config.port = "4040"
+	fmt.Println(config)
+}
+
+type configuration struct {
+	name string
+	proxy
+}
+
+type proxy struct {
+	address string
+	port    string
+}
+```
+```
+{test {192.168.23.48 4040}}
+```
+
 ## Области видимости
 
 Напомним, имена, которые начинаются с прописных букв, доступны из пакетов, которые их импортируют. В противном случае они доступны только внутри своего пакета. Это актуально как для самой структуры, так и для полей внутри нее. Например, поле `level` такой структуры доступно только внутри пакета `heroes`:
@@ -173,7 +223,7 @@ func main() {
 ## Сравнение структур
 Структуры одного типа можно сравнивать, если все поля структуры сравнимы друг с другом. Две такие структуры равны, если их поля совпадают:
 
-```golang {.example_for_playground}
+```go {.example_for_playground}
 func main() {
 	timeOfSpawn := time.Now()
 	var mage hero = hero{"Kate", 150, 32, timeOfSpawn, [2]int{15, 76}}
