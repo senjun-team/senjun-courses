@@ -219,7 +219,7 @@ hello, gopher!
 
 Если нет необходимости печатать строку, то воспользуйтесь функцией `fmt.Sprintf`:
 
-```go {.example_for_playground}
+```go
 user := "Buba"
 app := "telegram"
 s := fmt.Sprintf("Get message from %s user with %s!", user, app)
