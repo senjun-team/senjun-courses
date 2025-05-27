@@ -267,3 +267,206 @@ type book struct {
 ```
 ./main.go:10:14: invalid operation: gameOfThrones == gameOfThronesDeluxEdition (struct containing map[int]string cannot be compared) (exit status 1)
 ```
+
+## Псевдонимы существующих типов данных
+Для выразительности и дополнительного контроля можно объявить псевдоним *alias* для существующих типов данных:
+```go
+type userId uint
+type ip string
+``` 
+
+Вновь созданные переменные таких типов также проверяются на соответствие типов. Следующий код вызовет ошибку компиляции:
+
+```go {.example_for_playground}
+type userId uint
+var bubaId userId = 20
+var valueId uint = 19
+
+fmt.Println(bubaId == valueId)
+```
+
+```
+./main.go:10:24: invalid operation: bubaId == valueId (mismatched types userId and uint) (exit status 1)
+```
+
+Язык Go — язык со строгой типизации. Необходимо явное приведение:
+
+```go {.example_for_playground}
+type userId uint
+var bubaId userId = 20
+var valueId uint = 19
+
+fmt.Println(bubaId == userId(valueId))
+```
+
+```
+false
+```
+
+Абстрактное синтаксическое дерево — это дерево, в котором внутренние узлы сопоставлены операторам языка, а листья — его операндам. Сокращенно — AST, от английского: abstract syntax tree. Например, для арифметического выражения `(5+4)/(10-8)` можно построить следующее AST: {.task_text}
+
+```
+/
+├─ +
+│  ├─ 5
+│  └─ 4
+└─ -
+    ├─ 10
+    └─ 8
+```
+{.task_text}
+
+Следующий код реализует AST. Структура `ast` состоит из единственного поля — указателя на корневой узел `node`. Структура `node` состоит из трех полей: указателя на родительский узел, среза указателей из дочерних узлов и самого значения `value`. Функция `printAst` печатает AST на экран. С использованием структур `ast` и `node` постройте AST внутри функции `main` для выражения `10*(4+5)` и выведете его на экран.
+
+```go {.task_source #golang_chapter_0110_task_0020}
+package main
+
+import "fmt"
+
+func main() {
+	//10*(4+5)
+
+	var tree ast
+	// ваш код здесь
+
+	printAst(&tree)
+}
+
+type ast struct {
+	root *node
+}
+
+type node struct {
+	parent   *node
+	children []*node
+	value    lexeme 
+}
+
+type lexeme string
+
+func printAst(a *ast) {
+	printInLevel(a.root, 0, map[int]struct{}{})
+}
+
+func printInLevel(n *node, level int, prevBranchLevels map[int]struct{}) (branchLevels map[int]struct{}) {
+	branchLevels = make(map[int]struct{})
+
+	for i := 0; i < level; i++ {
+		_, ok := prevBranchLevels[i]
+		if ok {
+			fmt.Print("│  ")
+			branchLevels[i] = struct{}{}
+		} else if i != 0 {
+			fmt.Print("   ")
+		}
+	}
+
+	if level != 0 {
+		if n.parent == nil || n.parent.children[len(n.parent.children)-1] == n {
+			fmt.Print("└─ ")
+		} else {
+			fmt.Print("├─ ")
+			branchLevels[level] = struct{}{}
+		}
+	}
+
+	fmt.Println(n.value)
+
+	for _, child := range n.children {
+		branchLevels = printInLevel(child, level+1, branchLevels)
+	}
+
+	return
+}
+```
+
+Заполните каждое поле структуры `node` для каждого из узлов. Корневой узел имеет в качестве родителя значение `nil`. Порядок, в котором задаются дочерние узлы, также имеет значение. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import "fmt"
+
+func main() {
+	//10*(4+5)
+
+	var tree ast
+	var leaf node
+
+	tree.root = &leaf
+	tree.root.value = "*"
+
+	ten := &node{tree.root, nil, "10"}
+	tree.root.children = append(tree.root.children,
+		ten)
+	ten.parent = tree.root
+	plus := &node{parent: tree.root, value: "+"}
+	tree.root.children = append(tree.root.children,
+		plus)
+	plus.parent = tree.root
+	four := &node{tree.root, nil, "4"}
+	tree.root.children[1].children = append(tree.root.children[1].children,
+		four)
+	four.parent = plus
+	five := &node{tree.root, nil, "5"}
+	tree.root.children[1].children = append(tree.root.children[1].children,
+		five)
+	five.parent = plus
+	printAst(&tree)
+}
+
+type ast struct {
+	root *node
+}
+
+type node struct {
+	parent   *node
+	children []*node
+	value    lexeme
+}
+
+type lexeme string
+
+func printAst(a *ast) {
+	printInLevel(a.root, 0, map[int]struct{}{})
+}
+
+func printInLevel(n *node, level int, prevBranchLevels map[int]struct{}) (branchLevels map[int]struct{}) {
+	branchLevels = make(map[int]struct{})
+
+	for i := 0; i < level; i++ {
+		_, ok := prevBranchLevels[i]
+		if ok {
+			fmt.Print("│  ")
+			branchLevels[i] = struct{}{}
+		} else if i != 0 {
+			fmt.Print("   ")
+		}
+	}
+
+	if level != 0 {
+		if n.parent == nil || n.parent.children[len(n.parent.children)-1] == n {
+			fmt.Print("└─ ")
+		} else {
+			fmt.Print("├─ ")
+			branchLevels[level] = struct{}{}
+		}
+	}
+
+	fmt.Println(n.value)
+
+	for _, child := range n.children {
+		branchLevels = printInLevel(child, level+1, branchLevels)
+	}
+
+	return
+}
+
+```
+
+## Резюме
+1. Структура представляет собой пользовательский тип данных. Структура удобна, когда необходимо представить одну сущность из нескольких полей разных типов как единой целое.
+2. Одна структура может быть частью другой структуры. 
+3. Полем структуры может быть даже указатель на саму эту структуру! Это позволяет легко реализовать многие структуры данных. Например, списки и деревья. 
+4. Полезным свойством структур является то, что их можно сравнивать, если сравнимы соответствующие поля. Вместо того, чтобы писать цикл по обходу полей структуры, достаточно проверить их на равенство.
+5. Для существующих типов данных допустимо использовать псевдоним. Это делает код более выразительным и менее подверженным ошибкам. Разные пседовнимы, образованные от одного типа, являются разными типами. 
