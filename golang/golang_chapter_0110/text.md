@@ -12,11 +12,22 @@ type hero struct{
 }
 ```
  
-Создать переменную типа `hero` и присвоить ей значение:
+Чтобы создать переменную типа `hero` и присвоить ей значение, поступают следующим образом:
 
 ```go 
 var mage hero = hero{"Kate", 150, 32, time.Now(), [2]int{15, 76}}
 ```
+
+При таком синтаксисе важно соблюдать порядок инициализируемых значений.  
+
+Иногда используют и пустые скобки:
+
+```go
+var a []hero
+a = append(a, hero{})
+```
+
+В результате в срез из переменных типа `hero` будет добавлена структура с нулевыми значениями полей.
 
 ## Приемы по работе со структурами
 Когда  нужно задать лишь некоторые поля, то перечисляют их имена:
@@ -36,17 +47,16 @@ mage.location[1] = 32
 Чтобы сократить запись, имена полей одного типа объединяют:
 
 ```go
-type hero struct {
-	name        string
-	age, level  uint
-	timeOfSpawn time.Time
-	location    [2]int
+type book struct {
+	id           uint
+	name, author string
+	pages        uint
 }
 ```
 
 *Совет*: старайтесь объединять такие имена полей, которые логически связаны между собой.
 
-Полем для одной структуры может быть другая структура:
+Структуры могут быть вложенными:
 
 ```go {.example_for_playground}
 func main() {
@@ -303,10 +313,10 @@ fmt.Println(bubaId == userId(valueId))
 false
 ```
 
-Абстрактное синтаксическое дерево — это дерево, в котором внутренние узлы сопоставлены операторам языка, а листья — его операндам. Сокращенно — AST, от английского: abstract syntax tree. Например, для арифметического выражения `(5+4)/(10-8)` можно построить следующее AST: {.task_text}
+Абстрактное синтаксическое дерево — это дерево, в котором внутренние узлы сопоставлены операторам языка, а листья — его операндам. Сокращенно — AST, от английского: abstract syntax tree. Например, для арифметического выражения `(5+4)*(10-8)` можно построить следующее AST: {.task_text}
 
 ```
-/
+*
 ├─ +
 │  ├─ 5
 │  └─ 4
@@ -314,22 +324,22 @@ false
     ├─ 10
     └─ 8
 ```
-{.task_text}
+Каждый узел такого дерева содержит так называемую лексему. {.task_text}
 
-Следующий код реализует AST. Структура `ast` состоит из единственного поля — указателя на корневой узел `node`. Структура `node` состоит из трех полей: указателя на родительский узел, среза указателей из дочерних узлов и самого значения `value`. Функция `printAst` печатает AST на экран. С использованием структур `ast` и `node` постройте AST внутри функции `main` для выражения `10*(4-5)` и выведете его на экран. {.task_text}
+Следующий код реализует AST. Структура `ast` состоит из единственного поля — указателя на корневой узел `node`. Структура `node` состоит из трех полей: указателя на родительский узел, среза указателей из дочерних узлов и самого значения `value`. Функция `printAst` печатает AST на экран. Функция `randromTree` генерирует AST для случайного арифметического выражения. Она принимает в качестве параметров `seed`, на основе которого считаются случайные числа, и размер дерева. Зафиксировав `seed`, можно получать одинаковые деревья для одних и тех же параметров. Арифметическое выражение может состоять из целых чисел, скобок и трех операций: `+`, `-`, `*`.Реализуйте функцию `solve`, которая считает результат арифметического выражения по его AST. Вы можете также писать код за пределами функции `solve`.  {.task_text}
 
 ```go {.task_source #golang_chapter_0110_task_0020}
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"strconv"
+)
 
 func main() {
-	//10*(4-5)
-
-	var tree ast
-	// ваш код здесь 
-
-	printAst(&tree)
+	tree := randomTree(42, 5)
+	printAst(tree)
 }
 
 type ast struct {
@@ -343,6 +353,12 @@ type node struct {
 }
 
 type lexeme string
+
+func solve(n *node) lexeme {
+	 // ваш код здесь
+}
+
+// ваш код также здесь
 
 func printAst(a *ast) {
 	printInLevel(a.root, 0, map[int]struct{}{})
@@ -378,41 +394,93 @@ func printInLevel(n *node, level int, prevBranchLevels map[int]struct{}) (branch
 
 	return
 }
+func randomTree(seed int64, size int) *ast {
+	rnd := rand.New(rand.NewSource(seed))
+	var leaf node
+	var a ast
+	a.root = &leaf
+	a.root.value = randomOp(rnd)
+	var nonTerminalNodes []*node
+	nonTerminalNodes = append(nonTerminalNodes, a.root)
+
+	for i := 0; i < size; i++ {
+		n := nonTerminalNodes[i]
+		left, right := extendTree(rnd, n)
+		if left != nil {
+			nonTerminalNodes = append(nonTerminalNodes, left)
+		}
+		if right != nil {
+			nonTerminalNodes = append(nonTerminalNodes, right)
+		}
+	}
+
+	for i := size; i < len(nonTerminalNodes); i++ {
+		nonTerminalNodes[i].children = append(nonTerminalNodes[i].children, &node{})
+		nonTerminalNodes[i].children = append(nonTerminalNodes[i].children, &node{})
+		nonTerminalNodes[i].children[0] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		nonTerminalNodes[i].children[1] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		nonTerminalNodes[i].children[0].parent = nonTerminalNodes[i]
+		nonTerminalNodes[i].children[1].parent = nonTerminalNodes[i]
+	}
+
+	return &a
+}
+
+func extendTree(rnd *rand.Rand, n *node) (left *node, right *node) {
+	n.children = append(n.children, &node{})
+	n.children = append(n.children, &node{})
+	switch rnd.Intn(3) {
+	case 0:
+		n.children[0] = &node{value: randomOp(rnd)}
+		n.children[1] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		n.children[0].parent = n
+		n.children[1].parent = n
+		return n.children[0], nil
+	case 1:
+		n.children[0] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		n.children[1] = &node{value: randomOp(rnd)}
+		n.children[0].parent = n
+		n.children[1].parent = n
+		return nil, n.children[1]
+	case 2:
+		n.children[0] = &node{value: randomOp(rnd)}
+		n.children[1] = &node{value: randomOp(rnd)}
+		n.children[0].parent = n
+		n.children[1].parent = n
+		return n.children[0], n.children[1]
+	}
+	panic("no such case for int value")
+}
+
+func randomOp(rnd *rand.Rand) lexeme {
+
+	switch rnd.Intn(3) {
+	case 0:
+		return "+"
+	case 1:
+		return "-"
+	case 2:
+		return "*"
+	}
+	panic("no such case for int value")
+}
+
 ```
 
-Заполните каждое поле структуры `node` для каждого из узлов. Корневой узел имеет в качестве родителя значение `nil`. Порядок, в котором задаются дочерние узлы, также имеет значение. {.task_hint}
+Создайте еще одну функцию: `compute`. Функция `compute` должна получать на вход три лексемы: операцию, левый операнд и правый операнд. Она считает результат и возвращает его также в качестве лексемы. Воспользуйтесь этой функцией для реализации рекурсивной функции `solve`. {.task_hint}
 
 ```go {.task_answer}
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"strconv"
+)
 
 func main() {
-	//10*(4-5)
-
-	var tree ast
-	var leaf node
-
-	tree.root = &leaf
-	tree.root.value = "*"
-
-	ten := &node{tree.root, nil, "10"}
-	tree.root.children = append(tree.root.children,
-		ten)
-	ten.parent = tree.root
-	minus := &node{parent: tree.root, value: "-"}
-	tree.root.children = append(tree.root.children,
-		minus)
-	minus.parent = tree.root
-	four := &node{tree.root, nil, "4"}
-	tree.root.children[1].children = append(tree.root.children[1].children,
-		four)
-	four.parent = minus
-	five := &node{tree.root, nil, "5"}
-	tree.root.children[1].children = append(tree.root.children[1].children,
-		five)
-	five.parent = minus
-	printAst(&tree)
+	tree := randomTree(42, 5)
+	printAst(tree)
 }
 
 type ast struct {
@@ -426,6 +494,31 @@ type node struct {
 }
 
 type lexeme string
+
+func solve(n *node) lexeme {
+	if len(n.children) == 0 {
+		return n.value
+	}
+
+	return compute(n.value, solve(n.children[0]), solve(n.children[1]))
+}
+
+func compute(op lexeme,
+	leftLexeme lexeme, rightLexeme lexeme) lexeme {
+	left, _ := strconv.Atoi(string(leftLexeme))
+	right, _ := strconv.Atoi(string(rightLexeme))
+
+	switch op {
+	case "+":
+		return lexeme(strconv.Itoa(left + right))
+	case "-":
+		return lexeme(strconv.Itoa(left - right))
+	case "*":
+		return lexeme(strconv.Itoa(left * right))
+	}
+
+	panic("no such operation")
+}
 
 func printAst(a *ast) {
 	printInLevel(a.root, 0, map[int]struct{}{})
@@ -461,7 +554,76 @@ func printInLevel(n *node, level int, prevBranchLevels map[int]struct{}) (branch
 
 	return
 }
+func randomTree(seed int64, size int) *ast {
+	rnd := rand.New(rand.NewSource(seed))
+	var leaf node
+	var a ast
+	a.root = &leaf
+	a.root.value = randomOp(rnd)
+	var nonTerminalNodes []*node
+	nonTerminalNodes = append(nonTerminalNodes, a.root)
 
+	for i := 0; i < size; i++ {
+		n := nonTerminalNodes[i]
+		left, right := extendTree(rnd, n)
+		if left != nil {
+			nonTerminalNodes = append(nonTerminalNodes, left)
+		}
+		if right != nil {
+			nonTerminalNodes = append(nonTerminalNodes, right)
+		}
+	}
+
+	for i := size; i < len(nonTerminalNodes); i++ {
+		nonTerminalNodes[i].children = append(nonTerminalNodes[i].children, &node{})
+		nonTerminalNodes[i].children = append(nonTerminalNodes[i].children, &node{})
+		nonTerminalNodes[i].children[0] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		nonTerminalNodes[i].children[1] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		nonTerminalNodes[i].children[0].parent = nonTerminalNodes[i]
+		nonTerminalNodes[i].children[1].parent = nonTerminalNodes[i]
+	}
+
+	return &a
+}
+
+func extendTree(rnd *rand.Rand, n *node) (left *node, right *node) {
+	n.children = append(n.children, &node{})
+	n.children = append(n.children, &node{})
+	switch rnd.Intn(3) {
+	case 0:
+		n.children[0] = &node{value: randomOp(rnd)}
+		n.children[1] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		n.children[0].parent = n
+		n.children[1].parent = n
+		return n.children[0], nil
+	case 1:
+		n.children[0] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		n.children[1] = &node{value: randomOp(rnd)}
+		n.children[0].parent = n
+		n.children[1].parent = n
+		return nil, n.children[1]
+	case 2:
+		n.children[0] = &node{value: randomOp(rnd)}
+		n.children[1] = &node{value: randomOp(rnd)}
+		n.children[0].parent = n
+		n.children[1].parent = n
+		return n.children[0], n.children[1]
+	}
+	panic("no such case for int value")
+}
+
+func randomOp(rnd *rand.Rand) lexeme {
+
+	switch rnd.Intn(3) {
+	case 0:
+		return "+"
+	case 1:
+		return "-"
+	case 2:
+		return "*"
+	}
+	panic("no such case for int value")
+}
 ```
 
 ## Резюме
