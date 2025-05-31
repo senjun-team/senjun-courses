@@ -1,0 +1,57 @@
+#include "ut.hpp"
+#include "test_helpers.h"
+
+import std;
+
+using namespace boost::ut;
+
+#INJECT-b585472fa
+
+template <>
+struct std::formatter<Product> : std::formatter<std::string> {
+  auto format(Product p, std::format_context& ctx) const {
+    return std::formatter<std::string>::format(
+      std::format("Product(.id={}, .popularity={}, .rating={})", p.id, p.popularity, p.rating), ctx);
+  }
+};
+
+
+bool are_eq(const Product & a, const Product & b)
+{
+    return !has_higher_priority(a, b) && !has_higher_priority(a, b);
+}
+
+int main()
+{
+    "Transitivity of equivalence"_test = [] {
+        const Product a{.id=1, .popularity=10, .rating=5};
+        const Product b{.id=2, .popularity=10, .rating=5};
+        const Product c{.id=3, .popularity=10, .rating=5};
+        
+        expect(are_eq(a, b) && are_eq(b, c) && are_eq(a, c)) << std::format("{}, {} and {} must be equal", a, b, c) << fatal;
+    };
+
+    "Irreflexivity"_test = [] {
+        const Product a{.id=1, .popularity=10, .rating=5};
+        expect(!has_higher_priority(a, a)) << std::format("{} must not be less then {}", a, a) << fatal;
+    };
+
+
+    "Transitivity & asymmetry"_test = [] {
+        {
+            const Product a{.id=3, .popularity=1000, .rating=1};
+            const Product b{.id=2, .popularity=100, .rating=2};
+            const Product c{.id=1, .popularity=10, .rating=3};
+            expect(has_higher_priority(a, b) && has_higher_priority(b, c) && has_higher_priority(a, c)) << std::format("{} must be less then {}, {} must be less then {}, {} must be less then {}", a, b, b, c, a, c) << fatal;
+            expect(!has_higher_priority(b, a) && !has_higher_priority(c, b) && !has_higher_priority(c, a)) << std::format("{} must be less then {}, {} must be less then {}, {} must be less then {}", a, b, b, c, a, c) << fatal;
+        }
+
+        {
+            const Product a{.id=3, .popularity=1000, .rating=2};
+            const Product b{.id=2, .popularity=1000, .rating=1};
+            const Product c{.id=1, .popularity=10, .rating=3};
+            expect(has_higher_priority(a, b) && has_higher_priority(b, c) && has_higher_priority(a, c)) << std::format("{} must be less then {}, {} must be less then {}, {} must be less then {}", a, b, b, c, a, c) << fatal;
+            expect(!has_higher_priority(b, a) && !has_higher_priority(c, b) && !has_higher_priority(c, a)) << std::format("{} must be less then {}, {} must be less then {}, {} must be less then {}", a, b, b, c, a, c) << fatal;
+        }
+    };
+}

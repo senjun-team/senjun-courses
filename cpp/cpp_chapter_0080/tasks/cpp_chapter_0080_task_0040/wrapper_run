@@ -1,0 +1,17 @@
+import std;
+
+#INJECT-b585472fa
+
+
+int main()
+{
+    std::vector<int> v = {2, 5, 8, 9, 11, 12, 16};
+    const int x = 11;
+    std::println("Vector {}. Searching for value {}...", v, x);
+    
+    auto it = b_search(v.begin(), v.end(), 11);
+    if (it == v.end())
+        std::println("Not found");
+    else
+        std::println("Index of {}: {}", x, std::distance(v.begin(), it));
+}

@@ -1,0 +1,11 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::vector<int> numbers{15, -2, 0, 1};
+    std::println("get_average({}) = {}",
+        numbers,
+        get_average(numbers));
+}

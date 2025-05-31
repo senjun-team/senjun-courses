@@ -1,0 +1,53 @@
+#include "ut.hpp"
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+void check(const std::vector<int> & v, int x, int plan_index)
+{
+    auto it = b_search(v.begin(), v.end(), x);
+    if (plan_index == -1)
+    {
+        expect(it == v.end()) << std::format("b_search() didn't return v.end() while searching for value {} in vector {}", x, v) << fatal;
+        return;
+    }
+
+    expect(it != v.end()) << std::format("b_search() returned v.end() while searching for value {} in vector {}", x, v) << fatal;
+    
+    std::size_t fact_index = std::distance(v.begin(), it);
+    expect(plan_index == fact_index) << std::format("b_search() returned wrong result while searching for value {} in vector {}. Expected iterator to element with index {}. But got iterator to element with index {}", x, v, plan_index, fact_index) << fatal;
+}
+
+void check_case(const std::vector<int> & v)
+{
+    for (std::size_t i = 0; i < v.size(); ++i)
+    {
+        check(v, v[i], i);
+    }
+
+    check(v, 1000, -1); // this value doesn't exist in vector
+}
+
+int main()
+{
+    "corner case"_test = [] {
+        std::vector<int> v = {};
+        check(v, 1000, -1);
+    };
+
+    "simple cases"_test = [] {
+        std::vector<std::vector<int>> cases {
+            {1},
+            {1, 2},
+            {1, 3, 5},
+            {2, 4, 5, 6},
+            {2, 5, 8, 9, 11, 12, 16}
+        };
+
+        for (const auto & v: cases)
+            check_case(v);
+    };
+}

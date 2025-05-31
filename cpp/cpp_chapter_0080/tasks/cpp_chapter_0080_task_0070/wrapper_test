@@ -1,0 +1,19 @@
+#include "ut.hpp"
+#include "test_helpers.h"
+
+import std;
+
+using namespace boost::ut;
+
+#INJECT-b585472fa
+
+
+
+int main()
+{
+    "Transitivity of equivalence"_test = [] {
+
+        expect(are_eq(a, b) && are_eq(b, c) && are_eq(a, c)) << std::format("{}, {} and {} must be equal", a, b, c) << fatal;
+    };
+
+}
