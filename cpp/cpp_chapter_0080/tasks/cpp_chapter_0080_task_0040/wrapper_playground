@@ -1,0 +1,16 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::vector<std::pair<std::string, std::string>> headers =
+    {
+        {"Referrer-Policy", "same-origin"},
+        {"Accept-Encoding", "deflate, br, zstd"},
+        {"Accept-Encoding", "gzip, deflate, br, zstd"},
+        {"Connection", "keep-alive"}
+    };
+
+    std::println("{}", accepts_gzip(headers));
+}

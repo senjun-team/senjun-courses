@@ -143,7 +143,7 @@ int main()
 
 ```consoleoutput {.task_source #cpp_chapter_0080_task_0010}
 ```
-. {.task_hint}
+В алгоритм `std::find()` передаются обратные итераторы, значит поиск начинается с конца. Функция `std::find()` возвращает обратный итератор `rit`, и выражение `(rit + 1).base()` позволяет получить из обратного итератора обычный. Затем расчитывается расстояние между первым элементом вектора и элементом, на который указывает итератор. {.task_hint}
 ```cpp {.task_answer}
 3
 ```
@@ -160,9 +160,21 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 
 }
 ```
-. {.task_hint}
+Вам потребуется завести вспомогательную функцию-предикат, которая сравнивает поле `first` объекта `std::pair` с нужным заголовком. И в случае успеха ищет в поле `second` подстроку `"gzip"`. Вам пригодится метод строки `find()`, с которым вы [уже работали.](/courses/cpp/chapters/cpp_chapter_0030/#block-string-find) {.task_hint}
 ```c++ {.task_answer}
+bool accepts(std::pair<std::string, std::string> header)
+{
+    if (header.first != "Accept-Encoding")
+        return false;
 
+    return (header.second.find("gzip") != std::string::npos);
+}
+
+bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
+{
+    return std::find_if(headers.begin(), headers.end(), accepts) 
+           != headers.end();
+}
 ```
 
 Чтобы искать элементы начиная с конца диапазона, в алгоритм поиска передаются [обратные итераторы:](/courses/cpp/chapters/cpp_chapter_0060/#block-reverse-iterators)
@@ -207,16 +219,39 @@ std::println("{}", std::distance(d.begin(), (rit + 1).base()));
 
 Например, для диапазона `[2, 5, 8, 9, 11, 12, 16]` и значения `x=11` функция должна вернуть итератор на 4-ый элемент, считая с нуля. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0080_task_0040}
+```c++ {.task_source #cpp_chapter_0080_task_0030}
 template<class It, class Val>
 It b_search(It first, It last, Val x)
 {
 
 }
 ```
-. {.task_hint}
+Определите длину диапазона через `std::distance()`. Середина диапазона находится на половине длины от его начала. {.task_hint}
 ```c++ {.task_answer}
+template<class It, class Val>
+It b_search(It first, It last, Val x)
+{
+    std::size_t len = std::distance(first, last);
 
+    while (len > 0)
+	{
+        const std::size_t half = len / 2;
+        It middle = first + half;
+        
+        if (*middle < x)
+        {
+            first = middle;
+            ++first;
+            len -= half - 1;
+        }
+        else
+        {
+            len = half;
+        }
+	}
+    
+    return first;
+}
 ```
 
 В стандартной библиотеке есть алгоритм [std::binary_search()](https://en.cppreference.com/w/cpp/algorithm/binary_search). Но он лишь проверяет, что диапазон содержит искомый элемент. Эта функция возвращает `true` либо `false`:
@@ -275,16 +310,20 @@ upper bound. index = 2. value = 9
 
 Функция должна вернуть итератор на первый элемент, равный `x`, либо итератор `last`, если элемент не обнаружен. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0080_task_0050}
+```c++ {.task_source #cpp_chapter_0080_task_0040}
 template<class It, class Val>
 It b_search(It first, It last, Val x)
 {
 
 }
 ```
-. {.task_hint}
+Функция `b_search()` — всего лишь обертка над вызовом `std::lower_bound()`. Цель задачи в том, чтобы вы еще раз убедились, насколько проще и удобнее подбирать под задачу стандартную функцию вместо самостоятельной реализации известных алгоритмов. {.task_hint}
 ```c++ {.task_answer}
-
+template<class It, class Val>
+It b_search(It first, It last, Val x)
+{
+    return std::lower_bound(first, last, x);
+}
 ```
 
 ## Сортировка
@@ -329,32 +368,48 @@ bool is_sorted = std::is_sorted(days.begin(),
 
 Если компаратор удовлетворяет строгому частичному порядку и транзитивности эквивалентности, то говорят, что он реализует строгий слабый порядок (strict weak ordering). Стандарт C++ требует, чтобы все передаваемые в алгоритмы компараторы поддерживали строгий слабый порядок. Вызов алгоритма с некорректным компаратором приводит к UB.
 
-При написании собственных компараторов наиболее частая ошибка — это нарушение антисимметричности. Она допущена и в коде компаратора `has_higher_priority()`. Он нужен для сортировки товаров в первую очередь по популярности и во вторую — по рейтингу. {.task_text}
+При написании собственных компараторов наиболее частая ошибка — это нарушение антисимметричности. Она допущена и в коде компаратора `has_higher_priority()`. Он нужен для сортировки товаров в первую очередь по убыванию популярности и во вторую — по убыванию рейтинга. {.task_text}
 
 Найдите ошибку в компараторе и исправьте ее. Чтобы посмотреть, как компаратор применяется в коде, откройте эту задачу в плэйграунде. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0080_task_070}
+```c++ {.task_source #cpp_chapter_0080_task_0050}
 struct Product
 {
     int id = 0;
-    int populatity = 0;
+    int popularity = 0;
     int rating = 0; 
 };
 
 bool has_higher_priority(Product a, Product b)
 {
-    if (a.popularity < b.popularity)
+    if (a.popularity > b.popularity)
         return true;
     
-    if (a.rating < b.rating)
+    if (a.rating > b.rating)
         return true;
 
     return false;
 }
 ```
-. {.task_hint}
+Допустим, в функцию переданы аргументы с полями `popularity=1000, rating=4` и `popularity=100, rating=5`. В зависимости от того, в каком порядке эти аргументы попадут в функцию, `has_higher_priority()` вернет разный результат! Это означает нарушение аксиомы антисимметричности. Чтобы исправить это, нужно добавить дополнительную проверку для сравнений поля `rating`. Условие `a.rating < b.rating` нужно дополнить: `a.popularity == b.popularity && a.rating < b.rating`. {.task_hint}
 ```c++ {.task_answer}
+struct Product
+{
+    int id = 0;
+    int popularity = 0;
+    int rating = 0; 
+};
 
+bool has_higher_priority(Product a, Product b)
+{
+    if (a.popularity > b.popularity)
+        return true;
+    
+    if (a.popularity == b.popularity && a.rating > b.rating)
+        return true;
+
+    return false;
+}
 ```
 
 До C++11 для реализации `std::sort()` подходил алгоритм быстрой сортировки [quicksort](https://ru.wikipedia.org/wiki/%D0%91%D1%8B%D1%81%D1%82%D1%80%D0%B0%D1%8F_%D1%81%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0). Но начиная с C++11 стандарт гарантирует для этой функции алгоритмическую сложность `O(N * log(N))`. Quicksort в худшем случае имеет квадратичную сложность `O(N^2)` и  не удовлетворяет этому ограничению. 
@@ -365,21 +420,35 @@ bool has_higher_priority(Product a, Product b)
 
 Другие реализации `std::sort()` еще [более сложные](https://danlark.org/2022/04/20/changing-stdsort-at-googles-scale-and-beyond/). Они [включают](https://github.com/llvm-mirror/libcxx/blob/master/include/algorithm#L3899) эвристики и оптимизации в зависимости от длины интервалов и особенностей типа элементов.
 
-Напишите функцию `contains_sum()`. Она принимает вектор целых чисел и число `sum`. Функция возвращает `true`, если вектор содержит два элемента, сумма которых равна `sum`. {.task_text}
+Напишите функцию `contains_duplicate()`. Она принимает вектор целых чисел и возвращает `true`, если в нем есть дубликаты. {.task_text}
 
-Например, для вектора `[3, 2, 3, 1]` и `sum = 4` функция вернет `true`. А для `[9, 2]` и `sum = 5` — `false`. {.task_text}
+Например, для вектора `[3, 2, 3, 1]` функция вернет `true`. А для `[9, 2]`  — `false`. {.task_text}
 
-Функция должна отработать _быстрее,_ чем за квадратичное время `O(N^2)`. Исходный массив можно изменять. В подсказке к задаче подробно описан подход к решению. {.task_text}
+Функция должна отработать _быстрее,_ чем за квадратичное время `O(N^2)`. Исходный массив можно изменять. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0080_task_0110}
-bool contains_sum(std::vector<int> v, int sum)
+```c++ {.task_source #cpp_chapter_0080_task_0060}
+bool contains_duplicate(std::vector<int> v)
 {
 
 }
 ```
-. {.task_hint}
+Сначала отсоритруйте вектор. Сложность сортировки — `O(N * log(N))` Затем пройдитесь по вектору, чтобы сравнить соседние элементы за `O(N)`. {.task_hint}
 ```c++ {.task_answer}
+bool contains_duplicate(std::vector<int> v)
+{
+    if (v.empty())
+        return false;
+    
+    std::sort(v.begin(), v.end());
+    
+    for (std::size_t i = 0; i < v.size() - 1; ++i)
+    {
+        if (v[i] == v[i + 1])
+            return true;
+    }
 
+    return false;
+}
 ```
 
 ## Копирование
@@ -461,7 +530,7 @@ std::println("{}", destination);
 
 Для вставки на произвольную позицию вам нужен итератор-адаптер [std::insert_iterator](https://en.cppreference.com/w/cpp/iterator/insert_iterator), вызывающий метод контейнера `insert()`. Чтобы получить его для контейнера, воспользуйтесь функцией [std::inserter](https://en.cppreference.com/w/cpp/iterator/inserter). {.task_text}
 
-```c++ {.task_source #cpp_chapter_0080_task_0080}
+```c++ {.task_source #cpp_chapter_0080_task_0070}
 std::vector<std::string> insert(std::vector<int> source,
                                 std::vector<int> destination)
 {
@@ -557,9 +626,9 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0080_task_0060}
+```consoleoutput {.task_source #cpp_chapter_0080_task_0080}
 ```
-. {.task_hint}
+Подсчет отрицательных элементов осуществляется начиная с индекса 1 и до индекса 3 включительно. То есть среди элементов `5, 10, -2`. {.task_hint}
 ```cpp {.task_answer}
 1
 ```
@@ -581,15 +650,12 @@ std::println("{}", total_distance);
 103.8
 ```
 
-Перепишите функцию `get_average()` с использованием `std::accumulate()`. {.task_text}
+Функция `get_average()` принимает вектор чисел и возвращает их среднее арифметическое. В ней допущена ошибка. Исправьте ее и перепишите код с использованием `std::accumulate()`. {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0080_task_0090}
 double get_average(std::vector<int> values)
 {
     double sum = 0.0;
-
-    if (values.empty())
-        return sum;
 
     for (double val: values)
         sum += val;
@@ -597,12 +663,20 @@ double get_average(std::vector<int> values)
     return sum / values.size();
 }
 ```
-. {.task_hint}
+В исходной реализации функции если вектор `values` пуст, происходит деление на ноль. {.task_hint}
 ```c++ {.task_answer}
+double get_average(std::vector<int> values)
+{
+    if (values.empty())
+        return 0.0;
 
+    return std::accumulate(values.begin(),
+                           values.end(),
+                           0.0) / values.size();
+}
 ```
 
-У `std::accumulate()` есть перегрузка, дополнительно принимающая функцию с двумя параметрами. Она нужна для расчета произведения или другого значения.
+У `std::accumulate()` есть перегрузка, дополнительно принимающая функцию с двумя параметрами. Она нужна для расчета произведения или любого другого значения.
 
 Что будет выведено в консоль? {.task_text}
 
@@ -628,7 +702,7 @@ int main()
 
 ```consoleoutput {.task_source #cpp_chapter_0080_task_0100}
 ```
-. {.task_hint}
+В данном случае `std::accumulate()` накапливает результат, начиная с нулевого элемента вектора, сконвертированного в строку. К этой строке через точку прибавляются последующие элементы вектора. {.task_hint}
 ```cpp {.task_answer}
 5.2.0
 ``` 

@@ -1,0 +1,16 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const std::vector<int> numbers_unique{15, -2, 0, 1};
+    std::println("contains_duplicate({}) = {}",
+        numbers_unique,
+        contains_duplicate(numbers_unique));
+
+    const std::vector<int> numbers_copy{1, -2, 0, 1};
+    std::println("contains_duplicate({}) = {}",
+        numbers_copy,
+        contains_duplicate(numbers_copy));
+}

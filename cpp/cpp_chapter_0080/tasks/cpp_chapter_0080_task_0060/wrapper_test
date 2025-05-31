@@ -1,0 +1,48 @@
+#include "ut.hpp"
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+void check(const std::vector<int> & v, bool contains)
+{
+    const bool fact = contains_duplicate(v);
+    expect(fact == contains) << std::format("contains_duplicate() returned {} for vector:\n{}", fact, v) << fatal;
+}
+
+struct testcase
+{
+    std::vector<int> v;
+    bool contains = false;
+};
+
+int main()
+{
+    "Corner cases"_test = [] {
+        std::vector<testcase> cases = {
+            {.v = {}, .contains = false},
+            {.v = {1}, .contains = false},
+            {.v = {1, 1}, .contains = true},
+        };
+
+        for (const auto & testcase: cases)
+            check(testcase.v, testcase.contains);
+    };
+
+
+    "Simple cases"_test = [] {
+        std::vector<testcase> cases = {
+            {.v = {-1, 4, 0, 9}, .contains = false},
+            {.v = {10, 10, 10}, .contains = true},
+            {.v = {8, 0, 8, 0, -1}, .contains = true},
+            {.v = {9, 5, 6, 2, 4}, .contains = false},
+            {.v = {10, 8, 11, 4, 8, 3}, .contains = true},
+        };
+
+        for (const auto & testcase: cases)
+            check(testcase.v, testcase.contains);
+    };
+
+}
