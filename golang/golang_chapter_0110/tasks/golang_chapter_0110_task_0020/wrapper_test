@@ -1,0 +1,106 @@
+package main
+
+import (
+	"fmt"
+	"testing"
+)
+
+func TestSolve(t *testing.T) {
+
+	/*
+		*
+		├─ 10
+		└─ +
+		   ├─ 4
+		   └─ 5
+	*/
+
+	var firstCase ast
+	firstCase.root = &node{value: "*"}
+	firstCasePlus := &node{value: "+", parent: firstCase.root}
+	firstCase.root.children = []*node{{value: "10",
+		parent: firstCase.root}, firstCasePlus}
+	firstCasePlus.children = []*node{{value: "4",
+		parent: firstCasePlus}, {value: "5", parent: firstCasePlus}}
+
+	/*
+		*
+		├─ -
+		│  ├─ 4
+		│  └─ 5
+		└─ 10
+	*/
+
+	var secondCase ast
+	secondCase.root = &node{value: "*"}
+	secondCaseMinus := &node{value: "-", parent: secondCase.root}
+	secondCase.root.children = []*node{secondCaseMinus, {value: "10",
+		parent: secondCase.root}}
+	secondCaseMinus.children = []*node{{value: "4",
+		parent: secondCaseMinus}, {value: "5", parent: secondCaseMinus}}
+
+	/*
+		+
+		├─ 4
+		└─ 5
+	*/
+	var thirdCase ast
+	thirdCase.root = &node{value: "+"}
+
+	thirdCase.root.children = []*node{{value: "4", parent: thirdCase.root},
+		{value: "5", parent: thirdCase.root}}
+
+	cases := []struct {
+		in   *node
+		want lexeme
+	}{
+		{firstCase.root, "90"},
+		{secondCase.root, "-10"},
+		{thirdCase.root, "9"},
+	}
+	for _, c := range cases {
+		got := solve(c.in)
+		if got != c.want {
+			t.Errorf("solve from:\n\n%v\n got: %q, want: %q", sprintNode(c.in), got, c.want)
+		}
+	}
+}
+
+func sprintNode(a *node) string {
+	res, _ := sprintInLevel("", a, 0, map[int]struct{}{})
+	return res
+}
+
+func sprintInLevel(oldRes string, n *node, level int,
+	prevBranchLevels map[int]struct{}) (res string,
+	branchLevels map[int]struct{}) {
+	res = oldRes
+	branchLevels = make(map[int]struct{})
+
+	for i := 0; i < level; i++ {
+		_, ok := prevBranchLevels[i]
+		if ok {
+			res += "│  "
+			branchLevels[i] = struct{}{}
+		} else if i != 0 {
+			res += "   "
+		}
+	}
+
+	if level != 0 {
+		if n.parent == nil || n.parent.children[len(n.parent.children)-1] == n {
+			res += "└─ "
+		} else {
+			res += "├─ "
+			branchLevels[level] = struct{}{}
+		}
+	}
+
+	res += fmt.Sprintln(n.value)
+
+	for _, child := range n.children {
+		res, branchLevels = sprintInLevel(res, child, level+1, branchLevels)
+	}
+
+	return
+}
