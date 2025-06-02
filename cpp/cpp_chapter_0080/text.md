@@ -6,7 +6,7 @@
 
 Умение своевременно использовать алгоритмы отличает опытного C++ разработчика от новичка. Например, так выглядит наивная реализация поиска максимального элемента вектора:
 
-```c++
+```c++  {.example_for_playground .example_for_playground_001}
 std::vector<double> temperatures = read_temperatures();
 
 if (temperatures.empty())
@@ -29,7 +29,7 @@ else
 
 Перепишем этот пример с использованием алгоритма [std::max_element()](https://en.cppreference.com/w/cpp/algorithm/max_element):
 
-```c++
+```c++  {.example_for_playground .example_for_playground_002}
 std::vector<double> temperatures = read_temperatures();
 
 const auto it_max = std::max_element(temperatures.begin(), temperatures.end());
@@ -86,7 +86,7 @@ else
 
 Многие алгоритмы принимают итераторы на диапазон внутри контейнера. Диапазон включает итератор на начало и _не_ включает итератор на конец:
 
-```c++
+```c++ {.example_for_playground .example_for_playground_003}
 std::vector<int> vals = {1, 2, 3, 4, 5, 6};
 
 // Переворачиваем последовательность элементов
@@ -109,7 +109,7 @@ std::println("{}", vals);
 
 В этом примере мы получаем итератор на искомый элемент, чтобы заменить его значение:
 
-```c++
+```c++ {.example_for_playground .example_for_playground_004}
 std::array<int, 5> raw_data = {9, -1, 2, 2, 3};
 
 auto it = std::find(raw_data.begin(), raw_data.end(), -1);
@@ -127,7 +127,7 @@ std::println("{}", raw_data);
 
 С функцией `std::distance()` вы [познакомились](/courses/cpp/chapters/cpp_chapter_0060/#block-distance) в главе про итераторы. {.task_text}
 
-```c++
+```c++ {.example_for_playground}
 import std;
 
 int main()
@@ -179,7 +179,7 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 
 Чтобы искать элементы начиная с конца диапазона, в алгоритм поиска передаются [обратные итераторы:](/courses/cpp/chapters/cpp_chapter_0060/#block-reverse-iterators)
 
-```c++
+```c++ {.example_for_playground .example_for_playground_005}
 std::deque<int> d = {5, 6, 10, 10, 1};
 
 auto rit = std::find(d.rbegin(), d.rend(), 10);
@@ -189,7 +189,7 @@ std::println("{}", std::distance(d.begin(), (rit + 1).base()));
 3
 ```
 
-Алгоритм `std::find()` и его вариации реализуют поиск одного элемента. Они работают за линейное время `O(N)`, где `N` — длина диапазона.
+Функция `std::find()` и ее вариации нужны для поиска одного элемента. Они работают за линейное время `O(N)`, где `N` — длина диапазона.
 
 Для поиска одного диапазона внутри другого используется алгоритм [std::search()](https://en.cppreference.com/w/cpp/algorithm/search). Он работает за время `O(N * M)`, где `N` и `M` — длины диапазонов.
 
@@ -256,7 +256,7 @@ It b_search(It first, It last, Val x)
 
 В стандартной библиотеке есть алгоритм [std::binary_search()](https://en.cppreference.com/w/cpp/algorithm/binary_search). Но он лишь проверяет, что диапазон содержит искомый элемент. Эта функция возвращает `true` либо `false`:
 
-```c++
+```c++ {.example_for_playground .example_for_playground_006}
 std::string s = "abcdefg";
 std::println("{}", std::binary_search(s.begin() + 2, s.end() - 1, 'e'));
 ```
@@ -264,13 +264,13 @@ std::println("{}", std::binary_search(s.begin() + 2, s.end() - 1, 'e'));
 true
 ```
 
-Зато алгоритмы [std::lower_bound()](https://en.cppreference.com/w/cpp/algorithm/lower_bound) и [std::upper_bound()](https://en.cppreference.com/w/cpp/algorithm/upper_bound) возвращают итератор. Оба они принимают итераторы на упорядоченный диапазон и искомое значение:
+Зато алгоритмы [std::lower_bound()](https://en.cppreference.com/w/cpp/algorithm/lower_bound) и [std::upper_bound()](https://en.cppreference.com/w/cpp/algorithm/upper_bound) возвращают итератор. Оба принимают итераторы на упорядоченный диапазон и искомое значение:
 - `std::lower_bound()` возвращает итератор на первый элемент диапазона, который _не меньше,_ чем значение.
 - `std::upper_bound()` возвращает итератор на первый элемент диапазона, который `_больше_, чем значение.
 
 Если искомый элемент присутствует в диапазоне, функции возвращают разный результат:
 
-```c++
+```c++ {.example_for_playground .example_for_playground_007}
 std::vector<int> v = {3, 5, 7, 8, 8, 8, 10};
 auto it_l = std::lower_bound(v.begin(), v.end(), 8);
 std::println("lower bound. index = {}. value = {}",
@@ -287,7 +287,7 @@ upper bound. index = 6. value = 10
 
 А при поиске отсутствующего числа эти функции возвращают одинаковый результат:
 
-```c++
+```c++  {.example_for_playground .example_for_playground_008}
 std::vector<int> v = {2, 5, 9, 11};
 auto it_l = std::lower_bound(v.begin(), v.end(), 6);
 std::println("lower bound. index = {}. value = {}",
@@ -302,7 +302,7 @@ lower bound. index = 2. value = 9
 upper bound. index = 2. value = 9
 ```
 
-Иными словами, итераторы, возвращаемые `std::lower_bound()` и `std::upper_bound()`, _ограничивают_ диапазон элементов, равных искомому значению. Чтобы получить этот диапазон, можно воспользоваться всего одной. Она называется [std::equal_range()](https://en.cppreference.com/w/cpp/algorithm/equal_range) и возвращает пару итераторов.
+Иными словами, итераторы от `std::lower_bound()` и `std::upper_bound()` _ограничивают_ диапазон элементов, равных искомому значению. Чтобы получить этот диапазон, можно воспользоваться всего одной функцией. Она называется [std::equal_range()](https://en.cppreference.com/w/cpp/algorithm/equal_range) и возвращает пару итераторов.
 
 Еще раз реализуйте шаблонную функцию `b_search()` из предыдущей задачи, но уже с помощью `std::lower_bound()`. Функция принимает итераторы на отсортированный диапазон: `first` — итератор на первый элемент, `last` — итератор, указывающий за последний элемент. Также функция принимает искомое значение `x`. {.task_text}
 
@@ -330,7 +330,7 @@ It b_search(It first, It last, Val x)
 
 Функция [std::is_sorted()](https://en.cppreference.com/w/cpp/algorithm/is_sorted) проверяет, отсортирован ли диапазон. А [std::sort()](https://en.cppreference.com/w/cpp/algorithm/sort) сортирует его. Обе функции работают с сортировкой по возрастанию. Для строк это называется [лексикографическим порядком.](https://ru.wikipedia.org/wiki/%D0%9B%D0%B5%D0%BA%D1%81%D0%B8%D0%BA%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%BF%D0%BE%D1%80%D1%8F%D0%B4%D0%BE%D0%BA) Для сортировки по возрастанию используется сравнение через оператор `<`.
 
-```c++
+```c++   {.example_for_playground .example_for_playground_009}
 std::deque<double> d = {3.1, 8.0, 56.5};
 std::println("{}", std::is_sorted(d.begin(), d.end()));
 
@@ -391,6 +391,7 @@ bool has_higher_priority(Product a, Product b)
     return false;
 }
 ```
+
 Допустим, в функцию переданы аргументы с полями `popularity=1000, rating=4` и `popularity=100, rating=5`. В зависимости от того, в каком порядке эти аргументы попадут в функцию, `has_higher_priority()` вернет разный результат! Это означает нарушение аксиомы антисимметричности. Чтобы исправить это, нужно добавить дополнительную проверку для сравнений поля `rating`. Условие `a.rating < b.rating` нужно дополнить: `a.popularity == b.popularity && a.rating < b.rating`. {.task_hint}
 ```c++ {.task_answer}
 struct Product
@@ -467,7 +468,7 @@ OutputIt copy(InputIt first, InputIt last, OutputIt d_first)
 
 Например, UB есть в этом коде. Мы копируем 3 элемента из `source` по итератору _за_ последний элемент `destination`:
 
-```c++
+```c++  {.example_for_playground .example_for_playground_010}
 std::vector<int> source = {6, 8, 2};
 std::vector<int> destination = {1, 1, 1};
 
@@ -476,7 +477,7 @@ std::copy(source.begin(), source.end(), destination.end()); // UB
 
 Чтобы избавиться от UB, заранее обеспечьте выходной диапазон необходимого размера. Сделаем это с помощью метода вектора [resize()](https://en.cppreference.com/w/cpp/container/vector/resize):
 
-```c++
+```c++ {.example_for_playground .example_for_playground_011}
 std::vector<int> source = {6, 8, 2};
 std::vector<int> destination = {1, 1, 1};
 
@@ -498,7 +499,7 @@ std::println("{}", destination);
 
 Чтобы получить этот итератор-адаптер для контейнера, предусмотрена функция [std::back_inserter](https://en.cppreference.com/w/cpp/iterator/back_inserter). Она принимает контейнер и возвращает `std::back_insert_iterator`. 
 
-```c++
+```c++  {.example_for_playground .example_for_playground_012}
 std::vector<int> source = {6, 8, 2};
 std::vector<int> destination = {1, 1, 1};
 
@@ -512,7 +513,7 @@ std::println("{}", destination);
 
 Для вставки в начало контейнера есть итератор-адаптер [std::front_insert_iterator](https://en.cppreference.com/w/cpp/iterator/front_insert_iterator). Под капотом он вызывает метод `push_front()` контейнера. Чтобы получить этот итератор-адаптер, есть функция [std::front_inserter](https://en.cppreference.com/w/cpp/iterator/front_inserter)
 
-```c++
+```c++  {.example_for_playground .example_for_playground_013}
 std::list<int> source = {6, 8, 2};
 std::list<int> destination = {1, 1, 1};
 
@@ -524,29 +525,61 @@ std::println("{}", destination);
 [2, 8, 6, 1, 1, 1]
 ```
 
-Реализуйте функцию `merge()`. Она принимает два отсортированных не пустых вектора. Функция должна вставить содержимое вектора `source` в вектор `destination`. Вставка должна произойти на позицию после последнего элемента `destination`, который _не больше_ нулевого элемента `source`. Если такого элемента нет, то в конец. Функция возвращает получившийся вектор. {.task_text}
+Для вставки на произвольную позицию используется итератор-адаптер [std::insert_iterator](https://en.cppreference.com/w/cpp/iterator/insert_iterator), вызывающий метод контейнера `insert()`. Чтобы получить его для контейнера, нужно вызвать функцию [std::inserter](https://en.cppreference.com/w/cpp/iterator/inserter). Ознакомьтесь с ее документацией и потренируйтесь использовать ее в следующей задаче.
 
-Например, для векторов `[1, 2, 5, 6]` и `[3, 3]` функция должна вернуть `[1, 2, 3, 3, 5, 6]`. {.task_text}
+Необходимо реализовать функцию `insert_ad()`. Она принимает аудиопоток `stream`, метку для вставки рекламы `tag` и аудиопоток рекламы `ad` (advertisement). Функция возвращает аудиопоток со вставленной рекламой. {.task_text}
 
-Для вставки на произвольную позицию вам нужен итератор-адаптер [std::insert_iterator](https://en.cppreference.com/w/cpp/iterator/insert_iterator), вызывающий метод контейнера `insert()`. Чтобы получить его для контейнера, воспользуйтесь функцией [std::inserter](https://en.cppreference.com/w/cpp/iterator/inserter). {.task_text}
+В аудиопотоке нужно найти все парные метки, то есть последовательность `tag`, идущую два раза подряд. Рекламу нужно вставить между этими метками. Удалять их из потока не надо. Считаем, что аудиопоток корректный: если он содержит метки, то они обязательно парные. {.task_text}
+
+Пример: {.task_text}
+- Аудиопоток: `[0x2a, 0x17, 0x14, 0x17, 0x01, 0x01, 0x01, 0x01, 0x55, 0x7c, 0x20]`.
+- Метка: `[0x01, 0x01]`.
+- Реклама: `[0x0b, 0x0a, 0x0d]`.
+- Результат после вставки рекламы: `[0x2a, 0x17, 0x14, 0x17, 0x01, 0x01, 0x0b, 0x0a, 0x0d, 0x01, 0x01, 0x55, 0x7c, 0x20]`.
 
 ```c++ {.task_source #cpp_chapter_0080_task_0070}
-std::vector<std::string> insert(std::vector<int> source,
-                                std::vector<int> destination)
+std::vector<char> insert_ad(
+    std::vector<char> stream, // аудиопоток
+    std::vector<char> tag,    // метка для вставки рекламы
+    std::vector<char> ad)     // реклама
 {
-
+    
 }
 ```
-. {.task_hint}
+Для поиска последовательности внутри другой последовательности воспользуйтесь [std::search()](https://en.cppreference.com/w/cpp/algorithm/search). Для определения смещения при последующем поиске пригодится [std::distance()](https://en.cppreference.com/w/cpp/iterator/distance). Для копирования будет нужна связка [std::copy()](https://en.cppreference.com/w/cpp/algorithm/copy) и [std::inserter()](https://en.cppreference.com/w/cpp/iterator/inserter). {.task_hint}
 ```c++ {.task_answer}
+std::vector<char> insert_ad(
+    std::vector<char> stream, // аудиопоток
+    std::vector<char> tag,    // метка для вставки рекламы
+    std::vector<char> ad)     // реклама
+{
+    std::size_t offset = 0;
+    
+    while(true)
+    {
+        auto it = std::search(stream.begin() + offset,
+                              stream.end(),
+                              tag.begin(),
+                              tag.end());
+        
+        if (it == stream.end())
+            break;
 
+        it += tag.size();
+        offset += std::distance(stream.begin(), it);
+        std::copy(ad.begin(), ad.end(), std::inserter(stream, it));
+        offset += ad.size() + tag.size();
+    }
+
+    return stream;
+}
 ```
 
 ## Удаление и идиома erase-remove
 
 Для удаления элементов из диапазона предназначены алгоритмы [std::remove и std::remove_if](https://en.cppreference.com/w/cpp/algorithm/remove). Но будьте бдительны: они ничего не удаляют.
 
-```c++
+```c++  {.example_for_playground .example_for_playground_014}
 std::vector<int> v = {1, 2, 3, 3, 2, 1};
 
 auto it = std::remove(v.begin(), v.end(), 2);
@@ -564,7 +597,7 @@ range without removed elements ends at 3'th element from 0
 
 Использование `std::remove()` и `erase()` в связке известно как [идиома erase-remove.](https://en.wikipedia.org/wiki/Erase%E2%80%93remove_idiom)
 
-```c++
+```c++  {.example_for_playground .example_for_playground_015}
 std::vector<int> v = {1, 2, 3, 3, 2, 1};
 
 auto it = std::remove(v.begin(), v.end(), 2);
@@ -590,7 +623,7 @@ v.erase(std::remove(v.begin(), v.end(), 2), v.end());
 - `std::count()` принимает итераторы на диапазон и значение. И возвращает количество элементов диапазона, равных значению.
 - `std::count_if()` вместо значения принимает предикат.
 
-```c++
+```c++ {.example_for_playground}
 import std;
 
 int main()
@@ -609,7 +642,7 @@ int main()
 
 Чему равно значение переменной `n`? {.task_text}
 
-```c++
+```c++   {.example_for_playground}
 import std;
 
 bool is_neg(int val)
@@ -637,7 +670,7 @@ int main()
 
 Функция `std::accumulate()` принимает итераторы на диапазон и начальное значение. И возвращает сумму начального значения с элементами диапазона:
 
-```c++
+```c++   {.example_for_playground .example_for_playground_016}
 std::vector<double> distances = {34.3, 18.0, 51.5};
 
 double total_distance = std::accumulate(distances.cbegin(),
@@ -713,7 +746,7 @@ int main()
 
 Функции стандартной библиотеки ничего не знают об устройстве контейнеров. Они реализуют обобщенные алгоритмы, работающие с итераторами. А методы класса, напротив, обладают полной информацией о его организации. За счет этого они эффективнее:
 
-```c++
+```c++   {.example_for_playground .example_for_playground_017}
 std::unordered_map<int, std::string> warning_codes =
 {
     {52, "API is deprecated"},
@@ -737,6 +770,23 @@ auto it_f = std::find(warning_codes.begin(), warning_codes.end(), 52);
 Второй пример пересекающейся функциональности у алгоритма и метода — это удаление элементов. У списка `std::list` есть методы [remove() и remove_if()](https://en.cppreference.com/w/cpp/container/list/remove). Алгоритмы стандартной библиотеки с этими названиями применительно к спискам неэффективны. А методы класса имеют возможность _действительно_ удалить элементы списка, причем быстро.
 
 Когда выбирать алгоритмы, а когда — методы класса? Если в приоритете скорость, то используйте методы. А если вы пишете обобщенный код, который должен работать с произвольными контейнерами, выбирайте функции стандартной библиотеки.
+
+## Оптимальны ли алгоритмы и контейнеры
+
+Классы и функции стандартной библиотеки разрабатываются с упором на три плохо совместимых качества:
+- Универсальность.
+- Эффективность.
+- Обратную совместимость.
+
+Это значит, что _в общем случае_ они показывают хорошие результаты. И уж точно превосходят простые самописные решения. Но [внимание к обратной совместимости](/courses/cpp/chapters/cpp_chapter_0010/#block-backward-compatibility) бьет по эффективности. То есть даже для усредненного сценария возможна более удачная реализация многих контейнеров и алгоритмов.
+
+Возникает вопрос: в каких случаях стоит подбирать им замену?
+
+Как всегда, руководствуйтесь здравым смыслом и фактами. По умолчанию выбирайте стандартную библиотеку. Это не требует от вас лишних действий. И даже при появлении проблем со скоростью или потреблением памяти не спешите мигрировать на стороннюю библиотеку. Принимайте решение, опираясь на профилирование производительности, бенчмарки и анализ потребления памяти.
+
+_В большинстве случаев_ стандартная библиотека оказывается ни при чем, а проблемы лежат в совершенно другой плоскости. Например, упираются в неудачную архитектуру или синхронную обработку данных там, где нужна асинхронность.
+
+Если же контейнер или алгоритм действительно стал бутылочным горлышком проекта, поэкспериментируйте с альтернативами: [Abseil от Google](https://github.com/abseil/abseil-cpp), [Folly от Meta](https://github.com/facebook/folly), уже [знакомым](/courses/cpp/chapters/cpp_chapter_0010/#block-boost) вам [Boost](https://www.boost.org/) и другими библиотеками с открытым исходным кодом.
 
 ## Домашнее задание
 

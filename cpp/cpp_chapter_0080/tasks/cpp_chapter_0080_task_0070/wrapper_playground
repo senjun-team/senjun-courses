@@ -2,7 +2,24 @@ import std;
 
 #INJECT-b585472fa
 
+void print_stream(std::string title, const std::vector<char> & v)
+{
+    std::println("{}:", title);
+    for (char c: v)
+        std::print("{:#04x} ", c);
+    std::println("\n");
+}
+
 int main()
 {
+    const std::vector<char> stream = {0x2a, 0x17, 0x14, 0x17, 0x01, 0x01, 0x01, 0x01, 0x55, 0x7c, 0x20};
+    const std::vector<char> tag = {0x01, 0x01};
+    const std::vector<char> ad = {0x0b, 0x0a, 0x0d};
 
+    const std::vector<char> stream_with_ad = insert_ad(stream, tag, ad);
+    
+    print_stream("Stream", stream);
+    print_stream("Tag", tag);
+    print_stream("Ad", ad);
+    print_stream("Stream with ad", stream_with_ad);
 }
