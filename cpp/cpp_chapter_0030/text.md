@@ -170,7 +170,7 @@ double vertical_flight_speed(double cur_height,
 
 Напишите функцию `is_valid()` для наивной валидации e-mail. Она должна принимать строку и возвращать `true`, если в строке соблюдены условия: есть символы `@` и `.`; после символа `@` есть `.`; `@` не идет первым. {.task_text}
 
-Вам поможет метод строки [find().](https://en.cppreference.com/w/cpp/string/basic_string/find) Он принимает подстроку или символ и опциональный параметр — индекс, начиная с которого искать вхождение. По умолчанию это 0. Метод возвращает индекс первого вхождения либо константу `std::string::npos`, означающую, что подстрока не найдена. Тип возвращаемого значения — `std::size_t`. {.task_text}
+Вам поможет метод строки [find().](https://en.cppreference.com/w/cpp/string/basic_string/find) Он принимает подстроку или символ и опциональный параметр — индекс, начиная с которого искать вхождение. По умолчанию это 0. Метод возвращает индекс первого вхождения либо константу `std::string::npos`, означающую, что подстрока не найдена. Тип возвращаемого значения — `std::size_t`. {.task_text #block-string-find}
 
 ```c++ {.task_source #cpp_chapter_0030_task_0020}
 
@@ -304,7 +304,7 @@ int max(int a, int b)
 }
 ```
 
-Кстати, в стандартной библиотеке C++ есть функции [std::max()](https://en.cppreference.com/w/cpp/algorithm/max) и [std::min()](https://en.cppreference.com/w/cpp/algorithm/min). При работе над реальными проектами руководствуйтесь правилом: [используй готовое.](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-lib) То есть прежде чем писать функцию самостоятельно, проверьте — вдруг она уже реализована в стандартной библиотеке?
+Кстати, в стандартной библиотеке C++ есть функции [std::max()](https://en.cppreference.com/w/cpp/algorithm/max) и [std::min()](https://en.cppreference.com/w/cpp/algorithm/min). При работе над реальными проектами руководствуйтесь правилом: [используй готовое.](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-lib) То есть прежде чем писать функцию самостоятельно, проверьте — вдруг она уже реализована в стандартной библиотеке? {#block-min-max}
 
 ## Конструкция switch-case {#switch-case}
 
