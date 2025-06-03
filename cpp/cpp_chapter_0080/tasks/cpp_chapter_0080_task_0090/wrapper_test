@@ -1,0 +1,59 @@
+#include "ut.hpp"
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+bool is_eq(double a, double b)
+{
+    return std::abs(a - b) < 1e-5;
+}
+
+void check(const std::vector<int> & v, double avg)
+{
+    try
+    {
+        const double fact = get_average(v);
+        expect(is_eq(fact, avg)) << std::format("get_average() returned {} for vector: {}. Expected value: {}", fact, v, avg) << fatal;
+    }
+    catch(const std::exception & e)
+    {
+        expect(false) << std::format("get_average() throwed an exception {} for vector: {}", e.what(), v) << fatal;
+    }
+}
+
+struct testcase
+{
+    std::vector<int> v;
+    double avg = 0.0;
+};
+
+int main()
+{
+    "Corner cases"_test = [] {
+        std::vector<testcase> cases = {
+            {.v = {}, .avg = 0.0},
+            {.v = {1}, .avg = 1.0},
+            {.v = {1, 1}, .avg = 1.0},
+            {.v = {1, -1}, .avg = 0.0},
+        };
+
+        for (const auto & testcase: cases)
+            check(testcase.v, testcase.avg);
+    };
+
+
+    "Simple cases"_test = [] {
+        std::vector<testcase> cases = {
+            {.v = {100, 200, 300}, .avg = 200.0},
+            {.v = {-10, -10, -10, -10}, .avg = -10.0},
+            {.v = {15, -2, 0, 1}, .avg = 3.5},
+        };
+
+        for (const auto & testcase: cases)
+            check(testcase.v, testcase.avg);
+    };
+
+}

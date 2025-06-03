@@ -1,0 +1,44 @@
+import std;
+
+std::vector<double> read_temperatures()
+{
+    const std::size_t len = 1e8;
+    std::random_device rnd_device;
+    std::mt19937 mersenne_engine {rnd_device()};
+    std::uniform_real_distribution<double> dist {-20, 30};
+    
+    auto gen = [&](){ return dist(mersenne_engine); };
+
+    std::vector<double> vec(len);
+    std::generate(vec.begin(), vec.end(), gen);
+    return vec;
+}
+
+int main()
+{
+    std::vector<double> temperatures = read_temperatures();
+
+    const auto start = std::chrono::high_resolution_clock::now();
+
+    if (temperatures.empty())
+    {
+        std::println("Waiting for new data...");
+    }
+    else
+    {
+        double max = temperatures.front();
+
+        for(double t: temperatures)
+        {
+            if (max < t)
+                max = t;
+        }
+
+        std::println("Max temperature: {}", max);
+    }
+
+    const auto finish = std::chrono::high_resolution_clock::now();
+
+    const auto time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(finish-start).count();
+    std::println("Duration: {} ms", time_ms);
+}

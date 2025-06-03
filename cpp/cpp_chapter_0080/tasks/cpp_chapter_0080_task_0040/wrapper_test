@@ -1,0 +1,79 @@
+#include "ut.hpp"
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+void check(const std::vector<int> & v, int x, std::size_t plan)
+{
+    const std::size_t fact = count_vals(v, x);
+    expect(plan == fact) << std::format("count_vals({}, {}) returned {} instead of {}", v, x, fact, plan) << fatal;
+}
+
+struct testcase
+{
+    std::vector<int> v;
+    int val = 0;
+    std::size_t plan = 0;
+};
+
+int main()
+{
+    "corner cases"_test = [] {
+        std::vector<testcase> testcases = {
+            {
+                .v = {},
+                .val = 10,
+                .plan = 0
+            },
+            {
+                .v = {1},
+                .val = 10,
+                .plan = 0
+            },
+            {
+                .v = {3},
+                .val = 3,
+                .plan = 1
+            }
+        };
+
+        for (const auto & c: testcases)
+            check(c.v, c.val, c.plan);
+    };
+
+    "simple cases"_test = [] {
+        std::vector<testcase> testcases = {
+            {
+                .v = {1, 1},
+                .val = 1,
+                .plan = 2
+            },
+            {
+                .v = {1, 1, 2, 2, 2},
+                .val = 2,
+                .plan = 3
+            },
+            {
+                .v = {0, 1, 2, 3, 4},
+                .val = 3,
+                .plan = 1
+            },
+            {
+                .v = {0, 1, 2, 3, 4},
+                .val = 5,
+                .plan = 0
+            },
+            {
+                .v = {6, 6, 8, 8, 9},
+                .val = 8,
+                .plan = 2
+            },
+        };
+
+        for (const auto & c: testcases)
+            check(c.v, c.val, c.plan);
+    };
+}
