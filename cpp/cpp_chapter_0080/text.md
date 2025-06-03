@@ -304,25 +304,21 @@ upper bound. index = 2. value = 9
 
 Иными словами, итераторы от `std::lower_bound()` и `std::upper_bound()` _ограничивают_ диапазон элементов, равных искомому значению. Чтобы получить этот диапазон, можно воспользоваться всего одной функцией. Она называется [std::equal_range()](https://en.cppreference.com/w/cpp/algorithm/equal_range) и возвращает пару итераторов.
 
-Еще раз реализуйте шаблонную функцию `b_search()` из предыдущей задачи, но уже с помощью `std::lower_bound()`. Функция принимает итераторы на отсортированный диапазон: `first` — итератор на первый элемент, `last` — итератор, указывающий за последний элемент. Также функция принимает искомое значение `x`. {.task_text}
+Напишите функцию `count_vals()`. Она принимает отсортированный вектор и искомое значение. Функция должна вернуть, сколько раз искомое значение встречается в векторе. {.task_text}
 
-Значение `x` может встречаться более 1 раза в диапазоне. {.task_text}
-
-Функция должна вернуть итератор на первый элемент, равный `x`, либо итератор `last`, если элемент не обнаружен. {.task_text}
+Например, для вектора `[6, 6, 8, 8, 9]` и значения 8 функция должна вернуть 2. {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0080_task_0040}
-template<class It, class Val>
-It b_search(It first, It last, Val x)
+std::size_t count_vals(std::vector<int> data, int val)
 {
 
 }
 ```
-Функция `b_search()` — всего лишь обертка над вызовом `std::lower_bound()`. Цель задачи в том, чтобы вы еще раз убедились, насколько проще и удобнее подбирать под задачу стандартную функцию вместо самостоятельной реализации известных алгоритмов. {.task_hint}
+Для получения диапазона элементов, равных `val`, воспользуйтесь [std::equal_range()](https://en.cppreference.com/w/cpp/algorithm/equal_range). Функция возвращает пару итераторов. Верните расстояние между ними, вызвав [std::distance()](https://en.cppreference.com/w/cpp/iterator/distance). {.task_hint}
 ```c++ {.task_answer}
-template<class It, class Val>
-It b_search(It first, It last, Val x)
+std::size_t count_vals(std::vector<int> data, int val)
 {
-    return std::lower_bound(first, last, x);
+
 }
 ```
 

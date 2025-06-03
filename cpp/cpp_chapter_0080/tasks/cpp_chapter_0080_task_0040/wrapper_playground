@@ -4,13 +4,7 @@ import std;
 
 int main()
 {
-    std::vector<std::pair<std::string, std::string>> headers =
-    {
-        {"Referrer-Policy", "same-origin"},
-        {"Accept-Encoding", "deflate, br, zstd"},
-        {"Accept-Encoding", "gzip, deflate, br, zstd"},
-        {"Connection", "keep-alive"}
-    };
-
-    std::println("{}", accepts_gzip(headers));
+    const std::vector<int> seq = {6, 6, 8, 8, 9};
+    const int x = 8;
+    std::println("count_vals({}, {}) == {}", seq, x, count_vals(seq, x));
 }

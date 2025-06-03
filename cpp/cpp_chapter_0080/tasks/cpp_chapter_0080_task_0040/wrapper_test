@@ -6,48 +6,74 @@ import std;
 
 using namespace boost::ut;
 
-void check(const std::vector<int> & v, int x, int plan_index)
+void check(const std::vector<int> & v, int x, std::size_t plan)
 {
-    auto it = b_search(v.begin(), v.end(), x);
-    if (plan_index == -1)
-    {
-        expect(it == v.end()) << std::format("b_search() didn't return v.end() while searching for value {} in vector {}", x, v) << fatal;
-        return;
-    }
-
-    expect(it != v.end()) << std::format("b_search() returned v.end() while searching for value {} in vector {}", x, v) << fatal;
-    
-    std::size_t fact_index = std::distance(v.begin(), it);
-    expect(plan_index == fact_index) << std::format("b_search() returned wrong result while searching for value {} in vector {}. Expected iterator to element with index {}. But got iterator to element with index {}", x, v, plan_index, fact_index) << fatal;
+    const std::size_t fact = count_vals(v, x);
+    expect(plan == fact) << std::format("count_vals({}, {}) returned {} instead of {}", v, x, fact, plan) << fatal;
 }
 
-void check_case(const std::vector<int> & v)
+struct testcase
 {
-    for (std::size_t i = 0; i < v.size(); ++i)
-    {
-        check(v, v[i], i);
-    }
-
-    check(v, 1000, -1); // this value doesn't exist in vector
-}
+    std::vector<int> v;
+    int val = 0;
+    std::size_t plan = 0;
+};
 
 int main()
 {
-    "corner case"_test = [] {
-        std::vector<int> v = {};
-        check(v, 1000, -1);
+    "corner cases"_test = [] {
+        std::vector<testcase> testcases = {
+            {
+                .v = {},
+                .val = 10,
+                .plan = 0
+            },
+            {
+                .v = {1},
+                .val = 10,
+                .plan = 0
+            },
+            {
+                .v = {3},
+                .val = 3,
+                .plan = 1
+            }
+        };
+
+        for (const auto & c: testcases)
+            check(c.v, c.val, c.plan);
     };
 
     "simple cases"_test = [] {
-        std::vector<std::vector<int>> cases {
-            {1},
-            {1, 2},
-            {1, 3, 5},
-            {2, 4, 5, 6},
-            {2, 5, 8, 9, 11, 12, 16}
+        std::vector<testcase> testcases = {
+            {
+                .v = {1, 1},
+                .val = 1,
+                .plan = 2
+            },
+            {
+                .v = {1, 1, 2, 2, 2},
+                .val = 2,
+                .plan = 3
+            },
+            {
+                .v = {0, 1, 2, 3, 4},
+                .val = 3,
+                .plan = 1
+            },
+            {
+                .v = {0, 1, 2, 3, 4},
+                .val = 5,
+                .plan = 0
+            },
+            {
+                .v = {6, 6, 8, 8, 9},
+                .val = 8,
+                .plan = 2
+            },
         };
 
-        for (const auto & v: cases)
-            check_case(v);
+        for (const auto & c: testcases)
+            check(c.v, c.val, c.plan);
     };
 }
