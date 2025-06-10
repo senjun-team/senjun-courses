@@ -219,6 +219,8 @@ std::println("{}", std::distance(d.begin(), (rit + 1).base()));
 
 Например, для диапазона `[2, 5, 8, 9, 11, 12, 16]` и значения `x=11` функция должна вернуть итератор на 4-ый элемент, считая с нуля. {.task_text}
 
+Не у всех контейнеров итераторы поддерживают инкремент через `+` и `+=`. Для перемещения итератора на `n` позиций вперед используйте функцию [std::advance()](https://cppreference.com/w/cpp/iterator/advance): `std::advance(it, n)`. {.task_text}
+
 ```c++ {.task_source #cpp_chapter_0080_task_0030}
 template<class It, class Val>
 It b_search(It first, It last, Val x)
@@ -226,7 +228,7 @@ It b_search(It first, It last, Val x)
 
 }
 ```
-Определите длину диапазона через `std::distance()`. Середина диапазона находится на половине длины от его начала. {.task_hint}
+Определите длину диапазона через `std::distance()`. Середина диапазона находится на половине длины от его начала. Сдвигайте середину диапазона функцией `std::advance()`. {.task_hint}
 ```c++ {.task_answer}
 template<class It, class Val>
 It b_search(It first, It last, Val x)
@@ -234,22 +236,23 @@ It b_search(It first, It last, Val x)
     std::size_t len = std::distance(first, last);
 
     while (len > 0)
-	{
+    {
         const std::size_t half = len / 2;
-        It middle = first + half;
-        
+        auto middle = first;
+        std::advance(middle, half);
+
         if (*middle < x)
         {
             first = middle;
             ++first;
-            len -= half - 1;
+            len -= half + 1;
         }
         else
         {
             len = half;
         }
-	}
-    
+    }
+
     return first;
 }
 ```
