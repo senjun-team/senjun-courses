@@ -318,7 +318,8 @@ std::size_t count_vals(std::vector<int> data, int val)
 ```c++ {.task_answer}
 std::size_t count_vals(std::vector<int> data, int val)
 {
-
+    const auto it_pair = std::equal_range(data.begin(), data.end(), val);
+    return std::distance(it_pair.first, it_pair.second);
 }
 ```
 
