@@ -107,7 +107,7 @@ catch(const std::out_of_range & e)
 - `front()` — возвращает первый элемент.
 - `back()` — возвращает последний элемент.
 - `push_back()` — добавляет элемент в конец. Например, `v.push_back(1)`.
-- `insert()` — добавляет элемент перед итератором. Вызов `v.insert(v.begin(), 1)` добавит элемент 1 в начало контейнера. У метода есть [несколько перегрузок.](https://en.cppreference.com/w/cpp/container/vector/insert) Метод возвращает итератор на вставленный элемент.
+- `insert()` — добавляет элемент перед итератором. Вызов `v.insert(v.begin(), 1)` добавит элемент 1 в начало контейнера. У метода есть [несколько перегрузок.](https://en.cppreference.com/w/cpp/container/vector/insert) Самая полезная из них — для вставки диапазона: `v.insert(v.begin() + 1, src.begin(), src.end())`. Метод возвращает итератор на вставленный элемент.
 - `pop_back()` — удаляет последний элемент.
 - `erase()` — удаляет один или несколько элементов. Вызов `v.erase(it)` удалит элемент, на который указывает итератор `it`. А `v.erase(it_start, it_end)` удалит элементы в диапазоне. У метода несколько [перегрузок.](https://en.cppreference.com/w/cpp/container/vector/erase) Метод возвращает итератор за последним удаленным элементом.
 - `clear()` — удаляет все элементы.
@@ -801,6 +801,8 @@ Key RFCOMM exists: true
 Set: {"SDP", "RFCOMM"} Size: 2
 ```
 
+Метод [insert()](https://en.cppreference.com/w/cpp/container/unordered_set/insert.html) контейнера `std::unordered_set`, как и этот же метод других контейнеров, позволяет вставлять целые диапазоны: `bluetooth_protocols.insert(src.begin(), src.end())`.
+
 Класс [std::unordered_map](https://en.cppreference.com/w/cpp/container/unordered_map) позволяет хранить пары ключ-значение с уникальным ключом.
 
 А классы [std::unordered_multimap](https://en.cppreference.com/w/cpp/container/unordered_multimap) и [std::unordered_multiset](https://en.cppreference.com/w/cpp/container/unordered_multiset) не требуют уникальности ключа. 
@@ -815,8 +817,34 @@ bool consists_of(std::string message, std::string magazine)
 
 }
 ```
-Заведите вспомогательную функцию, которая принимает строку и возвращает `std::map`, ключи которого — символы, а значения — их частота в строке. Это частотный словарь. Примените эту функцию к посланию и тексту журнала. Затем проитерируйтесь по частотному словарю послания и проверьте, что каждый ключ в нем содержится в словаре журнала. И значения по этому ключу в словаре послания больше или равны значениям в словаре журнала. {.task_hint}
+Заведите вспомогательную функцию, которая принимает строку и возвращает `std::map`, ключи которого — символы, а значения — их частота в строке. Это частотный словарь. Примените эту функцию к тексту журнала. Затем проитерируйтесь по посланию и проверьте, что каждый символ в нем (кроме пробела) содержится в частотном словаре. Если символ найден, уменьшайте по этому ключу частоту на 1. {.task_hint}
 ```c++ {.task_answer}
+// Лаконичное решение. Но оно расходует много памяти,
+// если длина строки magazine большая.
+// Ниже в комментарии приведено альтернативное решение.
+bool consists_of(std::string message, std::string magazine)
+{
+    std::unordered_multiset<char> mag_chars;
+    mag_chars.reserve(magazine.size());
+    mag_chars.insert(magazine.begin(), magazine.end());
+
+    for(char c: message)
+    {
+        if (c == ' ')
+            continue;
+
+        auto it = mag_chars.find(c);
+        if (it == mag_chars.end())
+            return false;
+        
+        mag_chars.erase(it);
+    }
+
+    return true;
+}
+
+// Альтернативное решение:
+/*
 std::unordered_map<char, std::size_t> to_dict(std::string text)
 {
     std::unordered_map<char, std::size_t> dict;
@@ -829,7 +857,7 @@ std::unordered_map<char, std::size_t> to_dict(std::string text)
         auto [it, inserted] = dict.try_emplace(c, 1);
 
         if (!inserted)
-            ++it->second;    
+            ++it->second;
     }
 
     return dict;
@@ -837,19 +865,24 @@ std::unordered_map<char, std::size_t> to_dict(std::string text)
 
 bool consists_of(std::string message, std::string magazine)
 {
-    const auto dict_message = to_dict(message);
-    const auto dict_magazine = to_dict(magazine);
+    auto dict = to_dict(magazine);
 
-    for (auto it = dict_message.cbegin(); it != dict_message.cend(); ++it)
+    for (char c: message)
     {
-        const auto it_mag = dict_magazine.find(it->first);
+        if (c == ' ')
+            continue;
         
-        if (it_mag == dict_magazine.end() || it_mag->second < it->second)
+        auto it = dict.find(c);
+        
+        if (it == dict.end() || it->second == 0)
             return false;
+        
+        --it->second;
     }
 
     return true;
 }
+*/
 ```
 
 ### Алгоритмическая сложность работы с неупорядоченными ассоциативными контейнерами
