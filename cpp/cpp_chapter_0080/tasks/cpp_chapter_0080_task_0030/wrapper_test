@@ -6,29 +6,43 @@ import std;
 
 using namespace boost::ut;
 
-void check(const std::vector<int> & v, int x, int plan_index)
+template <typename T>
+bool is_vector(const T & c)
 {
+    return std::is_same<T, std::vector<typename T::value_type>>::value;
+}
+
+template<class C>
+void check(const C & v, int x, int plan_index)
+{
+    std::string cont = is_vector(v) ? "std::vector" : "std::list";
+
     auto it = b_search(v.begin(), v.end(), x);
     if (plan_index == -1)
     {
-        expect(it == v.end()) << std::format("b_search() didn't return v.end() while searching for value {} in vector {}", x, v) << fatal;
+        expect(it == v.end()) << std::format("b_search() didn't return end() while searching for value {} in {} {}. Instead it returned iterator to {}'th element", x, cont, v, std::distance(v.begin(), it)) << fatal;
         return;
     }
 
-    expect(it != v.end()) << std::format("b_search() returned v.end() while searching for value {} in vector {}", x, v) << fatal;
+    expect(it != v.end()) << std::format("b_search() returned end() while searching for value {} in {} {}", x, cont, v) << fatal;
     
-    std::size_t fact_index = std::distance(v.begin(), it);
-    expect(plan_index == fact_index) << std::format("b_search() returned wrong result while searching for value {} in vector {}. Expected iterator to element with index {}. But got iterator to element with index {}", x, v, plan_index, fact_index) << fatal;
+    const std::size_t fact_index = std::distance(v.begin(), it);
+    expect(plan_index == fact_index) << std::format("b_search() returned wrong result while searching for value {} in {} {}. Expected iterator to element with index {}. But got iterator to element with index {}", x, cont, v, plan_index, fact_index) << fatal;
 }
 
 void check_case(const std::vector<int> & v)
 {
+    std::list<int> lst(v.begin(), v.end());
+
     for (std::size_t i = 0; i < v.size(); ++i)
     {
-        check(v, v[i], i);
+        int val = v[i];
+        check(v, val, i);
+        check(lst, val, i);
     }
 
-    check(v, 1000, -1); // this value doesn't exist in vector
+    check(v, 1000, -1); // this value doesn't exist in container
+    check(lst, 1000, -1);
 }
 
 int main()
