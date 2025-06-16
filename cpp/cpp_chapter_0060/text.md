@@ -188,7 +188,7 @@ bool is_palindrome(std::string text)
 
 Так, [std::find_if()](https://en.cppreference.com/w/cpp/algorithm/find) принимает итераторы на границы интересующего диапазона и предикат (функцию, возвращающую `true` либо `false`). Начальный элемент диапазона участвует в поиске, а последний — нет. Функция возвращает итератор на первый элемент внутри диапазона, для которого предикат вернул `true`. Если такого элемента нет, функция возвращает итератор на последний элемент диапазона. {#block-find-if}
 
-А [std::distance()](https://en.cppreference.com/w/cpp/iterator/distance) принимает итераторы на границы диапазона. Она возвращает, сколько элементов расположено между этими границами, включая начальный элемент диапазона и не включая последний. {#block-distance}
+А [std::distance()](https://en.cppreference.com/w/cpp/iterator/distance) принимает итераторы на границы диапазона. И возвращает, сколько элементов расположено между этими границами, включая начальный элемент диапазона и не включая последний. {#block-distance}
 
 ```c++ {.example_for_playground}
 import std;
@@ -214,7 +214,7 @@ void print_distance(std::string str, Pred pred)
     }
     else
     {
-        const std::size_t d = std::distance(str.begin(), it);
+        const auto d = std::distance(str.begin(), it);
         std::println("distance to '{}' is {}", *it, d);
     }
 }
@@ -233,6 +233,16 @@ distance to 'F' is 0
 distance to 'A' is 1
 distance to 'Q' is 2
 a character cannot be found by predicate
+```
+
+Важно знать, что `std::distance()` может вернуть _отрицательное_ значение. Это допустимо, если переданы итераторы произвольного доступа (random access), а итератор на начало диапазона достижим из итератора на конец:
+
+```c++
+std::string menu_item = "FAQ";
+std::println("{}", std::distance(menu_item.end(), menu_item.begin()));
+```
+```
+-3
 ```
 
 Напишите шаблонную функцию `index_of()`. Функция принимает строку и предикат. Тип предиката является параметром шаблона. Функция возвращает индекс первого символа, для которого предикат вернул `true`. Если такого символа нет, функция должна бросить исключение `std::runtime_error`. {.task_text}
