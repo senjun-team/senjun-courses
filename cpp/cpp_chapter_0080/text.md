@@ -152,7 +152,27 @@ int main()
 
 Функция [std::find_if_not()](https://en.cppreference.com/w/cpp/algorithm/find) имеет единственное отличие от `std::find_if()`. Она возвращает итератор на элемент, для которого предикат вернул `false`.
 
+Чтобы искать элементы начиная с конца диапазона, в алгоритм поиска передаются [обратные итераторы:](/courses/cpp/chapters/cpp_chapter_0060/#block-reverse-iterators)
+
+```c++ {.example_for_playground .example_for_playground_005}
+std::deque<int> d = {5, 6, 10, 10, 1};
+
+auto rit = std::find(d.rbegin(), d.rend(), 10);
+std::println("{}", std::distance(d.begin(), (rit + 1).base()));
+```
+```
+3
+```
+
+Функция `std::find()` и ее вариации нужны для поиска одного элемента. Они работают за линейное время `O(N)`, где `N` — длина диапазона.
+
+Для поиска одного диапазона внутри другого используется алгоритм [std::search()](https://en.cppreference.com/w/cpp/algorithm/search). Он работает за время `O(N * M)`, где `N` и `M` — длины диапазонов.
+
+Для определения, соответствуют ли элементы диапазона предикату, есть алгоритмы [std::all_of(), std::any_of() и std::none_of()](https://en.cppreference.com/w/cpp/algorithm/all_any_none_of). Их алгоритмическая сложность — `O(N)`.
+
 Реализуйте функцию `accepts_gzip()`. Она принимает вектор из HTTP-заголовков. Каждый заголовок — это пара, в которой поле `first` хранит имя заголовка, а поле `second` — его значение. Функция должна вернуть `true`, если среди заголовков содержится `"Accept-Encoding"`, значение которого содержит подстроку `"gzip"`. {.task_text}
+
+Попробуйте решить задачу двумя способами: сначала через `std::find_if()`, а затем через `std::any_of()`. {.task_text}
 
 ```c++ {.task_source #cpp_chapter_0080_task_0020}
 bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
@@ -174,26 +194,11 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 {
     return std::find_if(headers.begin(), headers.end(), accepts) 
            != headers.end();
+
+    // Еще более удачный вариант:
+    // return std::any_of(headers.begin(), headers.end(), accepts);
 }
 ```
-
-Чтобы искать элементы начиная с конца диапазона, в алгоритм поиска передаются [обратные итераторы:](/courses/cpp/chapters/cpp_chapter_0060/#block-reverse-iterators)
-
-```c++ {.example_for_playground .example_for_playground_005}
-std::deque<int> d = {5, 6, 10, 10, 1};
-
-auto rit = std::find(d.rbegin(), d.rend(), 10);
-std::println("{}", std::distance(d.begin(), (rit + 1).base()));
-```
-```
-3
-```
-
-Функция `std::find()` и ее вариации нужны для поиска одного элемента. Они работают за линейное время `O(N)`, где `N` — длина диапазона.
-
-Для поиска одного диапазона внутри другого используется алгоритм [std::search()](https://en.cppreference.com/w/cpp/algorithm/search). Он работает за время `O(N * M)`, где `N` и `M` — длины диапазонов.
-
-Для определения, соответствуют ли элементы диапазона предикату, есть алгоритмы [std::all_of(), std::any_of() и std::none_of()](https://en.cppreference.com/w/cpp/algorithm/all_any_none_of). Их алгоритмическая сложность — `O(N)`.
 
 ## Бинарный поиск
 
@@ -233,11 +238,11 @@ It b_search(It first, It last, Val x)
 template<class It, class Val>
 It b_search(It first, It last, Val x)
 {
-    std::size_t len = std::distance(first, last);
+    auto len = std::distance(first, last);
 
     while (len > 0)
     {
-        const std::size_t half = len / 2;
+        const auto half = len / 2;
         auto middle = first;
         std::advance(middle, half);
 
@@ -253,7 +258,7 @@ It b_search(It first, It last, Val x)
         }
     }
 
-    return first;
+    return (first != last && *first != x) ? last : first;
 }
 ```
 
