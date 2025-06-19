@@ -214,3 +214,72 @@ type snake struct {
 
 Отметим, что указатели используются не только для модификации получателя. Разумным решением по-прежнему является использование указателя и для доступа к большим данным. 
 
+`Nikolaev A.E.` ожидает получить 200 долларов от компании `OOO "Horns and Hooves"`. Однако, судя по выводу, не получает ничего. Найдите ошибку в коде. {.task_text}
+
+```go {.task_source #golang_chapter_0120_task_0020}
+package main
+
+import "fmt"
+
+func main() {
+	var t transaction
+	t.fromWho = `OOO "Horns and Hooves"`
+	t.toWhere = `Nikolaev A.E.`
+	t.setAmount(200)
+	fmt.Println(t.getAmount())
+}
+
+func (t transaction) setAmount(amount dollars) {
+	t.amount = amount
+}
+
+func (t transaction) getAmount() dollars {
+	return t.amount
+}
+
+type transaction struct {
+	fromWho string
+	toWhere string
+	amount  dollars
+}
+
+type dollars float64
+```
+
+Вспомните, что модифицировать получатель внутри метода возможно только через указатель. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import "fmt"
+
+func main() {
+	var t transaction
+	t.fromWho = `OOO "Horns and Hooves"`
+	t.toWhere = `Nikolaev A.E.`
+	t.setAmount(200)
+	fmt.Println(t.getAmount())
+}
+
+// ошибка была здесь!
+// метод setAmount должен модифицировать 
+// transaction через указатель
+func (t *transaction) setAmount(amount dollars) {
+	t.amount = amount
+}
+
+// по нашему соглашению getAmount
+// теперь тоже должен работать 
+// через указатель 
+func (t *transaction) getAmount() dollars {
+	return t.amount
+}
+
+type transaction struct {
+	fromWho string
+	toWhere string
+	amount  dollars
+}
+
+type dollars float64
+```
