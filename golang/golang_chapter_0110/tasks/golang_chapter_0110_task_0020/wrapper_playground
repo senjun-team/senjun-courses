@@ -1,0 +1,113 @@
+#INJECT-b585472fa
+
+func main() {
+	tree := randomTree(42, 2)
+    fmt.Printf("solve() returned %v for AST:", solve(tree.root))
+	printAst(tree)
+}
+
+func printAst(a *ast) {
+	printInLevel(a.root, 0, map[int]struct{}{})
+}
+
+func printInLevel(n *node, level int, prevBranchLevels map[int]struct{}) (branchLevels map[int]struct{}) {
+	branchLevels = make(map[int]struct{})
+
+	for i := 0; i < level; i++ {
+		_, ok := prevBranchLevels[i]
+		if ok {
+			fmt.Print("│  ")
+			branchLevels[i] = struct{}{}
+		} else if i != 0 {
+			fmt.Print("   ")
+		}
+	}
+
+	if level != 0 {
+		if n.parent == nil || n.parent.children[len(n.parent.children)-1] == n {
+			fmt.Print("└─ ")
+		} else {
+			fmt.Print("├─ ")
+			branchLevels[level] = struct{}{}
+		}
+	}
+
+	fmt.Println(n.value)
+
+	for _, child := range n.children {
+		branchLevels = printInLevel(child, level+1, branchLevels)
+	}
+
+	return
+}
+
+func randomTree(seed int64, size int) *ast {
+	rnd := rand.New(rand.NewSource(seed))
+	var leaf node
+	var a ast
+	a.root = &leaf
+	a.root.value = randomOp(rnd)
+	var nonTerminalNodes []*node
+	nonTerminalNodes = append(nonTerminalNodes, a.root)
+
+	for i := 0; i < size; i++ {
+		n := nonTerminalNodes[i]
+		left, right := extendTree(rnd, n)
+		if left != nil {
+			nonTerminalNodes = append(nonTerminalNodes, left)
+		}
+		if right != nil {
+			nonTerminalNodes = append(nonTerminalNodes, right)
+		}
+	}
+
+	for i := size; i < len(nonTerminalNodes); i++ {
+		nonTerminalNodes[i].children = append(nonTerminalNodes[i].children, &node{})
+		nonTerminalNodes[i].children = append(nonTerminalNodes[i].children, &node{})
+		nonTerminalNodes[i].children[0] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		nonTerminalNodes[i].children[1] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		nonTerminalNodes[i].children[0].parent = nonTerminalNodes[i]
+		nonTerminalNodes[i].children[1].parent = nonTerminalNodes[i]
+	}
+
+	return &a
+}
+
+func extendTree(rnd *rand.Rand, n *node) (left *node, right *node) {
+	n.children = append(n.children, &node{})
+	n.children = append(n.children, &node{})
+	switch rnd.Intn(3) {
+	case 0:
+		n.children[0] = &node{value: randomOp(rnd)}
+		n.children[1] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		n.children[0].parent = n
+		n.children[1].parent = n
+		return n.children[0], nil
+	case 1:
+		n.children[0] = &node{value: lexeme(strconv.Itoa(rnd.Intn(20)))}
+		n.children[1] = &node{value: randomOp(rnd)}
+		n.children[0].parent = n
+		n.children[1].parent = n
+		return nil, n.children[1]
+	case 2:
+		n.children[0] = &node{value: randomOp(rnd)}
+		n.children[1] = &node{value: randomOp(rnd)}
+		n.children[0].parent = n
+		n.children[1].parent = n
+		return n.children[0], n.children[1]
+	}
+	panic("no such case for int value")
+}
+
+func randomOp(rnd *rand.Rand) lexeme {
+	switch rnd.Intn(3) {
+	case 0:
+		return "+"
+	case 1:
+		return "-"
+	case 2:
+		return "*"
+	}
+
+	panic("no such case for int value")
+}
