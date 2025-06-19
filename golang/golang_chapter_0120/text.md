@@ -38,8 +38,23 @@ type snake struct {
 
 Объекты способны скрывать часть своей реализации. Мы уже видели, как это достигается в Go: строчными буквами в начале имен. Такое же правило действует и для имен методов. Так метод `show` недоступен из других пакетов. 
 
-Реализуйте метод `newGame` структуры `gameMap`. Метод `newGame` должен напечатать на экран карту  {.task_text}
+Реализуйте метод `newGame` структуры `gameMap`. Структура `gameMap` состоит из четырех полей: `rowsNumber` — числа строк, `colsNumber` — числа столбцов, `wall` — руны символа препятствия, `field` — руны символа свободной клетки.  Метод `newGame` должен напечатать на экран карту со змейкой. По краям этой карты — препятствия. Остальное — свободные клетки. Он должен принимать в качестве параметров позиции змейки `0 <= xPos` — позицию по оси `x` типа `int`, `0 <= yPos` — позицию по оси `y` типа `int`. Змейка должна иметь нулевую длину, нулевое тело и голову в виде символов `(:`. Например, для карты размером `rowsNumber=10` и `colsNumber=15`, когда `wall='o'`, `field='*'` и `xPos=4`, `yPos=7` метод `newGame` должен напечатать:  {.task_text}
 
+```
+ooooooooooooooo
+o*************o
+o*************o
+o*************o
+o*************o
+o*************o
+o*************o
+o***(:********o
+o*************o
+ooooooooooooooo
+```
+
+Метод `newGame` возвращает ошибку. В случае, когда змейка оказывается за пределами карты или упирается в стенку, верните ошибку с сообщением `size error`. Во всех остальных случаях в качестве ошибки верните `nil`. {.task_text}
+ 
 ```go {.task_source #golang_chapter_0120_task_0010}
 package main
 
@@ -48,14 +63,25 @@ import (
 )
 
 func main() {
+	var g gameMap
+	g.rowsNumber = 10
+	g.colsNumber = 15
+	g.wall = 'o'
+	g.field = '*'
+	err := g.newGame(4, 7)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
-func (s *snake) show() {
+func (s snake) show() {
 	fmt.Print(s.head)
 	for i := 0; i < s.length; i++ {
 		fmt.Print(s.body)
 	}
 }
+
+// ваш код здесь 
 
 type snake struct {
 	head   string
@@ -71,6 +97,7 @@ type gameMap struct {
 }
 ```
 
+Учитывайте длину головы через `len(s.head)`. {.task_hint}
 
 ```go {.task_answer}
 package main
@@ -82,17 +109,17 @@ import (
 
 func main() {
 	var g gameMap
-	g.rowsNumber = 4
-	g.colsNumber = 5
+	g.rowsNumber = 10
+	g.colsNumber = 15
 	g.wall = 'o'
 	g.field = '*'
-	err := g.newGame(2, 2)
+	err := g.newGame(4, 7)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func (s *snake) show() {
+func (s snake) show() {
 	fmt.Print(s.head)
 	for i := 0; i < s.length; i++ {
 		fmt.Print(s.body)
@@ -151,7 +178,7 @@ func (s *snake) respawn() {
 }
 ```
 
-В Go принято следующее соглашение. Если какой-либо метод `snake` использует указатель в качетсве получателя, то все методы `snake` должны использовать указатель. Даже если это не требуется компилятором, нам следует преобразовать наш код:
+В Go принято следующее соглашение. Если какой-либо метод `snake` использует указатель в качестве получателя, то все методы `snake` должны использовать указатель. Даже если это не требуется компилятором, нам следует преобразовать наш код:
 
 ```go {.example_for_playground}
 package main
