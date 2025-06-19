@@ -226,6 +226,9 @@ func newNode(node *linkedNode, value int) *linkedNode {
 }
 
 func newList(nodeNumber int) *linkedNode {
+	if nodeNumber <= 0 {
+		return nil
+	}
 	var beginNode = &linkedNode{nil, 0}
 	node := beginNode
 
@@ -308,8 +311,8 @@ type book struct {
 ./main.go:10:14: invalid operation: gameOfThrones == gameOfThronesDeluxEdition (struct containing map[int]string cannot be compared) (exit status 1)
 ```
 
-## Псевдонимы существующих типов данных
-Для выразительности и дополнительного контроля можно объявить псевдоним *alias* для существующих типов данных:
+## Псевдонимы типов данных
+Для выразительности и дополнительного контроля можно объявить псевдоним *alias* для типов данных:
 ```go
 type userId uint
 type ip string
@@ -319,24 +322,24 @@ type ip string
 
 ```go {.example_for_playground}
 type userId uint
-var bubaId userId = 20
-var valueId uint = 19
+var mainId userId = 20
+var computerId uint = 19
 
-fmt.Println(bubaId == valueId)
+fmt.Println(mainId == computerId)
 ```
 
 ```
-./main.go:10:24: invalid operation: bubaId == valueId (mismatched types userId and uint) (exit status 1)
+./main.go:10:24: invalid operation: mainId == computerId (mismatched types userId and uint) (exit status 1)
 ```
 
 Язык Go — язык со строгой типизацией. Необходимо явное приведение:
 
 ```go {.example_for_playground}
 type userId uint
-var bubaId userId = 20
-var valueId uint = 19
+var mainId userId = 20
+var computerId uint = 19
 
-fmt.Println(bubaId == userId(valueId))
+fmt.Println(mainId == userId(computerId))
 ```
 
 ```
@@ -663,8 +666,8 @@ func randomOp(rnd *rand.Rand) lexeme {
 ## Резюме
 
 1. Структура представляет собой пользовательский тип данных. Структура удобна, когда необходимо представить одну сущность из нескольких полей разных типов как единой целое.
-2. Одна структура может быть частью другой структуры.
+2. Одна структура может быть частью другой структуры. Это встраивание структур.
 3. Как структура, так и поля внутри нее, ограничены областью видимости. Имена, которые начинаются с прописных букв, видны из пакетов, которые их импортируют. Имена, которые начинаются со строчных букв, доступны только внутри пакета.  
-4. Полем структуры может быть даже указатель на саму эту структуру! Это позволяет легко реализовать многие структуры данных. Например, списки и деревья. 
+4. Полем структуры может быть даже указатель на саму эту структуру! Это позволяет легко реализовать рекурсивные структуры данных. Например, списки и деревья. 
 5. Полезным свойством структур является то, что их можно сравнивать, если сравнимы соответствующие поля. Вместо того, чтобы писать цикл по обходу полей структуры, достаточно проверить их на равенство.
-6. Для существующих типов данных допустимо использовать псевдоним. Это делает код более выразительным и менее подверженным ошибкам. Разные пседовнимы, образованные от одного типа, являются разными типами. 
+6. Для типов данных допустимо использовать псевдоним. Это делает код более выразительным и менее подверженным ошибкам. Разные пседовнимы, образованные от одного типа, являются разными типами. 
