@@ -38,7 +38,9 @@ type snake struct {
 
 Объекты способны скрывать часть своей реализации. Мы уже видели, как это достигается в Go: строчными буквами в начале имен. Такое же правило действует и для имен методов. Так метод `show` недоступен из других пакетов. 
 
-```go
+Реализуйте метод `newGame` структуры `gameMap`. Метод `newGame` должен напечатать на экран карту  {.task_text}
+
+```go {.task_source #golang_chapter_0120_task_0010}
 package main
 
 import (
@@ -60,10 +62,17 @@ type snake struct {
 	body   string
 	length int
 }
+
+type gameMap struct {
+	rowsNumber int
+	colsNumber int
+	wall       rune
+	field      rune
+}
 ```
 
 
-```go 
+```go {.task_answer}
 package main
 
 import (
