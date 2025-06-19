@@ -2,7 +2,7 @@
 
 func main() {
 	tree := randomTree(42, 2)
-    fmt.Printf("solve() returned %v for AST:", solve(tree.root))
+    fmt.Printf("solve() returned %v for AST:\n", solve(tree.root))
 	printAst(tree)
 }
 
