@@ -38,6 +38,101 @@ type snake struct {
 
 Объекты способны скрывать часть своей реализации. Мы уже видели, как это достигается в Go: строчными буквами в начале имен. Такое же правило действует и для имен методов. Так метод `show` недоступен из других пакетов. 
 
+```go
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+}
+
+func (s *snake) show() {
+	fmt.Print(s.head)
+	for i := 0; i < s.length; i++ {
+		fmt.Print(s.body)
+	}
+}
+
+type snake struct {
+	head   string
+	body   string
+	length int
+}
+```
+
+
+```go 
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+func main() {
+	var g gameMap
+	g.rowsNumber = 4
+	g.colsNumber = 5
+	g.wall = 'o'
+	g.field = '*'
+	err := g.newGame(2, 2)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func (s *snake) show() {
+	fmt.Print(s.head)
+	for i := 0; i < s.length; i++ {
+		fmt.Print(s.body)
+	}
+}
+
+func (g gameMap) newGame(xPos int, yPos int) error {
+	var s snake = snake{head: "(:"}
+	if yPos < 1 || yPos >= g.rowsNumber-1 ||
+		xPos < 1 || xPos > g.colsNumber-len(s.head)-1 {
+		return errors.New("size error")
+	}
+
+	for i := 0; i < g.rowsNumber; i++ {
+		for j := 0; j < g.colsNumber; j++ {
+			if i == yPos && j > xPos &&
+				j+len(s.head) >= g.colsNumber {
+				fmt.Print(string(g.wall))
+				break
+			} else if j == 0 || j == g.colsNumber-1 ||
+				i == 0 || i == g.rowsNumber-1 {
+				fmt.Print(string(g.wall))
+			} else if i == yPos && j == xPos {
+				s.show()
+			} else {
+				fmt.Print(string(g.field))
+			}
+
+		}
+		fmt.Println()
+	}
+
+	return nil
+}
+
+type snake struct {
+	head   string
+	body   string
+	length int
+}
+
+type gameMap struct {
+	rowsNumber int
+	colsNumber int
+	wall       rune
+	field      rune
+}
+```
+
 ## Модификация получателя внутри метода 
 Иногда методу необходимо изменить получатель. Поскольку каждый вызов метода создает копию получателя, то для этого нужно воспользоваться указателем: 
 
