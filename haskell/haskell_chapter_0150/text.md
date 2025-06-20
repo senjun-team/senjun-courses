@@ -359,6 +359,8 @@ import Data.Text.IO hiding ( readFile
 Скройте функцию `putStrLn` из `Prelude`, чтобы появилась возможность использования `putStrLn` из `Data.Text.IO`. {.task_text}
 
 ```haskell {.task_source #haskell_chapter_0150_task_0040}
+module Main where
+
 import Data.Text.IO
 
 main :: IO ()
@@ -370,6 +372,8 @@ main = let
 ```
 Синтаксис: `import Имя.Модуля hiding (определение1, определение2, ...)`. {.task_hint}
 ```haskell {.task_answer}
+module Main where
+
 import Prelude hiding (putStrLn)
 import Data.Text.IO
 
