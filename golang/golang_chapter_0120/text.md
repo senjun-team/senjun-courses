@@ -354,7 +354,6 @@ func main() {
 	var nilLib *library
 	fmt.Println(nilLib.getAuthorBooks("George R. R. Martin"))
 }
-
 ```
 
 Если получатель равен `nil`, сразу же выполните `return`.  В противном случае пройдите в цикле по всем книгам библиотеки. Если автор совпадает, добавьте книгу в результирующий срез. {.task_hint}
@@ -398,7 +397,35 @@ func main() {
 	var nilLib *library
 	fmt.Println(nilLib.getAuthorBooks("George R. R. Martin"))
 }
-
 ```
 
+## Композиция 
+``` go {.example_for_playground}
+package main
 
+import "fmt"
+
+type book struct {
+	author, name string
+	pages        int
+	year         int
+}
+
+func (b book) print() {
+	fmt.Printf("%s. %s. %d p., %d year",
+		b.author, b.name, b.pages, b.year)
+}
+
+type textbook struct {
+	subject string
+	book
+}
+
+func main() {
+	var t textbook = textbook{"Go", book{"Alan A. A. Donovan", "The Go Programming Language", 380, 2015}}
+	t.print()
+}
+```
+```
+Alan A. A. Donovan. The Go Programming Language. 380 p., 2015 year
+```
