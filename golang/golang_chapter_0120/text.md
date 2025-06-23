@@ -283,3 +283,119 @@ type transaction struct {
 
 type dollars float64
 ```
+
+## Пустой получатель 
+Если вы используете указатель в качестве получателя, то этот указтель может быть равен `nil`. Такую ситуацию имеет смысл корректно обрабатывать, о чем дополнительно пишут в комментарии к функции.
+
+```go {.example_for_playground}
+package main
+
+import "fmt"
+
+type rating struct {
+	student string
+	mark    int
+}
+
+type allRating struct {
+	raitings []rating
+}
+
+/*
+The average gets the average value from all the ratings.
+If r is nil then the average returns 0.
+*/
+func (r *allRating) average() (res float64) {
+	if r == nil {
+		return
+	}
+	for _, raiting := range r.raitings {
+		res += float64(raiting.mark) / float64(len(r.raitings))
+	}
+	return
+}
+
+func main() {
+	var a *allRating
+	fmt.Println(a.average())
+}
+```
+
+
+В коде представлены структуры книги `book` и библиотеки `library`, состоящей из книг. Реализуйте метод `getAuthorBooks`  с указателем на `library` в качестве получателя. Метод принимает аргумент `author` типа `string` и должен вернуть срез из структур `book`. Срез должен содержать все книги автора `author`. {.task_text}
+
+Учтите, что получатель может иметь значение `nil`. В этом случае верните пустой срез. {.task_text}
+
+``` go {.task_source #golang_chapter_0120_task_0030}
+package main
+
+import "fmt"
+
+type book struct {
+	author, name string
+	pages        int
+	year         int
+}
+
+type library struct {
+	books []book
+}
+
+func main() {
+	var lib library
+	lib.books = append(lib.books, book{"J. R. R. Tolkien", "The Hobbit, or There and Back Again", 310, 1937})
+	lib.books = append(lib.books, book{"J. R. R. Tolkien", "The Lord of the Rings", 1077, 1954})
+	lib.books = append(lib.books, book{"George R. R. Martin", "A Game of Thrones", 694, 1996})
+	for _, book := range lib.getAuthorBooks("J. R. R. Tolkien") {
+		fmt.Println(book.name)
+	}
+	var nilLib *library
+	fmt.Println(nilLib.getAuthorBooks("George R. R. Martin"))
+}
+
+```
+
+Если получатель равен `nil`, сразу же выполните `return`.  В противном случае пройдите в цикле по всем книгам библиотеки. Если автор совпадает, добавьте книгу в результирующий срез. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import "fmt"
+
+type book struct {
+	author, name string
+	pages        int
+	year         int
+}
+
+type library struct {
+	books []book
+}
+
+func (lib *library) getAuthorBooks(
+	author string) (res []book) {
+	if lib == nil {
+		return
+	}
+	for _, book := range lib.books {
+		if book.author == author {
+			res = append(res, book)
+		}
+	}
+	return res
+}
+
+func main() {
+	var lib library
+	lib.books = append(lib.books, book{"J. R. R. Tolkien", "The Hobbit, or There and Back Again", 310, 1937})
+	lib.books = append(lib.books, book{"J. R. R. Tolkien", "The Lord of the Rings", 1077, 1954})
+	lib.books = append(lib.books, book{"George R. R. Martin", "A Game of Thrones", 694, 1996})
+	for _, book := range lib.getAuthorBooks("J. R. R. Tolkien") {
+		fmt.Println(book.name)
+	}
+	var nilLib *library
+	fmt.Println(nilLib.getAuthorBooks("George R. R. Martin"))
+}
+
+```
+
