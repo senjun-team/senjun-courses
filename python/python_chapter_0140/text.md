@@ -285,24 +285,24 @@ print(x)
 
 `<class 'set'> False` {.task_text}
 
-Для проверки на хешируемость воспользуйтесь функцией `isinstance(object, class)`, которая определяет принадлежность объекта к интересующему классу. Первым аргументом передайте в нее объект, вторым — тип `typing.Hashable`. Он содержится в подключенном через ключевое слово `import` модуле `typing`. {.task_text}
+Для проверки на хешируемость воспользуйтесь функцией `isinstance(object, class)`, которая определяет принадлежность объекта к интересующему классу. Первым аргументом передайте в нее объект, вторым — тип `collections.abc.Hashable`. Он содержится в подключенном через ключевое слово `import` модуле `collections.abc`. {.task_text}
 
-Как вы [помните,](/courses/python/chapters/python_chapter_0140#block-tuple-immutability) с хешируемостью кортежей все не так однозначно. Если в кортеже есть элементы изменяемых типов, он перестает быть хешируемым. Это же правило работает и для `frozenset`. То, что `tuple` и `frozenset` наследуются от `typing.Hashable`, говорит именно о том, что сами по себе они _не исключают_ возможности хеширования.  {.task_text}
+Как вы [помните,](/courses/python/chapters/python_chapter_0140#block-tuple-immutability) с хешируемостью кортежей все не так однозначно. Если в кортеже есть элементы изменяемых типов, он перестает быть хешируемым. Это же правило работает и для `frozenset`. То, что `tuple` и `frozenset` наследуются от `collections.abc.Hashable`, говорит именно о том, что сами по себе они _не исключают_ возможности хеширования.  {.task_text}
 
 ```python {.task_source #python_chapter_0140_task_0080}
-import typing
+import collections.abc
 
 objects = ["M", 7.8, True, [9, 9], {1, 2, 2}, None, frozenset([5]), (True, False)]
 ```
 
-Так выглядит проверка на хэшируемость: `isinstance(obj, typing.Hashable)`. {.task_hint}
+Так выглядит проверка на хэшируемость: `isinstance(obj, collections.abc.Hashable)`. {.task_hint}
 ```python {.task_answer}
-import typing
+import collections.abc
 
 objects = ["M", 7.8, True, [9, 9], {1, 2, 2}, None, frozenset([5]), (True, False)]
 
 for obj in objects:
-    print(type(obj), isinstance(obj, typing.Hashable))
+    print(type(obj), isinstance(obj, collections.abc.Hashable))
 ```
 
 ## Резюмируем
