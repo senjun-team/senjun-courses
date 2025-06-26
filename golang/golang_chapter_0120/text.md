@@ -400,6 +400,9 @@ func main() {
 ```
 
 ## Композиция 
+
+С помощью встраивания структур реализуют *композицию*. Композиция — это прием, который позволяет объединить несколько полей, каждое из которых содержит множество методов. Следующий пример иллюстрирует этот прием. Для этого используется анонимное встраивание структуры `book` в `textbook`. Заметим, что метод `print` определен для структуры `book`, однако может вызываться и для переменных структуры `textbook`:
+
 ``` go {.example_for_playground}
 package main
 
@@ -412,7 +415,7 @@ type book struct {
 }
 
 func (b book) print() {
-	fmt.Printf("%s. %s. %d p., %d year",
+	fmt.Printf("%s. %s. %d p., %d year\n",
 		b.author, b.name, b.pages, b.year)
 }
 
@@ -422,10 +425,53 @@ type textbook struct {
 }
 
 func main() {
-	var t textbook = textbook{"Go", book{"Alan A. A. Donovan", "The Go Programming Language", 380, 2015}}
+	var t textbook = textbook{"Go",
+	 	book{"Alan A. A. Donovan", "The Go Programming Language", 380, 2015}}
 	t.print()
 }
 ```
 ```
 Alan A. A. Donovan. The Go Programming Language. 380 p., 2015 year
+```
+
+В `textbook` может быть содеражть любое количество анонимных полей. Создайте еще одну структуру — `library`, которая содержит поля `name` и `address` типа `string`. Реализуйте метод этой структуры `printAddr`, который напечатает `name` и `address` через пробел. Встройте `library` в `textbook` как еще одно анонимное поле. Теперь переменные структуры `textbook` также содержат метод `printAddr`!
+
+```go {.task_answer}
+package main
+
+import "fmt"
+
+type book struct {
+	author, name string
+	pages        int
+	year         int
+}
+
+type library struct {
+	name    string
+	address string
+}
+
+func (lib library) printAdr() {
+	fmt.Printf("%s %s\n", lib.name, lib.address)
+}
+
+func (b book) print() {
+	fmt.Printf("%s. %s. %d p., %d year\n",
+		b.author, b.name, b.pages, b.year)
+}
+
+type textbook struct {
+	subject string
+	book
+	library
+}
+
+func main() {
+	var t textbook = textbook{"Go",
+		book{"Alan A. A. Donovan", "The Go Programming Language", 380, 2015},
+		library{"Moscow State Library", "Moscow city"}}
+	t.print()
+	t.printAdr()
+}
 ```
