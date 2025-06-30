@@ -1,6 +1,6 @@
 # Глава 12. Методы
 ## Пример метода 
-В Go особым образом реализовано объектно-ориентированное программирование — ООП. Под объектом понимается переменная, которая имеет *методы*. Методы — это функции, увязанные с некоторым типом. Вот пример метода `show`, который печатает «змейку» на экран:
+В Go особым образом реализовано ООП. Под объектом понимается переменная, которая имеет *методы*. Методы — это функции, увязанные с некоторым типом. Вот пример метода `show`, который печатает «змейку» на экран:
 
 
 ```go {.example_for_playground}
@@ -37,6 +37,15 @@ type snake struct {
 Параметр `s` метода `show` называется *получателем*. Получатель часто называют первой буквой имени типа, как в нашем случае.
 
 Объекты способны скрывать часть своей реализации. Мы уже видели, как это достигается в Go: строчными буквами в начале имен. Такое же правило действует и для имен методов. Так метод `show` недоступен из других пакетов. 
+
+Метод также может принимать параметры: 
+
+```go 
+func (s snake) new(length int) snake {
+	return snake{head: s.head, body: s.body,
+		length: length}
+}
+```
 
 Реализуйте метод `newGame` структуры `gameMap`. Структура `gameMap` состоит из четырех полей: `rowsNumber` — числа строк, `colsNumber` — числа столбцов, `wall` — руны символа препятствия, `field` — руны символа свободной клетки.  Метод `newGame` должен напечатать на экран карту со змейкой. По краям этой карты — препятствия. Остальное — свободные клетки. Он должен принимать в качестве параметров позиции змейки `0 <= xPos` — позицию по оси `x` типа `int`, `0 <= yPos` — позицию по оси `y` типа `int`. Змейка должна иметь нулевую длину, нулевое тело и голову в виде символов `(:`. Например, для карты размером `rowsNumber=10` и `colsNumber=15`, когда `wall='o'`, `field='*'` и `xPos=4`, `yPos=7` метод `newGame` должен напечатать:  {.task_text}
 
@@ -172,18 +181,46 @@ type gameMap struct {
 ## Методы псевдонимов 
 Метод необязательно должен быть связан с типом структуры. Он может быть объявлен и для псевдонима `alias`:
 
-```go
-type safeInt16 int16
+```go {.example_for_playground}
+package main
 
-func (s *safeInt16) inc() error {
-	if *s == math.MaxInt16 {
-		return errors.New("data type overflow")
+import (
+	"errors"
+	"fmt"
+)
+
+type lexeme string
+type lexemeType string
+
+func (lex lexeme) findLexeme(
+	dictionary map[lexemeType][]lexeme) (lexemeType,
+	error) {
+	for key, vals := range dictionary {
+		for _, val := range vals {
+			if val == lex {
+				return key, nil
+			}
+		}
 	}
-	*s++
-	return nil
+	return "", errors.New("not found")
+}
+
+func main() {
+	dictionary := make(map[lexemeType][]lexeme)
+	dictionary["keyword"] = []lexeme{"for", "if"}
+	dictionary["braces"] = []lexeme{"(", ")"}
+	lex := lexeme("if")
+	lexType, err := lex.findLexeme(dictionary)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Printf("lexeme: %s, lexemeType: %s\n", lex, lexType)
+	}
 }
 ```
-
+```
+lexeme: if, lexemeType: keyword
+```
 ## Модификация получателя внутри метода 
 Иногда методу необходимо изменить получатель. Поскольку каждый вызов метода создает копию получателя, то для этого нужно воспользоваться указателем: 
 
