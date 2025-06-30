@@ -169,6 +169,21 @@ type gameMap struct {
 }
 ```
 
+## Методы псевдонимов 
+Метод необязательно должен быть связан с типом структуры. Он может быть объявлен и для псевдонима `alias`:
+
+```go
+type safeInt16 int16
+
+func (s *safeInt16) inc() error {
+	if *s == math.MaxInt16 {
+		return errors.New("data type overflow")
+	}
+	*s++
+	return nil
+}
+```
+
 ## Модификация получателя внутри метода 
 Иногда методу необходимо изменить получатель. Поскольку каждый вызов метода создает копию получателя, то для этого нужно воспользоваться указателем: 
 
@@ -285,7 +300,7 @@ type dollars float64
 ```
 
 ## Пустой получатель 
-Если вы используете указатель в качестве получателя, то этот указтель может быть равен `nil`. Такую ситуацию имеет смысл корректно обрабатывать, о чем дополнительно пишут в комментарии к функции.
+Если вы используете указатель в качестве получателя, то этот указатель может быть равен `nil`. Такую ситуацию имеет смысл корректно обрабатывать, о чем дополнительно пишут в комментарии к функции.
 
 ```go {.example_for_playground}
 package main
@@ -356,7 +371,7 @@ func main() {
 }
 ```
 
-Если получатель равен `nil`, сразу же выполните `return`.  В противном случае пройдите в цикле по всем книгам библиотеки. Если автор совпадает, добавьте книгу в результирующий срез. {.task_hint}
+Если получатель метода `getAuthorBooks` равен `nil`, сразу же выполните `return`.  В противном случае пройдите в цикле по всем книгам библиотеки. Если автор совпадает, добавьте книгу в результирующий срез. {.task_hint}
 
 ```go {.task_answer}
 package main
@@ -434,7 +449,44 @@ func main() {
 Alan A. A. Donovan. The Go Programming Language. 380 p., 2015 year
 ```
 
-В `textbook` может быть содеражть любое количество анонимных полей. Создайте еще одну структуру — `library`, которая содержит поля `name` и `address` типа `string`. Реализуйте метод этой структуры `printAddr`, который напечатает `name` и `address` через пробел. Встройте `library` в `textbook` как еще одно анонимное поле. Теперь переменные структуры `textbook` также содержат метод `printAddr`!
+Говорят, что методы `book` *повышены* до методов `textbook`.
+
+В `textbook` может быть любое количество анонимных полей. Создайте еще одну структуру — `library`, которая содержит поля `name` и `address` типа `string`. Реализуйте метод этой структуры `printAddr`, который напечатает `name` и `address` через пробел. Встройте `library` в `textbook` как еще одно анонимное поле. Теперь переменные структуры `textbook` также содержат метод `printAddr`. {.task_text}
+
+```go {.task_source #golang_chapter_0120_task_0040}
+package main
+
+import "fmt"
+
+type book struct {
+	author, name string
+	pages        int
+	year         int
+}
+
+// ваш код здесь 
+
+func (b book) print() {
+	fmt.Printf("%s. %s. %d p., %d year\n",
+		b.author, b.name, b.pages, b.year)
+}
+
+type textbook struct {
+	subject string
+	book
+	library
+}
+
+func main() {
+	var t textbook = textbook{"Go",
+		book{"Alan A. A. Donovan", "The Go Programming Language", 380, 2015},
+		library{"Moscow State Library", "Moscow city"}}
+	t.print()
+	t.printAdr()
+}
+```
+
+Встройте структуру `library` в `textbook` аналогично тому, как встроена `book`. {.task_hint}
 
 ```go {.task_answer}
 package main
@@ -475,3 +527,63 @@ func main() {
 	t.printAdr()
 }
 ```
+
+Иногда бывает целесообразно использовать встраивание через указатель. В этом случае методы встраиваемой структуры также повышаются: 
+
+```go {.example_for_playground}
+package main
+
+import "fmt"
+
+type book struct {
+	author, name string
+	pages        int
+	year         int
+	abstract     string
+}
+
+func (b book) print() {
+	fmt.Printf("%s. %s. %d p., %d year\n",
+		b.author, b.name, b.pages, b.year)
+	fmt.Printf("\nAbstract:\n\n%s\n", b.abstract)
+}
+
+type textbook struct {
+	subject string
+	*book
+}
+
+func main() {
+	var t textbook = textbook{"Go",
+		&book{"Alan A. A. Donovan", "The Go Programming Language", 380, 2015,
+			`Google’s Go team member Alan A. A. Donovan and Brian Kernighan, 
+co-author of The C Programming Language, 
+provide hundreds of interesting and practical examples of 
+well-written Go code to help programmers 
+learn this flexible, and fast, language. 
+It is designed to get you started programming with Go 
+right away and then to progress on to more advanced topics.`}}
+	t.print()
+
+}
+```
+
+```
+Alan A. A. Donovan. The Go Programming Language. 380 p., 2015 year
+
+Abstract:
+
+Google’s Go team member Alan A. A. Donovan and Brian Kernighan, 
+co-author of The C Programming Language, 
+provide hundreds of interesting and practical examples of 
+well-written Go code to help programmers 
+learn this flexible, and fast, language. 
+It is designed to get you started programming with Go 
+right away and then to progress on to more advanced topics.
+```
+
+## Резюме
+1. Методы увязываются с типами структур, либо псевдонимов `alias`. 
+2. Чтобы модифицировать получатель внутри метода, необходимо использовать указатель.
+3. В качестве получателя может выступать значение `nil`.
+4. Композиция реализуется путем анонимного встраивания структур. В этом случае методы встраиваемой структуры повышаются. Такие методы оказываются доступны и для переменных внешней структуры.
