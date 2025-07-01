@@ -425,7 +425,7 @@ std::string s = "string";
 
 std::string::reverse_iterator rit = s.rbegin(); // g
 ++rit;                                          // n
-std::string::iterator it = rit.base();          // n
+std::string::iterator it = rit.base();          // g
 ```
 
 Зачем нужны обратные итераторы, если можно просто применить декремент к обычному итератору `--it`? {#block-motivation-reverse-iterators}
