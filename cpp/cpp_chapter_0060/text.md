@@ -193,46 +193,37 @@ bool is_palindrome(std::string text)
 ```c++ {.example_for_playground}
 import std;
 
-// Параметром шаблона может быть литерал простого типа,
-// в данном случае любой ASCII символ
-template<char Sym>
-bool expected(char c)
-{
-    return c == Sym;
-}
+bool is_comma(char c) { return c == ':'; }
 
-// Параметр шаблона - функция-предикат
-template <typename Pred>
-void print_distance(std::string str, Pred pred)
+void index_of_comma(std::string str)
 {
     const std::string::iterator it =
-        std::find_if(str.begin(), str.end(), pred);
+        std::find_if(str.begin(), str.end(), isComma);
 
     if (it == str.end())
     {
-        std::println("a character cannot be found by predicate");
+        std::println("a comma character cannot be found");
     }
     else
     {
         const auto d = std::distance(str.begin(), it);
-        std::println("distance to '{}' is {}", *it, d);
+        std::println("distance to ':' is {}", d);
     }
 }
 
 int main()
 {
-    std::string menu_item = "FAQ";
-    print_distance(menu_item, expected<'F'>);
-    print_distance(menu_item, expected<'A'>);
-    print_distance(menu_item, expected<'Q'>);
-    print_distance(menu_item, expected<'X'>);
+    index_of_comma(":");
+    index_of_comma("csv:non-csv");
+    index_of_comma("Order id: 5878");
+    index_of_comma("Lorem ipsum dolor sit amet.");
 }
 ```
 ```
-distance to 'F' is 0
-distance to 'A' is 1
-distance to 'Q' is 2
-a character cannot be found by predicate
+distance to ':' is 0
+distance to ':' is 3
+distance to ':' is 8
+a comma character cannot be found
 ```
 
 Важно знать, что `std::distance()` может вернуть _отрицательное_ значение. Это допустимо, если переданы итераторы произвольного доступа (random access), а итератор на начало диапазона достижим из итератора на конец:
