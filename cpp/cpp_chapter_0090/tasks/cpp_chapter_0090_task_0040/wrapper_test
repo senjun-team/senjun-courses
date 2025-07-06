@@ -8,10 +8,35 @@ import std;
 
 using namespace boost::ut;
 
+int parse_duration(const std::string & s)
+{
+    const std::string prefix = "Duration: ";
+    const std::string suffix = " ms\n";
+
+    const std::size_t i = s.find(prefix);
+    if (i != 0)
+        expect(false) << std::format("Console output in MeasureTime destructor must start with \"{}\"", prefix) << fatal;
+
+    const std::size_t j = s.find(suffix, i + prefix.size());
+    if (j == std::string::npos)
+        expect(false) << std::format("Console output in MeasureTime destructor must end with \" ms\" and line break") << fatal;
+    
+    const std::string num_s = s.substr(prefix.size(), j - prefix.size());
+    try
+    {
+        return std::stoi(num_s);
+    }
+    catch(const std::exception& e)
+    {
+        expect(false) << std::format("Console output in MeasureTime destructor must contain integer representation of time in milliseconds. Couldn't extract integer from this output: \"{}\"", s) << fatal;
+    }
+    
+    return 0;
+}
 
 int main()
 {
-    "check console output"_test = [] {
+    "measure time in empty code block"_test = [] {
         std::string captured_text;
         auto stdout_receiver = [&captured_text](std::string&& txt)
         {
@@ -23,7 +48,24 @@ int main()
             MeasureTime mt;
         }
 
-        std::string plan = "Duration: 0 ms\n";
-        expect(captured_text == plan) << std::format("Expected output in format: {} Received output: {}", plan, captured_text) << fatal;
+        const int t = parse_duration(captured_text);
+        expect(t < 3) << std::format("Expected output in format: Duration: N ms Received output: {}", captured_text) << fatal;
+    };
+
+    "measure time in non-empty block"_test = [] {
+        std::string captured_text;
+        auto stdout_receiver = [&captured_text](std::string&& txt)
+        {
+            captured_text = std::move(txt);
+        };
+
+        {
+            hlp::stdout_capture_t capture(stdout_receiver);
+            MeasureTime mt;
+            std::this_thread::sleep_for(std::chrono::milliseconds(150));
+        }
+
+        const int t = parse_duration(captured_text);
+        expect(t > 140 && t < 160) << std::format("Invalid time measurement in destructor output: {}", captured_text) << fatal;
     };
 }
