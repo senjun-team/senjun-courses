@@ -1,0 +1,70 @@
+#include "ut.hpp"
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+const std::vector<std::pair<std::string, std::string>> descriptions = {
+    {"rmdir", "remove empty directories"},
+    {"less", "display the contents of a file"},
+    {"sed", "stream editor for transforming text"}
+};
+
+const std::vector<std::pair<std::string, std::string>> aliases = {
+    {"rmdir", "rd"},
+    {"less", "o"},
+};
+
+int main()
+{
+    "test throws"_test = [] {
+        try
+        {
+            Commands cmds;
+            cmds.get_description("rd");
+        }
+        catch(const std::out_of_range & oor)
+        {
+            return;
+        }
+        catch(const std::exception& e)
+        {
+             expect(false) << "Class Commands throws exception of invalid type" << fatal;
+        }
+    };
+
+    "test add_command()"_test = [] {
+        Commands commands;
+        for (const auto & [cmd, descr]: descriptions)
+            commands.add_command(cmd, descr);
+        
+        for (const auto & [cmd, descr]: descriptions)
+        {
+            std::string fact = commands.get_description(cmd);
+            expect(fact == descr) << std::format("Method get_description() returns wrong result after add_command(\"{}\", \"{}\"): {}", cmd, descr, fact) << fatal;
+        }
+    };
+
+    "test add_alias()"_test = [] {
+        Commands commands;
+
+        for (const auto & [cmd, descr]: descriptions)
+            commands.add_command(cmd, descr);
+
+        for (const auto & [cmd, alias]: aliases)
+            commands.add_alias(alias, cmd);
+        
+        for (const auto & [cmd, alias]: aliases)
+        {
+            std::string fact = commands.get_description(alias);
+            auto it = std::find_if(descriptions.begin(), descriptions.end(), [cmd](const std::pair<std::string, std::string> & p) {return p.first == cmd;});
+            if (it == descriptions.end())
+                expect(false) << "Please revert your changes to test" << fatal;
+
+            std::string plan = it->second;
+            expect(fact == plan) << std::format("Method get_description() returns wrong result after add_command(\"{}\", \"{}\") and add_alias(\"{}\", \"{}\"): {}", cmd, plan, cmd, alias, fact) << fatal;
+        }
+    };
+}

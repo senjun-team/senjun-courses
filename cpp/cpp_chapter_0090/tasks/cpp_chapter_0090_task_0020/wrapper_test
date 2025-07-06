@@ -1,0 +1,12 @@
+#include "ut.hpp"
+#include "test_helpers.h"
+
+int main()
+{
+    using namespace boost::ut;
+
+    "check user input"_test = [] {
+        std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
+        expect(user_input == "2");
+    };
+}

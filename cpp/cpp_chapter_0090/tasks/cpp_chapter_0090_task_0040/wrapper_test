@@ -1,0 +1,29 @@
+#include "ut.hpp"
+
+import std;
+
+#include "test_helpers.h"
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+
+int main()
+{
+    "check console output"_test = [] {
+        std::string captured_text;
+        auto stdout_receiver = [&captured_text](std::string&& txt)
+        {
+            captured_text = std::move(txt);
+        };
+
+        {
+            hlp::stdout_capture_t capture(stdout_receiver);
+            MeasureTime mt;
+        }
+
+        std::string plan = "Duration: 0 ms\n";
+        expect(captured_text == plan) << std::format("Expected output in format: {} Received output: {}", plan, captured_text) << fatal;
+    };
+}
