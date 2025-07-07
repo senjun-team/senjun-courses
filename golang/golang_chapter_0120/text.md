@@ -1,6 +1,8 @@
 # Глава 12. Методы
 ## Пример метода 
-В Go особым образом реализовано ООП. Под объектом понимается переменная, которая имеет *методы*. Методы — это функции, увязанные с некоторым типом. Вот пример метода `show`, который печатает «змейку» на экран:
+В Go особым образом реализовано ООП. Под объектом понимается переменная, которая имеет *методы*. Метод — это всего лишь функция. Но у нее есть дополнительный параметр между ключевым словом `func` и именем функции.
+
+Вот пример метода `show`, который печатает «змейку» на экран:
 
 
 ```go {.example_for_playground}
@@ -222,7 +224,7 @@ func main() {
 lexeme: if, lexemeType: keyword
 ```
 ## Модификация получателя внутри метода 
-Иногда методу необходимо изменить получатель. Поскольку каждый вызов метода создает копию получателя, то для этого нужно воспользоваться указателем: 
+Иногда методу необходимо изменить получателя. Поскольку каждый вызов метода создает копию получателя, то для этого нужно воспользоваться указателем: 
 
 ```go 
 func (s *snake) respawn() {
@@ -230,7 +232,7 @@ func (s *snake) respawn() {
 }
 ```
 
-В Go принято следующее [соглашение](https://go.dev/tour/methods/8). Если какой-либо метод `snake` использует указатель в качестве получателя, то все методы `snake` должны использовать указатель. Даже если это не требуется компилятором, нам следует преобразовать наш код:
+В Go принято следующее [соглашение](https://go.dev/tour/methods/8). Если какой-либо метод `snake` использует указатель в качестве получателя, то все методы `snake` должны использовать указатель. Хотя это не требуется компилятором, нам следует преобразовать наш код:
 
 ```go {.example_for_playground}
 package main
@@ -266,7 +268,7 @@ type snake struct {
 
 Отметим, что указатели используются не только для модификации получателя. Разумным решением по-прежнему является использование указателя и для доступа к большим данным. 
 
-`Nikolaev A.E.` ожидает получить 200 долларов от компании `OOO "Horns and Hooves"`. Однако, судя по выводу, не получает ничего. Найдите ошибку в коде. {.task_text}
+`Nikolaev A.E.` ожидает получить 200 долларов от компании `OOO "Horns and Hooves"`. Однако, судя по выводу, не получает ничего. Найдите и исправьте ошибку в коде. {.task_text}
 
 ```go {.task_source #golang_chapter_0120_task_0020}
 package main
@@ -397,9 +399,15 @@ type library struct {
 
 func main() {
 	var lib library
-	lib.books = append(lib.books, book{"J. R. R. Tolkien", "The Hobbit, or There and Back Again", 310, 1937})
-	lib.books = append(lib.books, book{"J. R. R. Tolkien", "The Lord of the Rings", 1077, 1954})
-	lib.books = append(lib.books, book{"George R. R. Martin", "A Game of Thrones", 694, 1996})
+	lib.books = append(lib.books,
+		book{"J. R. R. Tolkien",
+			"The Hobbit, or There and Back Again", 310, 1937})
+	lib.books = append(lib.books,
+		book{"J. R. R. Tolkien",
+			"The Lord of the Rings", 1077, 1954})
+	lib.books = append(lib.books,
+		book{"George R. R. Martin",
+			"A Game of Thrones", 694, 1996})
 	for _, book := range lib.getAuthorBooks("J. R. R. Tolkien") {
 		fmt.Println(book.name)
 	}
@@ -440,9 +448,15 @@ func (lib *library) getAuthorBooks(
 
 func main() {
 	var lib library
-	lib.books = append(lib.books, book{"J. R. R. Tolkien", "The Hobbit, or There and Back Again", 310, 1937})
-	lib.books = append(lib.books, book{"J. R. R. Tolkien", "The Lord of the Rings", 1077, 1954})
-	lib.books = append(lib.books, book{"George R. R. Martin", "A Game of Thrones", 694, 1996})
+	lib.books = append(lib.books,
+		book{"J. R. R. Tolkien",
+			"The Hobbit, or There and Back Again", 310, 1937})
+	lib.books = append(lib.books,
+		book{"J. R. R. Tolkien",
+			"The Lord of the Rings", 1077, 1954})
+	lib.books = append(lib.books,
+		book{"George R. R. Martin",
+			"A Game of Thrones", 694, 1996})
 	for _, book := range lib.getAuthorBooks("J. R. R. Tolkien") {
 		fmt.Println(book.name)
 	}
@@ -478,7 +492,8 @@ type textbook struct {
 
 func main() {
 	var t textbook = textbook{"Go",
-	 	book{"Alan A. A. Donovan", "The Go Programming Language", 380, 2015}}
+		book{"Alan A. A. Donovan",
+			"The Go Programming Language", 380, 2015}}
 	t.print()
 }
 ```
@@ -501,7 +516,7 @@ type book struct {
 	year         int
 }
 
-// ваш код здесь 
+// ваш код здесь
 
 func (b book) print() {
 	fmt.Printf("%s. %s. %d p., %d year\n",
@@ -515,8 +530,10 @@ type textbook struct {
 
 func main() {
 	var t textbook = textbook{"Go",
-		book{"Alan A. A. Donovan", "The Go Programming Language", 380, 2015},
-		library{"Moscow State Library", "Moscow city"}}
+		book{"Alan A. A. Donovan",
+			"The Go Programming Language", 380, 2015},
+		library{"Moscow State Library",
+			"Moscow city"}}
 	t.print()
 	t.printAdr()
 }
@@ -557,8 +574,10 @@ type textbook struct {
 
 func main() {
 	var t textbook = textbook{"Go",
-		book{"Alan A. A. Donovan", "The Go Programming Language", 380, 2015},
-		library{"Moscow State Library", "Moscow city"}}
+		book{"Alan A. A. Donovan",
+			"The Go Programming Language", 380, 2015},
+		library{"Moscow State Library",
+			"Moscow city"}}
 	t.print()
 	t.printAdr()
 }
@@ -591,11 +610,12 @@ type textbook struct {
 
 func main() {
 	var t textbook = textbook{"Go",
-		&book{"Alan A. A. Donovan", "The Go Programming Language", 380, 2015,
-			`Google’s Go team member Alan A. A. Donovan and Brian Kernighan, 
-co-author of The C Programming Language...`}}
+		&book{"Alan A. A. Donovan",
+			"The Go Programming Language", 380, 2015,
+			`Google’s Go team member Alan A. A. Donovan 
+and Brian Kernighan, co-author of 
+The C Programming Language...`}}
 	t.print()
-
 }
 ```
 
@@ -604,12 +624,13 @@ Alan A. A. Donovan. The Go Programming Language. 380 p., 2015 year
 
 Abstract:
 
-Google’s Go team member Alan A. A. Donovan and Brian Kernighan, 
-co-author of The C Programming Language...
+Google’s Go team member Alan A. A. Donovan 
+and Brian Kernighan, co-author of 
+The C Programming Language...
 ```
 
 ## Резюме
 1. Методы увязываются с типами структур, либо псевдонимов (alias). 
 2. Чтобы модифицировать получатель внутри метода, необходимо использовать указатель.
 3. В качестве получателя может выступать значение `nil`.
-4. Композиция реализуется путем анонимного встраивания структур. В этом случае методы встраиваемой структуры повышаются. Такие методы оказываются доступны и для переменных внешней структуры.
+4. Композиция реализуется путем анонимного встраивания структур. В этом случае методы встраиваемой структуры повышаются, то есть становятся доступны и для переменных внешней структуры.
