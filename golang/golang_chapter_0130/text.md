@@ -9,6 +9,10 @@ package main
 
 import "fmt"
 
+type equipmentPrinter interface {
+	sprintf() (s string)
+}
+
 type computer struct {
 	opertionSystem string
 	ramInGb        int
@@ -30,10 +34,6 @@ func (c computer) sprintf() (s string) {
 func (m monitor) sprintf() (s string) {
 	return fmt.Sprintf("Monitor: %dx%d, %s",
 		m.size[0], m.size[1], m.company)
-}
-
-type equipmentPrinter interface {
-	sprintf() (s string)
 }
 
 func showEquipment(eq equipmentPrinter) {
@@ -72,3 +72,246 @@ All equipments:
 Указывать факт того, что функция реализует интерфейс явным образом, нет необходимости. В Go используется так называемая «утиная типизация»: «если что-то крякает как утка, то это утка». Это означает, что если тип реализует все методы интерфейса, то он удовлетворяет интерфейсу.
 
 Отметим также, что название интерфейса `equipmentPrinter` начинается со строчной буквы. Так мы поступили здесь, поскольку весь код находится в единственном пакете `main`. Однако чаще всего это не так, и имена интерфейсов начинаются с прописной буквы, чтобы они были доступны из других пакетов. То же самое относится и к методам, которые требует реализовать интерфейс.
+
+
+Создайте интерфейс `equipmentParser` с единственным методом `parse(s string) error`. Реализуйте этот метод в структурах `computer` и `monitor` так, чтобы эти структуры удовлетворяли интерфейсу. Метод должен разобрать значения полей структур по входной строке. Значения отделяются запятой. Не забудьте удалить пробельные символы вначале и в конце строк. Этого легко достичь с помощью метода `strings.TrimSpace()`.{.task_text}
+
+Создайте функцию `parseAll`, которая принимает в качестве параметров срез из `equipmentParser` и срез из строк. Она должна разобрать все строки, которые ей передадут, в соответствующие аргументы. Функция возвращает ошибку `failed to parse`, либо `nil`. {.task_text}
+
+
+```go {.task_source #golang_chapter_0130_task_0010}
+package main
+
+import (
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
+)
+
+type equipmentPrinter interface {
+	sprintf() (s string)
+}
+
+type computer struct {
+	opertionSystem string
+	ramInGb        int
+	coresNumber    int
+	cpu            string
+	company        string
+}
+
+type monitor struct {
+	size    [2]int
+	company string
+}
+
+func (c *computer) sprintf() (s string) {
+	return fmt.Sprintf("Computer: %s OS, %d RAM, %d cores, %s, %s",
+		c.opertionSystem, c.ramInGb, c.coresNumber, c.cpu, c.company)
+}
+
+func (m *monitor) sprintf() (s string) {
+	return fmt.Sprintf("Monitor: %dx%d, %s",
+		m.size[0], m.size[1], m.company)
+}
+
+func showEquipment(eq equipmentPrinter) {
+	fmt.Println(eq.sprintf())
+}
+
+func main() {
+	c := &computer{}
+	m := &monitor{}
+	err := parseAll([]equipmentParser{c, m},
+		[]string{"Ubuntu OS, 16, 8, Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
+			"1280x1024, Dell"})
+	if err != nil {
+		fmt.Println(err)
+	}
+	showEquipment(c)
+	showEquipment(m)
+}
+
+```
+
+Чтобы разбить строку в срез по разделителю, воспользуйтесь функцией `strings.Split`. Она принимает строку в качестве первого аргумента и разделитель — в качестве второго. Чтобы преобразовать строку к числу, воспользуйтесь функцией `strconv.Atoi`. Она вернет результат и ошибку. {.task_hint}
+
+```go  {.task_answer}
+package main
+
+import (
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
+)
+
+type equipmentPrinter interface {
+	sprintf() (s string)
+}
+
+type equipmentParser interface {
+	parse(s string) error
+}
+
+type computer struct {
+	opertionSystem string
+	ramInGb        int
+	coresNumber    int
+	cpu            string
+	company        string
+}
+
+type monitor struct {
+	size    [2]int
+	company string
+}
+
+func (c *computer) sprintf() (s string) {
+	return fmt.Sprintf("Computer: %s OS, %d RAM, %d cores, %s, %s",
+		c.opertionSystem, c.ramInGb, c.coresNumber, c.cpu, c.company)
+}
+
+func (c *computer) parse(s string) error {
+	res := strings.Split(s, ",")
+	elementsNumber := 5
+	if len(res) != elementsNumber {
+		return errors.New("elements number is wrong")
+	}
+	for i := 0; i < len(res); i++ {
+		res[i] = strings.TrimSpace(res[i])
+	}
+	var err error
+	c.ramInGb, err = strconv.Atoi(res[1])
+	if err != nil {
+		return errors.New("could not parse ramInGb as integer")
+	}
+	c.coresNumber, err = strconv.Atoi(res[2])
+	if err != nil {
+		return errors.New("could not parse coresNumber as integer")
+	}
+	c.opertionSystem = res[0]
+	c.cpu = res[3]
+	c.company = res[4]
+	return nil
+}
+func (m *monitor) sprintf() (s string) {
+	return fmt.Sprintf("Monitor: %dx%d, %s",
+		m.size[0], m.size[1], m.company)
+}
+
+func (m *monitor) parse(s string) error {
+	res := strings.Split(s, ",")
+	if len(res) != 2 {
+		return errors.New("elements number is wrong")
+	}
+	for i := 0; i < len(res); i++ {
+		res[i] = strings.TrimSpace(res[i])
+	}
+	m.company = res[1]
+	mSize := strings.Split(res[0], "x")
+	if len(mSize) != 2 {
+		return errors.New("elements size number is wrong")
+	}
+	for i := 0; i < len(mSize); i++ {
+		mSize[i] = strings.TrimSpace(mSize[i])
+	}
+	firstSize, err := strconv.Atoi(mSize[0])
+	if err != nil {
+		return errors.New("could not parse first size as integer")
+	}
+	secondSize, err := strconv.Atoi(mSize[1])
+	if err != nil {
+		return errors.New("could not second size as integer")
+	}
+	m.size = [2]int{firstSize, secondSize}
+	return nil
+}
+
+func showEquipment(eq equipmentPrinter) {
+	fmt.Println(eq.sprintf())
+}
+
+func parseAll(eqps []equipmentParser, s []string) error {
+	errToRet := errors.New("failed to parse")
+	if len(eqps) != len(s) {
+		return errToRet
+	}
+	for idx, eqp := range eqps {
+		err := eqp.parse(s[idx])
+		if err != nil {
+			return errToRet
+		}
+	}
+	return nil
+}
+func main() {
+	c := &computer{}
+	m := &monitor{}
+	err := parseAll([]equipmentParser{c, m},
+		[]string{"Ubuntu OS, 16, 8, Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
+			"1280x1024, Dell"})
+	if err != nil {
+		fmt.Println(err)
+	}
+	showEquipment(c)
+	showEquipment(m)
+}
+```
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+)
+
+type UserShower interface {
+	fmt.Stringer
+}
+
+type ChatUser struct {
+	id   int
+	name string
+}
+
+type InternalUser struct {
+	id      int
+	fromWho Proxy
+	toWhere Proxy
+}
+
+type Proxy struct {
+	address string
+	port    string
+}
+
+func (c ChatUser) String() string {
+	return fmt.Sprintf("%d, %s", c.id, c.name)
+}
+
+func (i InternalUser) String() string {
+	return fmt.Sprintf("%d, %s:%s->%s:%s", i.id, i.fromWho.address,
+		i.fromWho.port, i.toWhere.address, i.toWhere.port)
+}
+
+func ShowAllUsers(u []UserShower) {
+	for _, user := range u {
+		fmt.Println(user.String())
+	}
+}
+
+func main() {
+	var c ChatUser = ChatUser{1, "corefan"}
+	var i InternalUser = InternalUser{2, Proxy{"192.168.23.48", "4040"},
+		Proxy{"192.168.23.103", "3030"}}
+	var u []UserShower = []UserShower{c, i}
+
+	ShowAllUsers(u)
+}
+```
+```
+1, corefan
+2, 192.168.23.48:4040->192.168.23.103:3030
+```
