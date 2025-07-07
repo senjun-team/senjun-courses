@@ -1,10 +1,12 @@
-#pragma once
-
-import std;
+module;
 
 #include <cmath> // содержит константу NAN
 
-class MovingAverage
+export module moving_average;
+
+import std;
+
+export class MovingAverage
 {
 public:
     MovingAverage(std::size_t n)

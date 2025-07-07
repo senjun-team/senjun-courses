@@ -1,4 +1,5 @@
-#include "div.h"
+import std;
+import div;
 
 int main()
 {

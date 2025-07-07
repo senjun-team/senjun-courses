@@ -1,13 +1,15 @@
-#pragma once
-
-import std;
+module;
 
 #include <cmath> // содержит константу NAN
+
+export module test_helpers;
+
+import std;
 
 // senjun::MovingAverage - это эталонное решение, относительно которого
 // будет замеряться производительность решения пользователя.
 // Если вы не хотите случайно увидеть решение практики, не читайте этот файл.
-namespace senjun
+export namespace senjun
 {
     class MovingAverage
     {
@@ -58,7 +60,7 @@ namespace senjun
 }
 
 // Среднее арифметическое значений вектора
-template<class C>
+export template<class C>
 double average(std::vector<C> const& v)
 {
     if(v.empty())
@@ -68,7 +70,7 @@ double average(std::vector<C> const& v)
 }
 
 // Получение вектора длины len, заполненного случайными числами от -100 до 200
-std::vector<int> random_vector(std::size_t len)
+export std::vector<int> random_vector(std::size_t len)
 {
     std::random_device rnd_device;
     std::mt19937 mersenne_engine {rnd_device()};

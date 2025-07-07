@@ -1,8 +1,7 @@
-#include "ut.hpp"
+import boost.ut;
+import test_helpers;
 
-#include "moving_average.h"
-
-#include "tests_helpers.h"
+import moving_average;
 
 import std;
 
@@ -42,7 +41,7 @@ std::string error_message_nan(const std::vector<int> & input,
     );
 }
 
-void check_moving_average(size_t window_size, std::vector<int> input)
+void check_moving_average(std::size_t window_size, std::vector<int> input)
 {
     MovingAverage ma(window_size);
     senjun::MovingAverage ma_plan(window_size);
