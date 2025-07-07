@@ -511,7 +511,6 @@ func (b book) print() {
 type textbook struct {
 	subject string
 	book
-	library
 }
 
 func main() {
