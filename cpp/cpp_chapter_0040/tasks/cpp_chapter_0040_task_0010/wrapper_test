@@ -1,6 +1,6 @@
-#include "ut.hpp"
-#include <numeric>
-#include <format>
+import boost.ut;
+import std;
+
 #INJECT-b585472fa
 
 int main()

@@ -1,6 +1,6 @@
-#include "ut.hpp"
+import boost.ut;
 
-#include "div.h"
+import div;
 
 // Юнит-тесты
 int main()

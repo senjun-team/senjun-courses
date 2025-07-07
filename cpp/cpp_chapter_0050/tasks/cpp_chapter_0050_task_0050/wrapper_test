@@ -1,6 +1,6 @@
-#include "ut.hpp"
-#include "test_helpers.h"
-#include "format"
+import boost.ut;
+import TestHelpers;
+import std;
 
 #INJECT-b585472fa
 
