@@ -1,4 +1,4 @@
-#include "ut.hpp"
+import boost.ut;
 
 import std;
 
@@ -10,7 +10,7 @@ using namespace boost::ut;
 void check_case_no_cache(std::size_t i, int plan)
 {
     int fact = fib(i);
-    expect(fact == n) << std::format("Invalid result. fib({}) returned {}. Expected value: {}", i, fact, plan) << fatal;
+    expect(fact == plan) << std::format("Invalid result. fib({}) returned {}. Expected value: {}", i, fact, plan) << fatal;
 }
 
 int main()
