@@ -1,4 +1,5 @@
-#include "moving_average.h"
+import moving_average;
+import std;
 
 int main()
 {

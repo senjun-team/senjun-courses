@@ -1,7 +1,4 @@
-// Подключаем хедеры вместо импорта модуля.
-// Причина: в модуле std отсутствуют константы NAN и INFINITY.
-#include <cmath>
-#include <print>
+import std;
 
 #INJECT-b585472fa
 
