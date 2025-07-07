@@ -179,7 +179,7 @@ type gameMap struct {
 ```
 
 ## Методы псевдонимов 
-Метод необязательно должен быть связан с типом структуры. Он может быть объявлен и для псевдонима `alias`:
+Метод необязательно должен быть связан с типом структуры. Он может быть объявлен и для псевдонима (alias):
 
 ```go {.example_for_playground}
 package main
@@ -230,7 +230,7 @@ func (s *snake) respawn() {
 }
 ```
 
-В Go принято следующее соглашение. Если какой-либо метод `snake` использует указатель в качестве получателя, то все методы `snake` должны использовать указатель. Даже если это не требуется компилятором, нам следует преобразовать наш код:
+В Go принято следующее [соглашение](https://go.dev/tour/methods/8). Если какой-либо метод `snake` использует указатель в качестве получателя, то все методы `snake` должны использовать указатель. Даже если это не требуется компилятором, нам следует преобразовать наш код:
 
 ```go {.example_for_playground}
 package main
@@ -565,7 +565,7 @@ func main() {
 }
 ```
 
-Иногда бывает целесообразно использовать встраивание через указатель. В этом случае методы встраиваемой структуры также повышаются: 
+Иногда использовают встраивание через указатель. Это бывает нужно по тем же причинам, что и при использовании указателя в качестве получателя метода. Встраивание через указатель используют, когда необходимо передавать большие данные, либо когда нужно модифицировать значение. В этом случае методы встраиваемой структуры также повышаются: 
 
 ```go {.example_for_playground}
 package main
@@ -594,12 +594,7 @@ func main() {
 	var t textbook = textbook{"Go",
 		&book{"Alan A. A. Donovan", "The Go Programming Language", 380, 2015,
 			`Google’s Go team member Alan A. A. Donovan and Brian Kernighan, 
-co-author of The C Programming Language, 
-provide hundreds of interesting and practical examples of 
-well-written Go code to help programmers 
-learn this flexible, and fast, language. 
-It is designed to get you started programming with Go 
-right away and then to progress on to more advanced topics.`}}
+co-author of The C Programming Language...`}}
 	t.print()
 
 }
@@ -611,16 +606,11 @@ Alan A. A. Donovan. The Go Programming Language. 380 p., 2015 year
 Abstract:
 
 Google’s Go team member Alan A. A. Donovan and Brian Kernighan, 
-co-author of The C Programming Language, 
-provide hundreds of interesting and practical examples of 
-well-written Go code to help programmers 
-learn this flexible, and fast, language. 
-It is designed to get you started programming with Go 
-right away and then to progress on to more advanced topics.
+co-author of The C Programming Language...
 ```
 
 ## Резюме
-1. Методы увязываются с типами структур, либо псевдонимов `alias`. 
+1. Методы увязываются с типами структур, либо псевдонимов (alias). 
 2. Чтобы модифицировать получатель внутри метода, необходимо использовать указатель.
 3. В качестве получателя может выступать значение `nil`.
 4. Композиция реализуется путем анонимного встраивания структур. В этом случае методы встраиваемой структуры повышаются. Такие методы оказываются доступны и для переменных внешней структуры.
