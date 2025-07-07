@@ -1,0 +1,15 @@
+import std;
+
+#INJECT-b585472fa
+
+
+int main()
+{
+    std::vector<int> numbers = {0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181};
+    
+    for (std::size_t i = 0; i < 10; ++i)
+    {
+        const int res = fib(i);
+        std::println("fib({}) == {} {}", i, res, res == numbers[i] ? "OK" : "ERROR");
+    }
+}

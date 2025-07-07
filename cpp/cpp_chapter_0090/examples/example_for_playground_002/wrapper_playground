@@ -1,0 +1,27 @@
+import std;
+
+struct Request
+{
+
+};
+
+void handle_request(Request request)
+{
+    std::println("Handling HTTP POST...");
+}
+
+std::vector<Request> get_requests()
+{
+    return {{}, {}, {}};
+}
+
+void handle_requests()
+{
+    for (Request r: get_requests())
+        handle_request(r);
+}
+
+int main()
+{
+    handle_requests();
+}

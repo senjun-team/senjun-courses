@@ -1,0 +1,28 @@
+import std;
+
+std::string read_user_input()
+{
+    static int call_count = 0;
+    ++call_count;
+    switch (call_count)
+    {
+    case 1:
+        return "pwd";
+
+    case 2:
+        return "ls -lha";
+    
+    default:
+        return "q";
+    }
+}
+
+void run_command(const std::string & s)
+{
+    // ...
+}
+
+int main()
+{
+    #INJECT-b585472fa
+}

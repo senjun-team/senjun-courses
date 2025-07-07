@@ -1,0 +1,48 @@
+import std;
+
+std::string read_input()
+{
+    static int call_count = 0;
+    ++call_count;
+    switch (call_count)
+    {
+    case 1:
+        return "8";
+
+    case 2:
+        return "2";
+    
+    default:
+        std::exit(0);
+    }
+}
+
+int parse_code(const std::string & s)
+{
+    return std::stoi(s);
+}
+
+bool is_valid(int code)
+{
+    return code < 100;
+}
+
+void handle_user_input()
+{
+    while(true)
+    {
+        const std::string input = read_input();
+        const int code = parse_code(input);
+
+        if (is_valid(code))
+        {
+            std::println("Input: {}", code);
+            // ...
+        }
+    }
+}
+
+int main()
+{
+    handle_user_input();
+}
