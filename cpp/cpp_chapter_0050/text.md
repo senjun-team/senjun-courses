@@ -707,7 +707,7 @@ p.y = -2.0;
 Message UnixTimestamp
 ```
 
-## Шаблоны
+## Шаблоны {#block-templates}
 
 [Шаблоны](https://en.cppreference.com/w/cpp/language/templates) (templates) позволяют писать обобщенный код без привязки к конкретным типам и константам. Это эффективный способ переиспользования кода.
 
