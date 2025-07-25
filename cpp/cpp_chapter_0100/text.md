@@ -15,19 +15,20 @@ import std;
 
 int collatz_multiply(int x) 
 {
-    return x % 2 > 0 ? 3 * x + 1 : collatz_divide(x);
+    return (x % 2 > 0) ? 3 * x + 1 : collatz_divide(x);
 }
 
 int collatz_divide(int x) 
 {
-    return  x % 2 == 0 ? x / 2 : collatz_multiply(x);
+    return  (x % 2 == 0) ? x / 2 : collatz_multiply(x);
 }
 
 int main() {
     int n = 17;
     std::println("Checking Collatz conjecture for {}", n);
     
-    while (n > 1) {
+    while (n > 1)
+    {
         n = collatz_multiply(n);
         std::print("{} ", n);
     }
@@ -51,7 +52,7 @@ int collatz_multiply(int x);
 
 Все функции, классы, структуры и перечисления, с которыми вы успели поработать в предыдущих главах, являются _определениями._ Единственное исключение — объявление функции `read_file()` в файле `main.cpp` [предыдущей практики](/courses/cpp/practice/cpp_brainfuck_interpreter/) «Интерпретатор Brainfuck».
 
-[Определение](https://en.cppreference.com/w/cpp/language/definition.html) (definition) — это объявление вместе с информацией, которой достаточно для использования сущности в коде. Объявление функции включает ее тело, то есть реализацию.
+[Определение](https://en.cppreference.com/w/cpp/language/definition.html) (definition) — это объявление вместе с информацией, которой достаточно для использования сущности в коде. Объявление функции включает и ее тело, то есть реализацию.
 
 Любое определение также является и объявлением.
 
@@ -68,7 +69,8 @@ int main() {
     int n = 17;
     std::println("Checking Collatz conjecture for {}", n);
     
-    while (n > 1) {
+    while (n > 1)
+    {
         n = collatz_multiply(n);
         std::print("{} ", n);
     }
@@ -76,12 +78,12 @@ int main() {
 
 int collatz_multiply(int x) 
 {
-    return x % 2 > 0 ? 3 * x + 1 : collatz_divide(x);
+    return (x % 2 > 0) ? 3 * x + 1 : collatz_divide(x);
 }
 
 int collatz_divide(int x) 
 {
-    return  x % 2 == 0 ? x / 2 : collatz_multiply(x);
+    return  (x % 2 == 0) ? x / 2 : collatz_multiply(x);
 }
 ```
 ```
@@ -280,7 +282,7 @@ Thread model: posix
 
 Состоящий из хедеров и `cpp`-файлов проект составляется по простым принципам:
 - Объявления сущностей размещаются в хедерах, а их определения — в `cpp`-файлах.
-- Если объявление вложено в [пространство имен,](/courses/cpp/chapters/cpp_chapter_0050/#block-namespaces) объявление должно повторять эту вложенность.
+- Если объявление вложено в [пространство имен,](/courses/cpp/chapters/cpp_chapter_0050/#block-namespaces) определение должно повторять эту вложенность.
 - Чтобы использовать объявление из хедера, нужно его подключить.
 - Хедеры подключаются директивой препроцессора `#include`.
 - Хедеры можно подключать в `cpp`-файлы и другие хедеры.
