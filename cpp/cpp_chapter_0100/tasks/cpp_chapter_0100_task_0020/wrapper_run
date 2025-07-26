@@ -1,0 +1,22 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const std::size_t n = 2;
+    const std::size_t default_val = 100;
+    NthLargest stats(n, default_val);
+
+    std::println("Created instance of NthLargest with n={} and default_val={}",
+                 n, default_val);
+    
+    const std::vector<std::size_t> marks = {5, 6, 7, 4, 8};
+    
+    for(std::size_t mark: marks)
+    {
+        const std::size_t cur_nth_largest = stats.add(mark);
+        std::println("n-th largest after adding value {}: {}",
+                     mark, cur_nth_largest);
+    }
+}

@@ -1,0 +1,65 @@
+import boost.ut;
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+void check_case(std::vector<std::size_t> const & v,
+                std::size_t i,
+                std::size_t plan,
+                std::size_t fact,
+                std::size_t n,
+                std::size_t default_val
+                )
+{
+    expect(fact == plan) << std::format("add() returned invalid value.\n"
+                                        "Initialized NthLargest with n={} and default_val={}.\n"
+                                        "Called add() for values: {}\n"
+                                        "The last call returned {} instead of {}.\n",
+                                        n, default_val,
+                                        std::vector(v.begin(), v.begin() + i + 1),
+                                        fact, plan) << fatal;
+}
+
+void run_test_case(std::vector<std::size_t> const & marks, 
+                   std::vector<std::size_t> const & plan_vals,
+                   std::size_t n,
+                   std::size_t default_val)
+{
+    NthLargest stats(n, default_val);
+
+    for(std::size_t i = 0; i < marks.size(); ++i)
+    {
+        std::size_t mark = marks[i];
+        const std::size_t cur_nth_largest = stats.add(mark);
+        check_case(marks, i, plan_vals[i], cur_nth_largest, n, default_val);
+    }
+}
+
+int main()
+{
+    "simple cases"_test = [] {
+        run_test_case({100, 1000, 50,   2000}, // marks
+                      {100, 1000, 1000, 2000}, // plan vals
+                      1,                       // n
+                      0);                      // default_val
+        
+        run_test_case({5,   6, 7, 4, 8},
+                      {100, 5, 6, 6, 7},
+                      2,
+                      100);
+
+        run_test_case({1, 1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 3, 3, 4},
+                      {0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3},
+                      3,
+                      0);
+    };
+
+    "complex cases"_test = [] {
+        run_test_case({2, 2, 3, 4, 5, 6, 7, 8, 9, 10, 9, 8, 7, 6, 5, 4, 3, 2, 2},
+                      {1, 1, 1, 1, 1, 2, 2, 3, 4, 5,  6, 7, 7, 7, 7, 7, 7, 7, 7},
+                      6,
+                      1);
+    };
+}
