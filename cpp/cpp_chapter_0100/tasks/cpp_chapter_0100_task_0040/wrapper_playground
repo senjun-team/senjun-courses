@@ -1,0 +1,16 @@
+#include <print>
+#INJECT-b585472fa
+
+int main()
+{
+    std::flat_multimap<std::string, std::size_t> applicants = {
+        {"b78a", 63},
+        {"b78a", 82},
+        {"c325", 75},
+        {"4ed6", 71}
+    };
+
+    std::println("Applicants: {}", applicants);
+    const std::string id = "b78a";
+    std::println("score_sum(applicants, \"{}\") = {}", id, score_sum(applicants, id));
+}

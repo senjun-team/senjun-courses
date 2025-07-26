@@ -1,0 +1,45 @@
+#INJECT-b585472fa
+
+import boost.ut;
+import std;
+
+using namespace boost::ut;
+
+void check_case(std::flat_multimap<std::string, std::size_t> const & applicants,
+                std::string const & id,
+                std::size_t plan
+                )
+{
+    const std::size_t fact = score_sum(applicants, id);
+    expect(fact == plan) << std::format("score_sum() returned invalid result.\n"
+                                        "applicants={}.\n"
+                                        "id=\"{}\"\n"
+                                        "core_sum()  returned {} instead of {}.\n",
+                                        applicants,
+                                        id,
+                                        fact, plan) << fatal;
+}
+
+int main()
+{
+    "check default val"_test = [] {
+        check_case({}, "", 0);
+        check_case({}, "8ce72b6c", 0);
+        check_case({ {"8c", 65} }, "6c", 0);
+    };
+
+    "simple cases"_test = [] {
+        const std::flat_multimap<std::string, std::size_t> applicants = {
+            {"a", 1},
+            {"a", 2},
+            {"a", 3},
+            {"b", 4},
+            {"b", 5},
+            {"c", 6}
+        };
+
+        check_case(applicants, "a", 6);
+        check_case(applicants, "b", 9);
+        check_case(applicants, "c", 6);
+    };
+}
