@@ -733,7 +733,7 @@ if (!inserted)
     it->second.push_back("db_replication"); // Вызываем push_back() у вектора
 ```
 
-А можно использовать `std::multimap`. Его метод [equal_range()](https://en.cppreference.com/w/cpp/container/multimap/equal_range) принимает ключ и возвращает итераторы на начало и конец диапазона элементов с этим ключом. У `std::multimap` нет метода `try_emplace()`, потому что пара ключ-значение может быть добавлена, даже если ключ уже существует в контейнере. Вместо него есть метод [emplace()](https://en.cppreference.com/w/cpp/container/multimap/emplace).
+А можно использовать `std::multimap`. Его метод [equal_range()](https://en.cppreference.com/w/cpp/container/multimap/equal_range) принимает ключ и возвращает итераторы на начало и конец диапазона элементов с этим ключом. У `std::multimap` нет метода `try_emplace()`, потому что пара ключ-значение может быть добавлена, даже если ключ уже существует в контейнере. Вместо него есть метод [emplace()](https://en.cppreference.com/w/cpp/container/multimap/emplace). {#block-equal-range}
 
 ```c++ {.example_for_playground .example_for_playground_021}
 std::multimap<std::string, std::string> server_jobs;
@@ -984,7 +984,7 @@ int main()
 
 Класс [std::stack](https://en.cppreference.com/w/cpp/container/stack) реализует [структуру данных стек](https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D0%B5%D0%BA), в которой элементы добавляются и удаляются только с одного конца.
 
-### flat-версии ассоциативных контейнеров
+### flat-версии ассоциативных контейнеров {#block-flat}
 
 Упорядоченные ассоциативные контейнеры оптимизированы для смешанных операций вставки, поиска и удаления. Очередность операций произвольна: вслед за добавлением элемента может идти еще одно добавление, удаление или поиск. Так работает кеширование.
 

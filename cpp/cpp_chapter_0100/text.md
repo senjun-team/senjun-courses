@@ -10,7 +10,7 @@
 - Если `n` четное, делить его на 2.
 - Если `n` нечетное, умножать на 3 и прибавлять 1. 
 
-```c++
+```c++  {.example_for_playground}
 import std;
 
 int collatz_multiply(int x) 
@@ -23,7 +23,8 @@ int collatz_divide(int x)
     return  (x % 2 == 0) ? x / 2 : collatz_multiply(x);
 }
 
-int main() {
+int main()
+{
     int n = 17;
     std::println("Checking Collatz conjecture for {}", n);
     
@@ -52,20 +53,21 @@ int collatz_multiply(int x);
 
 Все функции, классы, структуры и перечисления, с которыми вы успели поработать в предыдущих главах, являются _определениями._ Единственное исключение — объявление функции `read_file()` в файле `main.cpp` [предыдущей практики](/courses/cpp/practice/cpp_brainfuck_interpreter/) «Интерпретатор Brainfuck».
 
-[Определение](https://en.cppreference.com/w/cpp/language/definition.html) (definition) — это объявление вместе с информацией, которой достаточно для использования сущности в коде. Объявление функции включает и ее тело, то есть реализацию.
+[Определение](https://en.cppreference.com/w/cpp/language/definition.html) (definition) — это объявление вместе с информацией, которой достаточно для использования сущности в коде. Определение функции включает и ее тело, то есть реализацию.
 
 Любое определение также является и объявлением.
 
 Чтобы исправить пример кода с гипотезой Коллатца, разместим объявления функций до их использования:
 
-```c++
+```c++  {.example_for_playground}
 import std;
 
 int collatz_multiply(int x);
 
 int collatz_divide(int x);
 
-int main() {
+int main()
+{
     int n = 17;
     std::println("Checking Collatz conjecture for {}", n);
     
@@ -97,7 +99,7 @@ Checking Collatz conjecture for 17
 
 В случае ошибки напишите `err`. {.task_text}
 
-```c++ {.example_for_playground .example_for_playground_003}
+```c++ {.example_for_playground}
 import std;
 
 int main()
@@ -111,20 +113,19 @@ double to_miles(double km)
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0020_task_0050}
+```consoleoutput {.task_source #cpp_chapter_0100_task_0010}
 ```
-Функция `to_miles()` объявлена после ее вызова.  {.task_hint}
+Функция `to_miles()` объявлена после ее вызова. {.task_hint}
 ```cpp {.task_answer}
 err
 ```
 
 Объявление класса не включает реализацию его методов:
 
-```c++
+```c++ {.example_for_playground .example_for_playground_001}
 class Message
 {
 public:
-    Message() = default;
     Message(std::string raw_text);
 
     std::string get_message();
@@ -138,7 +139,7 @@ private:
 
 Объявление класса в связке с реализацией методов считается определением класса. При реализации метода _вне_ тела класса перед методом указывается имя класса, отделенное от имени метода оператором разрешения области видимости `::`.
 
-```c++
+```c++  {.example_for_playground .example_for_playground_002}
 Message::Message(std::string raw_text)
 {
     msg = parse_message(raw_text);
@@ -166,7 +167,7 @@ std::time_t Message::get_timestamp()
 
 В реализации используется [очередь с приоритетами.](/courses/cpp/chapters/cpp_chapter_0070/#block-priority-queue) {.task_text}
 
-```c++ {.task_source #cpp_chapter_0100_task_0050}
+```c++ {.task_source #cpp_chapter_0100_task_0020}
 class NthLargest
 {
 public:
@@ -183,9 +184,47 @@ private:
                         > m_pq;
 };
 ```
-. {.task_hint}
+Очередь с приоритетами реализует структуру данных [куча](https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D1%87%D0%B0_(%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0_%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85)) (heap). По умолчанию элемент с наибольшим значением ключа находится на вершине кучи. Чтобы на вершине оказался наименьший элемент, шаблонный класс `std::priority_queue` был инстанцирован компаратором `std::greater` вместо `std::less`. Вам осталось контроллировать количество элементов кучи. Оно не должно превосходить `n`. {.task_hint}
 ```c++ {.task_answer}
+class NthLargest
+{
+public:
+    NthLargest(std::size_t n, std::size_t default_val);
+    std::size_t add(std::size_t val);
 
+private:
+    std::size_t m_n;
+    std::size_t m_default;
+    // https://en.cppreference.com/w/cpp/container/priority_queue
+    std::priority_queue<std::size_t,              // тип элемента
+                        std::vector<std::size_t>, // контейнер для адаптера
+                        std::greater<std::size_t> // компаратор
+                        > m_pq;
+};
+
+NthLargest::NthLargest(std::size_t n, std::size_t default_val)
+{
+    m_n = n;
+    m_default = default_val;
+}
+
+std::size_t NthLargest::add(std::size_t val)
+{
+    if (m_pq.size() < m_n)
+    {
+        m_pq.push(val);
+        return (m_pq.size() < m_n) ? m_default : m_pq.top();
+    }
+    
+    if (std::size_t cur_nth_largest = m_pq.top(); cur_nth_largest < val)
+    {
+        m_pq.push(val);
+        if (m_pq.size() > m_n)
+            m_pq.pop();
+    }
+    
+    return m_pq.top();
+}
 ```
 
 Объявления и определения могут находиться в разных файлах проекта. Принципы их размещения зависят от того, как в проекте импортируются в код сущности: с помощью хедеров или модулей.
@@ -216,7 +255,7 @@ hello_compiler/
 ```c++
 #include <string>
 
-namespace system
+namespace sys
 {
 void show_compiler_info(std::string compiler);
 }
@@ -228,28 +267,28 @@ void show_compiler_info(std::string compiler);
 
 ```c++
 #include <cstdlib>
+#include <map>
 #include <print>
 
 #include "hello_compiler.h"
 
 std::string binary_name(std::string compiler)
 {
-    switch(compiler)
-    {
-        case "clang":
-            return "clang++";
-        case "msvc":
-            return "cl.exe";
-        default:
-            return "g++"; // gcc
-    }
+    const static std::map<std::string, std::string> binaries = {
+        {"clang", "clang++"},
+        {"gcc", "g++"},
+        {"msvc", "cl.exe"}
+    };
+
+    return binaries.at(compiler);
 }
 
-namespace system
+namespace sys
 {
 void show_compiler_info(std::string compiler)
 {
-    const int code = std::system(std::format("{} -v", binary_name(compiler)));
+    const std::string command = std::format("{} -v", binary_name(compiler));
+    const int code = std::system(command.c_str());
     if (code != 0)
         std::println("Couldn't get clang compiler info. Error code: {}", code);
 }
@@ -257,7 +296,8 @@ void show_compiler_info(std::string compiler)
 ```
 
 В `hello_compiler.cpp` подключен наш хедер и два хедера стандартной библиотеки:
-- `cstdlib`. Здесь объявлена функция [std::system()](https://en.cppreference.com/w/cpp/utility/program/system) для запуска консольной команды. 
+- `cstdlib`. Здесь объявлена функция [std::system()](https://en.cppreference.com/w/cpp/utility/program/system) для запуска консольной команды.
+- `map`. Здесь объявлен шаблонный класс `std::map`.
 - `print`. Здесь объявлена функция для вывода в консоль.
 - `hello_compiler.h`. Так компилятор поймет, что мы определяем функцию, уже объявленную в другом месте. 
 
@@ -268,12 +308,12 @@ void show_compiler_info(std::string compiler)
 
 int main()
 {
-    system::show_compiler_info("clang");
+    sys::show_compiler_info("clang");
 }
 ```
 ```
-clang version 19.1.5
-Target: x86_64-suse-linux
+Debian clang version 20.1.7
+Target: x86_64-pc-linux-gnu
 Thread model: posix
 ...
 ```
@@ -316,7 +356,7 @@ Thread model: posix
 Заведем макрос `PI` и используем его при выводе в консоль:
 
 ```c++  {.example_for_playground}
-import std;
+#include <print>
 
 #define PI 3.1415926
 
@@ -345,10 +385,11 @@ std::println("{}", 3.1415926);
 
 На первых строках файла принято подключать хедеры, сущности из которых используются дальше по коду. В файле `hello_compiler.cpp` проекта `hello_compiler` мы подключили хедеры:
 - `hello_compiler.h`, чтобы реализовать объявленный в нем интерфейс.
-- `cstdlib` и `print` из стандартной библиотеки, чтобы воспользоваться предоставляемыми ими объявленными.
+- `cstdlib`, `map` и `print` из стандартной библиотеки, чтобы воспользоваться предоставляемыми ими объявленными.
 
 ```c++
 #include <cstdlib>
+#include <map>
 #include <print>
 
 #include "hello_compiler.h"
@@ -393,27 +434,44 @@ hello_compiler/
 - `s`, если хедер из стандартной библиотеки.
 - `l`, если хедер внутри проекта.
 
-```consoleoutput {.task_source #cpp_chapter_0030_task_0030}
+```consoleoutput {.task_source #cpp_chapter_0100_task_0030}
 ```
 Выше перечислены правила, позволяющие однозначно определить, к какому виду относится хедер. {.task_hint}
 ```cpp {.task_answer}
 l
 ```
 
-Реализуйте функцию `score_sum()`. Она принимает словарь, в котором ключ — это id абитуриента, а значение — его оценка за экзамен. Второй параметр функции — id интересующего абитуриента. Функция должна вернуть сумму баллов, которые он получил за все экзамены. {.task_text}
+Реализуйте функцию `score_sum()`. Она принимает словарь, в котором ключ — это id абитуриента, а значение — его оценка за экзамен. Второй параметр функции — id интересующего абитуриента. Функция должна вернуть сумму баллов, которые он получил за все экзамены. Если студент не найден, функция должна вернуть 0. {.task_text}
+
+Для суммирования используйте алгоритм [std::accumulate()](/courses/cpp/chapters/cpp_chapter_0080/#block-accumulate-overload). {.task_text}
 
 Над функцией разместите подключение всех необходимых хедеров. Для справки используйте [cppreference](https://cppreference.com/). {.task_text}
 
-```c++ {.task_source #cpp_chapter_0100_task_0060}
+```c++ {.task_source #cpp_chapter_0100_task_0040}
 std::size_t score_sum(std::flat_multimap<std::string, std::size_t> applicants, 
                       std::string id)
 {
 
 }
 ```
-. {.task_hint}
+Вам пригодится метод [equal_range()](/courses/cpp/chapters/cpp_chapter_0070/#block-equal-range), который есть у `multi`-версий контейнеров, в том числе у класса [std::flat_multimap](/courses/cpp/chapters/cpp_chapter_0080/#block-flat). {.task_hint}
 ```c++ {.task_answer}
+#include <flat_map>
+#include <numeric>
+#include <string>
+#include <utility>
 
+std::size_t fold(std::size_t left, std::pair<std::string, std::size_t> right)
+{
+    return left + right.second;
+}
+
+std::size_t score_sum(std::flat_multimap<std::string, std::size_t> applicants, 
+                      std::string id)
+{
+    auto[it, it_end] = applicants.equal_range(id);
+    return std::accumulate(it, it_end, 0, fold);
+}
 ```
 
 ### Недостатки использования хедеров
@@ -422,7 +480,7 @@ std::size_t score_sum(std::flat_multimap<std::string, std::size_t> applicants,
 
 В проекте есть 3 `cpp`-файла и 2 хедера. Каждый из хедеров подключен во все `cpp`-файлы. Сколько раз в итоге препроцессор будет подставлять содержимое файла по месту директивы `#include`? {.task_text}
 
-```consoleoutput {.task_source #cpp_chapter_0040_task_0010}
+```consoleoutput {.task_source #cpp_chapter_0100_task_0050}
 ```
 Каждый раз по месту директивы `#include` подставляется содержимое соответствующего заголовочного файла.  Поэтому каждый из 2-х хедеров будет подставлен трижды. {.task_hint}
 ```cpp {.task_answer}
@@ -502,7 +560,7 @@ export void f();
 
 namespace A
 {
-    export void g();
+export void g();
 }
 ```
 
@@ -510,8 +568,8 @@ namespace A
 
 ```c++
 export {
-    void f();
-    void g();
+void f();
+void g();
 }
 ```
 
@@ -520,8 +578,8 @@ export {
 ```c++
 export namespace A
 {
-    void f();
-    void g();
+void f();
+void g();
 }
 ```
 
@@ -628,22 +686,21 @@ export import std;
 
 std::string binary_name(std::string compiler)
 {
-    switch(compiler)
-    {
-        case "clang":
-            return "clang++";
-        case "msvc":
-            return "cl.exe";
-        default:
-            return "g++"; // gcc
-    }
+    const static std::map<std::string, std::string> binaries = {
+        {"clang", "clang++"},
+        {"gcc", "g++"},
+        {"msvc", "cl.exe"}
+    };
+
+    return binaries.at(compiler);
 }
 
-namespace system
+namespace sys
 {
 export void show_compiler_info(std::string compiler)
 {
-    const int code = std::system(std::format("{} -v", binary_name(compiler)));
+    const std::string command = std::format("{} -v", binary_name(compiler));
+    const int code = std::system(command.c_str());
     if (code != 0)
         std::println("Couldn't get clang compiler info. Error code: {}", code);
 }
@@ -657,7 +714,7 @@ import hello_compiler;
 
 int main()
 {
-    system::show_compiler_info("clang");
+    sys::show_compiler_info("clang");
 }
 ```
 
