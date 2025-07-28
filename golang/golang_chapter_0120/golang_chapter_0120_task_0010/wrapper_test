@@ -1,0 +1,97 @@
+package main
+
+import (
+	"bytes"
+	"errors"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestNewGame(t *testing.T) {
+	sizeErr := errors.New("size error")
+	cases := []struct {
+		g    gameMap
+		x    int
+		y    int
+		want string
+		err  error
+	}{
+		{gameMap{rowsNumber: 4,
+			colsNumber: 5,
+			wall:       'o',
+			field:      '*'},
+			2,
+			1,
+			"ooooo\no*(:o\no***o\nooooo",
+			nil},
+		{gameMap{rowsNumber: 3,
+			colsNumber: 4,
+			wall:       'o',
+			field:      '*'},
+			1,
+			1,
+			"oooo\no(:o\noooo",
+			nil},
+		{gameMap{rowsNumber: 10,
+			colsNumber: 10,
+			wall:       'o',
+			field:      '*'},
+			1,
+			9,
+			"",
+			sizeErr},
+		{gameMap{rowsNumber: 10,
+			colsNumber: 10,
+			wall:       'o',
+			field:      '*'},
+			8,
+			1,
+			"",
+			sizeErr},
+	}
+
+	for _, c := range cases {
+		old := os.Stdout // keep backup of the real stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+
+		outC := make(chan string)
+		// copy the output in a separate goroutine so printing can't block indefinitely
+		go func() {
+			var buf bytes.Buffer
+			io.Copy(&buf, r)
+			outC <- buf.String()
+		}()
+
+		gotError := c.g.newGame(c.x, c.y)
+
+		w.Close()
+		os.Stdout = old // restoring the real stdout
+		out := <-outC
+
+		if parseError(gotError) != parseError(c.err) {
+			t.Errorf("error of newGame(%d, %d)"+
+				" with rowsNumber=%d and colsNumber=%d: %s,\n want: %s",
+				c.x, c.y, c.g.rowsNumber, c.g.colsNumber,
+				parseError(gotError), parseError(c.err))
+			continue
+		}
+
+		if strings.TrimSpace(out) != c.want && gotError == nil {
+			t.Errorf("newGame(%d, %d) with rowsNumber=%d"+
+				" and colsNumber=%d prints:\n%s\n\nwant:\n\n%s",
+				c.x, c.y, c.g.rowsNumber, c.g.colsNumber,
+				strings.TrimSpace(out), c.want)
+		}
+	}
+
+}
+
+func parseError(err error) string {
+	if err == nil {
+		return "nil"
+	}
+	return err.Error()
+}
