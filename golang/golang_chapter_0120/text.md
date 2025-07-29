@@ -537,7 +537,7 @@ func main() {
 		library{"Moscow State Library",
 			"Moscow city"}}
 	t.print()
-	t.printAdr()
+	t.printAddr()
 }
 ```
 
@@ -559,7 +559,7 @@ type library struct {
 	address string
 }
 
-func (lib library) printAdr() {
+func (lib library) printAddr() {
 	fmt.Printf("%s %s\n", lib.name, lib.address)
 }
 
@@ -581,7 +581,7 @@ func main() {
 		library{"Moscow State Library",
 			"Moscow city"}}
 	t.print()
-	t.printAdr()
+	t.printAddr()
 }
 ```
 
