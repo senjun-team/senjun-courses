@@ -48,11 +48,12 @@ func (d *dictionary) Find(lex lexemes.Lexeme) lexemes.LexemeType {
 }
 
 /*
-The find finds value v of type T in the map[T2][]T.
-If value found returns key of type T2.
-If value was not found returns zero value of type T2.
+The find finds value v in the map m.
+If value found returns key.
+If value was not found returns zero value.
 */
-func find[T comparable, T2 comparable](m map[T2][]T, v T) T2 {
+func find(m map[lexemes.LexemeType][]lexemes.Lexeme,
+	v lexemes.Lexeme) lexemes.LexemeType {
 	for key, vals := range m {
 		for _, val := range vals {
 			if val == v {
@@ -61,9 +62,7 @@ func find[T comparable, T2 comparable](m map[T2][]T, v T) T2 {
 		}
 	}
 
-	var res T2
-
-	return res
+	return 0
 }
 
 /*
