@@ -1,8 +1,8 @@
 package command
 
 import (
+	"calculator/internal/cerrors"
 	"calculator/internal/lexemes"
-	"calculator/internal/myerrors"
 	"fmt"
 )
 
@@ -23,7 +23,7 @@ func (c *Command) lookAhead() (lexemes.Token, error) {
 		return lexemes.Token{}, nil
 	}
 
-	return lexemes.Token{Lex: lexemes.Lexeme(buf), T: 0}, myerrors.ErrNoToken
+	return lexemes.Token{Lex: lexemes.Lexeme(buf), T: 0}, cerrors.ErrNoToken
 }
 
 // The nextToken gets next longest token and removes this token from subinput.
@@ -32,7 +32,7 @@ func (c *Command) nextToken(prevToken lexemes.Token) (lexemes.Token, error) {
 	var newToken lexemes.Token
 
 loop:
-	for aheadToken, err := c.lookAhead(); (err == myerrors.ErrNoToken || !Dictionary().IsStop(aheadToken.T)) &&
+	for aheadToken, err := c.lookAhead(); (err == cerrors.ErrNoToken || !Dictionary().IsStop(aheadToken.T)) &&
 		len(aheadToken.Lex) != 0; aheadToken, err = c.lookAhead() {
 
 		buf := string(newToken.Lex)
@@ -95,7 +95,7 @@ func (c *Command) LexicalAnalyze() error {
 		err = c.nextToken(newToken) {
 
 		if err != nil {
-			return fmt.Errorf("%s : %s", myerrors.ErrLexAnalysis, err)
+			return fmt.Errorf("%s : %s", cerrors.ErrLexAnalysis, err)
 		}
 
 		c.Tokens = append(c.Tokens, newToken)

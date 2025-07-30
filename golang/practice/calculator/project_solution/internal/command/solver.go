@@ -1,9 +1,9 @@
 package command
 
 import (
+	"calculator/internal/cast"
+	"calculator/internal/cerrors"
 	"calculator/internal/lexemes"
-	"calculator/internal/myast"
-	"calculator/internal/myerrors"
 	"fmt"
 	"strconv"
 )
@@ -15,12 +15,12 @@ func (c *Command) Solve() (float64, error) {
 	}
 	res, err := strconv.ParseFloat(string(token.Lex), 64)
 	if err != nil {
-		return 0, fmt.Errorf("%s : %s", myerrors.ErrSolve, err)
+		return 0, fmt.Errorf("%s : %s", cerrors.ErrSolve, err)
 	}
 	return res, nil
 }
 
-func solve(n *myast.Node) (lexemes.Token, error) {
+func solve(n *cast.Node) (lexemes.Token, error) {
 	if len(n.Children) == 0 {
 		return n.Value, nil
 	}
@@ -40,13 +40,13 @@ func compute(leftToken lexemes.Token,
 	a, err := strconv.ParseFloat(string(leftToken.Lex), 64)
 
 	if err != nil {
-		return lexemes.Token{}, fmt.Errorf("%s : %s", myerrors.ErrSolve, err)
+		return lexemes.Token{}, fmt.Errorf("%s : %s", cerrors.ErrSolve, err)
 	}
 
 	b, err := strconv.ParseFloat(string(rightToken.Lex), 64)
 
 	if err != nil {
-		return lexemes.Token{}, fmt.Errorf("%s : %s", myerrors.ErrSolve, err)
+		return lexemes.Token{}, fmt.Errorf("%s : %s", cerrors.ErrSolve, err)
 	}
 
 	if op.Lex == "+" {
@@ -65,5 +65,5 @@ func compute(leftToken lexemes.Token,
 		return lexemes.Token{Lex: lexemes.Lexeme(fmt.Sprint(a / b)),
 			T: lexemes.Operator}, nil
 	}
-	return lexemes.Token{}, myerrors.ErrSolve
+	return lexemes.Token{}, cerrors.ErrSolve
 }

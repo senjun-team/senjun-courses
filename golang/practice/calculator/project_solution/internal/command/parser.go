@@ -11,25 +11,25 @@ factor = number | "(" expression ")"
 import (
 	"fmt"
 
+	"calculator/internal/cast"
+	"calculator/internal/cerrors"
 	"calculator/internal/lexemes"
-	"calculator/internal/myast"
-	"calculator/internal/myerrors"
 )
 
 /*
 The factor makes ast of the factor in the in variable.
 Returns error if in variable is not the factor.
 */
-func factor(in []lexemes.Token) (ast myast.Ast, err error) {
-	ast = myast.NewAst()
+func factor(in []lexemes.Token) (ast cast.Ast, err error) {
+	ast = cast.NewAst()
 
 	if len(in) == 0 {
-		return ast, myerrors.ErrNoFactor
+		return ast, cerrors.ErrNoFactor
 	}
 
 	if len(in) == 1 {
 		if in[0].T == lexemes.NumberLexeme {
-			node := myast.NewNode(in[0])
+			node := cast.NewNode(in[0])
 			ast.MustAppendNode(ast.Root.Id(), &node)
 
 			return ast, nil
@@ -41,15 +41,15 @@ func factor(in []lexemes.Token) (ast myast.Ast, err error) {
 		return parse(in[1 : len(in)-1])
 	}
 
-	return ast, myerrors.ErrNoFactor
+	return ast, cerrors.ErrNoFactor
 }
 
 /*
 The term makes ast of the term in the in variable.
 Returns error if in variable is not the term.
 */
-func term(in []lexemes.Token) (ast myast.Ast, err error) {
-	ast = myast.NewAst()
+func term(in []lexemes.Token) (ast cast.Ast, err error) {
+	ast = cast.NewAst()
 
 	factorAst, err := factor(in)
 	i := 1
@@ -69,9 +69,9 @@ func term(in []lexemes.Token) (ast myast.Ast, err error) {
 		if token.T == lexemes.Operator && (token.Lex == "*" || token.Lex == "/") {
 			t := in[:i-1]
 
-			var termAst myast.Ast
+			var termAst cast.Ast
 
-			node := myast.NewNode(token)
+			node := cast.NewNode(token)
 			nodeId := ast.MustAppendNode(ast.Root.Id(), &node)
 
 			termAst, err = term(t)
@@ -92,15 +92,15 @@ func term(in []lexemes.Token) (ast myast.Ast, err error) {
 		return factorAst, nil
 	}
 
-	return ast, myerrors.ErrNoTerm
+	return ast, cerrors.ErrNoTerm
 }
 
 /*
 The expr makes ast of the expr in the in variable.
 Returns error if in variable is not the expr.
 */
-func expr(in []lexemes.Token) (ast myast.Ast, err error) {
-	ast = myast.NewAst()
+func expr(in []lexemes.Token) (ast cast.Ast, err error) {
+	ast = cast.NewAst()
 
 	termAst, err := term(in)
 	i := 1
@@ -120,8 +120,8 @@ func expr(in []lexemes.Token) (ast myast.Ast, err error) {
 		if token.T == lexemes.Operator && (token.Lex == "+" || token.Lex == "-") {
 			t := in[:i-1]
 
-			var exprAst myast.Ast
-			var node myast.Node
+			var exprAst cast.Ast
+			var node cast.Node
 			node.Parent = ast.Root
 			node.Value = token
 			nodeId := ast.MustAppendNode(ast.Root.Id(), &node)
@@ -144,10 +144,10 @@ func expr(in []lexemes.Token) (ast myast.Ast, err error) {
 		return termAst, nil
 	}
 
-	return ast, myerrors.ErrNoExpr
+	return ast, cerrors.ErrNoExpr
 }
 
-func parse(in []lexemes.Token) (ast myast.Ast, err error) {
+func parse(in []lexemes.Token) (ast cast.Ast, err error) {
 	ast, err = expr(in)
 	return
 }
@@ -156,7 +156,7 @@ func (c *Command) Parse() (err error) {
 	c.Ast, err = parse(c.Tokens)
 
 	if err != nil {
-		return fmt.Errorf("%s : %s", myerrors.ErrParse, err)
+		return fmt.Errorf("%s : %s", cerrors.ErrParse, err)
 	}
 
 	return nil

@@ -1,8 +1,8 @@
 package main
 
 import (
+	"calculator/internal/cerrors"
 	"calculator/internal/command"
-	"calculator/internal/myerrors"
 	"fmt"
 )
 
@@ -11,16 +11,16 @@ func calc(rawExpression string) (float64, error) {
 	c.ReadCommand(rawExpression)
 	err := c.LexicalAnalyze()
 	if err != nil {
-		return 0, fmt.Errorf("%s : %s", myerrors.ErrCalculate, err)
+		return 0, fmt.Errorf("%s : %s", cerrors.ErrCalculate, err)
 	}
 	err = c.Parse()
 	if err != nil {
-		return 0, fmt.Errorf("%s : %s", myerrors.ErrCalculate, err)
+		return 0, fmt.Errorf("%s : %s", cerrors.ErrCalculate, err)
 	}
 	res, err := c.Solve()
 
 	if err != nil {
-		return 0, fmt.Errorf("%s : %s", myerrors.ErrCalculate, err)
+		return 0, fmt.Errorf("%s : %s", cerrors.ErrCalculate, err)
 	}
 
 	return res, nil

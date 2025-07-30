@@ -1,10 +1,10 @@
-package myast
+package cast
 
 import (
 	"fmt"
 
+	"calculator/internal/cerrors"
 	"calculator/internal/lexemes"
-	"calculator/internal/myerrors"
 )
 
 type Node struct {
@@ -46,7 +46,7 @@ Panics if fails to find the node with id=parentId in the ast a.
 func (a *Ast) MustAppendNode(parentId int, v *Node) (id int) {
 	node, err := a.Node(parentId)
 	if err != nil {
-		panic(fmt.Errorf("%s : %s, id: %d", myerrors.ErrAppendNode, err, parentId))
+		panic(fmt.Errorf("%s : %s, id: %d", cerrors.ErrAppendNode, err, parentId))
 	}
 
 	node.Children = append(node.Children, v)
@@ -108,7 +108,7 @@ func (n *Node) findNodeById(id int) (res *Node, err error) {
 		}
 	}
 
-	return n, myerrors.ErrNoNode
+	return n, cerrors.ErrNoNode
 }
 
 /*
