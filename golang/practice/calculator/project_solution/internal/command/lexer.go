@@ -101,5 +101,11 @@ func (c *Command) LexicalAnalyze() error {
 		c.Tokens = append(c.Tokens, newToken)
 	}
 
+	// expression has single negative number
+	if len(c.Tokens) == 1 && string(c.Tokens[0].Lex[0]) == "-" &&
+		len(c.Subinput) == 0 {
+		return cerrors.ErrNoToken
+	}
+
 	return nil
 }

@@ -2,7 +2,8 @@ package command
 
 import (
 	"calculator/internal/lexemes"
-	"strconv"
+	"strings"
+	"unicode"
 )
 
 type dictionary struct {
@@ -71,10 +72,15 @@ Returns NumberLexeme if lexeme can be a number,
 else - 0.
 */
 func isNumber(lex lexemes.Lexeme) lexemes.LexemeType {
-	_, err := strconv.ParseFloat(string(lex), 64)
-	if err == nil {
-		return lexemes.NumberLexeme
+	for _, s := range lex {
+		if !unicode.IsDigit(s) && string(s) != "." {
+			return 0
+		}
 	}
 
-	return 0
+	if strings.Count(string(lex), ".") > 1 {
+		return 0
+	}
+
+	return lexemes.NumberLexeme
 }
