@@ -58,6 +58,7 @@ func term(in []lexemes.Token) (ast cast.Ast, err error) {
 		factorAst, err = factor(in[i:])
 		i++
 	}
+
 	i--
 
 	if err != nil {
@@ -109,6 +110,7 @@ func expr(in []lexemes.Token) (ast cast.Ast, err error) {
 		termAst, err = term(in[i:])
 		i++
 	}
+
 	i--
 
 	if err != nil {
@@ -160,4 +162,11 @@ func (c *Command) Parse() (err error) {
 	}
 
 	return nil
+}
+
+func PrintExpr(expr []lexemes.Token) {
+	for _, token := range expr {
+		fmt.Print(token.Lex)
+	}
+	fmt.Println()
 }
