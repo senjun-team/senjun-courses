@@ -38,6 +38,7 @@ func factor(in []lexemes.Token) (ast cast.Ast, err error) {
 
 	if in[0].T == lexemes.Delimiter && in[0].Lex == "(" &&
 		in[len(in)-1].T == lexemes.Delimiter && in[len(in)-1].Lex == ")" {
+		//PrintExpr(in)
 		return parse(in[1 : len(in)-1])
 	}
 
@@ -48,11 +49,11 @@ func factor(in []lexemes.Token) (ast cast.Ast, err error) {
 The term makes ast of the term in the in variable.
 Returns error if in variable is not the term.
 */
-func term(in []lexemes.Token) (ast cast.Ast, err error) {
+func term(in []lexemes.Token, startPos int) (ast cast.Ast, err error) {
 	ast = cast.NewAst()
-
-	factorAst, err := factor(in)
-	i := 1
+	i := startPos
+	err = cerrors.ErrParse
+	var factorAst cast.Ast
 
 	for err != nil && i < len(in) {
 		factorAst, err = factor(in[i:])
@@ -75,22 +76,25 @@ func term(in []lexemes.Token) (ast cast.Ast, err error) {
 			node := cast.NewNode(token)
 			nodeId := ast.MustAppendNode(ast.Root.Id(), &node)
 
-			termAst, err = term(t)
+			termAst, err = term(t, 0)
 
-			if err != nil {
-				return
+			if err == nil {
+
+				ast.MustAppend(nodeId, &termAst)
+				ast.MustAppend(nodeId, &factorAst)
+				//ast.Print()
+				return ast, nil
 			}
-
-			ast.MustAppend(nodeId, &termAst)
-			ast.MustAppend(nodeId, &factorAst)
-
-			return ast, nil
 		}
 
 	}
 
 	if i == 0 {
 		return factorAst, nil
+	}
+
+	if i < len(in)-1 {
+		return term(in, i+1)
 	}
 
 	return ast, cerrors.ErrNoTerm
@@ -100,14 +104,15 @@ func term(in []lexemes.Token) (ast cast.Ast, err error) {
 The expr makes ast of the expr in the in variable.
 Returns error if in variable is not the expr.
 */
-func expr(in []lexemes.Token) (ast cast.Ast, err error) {
+func expr(in []lexemes.Token, startPos int) (ast cast.Ast, err error) {
 	ast = cast.NewAst()
 
-	termAst, err := term(in)
-	i := 1
+	err = cerrors.ErrParse
+	i := startPos
+	var termAst cast.Ast
 
 	for err != nil && i < len(in) {
-		termAst, err = term(in[i:])
+		termAst, err = term(in[i:], 0)
 		i++
 	}
 
@@ -128,16 +133,15 @@ func expr(in []lexemes.Token) (ast cast.Ast, err error) {
 			node.Value = token
 			nodeId := ast.MustAppendNode(ast.Root.Id(), &node)
 
-			exprAst, err = expr(t)
+			exprAst, err = expr(t, 0)
 
-			if err != nil {
-				return
+			if err == nil {
+
+				ast.MustAppend(nodeId, &exprAst)
+				ast.MustAppend(nodeId, &termAst)
+				//ast.Print()
+				return ast, nil
 			}
-
-			ast.MustAppend(nodeId, &exprAst)
-			ast.MustAppend(nodeId, &termAst)
-
-			return ast, nil
 		}
 
 	}
@@ -146,11 +150,15 @@ func expr(in []lexemes.Token) (ast cast.Ast, err error) {
 		return termAst, nil
 	}
 
+	if i < len(in)-1 {
+		return expr(in, i+1)
+	}
+
 	return ast, cerrors.ErrNoExpr
 }
 
 func parse(in []lexemes.Token) (ast cast.Ast, err error) {
-	ast, err = expr(in)
+	ast, err = expr(in, 0)
 	return
 }
 
@@ -165,8 +173,15 @@ func (c *Command) Parse() (err error) {
 }
 
 func PrintExpr(expr []lexemes.Token) {
+	//f, err := os.OpenFile("output.txt", os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	//if err != nil {
+	//	panic(err)
+	//}
 	for _, token := range expr {
+		//f.Write([]byte(token.Lex))
 		fmt.Print(token.Lex)
 	}
+	//f.Write([]byte("\n"))
 	fmt.Println()
+	//f.Close()
 }

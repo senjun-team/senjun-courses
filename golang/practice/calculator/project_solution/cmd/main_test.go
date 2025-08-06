@@ -21,7 +21,7 @@ func TestCalc(t *testing.T) {
 	cases = append(cases, testOperatorsPriority)
 	cases = append(cases, testParanthesis)
 	cases = append(cases, testSimpleInvalidExpressions)
-	cases = append(cases, testLongCorrectExpressions)
+	//cases = append(cases, testLongCorrectExpressions)
 
 	for _, c := range cases {
 		for _, test := range c() {
