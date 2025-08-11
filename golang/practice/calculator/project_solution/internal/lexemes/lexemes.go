@@ -9,6 +9,7 @@ type Token struct {
 }
 
 const (
+
 	// 0 - no lexeme
 	Delimiter LexemeType = iota + 1
 	Operator
