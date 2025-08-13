@@ -9,10 +9,21 @@ type Token struct {
 }
 
 const (
-
-	// 0 - no lexeme
-	Delimiter LexemeType = iota + 1
+	// type of the token
+	NoToken = iota
+	TokenStart
+	TokenNumber
+	TokenOperator
+	TokenParanthesis
+	// class of the symbol
+	Digit
+	Point
 	Operator
-	NumberLexeme
-	StartLexeme
+	Paranthesis
+	Other
+	// states of the state machine
+	NewToken
+	NumberIntegerPart
+	NumberFractionalPart
+	Error
 )

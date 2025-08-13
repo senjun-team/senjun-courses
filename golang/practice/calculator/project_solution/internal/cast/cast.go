@@ -33,7 +33,7 @@ func NewAst() Ast {
 	ast.nextId++
 
 	ast.Root.Value.Lex = "start"
-	ast.Root.Value.T = lexemes.StartLexeme
+	ast.Root.Value.T = lexemes.TokenStart
 
 	return ast
 }

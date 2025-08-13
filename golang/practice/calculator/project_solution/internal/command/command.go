@@ -8,7 +8,7 @@ import (
 type Command struct {
 	Input    string
 	Subinput string // to copy Input without spaces and work with it inside package
-	Tokens   []lexemes.Token
+	Tokens   []*lexemes.Token
 	Ast      cast.Ast
 }
 
