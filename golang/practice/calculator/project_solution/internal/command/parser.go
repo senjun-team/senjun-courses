@@ -1,167 +1,161 @@
 package command
 
-/*
-grammar
-
-expression = term | expression "+" term | expression "-" term
-term = factor | term "*" factor | term "/" factor
-factor = number | "(" expression ")"
-*/
-
 import (
-	"fmt"
-
 	"calculator/internal/cast"
 	"calculator/internal/cerrors"
 	"calculator/internal/lexemes"
+	"fmt"
 )
 
 /*
-The factor makes ast of the factor in the in variable.
-Returns error if in variable is not the factor.
+grammar:
+
+expr = expr "+" term | expr "-" term | term
+term = term "*" factor | term "/" factor | factor
+factor = "(" expr ")" | number
+
+another words:
+expr = term[+,-]term[+,-]...term
+term = factor[*,/]factor[*,/]...factor
+factor = number | "(" expr ")"
 */
-func factor(in []lexemes.Token) (ast cast.Ast, err error) {
-	ast = cast.NewAst()
 
-	if len(in) == 0 {
-		return ast, cerrors.ErrNoFactor
-	}
-
-	if len(in) == 1 {
-		if in[0].T == lexemes.NumberLexeme {
-			node := cast.NewNode(in[0])
-			ast.MustAppendNode(ast.Root.Id(), &node)
-
-			return ast, nil
-		}
-	}
-
-	if in[0].T == lexemes.Delimiter && in[0].Lex == "(" &&
-		in[len(in)-1].T == lexemes.Delimiter && in[len(in)-1].Lex == ")" {
-		return parse(in[1 : len(in)-1])
-	}
-
-	return ast, cerrors.ErrNoFactor
+type cparser struct {
+	command   *Command
+	pos       int
+	tokenval  lexemes.Token
+	lookahead lexemes.Token
 }
 
-/*
-The term makes ast of the term in the in variable.
-Returns error if in variable is not the term.
-Pass the startPos = len(in) - 1.
-*/
-func term(in []lexemes.Token, startPos int) (ast cast.Ast, err error) {
-	ast = cast.NewAst()
-	i := startPos
+func newCparser(c *Command) cparser {
+	c.Ast = cast.NewAst()
+	return cparser{command: c}
+}
+
+func (c *cparser) lexan() {
+	switch {
+	case c.pos == 0:
+		c.lookahead = c.command.Tokens[c.pos]
+		c.pos++
+	case c.pos < len(c.command.Tokens):
+		c.lookahead = c.command.Tokens[c.pos]
+		c.tokenval = c.command.Tokens[c.pos-1]
+		c.pos++
+	}
+}
+
+func (c *cparser) match(t lexemes.Token) (err error) {
+	if c.lookahead == t {
+		c.lexan()
+		return nil
+	}
 	err = cerrors.ErrParse
-	var factorAst cast.Ast
-
-	for err != nil && i >= 0 {
-		factorAst, err = factor(in[i:])
-		i--
-	}
-
-	i++
-
-	if err != nil {
-		return
-	}
-
-	if i > 0 {
-		token := in[i-1]
-		if token.T == lexemes.Operator && (token.Lex == "*" || token.Lex == "/") {
-			t := in[:i-1]
-
-			var termAst cast.Ast
-
-			node := cast.NewNode(token)
-			nodeId := ast.MustAppendNode(ast.Root.Id(), &node)
-			termAst, err = term(t, len(t)-1)
-
-			if err == nil {
-
-				ast.MustAppend(nodeId, &termAst)
-				ast.MustAppend(nodeId, &factorAst)
-				return ast, nil
-			}
-		}
-
-	}
-
-	if i == 0 {
-		return factorAst, nil
-	}
-
-	if i < len(in) {
-		return term(in, i-1)
-	}
-
-	return ast, cerrors.ErrNoTerm
-}
-
-/*
-The expr makes ast of the expr in the in variable.
-Returns error if in variable is not the expr.
-Pass the startPos = len(in) - 1.
-*/
-func expr(in []lexemes.Token, startPos int) (ast cast.Ast, err error) {
-	ast = cast.NewAst()
-
-	err = cerrors.ErrParse
-	i := startPos
-	var termAst cast.Ast
-
-	for err != nil && i >= 0 {
-		termAst, err = term(in[i:], len(in[i:])-1)
-		i--
-	}
-
-	i++
-
-	if err != nil {
-		return
-	}
-
-	if i > 0 {
-		token := in[i-1]
-		if token.T == lexemes.Operator && (token.Lex == "+" || token.Lex == "-") {
-			t := in[:i-1]
-
-			var exprAst cast.Ast
-			var node cast.Node
-			node.Parent = ast.Root
-			node.Value = token
-			nodeId := ast.MustAppendNode(ast.Root.Id(), &node)
-
-			exprAst, err = expr(t, len(t)-1)
-
-			if err == nil {
-
-				ast.MustAppend(nodeId, &exprAst)
-				ast.MustAppend(nodeId, &termAst)
-				return ast, nil
-			}
-		}
-
-	}
-
-	if i == 0 {
-		return termAst, nil
-	}
-
-	if i < len(in) {
-		return expr(in, i-1)
-	}
-
-	return ast, cerrors.ErrNoExpr
-}
-
-func parse(in []lexemes.Token) (ast cast.Ast, err error) {
-	ast, err = expr(in, len(in)-1)
 	return
 }
 
+func (c *cparser) expr() (cast.Ast, error) {
+	leftAst, err := c.term()
+	if err != nil {
+		return leftAst, err
+	}
+	for {
+		switch {
+		case c.lookahead.Lex == "+" || c.lookahead.Lex == "-":
+			t := c.lookahead
+			err := c.match(c.lookahead)
+			if err != nil {
+				return leftAst, err
+			}
+			ast := cast.NewAst()
+			node := cast.NewNode(t)
+			nodeId := ast.MustAppendNode(ast.Root.Id(), &node)
+			ast.MustAppend(nodeId, &leftAst)
+			rightAst, err := c.term()
+			if err != nil {
+				return rightAst, err
+			}
+			ast.MustAppend(nodeId, &rightAst)
+			leftAst = ast
+			continue
+		default:
+			return leftAst, nil
+		}
+	}
+}
+
+func (c *cparser) term() (cast.Ast, error) {
+	leftAst, err := c.factor()
+	if err != nil {
+		return leftAst, err
+	}
+	for {
+		switch {
+		case c.lookahead.Lex == "*" || c.lookahead.Lex == "/":
+			t := c.lookahead
+			err := c.match(c.lookahead)
+			if err != nil {
+				return leftAst, err
+			}
+			ast := cast.NewAst()
+			node := cast.NewNode(t)
+			nodeId := ast.MustAppendNode(ast.Root.Id(), &node)
+			ast.MustAppend(nodeId, &leftAst)
+			rightAst, err := c.factor()
+			if err != nil {
+				return rightAst, err
+			}
+			ast.MustAppend(nodeId, &rightAst)
+			leftAst = ast
+			continue
+		default:
+			return leftAst, nil
+		}
+	}
+}
+
+func (c *cparser) factor() (cast.Ast, error) {
+
+	switch {
+	case c.lookahead.Lex == "(":
+		err := c.match(c.lookahead)
+		if err != nil {
+			return cast.Ast{}, err
+		}
+		ast, err := c.expr()
+		if err != nil {
+			return ast, err
+		}
+		err = c.match(lexemes.Token{T: lexemes.Delimiter, Lex: ")"})
+		if err != nil {
+			return ast, err
+		}
+		return ast, err
+	case c.lookahead.T == lexemes.NumberLexeme:
+		ast := cast.NewAst()
+		node := cast.NewNode(c.lookahead)
+		ast.MustAppendNode(ast.Root.Id(), &node)
+		err := c.match(c.lookahead)
+		if err != nil {
+			return ast, err
+		}
+		return ast, nil
+	}
+	return cast.Ast{}, cerrors.ErrNoFactor
+}
+
+func (c *cparser) parse() (err error) {
+	c.lexan()
+	ast, err := c.expr()
+	if err != nil {
+		return err
+	}
+	c.command.Ast = ast
+	return nil
+}
+
 func (c *Command) Parse() (err error) {
-	c.Ast, err = parse(c.Tokens)
+	cparser := newCparser(c)
+	err = cparser.parse()
 
 	if err != nil {
 		return fmt.Errorf("%s : %s", cerrors.ErrParse, err)
