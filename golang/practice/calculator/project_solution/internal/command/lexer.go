@@ -3,47 +3,57 @@ package command
 import (
 	"calculator/internal/cerrors"
 	"calculator/internal/lexemes"
-	"fmt"
 	"unicode"
 )
 
 func (c *Command) saveToken(token *lexemes.Token) {
+	if len(token.Lex) == 0 {
+		return
+	}
 	c.Tokens = append(c.Tokens, token)
 }
 
 func startAccumulatingNumber(c *Command,
-	char string,
-	token *lexemes.Token) {
+	char rune,
+	token *lexemes.Token) (newToken *lexemes.Token) {
 	c.saveToken(token)
-	token.T = lexemes.TokenNumber
-	token.Lex = lexemes.Lexeme(char)
+	newToken = &lexemes.Token{}
+	newToken.T = lexemes.TokenNumber
+	newToken.Lex = lexemes.Lexeme(char)
+	return newToken
 }
 
 func accumulateNumber(c *Command,
-	char string,
-	token *lexemes.Token) {
+	char rune,
+	token *lexemes.Token) (newToken *lexemes.Token) {
 	token.Lex += lexemes.Lexeme(char)
+	return token
 }
 
 func accumulateOperator(c *Command,
-	char string,
-	token *lexemes.Token) {
+	char rune,
+	token *lexemes.Token) (newToken *lexemes.Token) {
 	c.saveToken(token)
-	token.T = lexemes.TokenOperator
-	token.Lex = lexemes.Lexeme(char)
+	newToken = &lexemes.Token{}
+	newToken.T = lexemes.TokenOperator
+	newToken.Lex = lexemes.Lexeme(char)
+	return newToken
 }
 
 func accumulateParanthesis(c *Command,
-	char string,
-	token *lexemes.Token) {
+	char rune,
+	token *lexemes.Token) (newToken *lexemes.Token) {
 	c.saveToken(token)
-	token.T = lexemes.TokenParanthesis
-	token.Lex = lexemes.Lexeme(char)
+	newToken = &lexemes.Token{}
+	newToken.T = lexemes.TokenParanthesis
+	newToken.Lex = lexemes.Lexeme(char)
+	return newToken
 }
 
 // finite-state machine for the lexical analysis of the expression
-type FsmT map[int]map[int]struct {
-	int func(*Command, string, *lexemes.Token)
+type fsmT map[int]map[int]struct {
+	state  int
+	action func(*Command, rune, *lexemes.Token) *lexemes.Token
 }
 
 func analyzeSymbol(c rune) int {
@@ -60,25 +70,105 @@ func analyzeSymbol(c rune) int {
 	return lexemes.Other
 }
 
-func (c *Command) LexicalAnalyze() error {
+func (c *Command) Tokenize() error {
+	fsm := fsmT{
+		lexemes.Digit: {
+			// now state
+			lexemes.NewToken: {
+				// new state
+				lexemes.NumberIntegerPart,
+				// action
+				startAccumulatingNumber},
 
-	var newToken lexemes.Token
+			lexemes.NumberIntegerPart: {
+				lexemes.NumberIntegerPart,
+				accumulateNumber},
 
-	for newToken, err := c.nextToken(newToken); len(newToken.Lex) > 0; newToken,
-		err = c.nextToken(newToken) {
-
-		if err != nil {
-			return fmt.Errorf("%s : %s", cerrors.ErrLexAnalysis, err)
-		}
-
-		c.Tokens = append(c.Tokens, newToken)
+			lexemes.NumberFractionalPart: {
+				lexemes.NumberFractionalPart,
+				accumulateNumber},
+		},
+		lexemes.Point: {
+			lexemes.NewToken: {
+				lexemes.NumberFractionalPart,
+				startAccumulatingNumber,
+			},
+			lexemes.NumberIntegerPart: {
+				lexemes.NumberFractionalPart,
+				accumulateNumber,
+			},
+			lexemes.NumberFractionalPart: {
+				lexemes.Error,
+				nil,
+			},
+		},
+		lexemes.Operator: {
+			lexemes.NewToken: {
+				lexemes.NewToken,
+				accumulateOperator,
+			},
+			lexemes.NumberIntegerPart: {
+				lexemes.NewToken,
+				accumulateOperator,
+			},
+			lexemes.NumberFractionalPart: {
+				lexemes.NewToken,
+				accumulateOperator,
+			},
+		},
+		lexemes.Paranthesis: {
+			lexemes.NewToken: {
+				lexemes.NewToken,
+				accumulateParanthesis,
+			},
+			lexemes.NumberIntegerPart: {
+				lexemes.NewToken,
+				accumulateParanthesis,
+			},
+			lexemes.NumberFractionalPart: {
+				lexemes.NewToken,
+				accumulateParanthesis,
+			},
+		},
+		lexemes.Other: {
+			lexemes.NewToken: {
+				lexemes.Error,
+				nil,
+			},
+			lexemes.NumberIntegerPart: {
+				lexemes.Error,
+				nil,
+			},
+			lexemes.NumberFractionalPart: {
+				lexemes.Error,
+				nil,
+			},
+		},
 	}
 
-	// expression has single negative number
-	if len(c.Tokens) == 1 && string(c.Tokens[0].Lex[0]) == "-" &&
-		len(c.Subinput) == 0 {
+	if len(c.Input) == 0 {
 		return cerrors.ErrNoToken
 	}
 
+	var token *lexemes.Token = &lexemes.Token{}
+
+	state := lexemes.NewToken
+
+	for _, ch := range c.Input {
+		symbol := analyzeSymbol(ch)
+		data := fsm[symbol][state]
+		state = data.state
+		action := data.action
+
+		if action != nil {
+			token = action(c, ch, token)
+		}
+
+		if state == lexemes.Error {
+			return cerrors.ErrNoToken
+		}
+	}
+
+	c.saveToken(token)
 	return nil
 }

@@ -35,11 +35,15 @@ func newCparser(c *Command) cparser {
 func (c *cparser) lexan() {
 	switch {
 	case c.pos == 0:
-		c.lookahead = c.command.Tokens[c.pos]
+		c.lookahead = *c.command.Tokens[c.pos]
 		c.pos++
 	case c.pos < len(c.command.Tokens):
-		c.lookahead = c.command.Tokens[c.pos]
-		c.tokenval = c.command.Tokens[c.pos-1]
+		c.lookahead = *c.command.Tokens[c.pos]
+		c.tokenval = *c.command.Tokens[c.pos-1]
+		c.pos++
+	case c.pos == len(c.command.Tokens):
+		c.lookahead = lexemes.Token{}
+		c.tokenval = *c.command.Tokens[c.pos-1]
 		c.pos++
 	}
 }
@@ -125,12 +129,12 @@ func (c *cparser) factor() (cast.Ast, error) {
 		if err != nil {
 			return ast, err
 		}
-		err = c.match(lexemes.Token{T: lexemes.Delimiter, Lex: ")"})
+		err = c.match(lexemes.Token{T: lexemes.TokenParanthesis, Lex: ")"})
 		if err != nil {
 			return ast, err
 		}
 		return ast, err
-	case c.lookahead.T == lexemes.NumberLexeme:
+	case c.lookahead.T == lexemes.TokenNumber:
 		ast := cast.NewAst()
 		node := cast.NewNode(c.lookahead)
 		ast.MustAppendNode(ast.Root.Id(), &node)
@@ -148,6 +152,9 @@ func (c *cparser) parse() (err error) {
 	ast, err := c.expr()
 	if err != nil {
 		return err
+	}
+	if c.pos <= len(c.command.Tokens) {
+		return cerrors.ErrNoToken
 	}
 	c.command.Ast = ast
 	return nil

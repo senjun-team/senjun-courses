@@ -9,7 +9,7 @@ import (
 func calc(rawExpression string) (float64, error) {
 	var c command.Command
 	c.ReadCommand(rawExpression)
-	err := c.LexicalAnalyze()
+	err := c.Tokenize()
 	if err != nil {
 		return 0, fmt.Errorf("%s : %s", cerrors.ErrCalculate, err)
 	}
@@ -17,6 +17,7 @@ func calc(rawExpression string) (float64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("%s : %s", cerrors.ErrCalculate, err)
 	}
+
 	res, err := c.Solve()
 
 	if err != nil {
