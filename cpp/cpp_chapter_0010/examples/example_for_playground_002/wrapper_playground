@@ -1,5 +1,8 @@
-import std;
-
+#include <algorithm>
+#include <chrono>
+#include <print>
+#include <random>
+#include <vector>
 
 void clamp_to_pct(int & n)
 {
