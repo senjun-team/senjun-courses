@@ -98,7 +98,7 @@ fsm := fsmT{
 Допустим, конечный автомат представлен в виде словаря с именем `fsm` (finite-state machine). Тогда переключение между состояниями `curState` и `nextState` будет выглядеть так:
 
 ```go
-data = FSM[curSymbol][curState]
+data = fsm[curSymbol][curState]
 
 nextState = data[0]
 action = data[1]
