@@ -15,8 +15,8 @@ term = term "*" factor | term "/" factor | factor
 factor = "(" expr ")" | number
 
 another words:
-expr = term[+,-]term[+,-]...term
-term = factor[*,/]factor[*,/]...factor
+expr = term ["+","-"] term ["+","-"] ... term
+term = factor ["*","/"] factor ["*","/"] ... factor
 factor = number | "(" expr ")"
 */
 
