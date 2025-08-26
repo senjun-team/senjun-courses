@@ -25,5 +25,6 @@ const (
 	NewToken
 	NumberIntegerPart
 	NumberFractionalPart
-	Error
+	InvalidTokenError
+	PointError
 )

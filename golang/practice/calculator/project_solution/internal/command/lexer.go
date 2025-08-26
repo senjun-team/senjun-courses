@@ -98,7 +98,7 @@ func (c *Command) Tokenize() error {
 				accumulateNumber,
 			},
 			lexemes.NumberFractionalPart: {
-				lexemes.Error,
+				lexemes.PointError,
 				nil,
 			},
 		},
@@ -132,15 +132,15 @@ func (c *Command) Tokenize() error {
 		},
 		lexemes.Other: {
 			lexemes.NewToken: {
-				lexemes.Error,
+				lexemes.InvalidTokenError,
 				nil,
 			},
 			lexemes.NumberIntegerPart: {
-				lexemes.Error,
+				lexemes.InvalidTokenError,
 				nil,
 			},
 			lexemes.NumberFractionalPart: {
-				lexemes.Error,
+				lexemes.InvalidTokenError,
 				nil,
 			},
 		},
@@ -164,8 +164,11 @@ func (c *Command) Tokenize() error {
 			token = action(c, ch, token)
 		}
 
-		if state == lexemes.Error {
-			return cerrors.ErrNoToken
+		if state == lexemes.PointError {
+			return cerrors.ErrPointError
+		}
+		if state == lexemes.InvalidTokenError {
+			return cerrors.ErrInvalidToken
 		}
 	}
 

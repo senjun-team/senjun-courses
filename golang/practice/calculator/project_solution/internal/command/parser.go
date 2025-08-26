@@ -32,7 +32,7 @@ func newCparser(c *Command) cparser {
 	return cparser{command: c}
 }
 
-func (c *cparser) lexan() {
+func (c *cparser) viewlex() {
 	switch {
 	case c.pos == 0:
 		c.lookahead = *c.command.Tokens[c.pos]
@@ -50,7 +50,7 @@ func (c *cparser) lexan() {
 
 func (c *cparser) match(t lexemes.Token) (err error) {
 	if c.lookahead == t {
-		c.lexan()
+		c.viewlex()
 		return nil
 	}
 	err = cerrors.ErrParse
@@ -148,7 +148,7 @@ func (c *cparser) factor() (cast.Ast, error) {
 }
 
 func (c *cparser) parse() (err error) {
-	c.lexan()
+	c.viewlex()
 	ast, err := c.expr()
 	if err != nil {
 		return err
