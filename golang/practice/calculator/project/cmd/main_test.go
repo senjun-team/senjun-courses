@@ -14,14 +14,13 @@ type testCaseT struct {
 }
 
 func TestCalc(t *testing.T) {
-	var cases []func() []testCaseT
-	cases = append(cases, testIntegerNumbers)
-	cases = append(cases, testFloatingPointNumbers)
-	cases = append(cases, testOperators)
-	cases = append(cases, testOperatorsPriority)
-	cases = append(cases, testParanthesis)
-	cases = append(cases, testSimpleInvalidExpressions)
-	cases = append(cases, testLongCorrectExpressions)
+	cases := []func() []testCaseT{testIntegerNumbers,
+		testFloatingPointNumbers,
+		testOperators,
+		testOperatorsPriority,
+		testParanthesis,
+		testSimpleInvalidExpressions,
+		testLongCorrectExpressions}
 
 	for _, c := range cases {
 		for _, test := range c() {
@@ -30,7 +29,7 @@ func TestCalc(t *testing.T) {
 				t.Fatalf("calc(%s) got error: %s, want error: %s", test.in,
 					parseError(err), parseError(test.err))
 			}
-			if test.err == nil && !isAlmostEqual(res, test.res, 0.000001) {
+			if test.err == nil && !isAlmostEqual(res, test.res, 1e-6) {
 				t.Fatalf("calc(\"%s\") got result: %.6f, want result: %.6f", test.in,
 					res, test.res)
 			}

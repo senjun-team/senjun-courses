@@ -62,7 +62,6 @@ The MustAppend appends the root of the ast v to the node with parentId of the as
 Panics is fails to find the node with id=parentId in the ast a.
 */
 func (a *Ast) MustAppend(parentId int, v *Ast) {
-
 	var parents []*Node
 	parents = append(parents, v.Root)
 
@@ -155,7 +154,6 @@ func (a *Ast) Print() {
 
 // The TerminalNodes returns all the terminal nodes from n as root.
 func (n *Node) TerminalNodes() (res []*Node) {
-
 	for _, child := range n.Children {
 		res = append(res, child.TerminalNodes()...)
 	}
@@ -169,7 +167,6 @@ func (n *Node) TerminalNodes() (res []*Node) {
 
 // The NonTerminalNodes returns all the nonterminal nodes from n as root.
 func (n *Node) NonTerminalNodes() (res []*Node) {
-
 	if len(n.Children) > 0 {
 
 		res = append(res, n)

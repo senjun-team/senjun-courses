@@ -39,7 +39,7 @@ func main() {
 	for _, expr := range expressions {
 		res, err := calc(expr)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Printf("%s error: %v\n", expr, err)
 		} else {
 			fmt.Printf("%s = %f\n", expr, res)
 		}
