@@ -38,6 +38,5 @@ target_sources(tests
 # В нем же можно посмотреть, какие версии clang, cmake и ninja точно подходят.
 
 # Затем выполните шаги:
-# mkdir build
 # cmake -Wno-dev -Bbuild -GNinja
 # cmake --build build/ -- -j4

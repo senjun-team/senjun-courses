@@ -721,7 +721,7 @@ export void show_compiler_info(std::string compiler)
 import hello_compiler;
 
 int main()
-{
+{    
     sys::show_compiler_info("clang");
 }
 ```
