@@ -260,6 +260,9 @@ func main() {
 }
 ```
 
+## Внедрение интерфейса
+Часто бывает удобно использовать уже имеющиеся интерфейсы для создания новых. В следующем примере мы использовали стандартный интерфейс `fmt.Stringer` для создания своего — `UserShower`. Если конкретный тип реализует методы `fmt.Stringer`, то он также удовлетворяет интерфейсу `UserShower`. Такой прием называется **внедрением** интерфейса. Чтобы конкретный тип удовлетворял интерфейсу `fmt.Stringer`, достаточно, чтобы он реализовывал метод `String`:
+
 ```go {.example_for_playground}
 package main
 
@@ -315,3 +318,200 @@ func main() {
 1, corefan
 2, 192.168.23.48:4040->192.168.23.103:3030
 ```
+
+Внедрять можно более одного интерфейса. Конкретный тип удовлетворяет такому интерфейсу, если он реализует все методы внедренных интерфейсов. В следующем коде объявите интерфейс `UserCloser`, который требует единственный метод `Close()`. Реализуйте этот метод таким образом, чтобы при его вызове выводилось сообщение `Closing N...`, где `N` — `id` сессии пользователя. Внедрите этот интерфейс в `AppUser`. {.task_text}
+
+```go {.task_source #golang_chapter_0130_task_0020}
+package main
+
+import (
+	"fmt"
+)
+
+type AppUser interface {
+	UserShower
+}
+
+type UserShower interface {
+	fmt.Stringer
+}
+
+type ChatUser struct {
+	id   int
+	name string
+}
+
+type InternalUser struct {
+	id      int
+	fromWho Proxy
+	toWhere Proxy
+}
+
+type Proxy struct {
+	address string
+	port    string
+}
+
+func (c ChatUser) String() string {
+	return fmt.Sprintf("%d, %s", c.id, c.name)
+}
+
+func (i InternalUser) String() string {
+	return fmt.Sprintf("%d, %s:%s->%s:%s", i.id, i.fromWho.address,
+		i.fromWho.port, i.toWhere.address, i.toWhere.port)
+}
+
+func ShowAllUsers(u []AppUser) {
+	for _, user := range u {
+		fmt.Println(user.String())
+	}
+}
+
+func CloseAllUsers(u []AppUser) {
+	for _, user := range u {
+		user.Close()
+	}
+}
+
+func main() {
+	var c ChatUser = ChatUser{1, "corefan"}
+	var i InternalUser = InternalUser{2, Proxy{"192.168.23.48", "4040"},
+		Proxy{"192.168.23.103", "3030"}}
+	var u []AppUser = []AppUser{c, i}
+
+	ShowAllUsers(u)
+	CloseAllUsers(u)
+}
+
+```
+
+В интерфейс `AppUser` теперь будет внедрено два других интерфейса: `UserShower` и `UserCloser`. {.task_hint}
+
+``` go  {.task_answer}
+package main
+
+import (
+	"fmt"
+)
+
+type AppUser interface {
+	UserShower
+	UserCloser
+}
+
+type UserShower interface {
+	fmt.Stringer
+}
+
+type UserCloser interface {
+	Close()
+}
+
+type ChatUser struct {
+	id   int
+	name string
+}
+
+type InternalUser struct {
+	id      int
+	fromWho Proxy
+	toWhere Proxy
+}
+
+type Proxy struct {
+	address string
+	port    string
+}
+
+func (c ChatUser) Close() {
+	fmt.Printf("closing %d...\n", c.id)
+}
+
+func (c InternalUser) Close() {
+	fmt.Printf("closing %d...\n", c.id)
+}
+
+func (c ChatUser) String() string {
+	return fmt.Sprintf("%d, %s", c.id, c.name)
+}
+
+func (i InternalUser) String() string {
+	return fmt.Sprintf("%d, %s:%s->%s:%s", i.id, i.fromWho.address,
+		i.fromWho.port, i.toWhere.address, i.toWhere.port)
+}
+
+func ShowAllUsers(u []AppUser) {
+	for _, user := range u {
+		fmt.Println(user.String())
+	}
+}
+
+func CloseAllUsers(u []AppUser) {
+	for _, user := range u {
+		user.Close()
+	}
+}
+
+func main() {
+	var c ChatUser = ChatUser{1, "corefan"}
+	var i InternalUser = InternalUser{2, Proxy{"192.168.23.48", "4040"},
+		Proxy{"192.168.23.103", "3030"}}
+	var u []AppUser = []AppUser{c, i}
+
+	ShowAllUsers(u)
+	CloseAllUsers(u)
+}
+```
+
+## Пустой интерфейс
+Что выведет следующий код? В случае ошибки напишите `error`. {.task_text}
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var i interface{}
+	i = 10
+	i = "hello"
+	fmt.Println(i)
+}
+```
+
+```consoleoutput {.task_source #golang_chapter_0130_task_0030}
+```
+Пустой интерфейс не требует реализации ни одного метода. {.task_hint}
+```go {.task_answer}
+hello
+```
+
+Пустой интерфейс не требует реализации ни одного метода. Поэтому значением переменной `i` может быть все что угодно. Таким образом, в Go есть косвенная возможность для динамической типизации.
+
+Начиная с Go 1.18, у типа `interface{}` есть псевдоним — `any`. Код из задачи эквивалентен следующему: 
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var i any
+	i = 10
+	i = "hello"
+	fmt.Println(i)
+}
+```
+
+## Резюме
+
+1. Интерфейс требует методы, которые должны быть реализованы конкретным типом.
+2. Чтобы конкретный тип удовлетворял интерфейсу, для него достаточно реализовать все методы этого интерфейса. Этот прием называется «утиная типизация».
+3. Один интерфейс может содержать другие интерфейсы. Чтобы конкретный тип удовлетворял такому интерфейсу, он должен реализовывать все методы каждого из внедренных интерфейсов.
+4. Бывает удобно использовать стандартные интерфейсы. Например, `fmt.Stringer`. Они ничем не отличаются от пользовательских. Подробнее о стандартных интерфейсах можно узнать на [сайте Go](https://go.dev/).
+5. Пустой интерфейс может содержать значение любого типа.
+6. Псевдоним пустого интерфейса `interface{}` — `any`.
