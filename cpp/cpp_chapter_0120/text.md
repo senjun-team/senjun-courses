@@ -4,15 +4,15 @@
 
 За свою 40-летнюю историю С++ так и не обзавелся стандартной системой сборки, но среди многообразия популярных инструментов [де-факто лидирует](https://www.jetbrains.com/lp/devecosystem-2023/cpp/#cpp_projectmodels_two_years) CMake. С одной стороны, изучение CMake несколько выходит за рамки курса по C++. Но с другой стороны, было бы странно погружаться в дебри языка и не уметь создавать и собирать проекты, состоящие более чем из пары-тройки файлов. Поэтому мы кратко разберемся, что такое CMake и как он вам поможет со сборкой.
 
-![Лого CMake](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-12/illustrations/cpp/cmake.png) {.illustration}
+![Лого CMake](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/cmake.png) {.illustration}
 
 Как и в прошлой главе, в этой не будет задач. Вместо них вы самостоятельно поэкспериментируете со сборкой. Вы можете воспользоваться для этого нашим [Docker-образом.](/courses/cpp/chapters/cpp_chapter_0110/#block-docker-image)
 
 ## Что такое CMake
 
-[CMake](https://cmake.org/) (Cross-platform Make) — это система для автоматизации компиляции, пакетирования и установки. CMake не занимается сборкой напрямую. Вместо этого он генерирует необходимые файлы для другого инструмента и вызывает его. CMake умеет работать поверх:
+[CMake](https://cmake.org/) (Cross-platform Make) — это система для автоматизации компиляции, пакетирования и установки. CMake не занимается сборкой напрямую. Вместо этого он создает необходимые файлы для другого инструмента и вызывает его. Этот инструмент называется _генератором._ CMake умеет работать поверх:
 - систем сборки, таких как [Make](https://www.gnu.org/software/make/) и [Ninja](https://ninja-build.org/).
-- IDE [Microsoft Visual Studio](https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170) и [Apple Xcode.](https://cmake.org/cmake/help/latest/generator/Xcode.html) Для них он создает необходимые проектные файлы.
+- IDE, например [Microsoft Visual Studio](https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170) и [Apple Xcode.](https://cmake.org/cmake/help/latest/generator/Xcode.html) Для них он создает необходимые проектные файлы.
 
 Если ваш проект собирается через CMake, вам будет удобно работать с ним из любой распространенной IDE для C++, начиная с [Qt Creator](https://doc.qt.io/qtcreator/creator-how-to-install.html) и заканчивая [Visual Studio Code.](https://code.visualstudio.com/docs/languages/cpp)
 
@@ -27,9 +27,9 @@ CMake включает три консольных инструмента:
 
 ## Команды CMake {#block-commands}
 
-CMake читает файлы конфигурации CMakeLists.txt, в которых перечисляются команды на макроязыке CMake.
+CMake читает файлы конфигурации CMakeLists.txt, в которых перечисляются команды на макроязыке CMake. Он является тьюринг-полным: с его помощью можно решить любую вычислимую задачу, в том числе управлять процессом сборки самых сложных проектов. Для этого в макроязыке есть все необходимое: переменные, условия, циклы и даже функции.
 
-За пару десятилетий эволюции макроязык CMake адаптировался под нужды индустрии. По аналогии с «Modern C++» в обиход вошел термин [«Modern CMake».](https://cliutils.gitlab.io/modern-cmake/README.html) Он относится к CMake версии 3.15 и выше, начиная с которой файлы CMakeLists.txt становятся все более удобными и читабельными. А поддержка C++ модулей появилась в CMake 3.28.
+За пару десятилетий эволюции макроязык CMake адаптировался под нужды индустрии. По аналогии с «Modern C++» в обиход вошел термин [«Modern CMake».](https://cliutils.gitlab.io/modern-cmake/README.html) Он относится к CMake версии 3.15 и выше, начиная с которой файлы CMakeLists.txt становятся все более удобными и читабельными. В CMake 3.28 появилась поддержка C++ модулей. 
 
 Допустим, у нас есть простейший проект, состоящий из двух файлов:
 
@@ -38,7 +38,7 @@ CMake читает файлы конфигурации CMakeLists.txt, в кот
 └── CMakeLists.txt
 ```
 
-Рассмотрим, как выглядит `CMakeLists.txt`, описывающий получение бинаря с именем `run` из `main.cpp`. Считаем, что в `main.cpp` не импортируются никакие модули.
+Рассмотрим, как выглядит CMakeLists.txt, описывающий получение бинаря с именем `run` из `main.cpp`. Считаем, что в `main.cpp` не импортируются никакие модули.
 
 ```
 cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
@@ -46,45 +46,61 @@ project(hello LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 add_executable(run main.cpp)
 ```
 
-С символа `#` в макроязыке CMake начинаются однострочные комментарии.
+С символа `#` в макроязыке CMake начинаются однострочные комментарии. Команды регистронезависимы, но [рекомендуется](https://cmake.org/cmake/help/latest/guide/tutorial/A%20Basic%20Starting%20Point.html#exercise-1-building-a-basic-project) использовать нижний регистр.
 
-Команда [cmake_minimum_required](https://cmake.org/cmake/help/latest/command/cmake_minimum_required.html) задает минимально необходимую версию CMake, без которой не получится собрать проект.
+Команда [cmake_minimum_required](https://cmake.org/cmake/help/latest/command/cmake_minimum_required.html) должна идти первой. Она задает минимально необходимую версию CMake, без которой не получится собрать проект.
 
 Команда [project](https://cmake.org/cmake/help/latest/command/project.html) задает имя проекта и сохраняет его в переменной `PROJECT_NAME`. Например, это удобно для задания имени в одном месте и переиспользования в именах артефактов сборки, таких как библиотеки и исполняемые файлы.
 
-Команда [set](https://cmake.org/cmake/help/latest/command/set.html) задает значение для переменной. Если имя переменной начинается с префикса `CMAKE_`, это означает, что перед вами [специальная переменная,](https://cmake.org/cmake/help/latest/manual/cmake-variables.7.html) используемая самой утилитой CMake. Мы задали три таких переменных:
+Команда [set](https://cmake.org/cmake/help/latest/command/set.html) задает значение для переменной. Если имя переменной начинается с префикса `CMAKE_`, это означает, что перед вами [специальная переменная,](https://cmake.org/cmake/help/latest/manual/cmake-variables.7.html) используемая самой утилитой CMake. Мы задали две таких переменных:
 - `CMAKE_CXX_STANDARD`. На основании значения этой переменной CMake передает компилятору специфичную для него опцию, конкретизирующую, с каким стандартом C++ собирать проект.
-- `CMAKE_CXX_STANDARD_REQUIRED` флаг для завершения сборки с ошибкой, если значение `CMAKE_CXX_STANDARD` не задано.
-- `CMAKE_CXX_FLAGS` — опции компилятора. Мы присвоили этой переменной строковое значение `"${CMAKE_CXX_FLAGS} -O3"`. Здесь переменная `CMAKE_CXX_FLAGS` обернута в конструкцию `${}`. Это необходимо для получения значения переменной.
+- `CMAKE_CXX_STANDARD_REQUIRED` — флаг для завершения сборки с ошибкой, если значение `CMAKE_CXX_STANDARD` не задано.
 
-И, наконец, команда [add_executable](https://cmake.org/cmake/help/latest/command/add_executable.html) добавляет цель сборки — исполняемый файл. Первым аргументом команды идет имя исполняемого файла, а затем разделенные пробелом файлы. 
+Наконец, команда [add_executable](https://cmake.org/cmake/help/latest/command/add_executable.html) добавляет цель сборки — исполняемый файл. Первым аргументом команды идет имя исполняемого файла, а затем разделенные пробелом файлы. 
 
 По любой из команд вы можете посмотреть [подробное описание.](https://cmake.org/cmake/help/latest/index.html#command-line-tools) Для этого воспользуйтесь поиском по документации.
 
 ## Процесс сборки через CMake
 
-При сборке любого проекта команду `cmake` требуется вызвать дважды с разными опциями. Сначала для создания файлов сборки, затем — для самой сборки.
+Сборка проекта через CMake состоит из нескольких этапов:
+- Конфигурация.
+    - `cmake` читает файлы CMakeLists.txt.
+    - Он анализирует команды и значения переменных. Проверяет окружение: доступность зависимостей, пути к требуемым библиотекам, версию компилятора и т.д.
+    - По завершению конфигуации обновляется файл CMakeCache.txt. Он содержит все полученные на предыдущем шаге настройки.
+- Генерация.
+    - `cmake` создает файлы для выбранного генератора. Например, это Makefile для Мake и проектные файлы для MSVC.
+    - Этап генерации нужен, чтобы транслировать команды на макроязыке CMake в файлы с инструкциями для конкретного генератора. 
+- Сборка.
+    - `cmake` вызывает генератор и передает ему созданные на предыдущем этапе файлы.
+    - Генератор в свою очередь уже вызывает компилятор, чтобы скомпилировать проект на C++.
 
-Файлы сборочной системы и артефакты сборки принято хранить в отдельной директории, чтобы не замусоривать проект. Зачастую это директория `build` внутри проекта.Чтобы создать в ней файлы сборки, `cmake` вызывается с опцией `-B`.
+Этапы конфигурации и генерации нужно проходить только при первой сборке проекта и при изменении файлов CMakeLists.txt. Они объединяются в одну команду:
 
 ```bash
 cmake -B build/
 ```
 
-Если на этом этапе явно не указать систему сборки, CMake сгенерирует файлы для Make.
+Здесь опция `-B` задает директорию для хранения файлов генератора и артефактов сборки. Их принято держать в отдельной директории, чтобы не замусоривать проект. Зачастую это директория `build` внутри проекта.
 
-После того как файлы сборки готовы, можно компилировать проект. Для этого `cmake` вызывается с опцией `--build`.
+Если не указать генератор, CMake создаст файлы для Make. Для явного задания генератора используется опция `-G`:  
+
+```bash
+cmake -B build -G Ninja
+```
+
+После успешного выполнения конфигурации и генерации `cmake` запускается непосредственно для сборки. Для этого ему передается опция `--build`.
 
 ```bash
 cmake --build build/
 ```
 
-Если компиляция завершается успешно, на жесткий диск сохраняются ее артефакты — исполняемые файлы и библиотеки. По умолчанию они также находятся в директории `build`. 
+Если компиляция завершается успешно, на жесткий диск сохраняются ее артефакты — исполняемые файлы и библиотеки.
+
+Обратите внимание, что опции `-B` и `--build` имеют разное предназначение. Не путайте их: `-B` явно задает директорию для файлов генератора и артефактов сборки для этапов конфигурации и генерации, а `--build` стартует этап сборки. 
 
 Вызовите `cmake` без аргументов, чтобы посмотреть краткую справку. А вызов `cmake --help` подскажет, какие опции есть у `cmake`. Например, вы можете узнать, для чего нужна опция `-S`.
 
@@ -111,10 +127,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Символ \ нужен, чтобы разбить длинную строку на несколько
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ \
                     -Werror -Wall -Wno-unused-variable \
-                    -Wno-logical-op-parentheses -O3")
+                    -Wno-logical-op-parentheses")
 
 add_executable(main main.cpp hello_compiler.cpp)
 ```
+
+Переменная `CMAKE_CXX_FLAGS` нужна для задания конкретных опций компилятора. Мы присвоили ей строковое значение `"${CMAKE_CXX_FLAGS} ..."`, чтобы добавить к _уже установленным_ опциям несколько дополнительных. Внутри строки переменная `CMAKE_CXX_FLAGS` обернута в конструкцию `${}`. Это необходимо для подстановки значения переменной, а не ее имени. 
+
+Опция `-stdlib=libc++` равносильна `-lc++`, с которой вы [уже знакомы.](/courses/cpp/chapters/cpp_chapter_0100/#block-opts) [-Werror](https://clang.llvm.org/docs/UsersManual.html#cmdoption-Werror) позволяет трактовать любые предупреждения компиляции как ошибки и завершать сборку. Самостоятельно разберитесь, для чего нужны опции `-Wall`, `-Wno-unused-variable` и `-Wno-logical-op-parentheses`.
 
 Теперь соберите проект:
 
@@ -165,7 +185,7 @@ set(STD_MODULE_FILE /usr/local/lib/std.pcm)
 
 # Среди опций для компилятора передаем значение переменной
 # STD_MODULE_FILE
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -O3 \
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ \
                     -fmodule-file=std=${STD_MODULE_FILE}")
 
 # Добавление цели сборки - бинарного файла main. Перечисление
@@ -188,7 +208,7 @@ cmake --build build/
 ./build/main
 ```
 
-### Подпроекты
+## Подпроекты {#block-subproject}
 
 Допустим, вы пишете проект для проигрывания аудио-файлов, который компилируется в динамическую библиотеку. Но библиотека — не единственная цель сборки. Помимо нее есть бинарные файлы юнит-тестов и примеров работы с аудио. Все они подключают хедеры библиотеки и линкуются с ней.
 
@@ -217,7 +237,7 @@ audio/
 
 В директории `src` лежит реализация этих хедеров. А `test` и `examples` содержат тесты и примеры кода.
 
-Для сборки такого проекта через `cmake` можно завести не один, а три файла `CMakeLists.txt`:
+Для сборки такого проекта через `cmake` можно завести не один, а три файла CMakeLists.txt:
 
 ```
 audio/
@@ -237,7 +257,7 @@ audio/
     └── ...
 ```
 
-Файл `CMakeLists.txt` в корне проекта собирает [динамическую](/courses/cpp/chapters/cpp_chapter_0110/#block-dynamic-libs) (shared) библиотеку `audio` и добавляет _подпроекты:_
+Файл CMakeLists.txt в корне проекта собирает [динамическую](/courses/cpp/chapters/cpp_chapter_0110/#block-dynamic-libs) (shared) библиотеку `audio` и добавляет _подпроекты:_
 
 ```
 ...
@@ -253,7 +273,7 @@ add_subdirectory(test)
 
 Команда [add_library](https://cmake.org/cmake/help/latest/command/add_library.html) добавляет цель сборки — библиотеку.
 
-Команда [add_subdirectory](https://cmake.org/cmake/help/latest/command/add_subdirectory.html) обозначает, что в указанной директории содержится подпроект с файлом `CMakeLists.txt`, команды из которого тоже необходимо выполнить. Например, в `examples/CMakeLists.txt` могут быть такие команды:
+Команда [add_subdirectory](https://cmake.org/cmake/help/latest/command/add_subdirectory.html) обозначает, что в указанной директории содержится подпроект с файлом CMakeLists.txt, команды из которого тоже необходимо выполнить. Например, в `examples/CMakeLists.txt` могут быть такие команды:
 
 ```
 ...
@@ -266,7 +286,137 @@ target_link_libraries(play_mp3_file PRIVATE audio)
 
 Команда [target_link_libraries](https://cmake.org/cmake/help/latest/command/target_link_libraries.html) линкует цель сборки с набором библиотек.
 
-Подпроекты в `cmake` нужны, чтобы структурировать скрипты сборки в соответствии с логической организацией проекта. Без подпроектов все команды для сборки пришлось бы хранить в одном-единственном огромном файле `CMakeLists.txt`, который было бы крайне тяжело читать и изменять.
+Подпроекты в `cmake` нужны, чтобы структурировать скрипты сборки в соответствии с логической организацией проекта. Без подпроектов все команды для сборки пришлось бы хранить в одном-единственном огромном файле CMakeLists.txt, который было бы крайне тяжело читать и изменять.
+
+## Типы сборок
+
+[Как вы помните,](/courses/cpp/chapters/cpp_chapter_0110/#block-optimizations) у компиляторов есть опции, указывающие, насколько активно нужно оптимизировать код: `-O0`, `-O1` и другие. `-O0` означает отсутствие оптимизиаций, а `-O3` — применение полного набора.
+
+Также у компиляторов есть опция `-g`, предназначенная для сохранения отладочных символов (debug info). Они добавляются прямо в бинарь или сохраняются отдельным файлом, чтобы у отладчика была возможность связать бинарный код с исходным кодом. Это нужно для отображения имен переменных и функций, стека вызовов и других полезных при отладке вещей.
+
+Комбинация из этих и некоторых других опций компилятора описывает _тип сборки_. В CMake он задатся переменной `CMAKE_BUILD_TYPE`. Она принимает значения `Debug`, `Release`, `RelWithDebInfo` и [другие.](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html)
+
+```
+set(CMAKE_BUILD_TYPE Release)
+```
+
+От значения `CMAKE_BUILD_TYPE` зависит набор опций _по умолчанию,_ передаваемых компилятору. При релизной сборке как правило передается `-O3`, при отладочной — `-O0 -g`, а при релизной сборке с отладочными символами `RelWithDebInfo` — `-O2 -g`.
+
+Переменная `CMAKE_CXX_FLAGS` лишь _дополняет_ этот набор опций, но не переопределяет. Если переменная `CMAKE_BUILD_TYPE` не задана явно, то большинство генераторов создают отладочную сборку.
+
+Фиксировать значение `CMAKE_BUILD_TYPE` внутри CMakeLists.txt — не самый гибкий подход. Ведь всякий раз для смены типа сборки придется редактировать эту переменную в коде скрипта. К счастью, есть более удобные способы присвоить ей необходимое значение.
+
+## Варианты установки переменных
+
+У команды `set` для задания переменной есть альтернативы: опция `-D` и переменные окружения.
+
+[Опция](https://cmake.org/cmake/help/latest/manual/cmake.1.html#cmdoption-cmake-D) `-D` консольной команды `cmake` позволяет на этапе конфигурации определить все необходимые переменные.
+
+Формат: `-D <var>=<value>`. Пробел между `-D` и именем переменной чаще всего опускают:
+
+```bash
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_STANDARD=23 -B build
+```
+
+[Некоторые](https://cmake.org/cmake/help/latest/manual/cmake-env-variables.7.html) переменные можно передавать в CMake через окружение. Переменная окружения должна быть задана до вызова `cmake`:
+
+```bash
+CXX=clang++ CMAKE_BUILD_TYPE=RelWithDebInfo cmake -B build
+```
+
+## Работа с зависимостями
+
+Практически любой серьезный проект на C++ задействует внешние зависимости для решения типовых задач. В качестве зависимости может выступать что угодно, хоть файлы ресурсов с иконками или переводами текста на разные языки. Однако в большинстве случев речь идет о C++ библиотеках. [Как вы помните,](/courses/cpp/chapters/cpp_chapter_0110/#block-libraries) библиотеки бывают статическими, динамическими или header-only.
+
+Представим, что нужная библиотека уже собрана и присутствует в системе. Например, если она входит в состав пакета, установленного пакетным менеджером. В таком случае для обнаружения хедеров и бинарных файлов библиотеки в CMakeLists.txt прописывается команда `find_package`. Вам остается только убедиться, что компилятор находит ее хедеры, и слинковаться с бинарными файлами библиотеки.
+
+Более интересный сценарий: доступен только исходный код библиотеки, и ее предстоит собрать. Допустим, в проекте используется [git,](https://git-scm.com/) а нужная библиотека лежит в git-репозитории. Тогда ее можно подгрузить в проект в качестве [git-сабмодуля](https://git-scm.com/book/en/v2/Git-Tools-Submodules) (git-submodule). Исходный код библиотеки станет частью проекта, например попадет в директорию `third_party/library_name`. В CMakeLists.txt работа с такой библиотекой ничем не будет отличаться от работы с любым другим [подпроектом.](/courses/cpp/chapters/cpp_chapter_0120/#block-subproject)
+
+У git-сабмодулей есть альтернативы: модули CMake для работы с зависимостями. [Модуль](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Modules.html) (module) в CMake — это набор команд на макроязыке CMake, вынесенных в отдельный файл. Чтобы скачивать и собирать зависимости проекта, доступны модули [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) и [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html).
+
+Рассмотрим варианты подключения зависимостей, не касающиеся git.
+
+### Подключение библиотек, которые установлены в системе
+
+Для поиска зависимостей, установленных системно, в CMake предусмотрена команда [find_package](https://cmake.org/cmake/help/latest/command/find_package.html). У нее десятки параметров, но обязательный только один — имя пакета. 
+
+Так выглядит поиск библиотеки [fmt](https://github.com/fmtlib/fmt). Она послужила фундаментом для реализации стандартного форматирования строк `std::format` и популярна в проектах, не поддерживающих C++20:
+
+```
+find_package(fmt)
+```
+
+Помимо имени пакета вам могут потребоваться несколько других параметров:
+
+```
+find_package(<PackageName> [version] [EXACT] [REQUIRED|QUIET] [COMPONENTS <component1> ...])
+```
+
+- `version` — версия пакета.
+- `EXACT` — указание, что требуется конкретная версия, а не минимально необходимая.
+- Флаг `REQUIRED` прекращает сборку с ошибкой, если зависимость не обнаружена в системе. Флаг `QUIET` наоборот продолжает сборку, даже если пакет не найден.
+- `COMPONENTS` — список требуемых компонентов пакета.
+
+Так выглядит поиск компонентов `program_options` и `filesystem` пакета [Boost](/courses/cpp/chapters/cpp_chapter_0010/#block-boost):
+
+```
+find_package(Boost 1.89 REQUIRED COMPONENTS program_options filesystem)
+
+# Делаем видимыми компилятору пути к хедерам
+include_directories(${Boost_INCLUDE_DIRS})
+
+add_executable(run main.cpp)
+
+# Линкуем библиотеки к цели сборки
+target_link_libraries(run ${Boost_LIBRARIES})
+```
+
+В этом примере команда `find_package` определила расположение компонентов Boost и установила переменные `Boost_INCLUDE_DIRS` и `Boost_LIBRARIES` в соответствующие значения. Чтобы подробнее разобраться, как это работает, советуем почитать [первые два раздела](https://cmake.org/cmake/help/book/mastering-cmake/chapter/Finding%20Packages.html) документации про поиск пакетов в CMake.
+
+### Подключение библиотек через модуль CMake
+
+В CMake есть два модуля, которые позволяют скачивать и собирать зависимости проекта: [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) и [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html). У них схожее назначение, но разные сценарии использования.
+
+FetchContent работает исключительно с зависимостями, собираемыми через CMake. А ExternalProject подойдет, даже если зависимость строится через другую систему автоматизации сборки (например, GNU autotools).
+
+FetchContent подгружает и делает зависимость доступной _на этапе конфигурации._ Затем она собирается как часть основного проекта. ExternalProject скачивает и строит зависимость _на этапе сборки._ Построение при этом происходит максимально изолированно от основного проекта.
+
+Модуль ExternalProject менее распространен: в большинстве случаев хватает функционала FetchContent. На нем и остановимся.
+
+Представим, что у проекта две библиотеки-зависимости: [spdlog](https://github.com/gabime/spdlog) для логирования и [libunifex](https://github.com/facebookexperimental/libunifex) для асинхронного запуска задач. Тогда их подключение через FetchContent будет выглядеть так:
+
+```
+# Подключаем модуль CMake FetchContent
+include(FetchContent)
+
+# Описываем зависимости
+FetchContent_Declare(
+  # Имя, которое мы даем зависимости:
+  spdlog
+
+  # URI
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+
+  # Хеш коммита или git-тег:
+  GIT_TAG        6fa36017cfd5731d617e1a934f0e5ea9c4445b13
+)
+
+FetchContent_Declare(
+  libunifex
+  GIT_REPOSITORY https://github.com/facebookexperimental/libunifex.git
+  GIT_TAG        17fecea7fa3bf7345cb781fff5be33b05245ef90
+)
+
+# Получаем зависимости
+FetchContent_MakeAvailable(spdlog libunifex)
+```
+
+Процесс подключения зависимости через FetchContent состоит из трех шагов:
+- [include(FetchContent)](https://cmake.org/cmake/help/latest/command/include.html) — подключение модуля `FetchContent`, в котором реализованы команды `FetchContent_Declare` и `FetchContent_MakeAvailable`.
+- [FetchContent_Declare](https://cmake.org/cmake/help/latest/module/FetchContent.html#command:fetchcontent_declare) — описание зависимости и ее характеристик.
+- [FetchContent_MakeAvailable](https://cmake.org/cmake/help/latest/module/FetchContent.html#command:fetchcontent_makeavailable) - загрузка зависимости и определение целей для сборки из этой зависимости.
+
+После того как зависимость подгружена, с ней можно линковаться командой [target_link_libraries](https://cmake.org/cmake/help/latest/command/target_link_libraries.html).
 
 ## Что использовать вместо CMake
 
@@ -286,11 +436,11 @@ target_link_libraries(play_mp3_file PRIVATE audio)
 - пакетирования,
 - доставки пакета в репозиторий.
 
-Эти задачи решают пакетные менеджеры. В мире C++ два самых распространенных пакетных менеджера — это [Conan](https://docs.conan.io/2/tutorial.html) и [vcpkg.](https://learn.microsoft.com/en-us/vcpkg/) Оба легко встраиваются в CI/CD и умеют работать в связке с популярными системами автоматизации сборки.
+Все эти задачи решают пакетные менеджеры. В мире C++ два самых распространенных пакетных менеджера — это [Conan](https://docs.conan.io/2/tutorial.html) и [vcpkg.](https://learn.microsoft.com/en-us/vcpkg/) Оба легко встраиваются в CI/CD и умеют работать в связке с популярными системами автоматизации сборки.
 
 ![Лого Conan и vcpkg](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-12/illustrations/cpp/packaging.png) {.illustration}
 
-Можно ли жить без пакетных менеджеров? Вполне, хоть это и менее удобно. В таком случае разрешение зависимостей чаще всего организуется с помощью [git-сабмодулей](https://git-scm.com/book/en/v2/Git-Tools-Submodules) либо управления внешним проектом через функционал модулей [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html) и [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) в CMake. Пакетирование при этом организуется стандартными средствами для создания rpm или deb пакетов. А версионирование и заливка пакета в репозиторий делегируется продуктам, отвечающим за CI/CD.
+Можно ли жить без пакетных менеджеров? Вполне, хоть это и менее удобно. В таком случае разрешение зависимостей чаще всего организуется с помощью [git-сабмодулей](https://git-scm.com/book/en/v2/Git-Tools-Submodules) либо модули [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html) и [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) в CMake. Пакетирование при этом организуется стандартными средствами для создания rpm или deb пакетов. А версионирование и заливка пакета в репозиторий делегируется продуктам, отвечающим за CI/CD.
 
 ## Домашнее задание
 
@@ -305,6 +455,6 @@ target_link_libraries(play_mp3_file PRIVATE audio)
 ## Резюме
 
 - CMake — это система для автоматизации компиляции, пакетирования и установки.
-- CMake не занимается сборкой напрямую. Он генерирует необходимые файлы для другого инструмента и вызывает его.
+- CMake не занимается сборкой напрямую. Он генерирует необходимые файлы для генератора — инструмента, занимающегося сборкой, и вызывает его.
 - CMake читает файлы конфигурации CMakeLists.txt, в которых перечисляются команды на макроязыке CMake.
-- Сборка проекта через CMake состоит из двух этапов: создания файлов сборки и непосредственно компиляции проекта.
+- Компиляция C++ проекта через CMake состоит из этапов конфигурации, генерации и непосредственно сборки.
