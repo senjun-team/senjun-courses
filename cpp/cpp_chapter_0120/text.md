@@ -162,7 +162,7 @@ cmake --build build/
 Теперь соберем [вариант проекта](/courses/cpp/chapters/cpp_chapter_0100/#block-project-modules) `hello_compiler`, содержащий пользовательский модуль и импортирующий `std`. Добавьте в проект CMakeLists.txt:
 
 ```
-hello_compiler
+hello_compiler/
 ├── hello_compiler.cppm
 ├── main
 └── CMakeLists.txt
