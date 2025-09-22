@@ -116,7 +116,7 @@ cmake --build build/
 Создайте директорию `hello_compiler` для одноименного проекта, сохраните в ней [один хедер и два cpp-файла.](/courses/cpp/chapters/cpp_chapter_0100/#block-hello-compiler) Добавьте CMakeLists.txt:
 
 ```
-hello_compiler/
+hello_compiler
 ├── hello_compiler.h
 ├── hello_compiler.cpp
 ├── main.cpp
@@ -162,7 +162,7 @@ cmake --build build/
 Теперь соберем [вариант проекта](/courses/cpp/chapters/cpp_chapter_0100/#block-project-modules) `hello_compiler`, содержащий пользовательский модуль и импортирующий `std`. Добавьте в проект CMakeLists.txt:
 
 ```
-hello_compiler/
+hello_compiler
 ├── hello_compiler.cppm
 ├── main
 └── CMakeLists.txt
@@ -223,7 +223,7 @@ cmake --build build/
 Структура такого проекта может выглядеть следующим образом:
 
 ```
-audio/
+audio
 ├── include
 │   └── audio
 │       └── play.h
@@ -248,7 +248,7 @@ audio/
 Для сборки такого проекта через `cmake` можно завести не один, а три файла CMakeLists.txt:
 
 ```
-audio/
+audio
 ├── CMakeLists.txt
 ├── include
 │   └── audio
