@@ -138,7 +138,7 @@ func main() {
 	c := &systemUnit{}
 	m := &monitor{}
 	err := parseAll([]equipmentParser{c, m},
-		[]string{"Ubuntu OS, 16, 8, Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
+		[]string{"Ubuntu, 16, 8, Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
 			"1280x1024, Dell"})
 	if err != nil {
 		fmt.Println(err)
@@ -264,7 +264,7 @@ func main() {
 	c := &systemUnit{}
 	m := &monitor{}
 	err := parseAll([]equipmentParser{c, m},
-		[]string{"Ubuntu OS, 16, 8, Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
+		[]string{"Ubuntu, 16, 8, Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
 			"1280x1024, Dell"})
 	if err != nil {
 		fmt.Println(err)
