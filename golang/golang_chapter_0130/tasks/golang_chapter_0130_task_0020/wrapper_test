@@ -1,0 +1,61 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestCloseAllConns(t *testing.T) {
+	cases := []struct {
+		in   []AppUser
+		want string
+	}{
+		{
+			[]AppUser{ChatUser{1, "corefan"},
+				InternalUser{2, Proxy{"192.168.23.48", "4040"},
+					Proxy{"192.168.23.103", "3030"}}},
+			"closing 1...\nclosing 2...",
+		},
+		{
+			[]AppUser{InternalUser{723, Proxy{"192.168.23.48", "4040"},
+				Proxy{"192.168.23.103", "3030"}}},
+			"closing 723...",
+		},
+		{
+			[]AppUser{},
+			"",
+		},
+	}
+
+	for _, c := range cases {
+
+		old := os.Stdout // keep backup of the real stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+
+		outC := make(chan string)
+		// copy the output in a separate goroutine so printing can't block indefinitely
+		go func() {
+			var buf bytes.Buffer
+			io.Copy(&buf, r)
+			outC <- buf.String()
+		}()
+
+		CloseAllConns(c.in)
+
+		// back to normal state
+		w.Close()
+		os.Stdout = old // restoring the real stdout
+		out := <-outC
+
+		// reading our temp stdout
+		if strings.TrimSpace(out) != c.want {
+			t.Errorf("CloseAllConns(%v) prints: \n\n%s\n\n not: \n\n%s\n\n", c.in,
+				strings.TrimSpace(out), c.want)
+		}
+	}
+
+}
