@@ -2,9 +2,7 @@
 
 ## Понятие интерфейса 
 
-До сих пор мы имели дело с конкретными типами. Интерфейс — это *абстрактный тип*. Абстрактный тип — это такой тип, который определяется не его внутренней реализацией, а только его поведением. Абстрактный тип описывает, что можно делать с данными, а не как они хранятся. 
-
-Интерфейс представляет собой соглашение о том, какие методы должны быть реализованы конкретным типом. Если конкретный тип реализует эти методы, то его экземпляры являются экземплярами интерфейса. Другими словами, такой тип *соответствует* или *удовлетворяет* интерфейсу. 
+До сих пор мы имели дело с конкретными типами. Интерфейс — это *абстрактный тип*. Абстрактный тип — это такой тип, который определяется его поведением. Интерфейс перечисляет методы, но не реализует их. Интерфейс представляет собой соглашение о том, какие методы должны быть реализованы конкретным типом. Если конкретный тип реализует эти методы, то его экземпляры являются экземплярами интерфейса. Другими словами, такой тип *соответствует* или *удовлетворяет* интерфейсу. 
 
 Для того, чтобы объявить интерфейс, используют ключевое слово `interface`:
 ```
@@ -36,8 +34,8 @@ type systemUnit struct {
 }
 
 type monitor struct {
-	resolution    [2]int
-	company string
+	resolution [2]int
+	company    string
 }
 
 func (c systemUnit) sprintf() (s string) {
@@ -61,7 +59,8 @@ func saveEquipment(eqs []string,
 }
 
 func main() {
-	c := systemUnit{"Ubuntu", 16, 8, "Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz", "Dell"}
+	c := systemUnit{"Ubuntu", 16, 8,
+		"Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz", "Dell"}
 	m := monitor{[2]int{1280, 1024}, "Dell"}
 	showEquipment(c)
 	showEquipment(m)
@@ -85,10 +84,10 @@ All equipments:
 
 Вам не нужно явно указывать, что функция реализует какой-то интерфейс. В Go используется так называемая «утиная типизация»: «если что-то крякает как утка, то это утка». Это означает, что если тип реализует все методы интерфейса, то он удовлетворяет интерфейсу.
 
-Отметим также, что имя интерфейса `equipmentPrinter` начинается со строчной буквы. Так мы поступили здесь, поскольку весь код находится в единственном пакете `main`. Однако чаще всего это не так, и имена интерфейсов начинаются с прописной буквы, чтобы они были доступны из других пакетов. То же самое относится и к методам, которые требует реализовать интерфейс.
+Отметим также, что имя интерфейса `equipmentPrinter` начинается со строчной буквы. Мы назвали его так, потому что весь код находится в единственном пакете `main`. Однако чаще всего это не так, и имена интерфейсов начинаются с прописной буквы, чтобы они были доступны из других пакетов. То же самое относится и к методам, которые требует реализовать интерфейс.
 
 
-Создайте интерфейс `equipmentParser` с единственным методом `parse(s string) error`. Реализуйте этот метод в структурах `systemUnit` и `monitor` так, чтобы эти структуры удовлетворяли интерфейсу. Метод должен разобрать значения полей структур по входной строке. Значения отделяются запятой. Не забудьте удалить пробельные символы вначале и в конце строк. Этого легко достичь с помощью метода `strings.TrimSpace()`.{.task_text}
+Создайте интерфейс `equipmentParser` с единственным методом `parse(s string) error`. Реализуйте этот метод в структурах `systemUnit` и `monitor` так, чтобы эти структуры удовлетворяли интерфейсу. Метод должен разобрать значения полей структур по входной строке. Значения отделяются запятой. Не забудьте удалить пробельные символы вначале и в конце строк. Этого легко достичь с помощью метода [strings.TrimSpace](https://pkg.go.dev/strings#TrimSpace). {.task_text}
 
 Создайте функцию `parseAll`, которая принимает в качестве параметров срез из `equipmentParser` и срез из строк. Она должна разобрать все строки, которые ей передадут, в соответствующие аргументы. Функция возвращает ошибку `failed to parse`, либо `nil`. {.task_text}
 
@@ -138,7 +137,8 @@ func main() {
 	c := &systemUnit{}
 	m := &monitor{}
 	err := parseAll([]equipmentParser{c, m},
-		[]string{"Ubuntu, 16, 8, Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
+		[]string{"Ubuntu, 16, 8, " +
+			"Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
 			"1280x1024, Dell"})
 	if err != nil {
 		fmt.Println(err)
@@ -146,7 +146,6 @@ func main() {
 	showEquipment(c)
 	showEquipment(m)
 }
-
 ```
 
 Чтобы получить из строки срез по разделителю, воспользуйтесь функцией `strings.Split`. Она принимает строку в качестве первого аргумента и разделитель — в качестве второго. Чтобы преобразовать строку к числу, воспользуйтесь функцией `strconv.Atoi`. Она вернет результат и ошибку. {.task_hint}
@@ -264,7 +263,8 @@ func main() {
 	c := &systemUnit{}
 	m := &monitor{}
 	err := parseAll([]equipmentParser{c, m},
-		[]string{"Ubuntu, 16, 8, Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
+		[]string{"Ubuntu, 16, 8, " +
+			"Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
 			"1280x1024, Dell"})
 	if err != nil {
 		fmt.Println(err)
@@ -280,9 +280,7 @@ func main() {
 ```go {.example_for_playground}
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type UserDisplayer interface {
 	fmt.Stringer
@@ -309,7 +307,8 @@ func (c ChatUser) String() string {
 }
 
 func (i InternalUser) String() string {
-	return fmt.Sprintf("%d, %s:%s->%s:%s", i.id, i.fromWho.address,
+	return fmt.Sprintf("%d, %s:%s->%s:%s",
+		i.id, i.fromWho.address,
 		i.fromWho.port, i.toWhere.address, i.toWhere.port)
 }
 
@@ -321,7 +320,8 @@ func ShowAllUsers(u []UserDisplayer) {
 
 func main() {
 	var c ChatUser = ChatUser{1, "corefan"}
-	var i InternalUser = InternalUser{2, Proxy{"192.168.23.48", "4040"},
+	var i InternalUser = InternalUser{2,
+		Proxy{"192.168.23.48", "4040"},
 		Proxy{"192.168.23.103", "3030"}}
 	var u []UserDisplayer = []UserDisplayer{c, i}
 
@@ -333,14 +333,12 @@ func main() {
 2, 192.168.23.48:4040->192.168.23.103:3030
 ```
 
-Встраивать можно более одного интерфейса. Конкретный тип удовлетворяет такому интерфейсу, если он реализует все методы встроенных интерфейсов. В следующем коде объявите интерфейс `ConnCloser`, который требует единственный метод `CloseConn()`. Реализуйте этот метод таким образом, чтобы при его вызове выводилось сообщение `closing N...`, где `N` — `id` сессии пользователя. Встройте интерфейс `ConnCloser` в интерфейс `AppUser`. {.task_text}
+Встраивать можно более одного интерфейса. Допустим, некоторый интерфейс состоит из других интерфейсов. Конкретный тип удовлетворяет такому интерфейсу, если он реализует все методы встроенных интерфейсов. В следующем коде объявите интерфейс `ConnCloser`, который требует единственный метод `CloseConn`. Реализуйте этот метод таким образом, чтобы при его вызове выводилось сообщение `closing N...`, где `N` — `id` сессии пользователя. Встройте интерфейс `ConnCloser` в интерфейс `AppUser`. {.task_text}
 
 ```go {.task_source #golang_chapter_0130_task_0020}
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type AppUser interface {
 	UserDisplayer
@@ -371,8 +369,10 @@ func (c ChatUser) String() string {
 }
 
 func (i InternalUser) String() string {
-	return fmt.Sprintf("%d, %s:%s->%s:%s", i.id, i.fromWho.address,
-		i.fromWho.port, i.toWhere.address, i.toWhere.port)
+	return fmt.Sprintf("%d, %s:%s->%s:%s",
+		i.id, i.fromWho.address,
+		i.fromWho.port, i.toWhere.address,
+		i.toWhere.port)
 }
 
 func ShowAllUsers(u []AppUser) {
@@ -389,14 +389,14 @@ func CloseAllConns(u []AppUser) {
 
 func main() {
 	var c ChatUser = ChatUser{1, "corefan"}
-	var i InternalUser = InternalUser{2, Proxy{"192.168.23.48", "4040"},
+	var i InternalUser = InternalUser{2,
+		Proxy{"192.168.23.48", "4040"},
 		Proxy{"192.168.23.103", "3030"}}
 	var u []AppUser = []AppUser{c, i}
 
 	ShowAllUsers(u)
 	CloseAllConns(u)
 }
-
 ```
 
 В интерфейс `AppUser` теперь будет встроено два других интерфейса: `UserDisplayer` и `ConnCloser`. {.task_hint}
@@ -404,9 +404,7 @@ func main() {
 ``` go  {.task_answer}
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type AppUser interface {
 	UserDisplayer
@@ -450,8 +448,10 @@ func (c ChatUser) String() string {
 }
 
 func (i InternalUser) String() string {
-	return fmt.Sprintf("%d, %s:%s->%s:%s", i.id, i.fromWho.address,
-		i.fromWho.port, i.toWhere.address, i.toWhere.port)
+	return fmt.Sprintf("%d, %s:%s->%s:%s",
+		i.id, i.fromWho.address,
+		i.fromWho.port, i.toWhere.address,
+		i.toWhere.port)
 }
 
 func ShowAllUsers(u []AppUser) {
@@ -468,7 +468,8 @@ func CloseAllConns(u []AppUser) {
 
 func main() {
 	var c ChatUser = ChatUser{1, "corefan"}
-	var i InternalUser = InternalUser{2, Proxy{"192.168.23.48", "4040"},
+	var i InternalUser = InternalUser{2,
+		Proxy{"192.168.23.48", "4040"},
 		Proxy{"192.168.23.103", "3030"}}
 	var u []AppUser = []AppUser{c, i}
 
@@ -485,9 +486,7 @@ func main() {
 ```go {.example_for_playground}
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
 	var i interface{}
@@ -511,9 +510,7 @@ hello
 ```go {.example_for_playground}
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
 	var i any
@@ -528,6 +525,6 @@ func main() {
 1. Интерфейс требует методы, которые должны быть реализованы конкретным типом.
 2. Чтобы конкретный тип удовлетворял интерфейсу, для него достаточно реализовать все методы этого интерфейса. Этот прием называется «утиная типизация».
 3. Один интерфейс может содержать другие интерфейсы. Чтобы конкретный тип удовлетворял такому интерфейсу, он должен реализовывать все методы каждого из встроенных интерфейсов.
-4. Бывает удобно использовать стандартные интерфейсы. Например, `fmt.Stringer`. Они ничем не отличаются от пользовательских. Подробнее о стандартных интерфейсах можно узнать на  официальном сайте Go.
+4. Бывает удобно использовать стандартные интерфейсы. Например, `fmt.Stringer`. Они ничем не отличаются от пользовательских.
 5. Пустой интерфейс может содержать значение любого типа.
 6. Псевдоним пустого интерфейса `interface{}` — `any`.
