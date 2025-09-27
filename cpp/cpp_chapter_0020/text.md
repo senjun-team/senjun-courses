@@ -197,7 +197,7 @@ int const winter_avg_temp = -5;
 
 ## Знакомство с фундаментальными типами {#block-fundamental-types}
 
-[Фундаментальные типы](https://en.cppreference.com/w/cpp/language/types#Standard_floating-point_types) (fundamental types) — это типы, встроенные в язык. Их имена являются ключевыми словами (keywords). Рассмотрим некоторые из них:
+[Фундаментальные типы](https://en.cppreference.com/w/cpp/language/types) (fundamental types) — это типы, встроенные в язык. Их имена являются ключевыми словами (keywords). Рассмотрим некоторые из них:
 - `int` — знаковое целое: `93`, `-3`, `0`, `9'100`.
 - `double` — число с плавающей точкой [двойной точности:](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) `-45.5`, `1e6`, `0.0`, `NAN` (not a number), `INFINITY`.
 - `bool` — логическое значение: `true`, `false`.
