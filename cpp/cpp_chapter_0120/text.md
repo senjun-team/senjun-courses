@@ -142,7 +142,7 @@ add_executable(main main.cpp hello_compiler.cpp)
 
 Переменная `CMAKE_CXX_FLAGS` нужна для задания конкретных опций компилятора. Мы присвоили ей строковое значение `"${CMAKE_CXX_FLAGS} ..."`, чтобы добавить к _уже установленным_ опциям несколько дополнительных. Внутри строки переменная `CMAKE_CXX_FLAGS` обернута в конструкцию `${}`. Это необходимо для подстановки значения переменной, а не ее имени. 
 
-Опция `-stdlib=libc++` равносильна `-lc++`, с которой вы [уже знакомы.](/courses/cpp/chapters/cpp_chapter_0100/#block-opts) [-Werror](https://clang.llvm.org/docs/UsersManual.html#cmdoption-Werror) позволяет трактовать любые предупреждения компиляции как ошибки и завершать сборку. Самостоятельно разберитесь, для чего нужны опции `-Wall`, `-Wno-unused-variable` и `-Wno-logical-op-parentheses`.
+Опция `-stdlib=libc++` равносильна `-lc++`, с которой вы [уже знакомы.](/courses/cpp/chapters/cpp_chapter_0100/#block-opts) [-Werror](https://clang.llvm.org/docs/UsersManual.html#cmdoption-Werror) позволяет трактовать любые предупреждения компиляции как ошибки и завершать сборку. Самостоятельно разберитесь, для чего нужны опции `-Wall`, `-Wno-unused-variable` и `-Wno-logical-op-parentheses`. {#block-flags}
 
 Теперь соберите проект:
 
@@ -354,7 +354,7 @@ message(STATUS "Flags for compiler: ${CMAKE_CXX_FLAGS}")
 
 Про поддерживаемые типы сообщений вы можете почитать [здесь.](https://cmake.org/cmake/help/latest/command/message.html#general-messages) 
 
-Задание: установите значение переменной `CMAKE_BUILD_TYPE` тремя возможными способами — командой `set`, опцией `-D` и через переменную окружения. В CMakeLists.txt выведите значение `CMAKE_BUILD_TYPE` в консоль. Что будет, если одновременно задать переменную окружения и оцию `-D` с разными значениями? Какое из них подхватит CMake?
+Задание: установите значение переменной `CMAKE_BUILD_TYPE` тремя возможными способами — командой `set`, опцией `-D` и через переменную окружения. В CMakeLists.txt выведите значение `CMAKE_BUILD_TYPE` в консоль. Что будет, если одновременно задать переменную окружения и опцию `-D` с разными значениями? Какое из них подхватит CMake?
 
 ## Работа с зависимостями
 

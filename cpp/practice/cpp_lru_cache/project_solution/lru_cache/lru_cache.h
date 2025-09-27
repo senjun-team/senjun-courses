@@ -9,7 +9,7 @@ class LRUCache
 {
 public:
     LRUCache(std::size_t max_size);
-    std::string get(int key);
+    std::pair<std::string, bool> get(int key);
     void put(int key, std::string value);
     void clear();
     std::size_t size();
