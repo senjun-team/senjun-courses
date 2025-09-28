@@ -9,25 +9,22 @@ LRUCache::LRUCache(std::size_t max_size)
     m_max_size = max_size;
 }
 
-std::string LRUCache::get(int key)
+std::pair<std::string, bool> LRUCache::get(int key)
 {
     auto it_map = m_map.find(key);
     if (it_map == m_map.end())
-        throw std::range_error("Key doesn't exist in cache");
+        return {"", false};
 
     auto it_list = it_map->second;
     m_list.splice(m_list.begin(), m_list, it_list);
-    return it_list->second;
+    return {it_list->second, true};
 }
     
 void LRUCache::put(int key, std::string value)
 {   
     if (auto it_map = m_map.find(key); it_map != m_map.end())
     {
-        auto it_list = it_map->second;
-        if (it_list->second == value)
-            return;
-        
+        auto it_list = it_map->second;        
         m_list.erase(it_list);
         m_map.erase(it_map);
     }

@@ -10,29 +10,22 @@ std::vector<int> random_vector(std::size_t len);
 
 static void BM_LRUUsage(benchmark::State& state)
 {
-  for (auto _ : state)
-  {
-      cache::LRUCache cache(100);
-      const std::vector<int> keys = random_vector(1'000);
-      const std::string val = "text";
+    for (auto _: state)
+    {
+        cache::LRUCache cache(100);
+        const std::vector<int> keys = random_vector(1'000);
+        const std::string val = "text";
 
-      for (std::size_t i = 0; i < keys.size(); ++i)
-      {
-          cache.put(keys[i], val);
-          
-          if (i % 2 != 0)
-          {
-              try
-              {
-                  const volatile std::string res = cache.get(keys[i - 1]);
-              }
-              catch(const std::range_error & e)
-              {
-                  // Попадаем сюда, если ключ не найден
-              }
-          }
-      }
-  }
+        for (std::size_t i = 0; i < keys.size(); ++i)
+        {
+            cache.put(keys[i], val);
+
+            if (i % 2 != 0)
+            {
+                const volatile auto res = cache.get(keys[i - 1]);
+            }
+        }
+    }
 }
 
 // Регистрируем функцию в качестве бенчмарка

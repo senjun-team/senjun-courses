@@ -37,39 +37,18 @@ TEST(LRU, MaxSizeZero)
 
     const std::size_t s = cache.size();
     ASSERT_EQ(s, 0) << "When initialized with max_size=0 LRUCache::size() must always return 0 but returns " << s << " after putting 1 element to cache";
-    try
-    {
-        cache.get(1);
-        ASSERT_TRUE(false) << "Method get() must throw an exception if cache max_size=0\n";
-    }
-    catch(const std::range_error & re)
-    {
-        // Expected err
-        return;
-    }
-    catch(const std::exception e)
-    {
-        ASSERT_TRUE(false) << "Method get() must throw an exception of type std::range_error but throws other type\n";
-    }
+
+    const auto p = cache.get(1);
+    ASSERT_FALSE(p.second) << "Method get() must return pair {\"\", false} if cache max_size=0";
+    ASSERT_EQ(p.first, "")<< "Method get() must return pair {\"\", false} if cache max_size=0";
 }
 
 TEST(LRU, MissingKey)
 {
-    try
-    {
-        cache::LRUCache cache(1);
-        cache.get(1);
-        ASSERT_TRUE(false) << "Method get() must throw an exception if key doesn't exist but doesn't throw\n";
-    }
-    catch(const std::range_error & re)
-    {
-        // Expected err
-        return;
-    }
-    catch(const std::exception e)
-    {
-        ASSERT_TRUE(false) << "Method get() must throw an exception of type std::range_error if key doesn't exist but throws other type\n";
-    }
+    cache::LRUCache cache(1);
+    const auto p = cache.get(1);
+    ASSERT_FALSE(p.second) << "Method get() must return pair {\"\", false} if key doesn't exist";
+
 }
 
 TEST(LRU, KeepElementsWithinCapacity)
@@ -102,9 +81,10 @@ TEST(LRU, SimplePutGetSizeClearFor1Element)
         const std::string v = "val";
 
         cache.put(k, v);
-        const std::string fact = cache.get(k);
-        ASSERT_EQ(v, fact) << "LRUCache is inited with max_size=" << max_size << ". "
-        "After calling put(" << k << ", \""<< v << "\") method get(" << k << ") must return \"" << v << "\" but returned \"" << fact << "\"";
+        const auto fact = cache.get(k);
+        ASSERT_TRUE(fact.second) << "Method get() must return pair {key_value, true} if key exists";
+        ASSERT_EQ(v, fact.first) << "LRUCache is inited with max_size=" << max_size << ". "
+        "After calling put(" << k << ", \""<< v << "\") method get(" << k << ") must return \"" << v << "\" key but returned \"" << fact.first << "\"";
 
         const std::size_t fact_size = cache.size();
         ASSERT_EQ(fact_size,1) << "After insertion of 1 element method size() must return 1 but returned " << fact_size;
@@ -209,27 +189,14 @@ void call_action(Action const & action, cache::LRUCache & cache, std::string & h
         case ActionType::Get:
             {
                 const auto plan = std::get<std::string>(action.ret_val);
+                const auto fact = cache.get(action.key);
                 if (plan == EX)
                 {
-                    try
-                    {
-                        cache.get(action.key);
-                        ASSERT_TRUE(false) << get_history(history) << "get() must throw an exception but doesn't throw";
-                    }
-                    catch(const std::range_error & re)
-                    {
-                        // Expected err
-                        return;
-                    }
-                    catch(const std::exception e)
-                    {
-                        ASSERT_TRUE(false) << get_history(history) << "get() must throw an exception of type std::range_error but throws other type";
-                    }
+                    ASSERT_FALSE(fact.second) << get_history(history) << "get() must return {\"\", false} for non-existent key";
                 }
                 else
                 {
-                    const std::string fact = cache.get(action.key);
-                    ASSERT_EQ(fact, plan) << get_history(history) << "get() returned \"" << fact << "\" but expected value is \"" << plan << "\""; 
+                    ASSERT_EQ(fact.first, plan) << get_history(history) << "get() returned \"" << fact.first << "\" but expected value is \"" << plan << "\""; 
                 }
             }
             break;
