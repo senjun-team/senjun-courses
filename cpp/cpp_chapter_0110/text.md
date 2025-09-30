@@ -35,7 +35,9 @@ docker run -it --entrypoint bash microvenator/senjun_cpp:2.0
 - [GCC](https://gcc.gnu.org/) ([GNU](https://www.gnu.org/) Compiler Collection). Входит в состав большинства дистрибутивов Linux и используется для сборки ядра Linux.
 - [MSVC.](https://visualstudio.microsoft.com/vs/features/cplusplus/) Де-факто стандарт от Microsoft для сборки проектов под Windows.
 
+
 ![Лого компиляторов](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/cpp_compilers.png) {.illustration}
+
 
 На cppreference постоянно актуализируется [список фичей](https://en.cppreference.com/w/cpp/compiler_support) версий C++ в разрезе поддержки компиляторами.
 
@@ -55,7 +57,9 @@ docker run -it --entrypoint bash microvenator/senjun_cpp:2.0
 
 **Линкер** (linker) компонует их в результирующий исполняемый файл или библиотеку.
 
+
 ![Пайплайн сборки](https://raw.githubusercontent.com/senjun-team/senjun-courses/cpp-chapter-11/illustrations/cpp/cpp_build_pipeline.jpg) {.illustration}
+
 
 Это классический пайплайн сборки. У него возможны вариации. Например, вместо трансляции кода C++ в код на ассемблере компилятор может сам создавать объектные файлы. В таком случае вызова ассемблера как самостоятельной программы не произойдет.
 
@@ -137,7 +141,9 @@ wc -l main.i
 
 Из нескольких строк кода мы получили десятки тысяч! И это для маленького файла, подключающего всего один хедер. А все благодаря директиве `#include`, вместо которой препроцессор рекурсивно скопировал содержимое файла `print`. А если в проекте сотни файлов, и каждый из них подключает десятки хедеров? Неудивительно, что компиляция крупных проектов может длиться часами! Решение этой проблемы — одна из мотиваций для появления в C++ модулей.
 
-![Медленная компиляция](https://raw.githubusercontent.com/senjun-team/senjun-courses/introduce-cpp/illustrations/cpp/slow_compiling.jpg) {.illustration}
+
+![Медленная компиляция — это проблема?](https://raw.githubusercontent.com/senjun-team/senjun-courses/introduce-cpp/illustrations/cpp/slow_compiling.jpg) {.illustration}
+
 
 Если описывать работу препроцессора верхнеуровнево, то он:
 - получает на вход содержимое файлов реализации,
@@ -206,7 +212,9 @@ return a;
 
 В упрощенном виде AST для этого кода будет выглядеть так:
 
+
 ![Пример AST](https://raw.githubusercontent.com/senjun-team/senjun-courses/introduce-cpp/illustrations/cpp/ast_for_euclidean_algo.jpg) {.illustration}
+
 
 AST обходится при [семантическом анализе](https://ru.wikipedia.org/wiki/%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%B0%D0%BD%D0%B0%D0%BB%D0%B8%D0%B7) кода. На этом этапе компилятор сообщает о некорректных программных конструкциях. Например, о вызове функции с неправильным количеством аргументов.
 
@@ -344,7 +352,9 @@ nm main.o
 
 Допустим, мы работаем с проектом поискового движка search_engine. Он содержит два файла реализации и три хедера. Он собирается в исполняемый файл. Для этого препроцессор из файлов реализации получает единицы трансляции, компилятор транслирует их в код на ассемблере, ассемблер получает его и создает объектные файлы, а линкер объединяет их в исполняемый файл.
 
+
 ![Прохождение файлами пайплайна сборки](https://raw.githubusercontent.com/senjun-team/senjun-courses/introduce-cpp/illustrations/cpp/cpp_build_pipeline_entities.jpg) {.illustration}
+
 
 Вернемся к проекту `hello_compiler`. Усложним его: пусть он состоит из 3-х файлов, содержимое которых [приводилось](/courses/cpp/chapters/cpp_chapter_0100/#block-hello-compiler) в прошлой главе:
 
