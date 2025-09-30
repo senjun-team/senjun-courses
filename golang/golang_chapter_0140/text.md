@@ -91,3 +91,195 @@ func Reverse(data Interface) Interface {
 	return &reverse{data}
 }
 ```
+
+Память `memory` выделяется частями `chunk` по 16 значений типа `int`. Вся выделенная память представляется в виде односвязного списка `linkedList`, в котором каждое значение представлено в виде `memory`. Каждый чанк имеет `id`. Отсортируйте выделенную память по возрастанию `id` чанков.  {.task_text}
+
+
+```go {.task_source #golang_chapter_0130_task_0010}
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+type memory struct {
+	id    int
+	chunk [16]int
+}
+
+type linkedNode struct {
+	next  *linkedNode
+	value memory
+}
+
+type linkedList struct {
+	begin *linkedNode
+}
+
+func (list *linkedList) print() {
+	node := list.begin
+	for node != nil {
+		fmt.Print(node.value)
+		fmt.Print("->")
+		node = node.next
+	}
+	fmt.Print("nil")
+}
+
+func exampleList() *linkedList {
+	mem0 := memory{2, [16]int{1, 2, 3}}
+	mem1 := memory{3, [16]int{0, 0, 4, 5, 6}}
+	mem2 := memory{1, [16]int{7, 0, 8}}
+	mem3 := memory{0, [16]int{9, 10}}
+	return &linkedList{&linkedNode{
+		&linkedNode{
+			&linkedNode{
+				&linkedNode{nil,
+					mem3}, mem2}, mem1}, mem0}}
+}
+
+func main() {
+	lst := exampleList()
+	lst.print()
+	fmt.Println()
+	sort.Sort(lst)
+	lst.print()
+	fmt.Println()
+}
+
+```
+
+Чтобы отсортировать односвязный список, достаточно изменить адреса соответствующих указателей. {.task_hint}
+
+```go  {.task_answer}
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+type memory struct {
+	id    int
+	chunk [16]int
+}
+
+type linkedNode struct {
+	next  *linkedNode
+	value memory
+}
+
+type linkedList struct {
+	begin *linkedNode
+}
+
+func (list *linkedList) Len() int {
+	n := list.begin
+	counter := 0
+
+	for n != nil {
+		counter++
+		n = n.next
+	}
+	return counter
+}
+
+func (list *linkedList) Less(i, j int) bool {
+	iNode := list.numberNode(i)
+	errNilNode := "one of the nodes is nil"
+	if iNode == nil {
+		panic(errNilNode)
+	}
+	jNode := list.numberNode(j)
+	if jNode == nil {
+		panic(errNilNode)
+	}
+	return iNode.value.id < jNode.value.id
+}
+
+func (list *linkedList) Swap(i, j int) {
+	iNode := list.numberNode(i)
+	errNilNode := "one of the nodes is nil"
+	if iNode == nil {
+		panic(errNilNode)
+	}
+
+	jNode := list.numberNode(j)
+	if jNode == nil {
+		panic(errNilNode)
+	}
+
+	var iPrev *linkedNode = nil
+	var jPrev *linkedNode = nil
+
+	if i-1 >= 0 {
+		iPrev = list.numberNode(i - 1)
+	}
+	if j-1 >= 0 {
+		jPrev = list.numberNode(j - 1)
+	}
+
+	if iPrev != nil {
+		iPrev.next = jNode
+	}
+	if jPrev != nil {
+		jPrev.next = iNode
+	}
+	iNode.next, jNode.next = jNode.next, iNode.next
+
+	if i == 0 {
+		list.begin = jNode
+	}
+	if j == 0 {
+		list.begin = iNode
+	}
+}
+
+func (list *linkedList) numberNode(number int) *linkedNode {
+	if list.begin == nil || number < 0 {
+		return nil
+	}
+
+	inode := list.begin
+
+	for k := 0; k < number; k++ {
+		inode = inode.next
+		if inode == nil {
+			return nil
+		}
+	}
+	return inode
+}
+
+func (list *linkedList) print() {
+	node := list.begin
+	for node != nil {
+		fmt.Print(node.value)
+		fmt.Print("->")
+		node = node.next
+	}
+	fmt.Print("nil")
+}
+
+func exampleList() *linkedList {
+	mem0 := memory{2, [16]int{1, 2, 3}}
+	mem1 := memory{3, [16]int{0, 0, 4, 5, 6}}
+	mem2 := memory{1, [16]int{7, 0, 8}}
+	mem3 := memory{0, [16]int{9, 10}}
+	return &linkedList{&linkedNode{
+		&linkedNode{
+			&linkedNode{
+				&linkedNode{nil,
+					mem3}, mem2}, mem1}, mem0}}
+}
+
+func main() {
+	lst := exampleList()
+	lst.print()
+	fmt.Println()
+	sort.Sort(lst)
+	lst.print()
+	fmt.Println()
+}
+```
