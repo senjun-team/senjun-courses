@@ -9,12 +9,12 @@ std::string test_to_string(Rarity rarity)
 {
     switch(rarity)
     {
-        case Rarity::COMMON:
-            return "Rarity::COMMON";
-        case Rarity::RARE:
-            return "Rarity::RARE";
-        case Rarity::LEGENDARY:
-            return "Rarity::LEGENDARY";
+        case Rarity::Common:
+            return "Rarity::Common";
+        case Rarity::Rare:
+            return "Rarity::Rare";
+        case Rarity::Legendary:
+            return "Rarity::Legendary";
     }
 }
 
@@ -23,15 +23,15 @@ int main()
     using namespace boost::ut;
 
     "enum class values"_test = [] {
-        expect(static_cast<int>(Rarity::COMMON) < static_cast<int>(Rarity::RARE)) << "Integer representation of Rarity::COMMON must be less then Rarity::RARE" << fatal;
-        expect(static_cast<int>(Rarity::RARE) < static_cast<int>(Rarity::LEGENDARY)) << "Integer representation of Rarity::RARE must be less then Rarity::LEGENDARY" << fatal;
+        expect(static_cast<int>(Rarity::Common) < static_cast<int>(Rarity::Rare)) << "Integer representation of Rarity::Common must be less then Rarity::Rare" << fatal;
+        expect(static_cast<int>(Rarity::Rare) < static_cast<int>(Rarity::Legendary)) << "Integer representation of Rarity::Rare must be less then Rarity::Legendary" << fatal;
     };
 
     "to_string() return values"_test = [] {
         std::vector<std::pair<Rarity, std::string>> in_out{
-            {Rarity::COMMON, "Common"},
-            {Rarity::RARE, "Rare"},
-            {Rarity::LEGENDARY, "Legendary"}
+            {Rarity::Common, "Common"},
+            {Rarity::Rare, "Rare"},
+            {Rarity::Legendary, "Legendary"}
         };
 
         for (const auto & [in, out]: in_out)
