@@ -83,8 +83,10 @@ for(std::string::iterator it = s.begin(); it != s.end(); ++it)
 Методы `begin()` и `end()` есть у всех контейнеров стандартной библиотеки:
 - `begin()` возвращает итератор, указывающий на начальный элемент.
 - `end()` возвращает итератор на позицию **за** последним элементом.
- 
+
+
 ![Итераторы по строке](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-6/illustrations/cpp/iterators.jpg) {.illustration}
+
 
 ## Основные действия над итераторами
 
@@ -109,7 +111,9 @@ for(std::string::iterator it = s.begin(); it != s.end(); ++it)
 
 Чтобы показать, как эти категории соотносятся друг с другом, их можно представить вложенными друг в друга. Итераторы, изображенные внешними, обладают наибольшими возможностями.
 
+
 ![Категории итераторов](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-6/illustrations/cpp/iterator_categories.jpg) {.illustration}
+
 
 Итераторы по каждому из стандартных контейнеров относятся к одной из этих категорий. Например, итераторы по строке являются итераторами произвольного доступа.
 Так выглядит изменение символов строки в цикле по итераторам:
@@ -379,7 +383,9 @@ char c = *it; // Ок
 
 При инкременте `reverse_iterator` смещается ближе к началу контейнера.
 
+
 ![Обратные итераторы по строке](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-6/illustrations/cpp/reverse_iterators.jpg) {.illustration}
+
 
 Так выглядит обратный проход по строке:
 

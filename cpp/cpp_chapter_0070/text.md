@@ -20,7 +20,9 @@
 
 Контейнеры делятся на три категории, по одной на каждый из основных сценариев использования.
 
+
 ![Классификация контейнеров](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers.jpg) {.illustration}
+
 
 В **последовательных** (sequence) контейнерах элементы хранятся линейно. Место элемента зависит от того, когда и на какую позицию он был добавлен. И не зависит от значения самого элемента. Вы уже [познакомились](/courses/cpp/chapters/cpp_chapter_0060/#block-vector) с типичным представителем последовательных контейнеров — динамическим массивом `std::vector`.
 
@@ -42,7 +44,9 @@
 
 Последовательные контейнеры представлены массивами, деком и списками.
 
+
 ![Последовательные контейнеры](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_sequential.jpg) {.illustration}
+
 
 ### Класс vector
 
@@ -232,7 +236,9 @@ std::println("{}", d);
 
 Если допустить, что выделяемые под дек массивы содержат по 6 элементов, дек `d` можно представить так:
 
+
 ![Дек](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/deque.jpg) {.illustration}
+
 
 Доступ к элементам по индексу за `O(1)` — это ключевое свойство классов `std::array`, `std::vector` и `std::deque`. Но вставка и удаление по произвольному индексу в них работают медленно: за `O(N)`. Ведь для этого нужно сдвинуть все элементы с бОльшим индексом. После чего итераторы на сдвинутые элементы инвалидируются. А добавление нового элемента в вектор может привести к перевыделению памяти и инвалидации всех итераторов.
 
@@ -301,7 +307,9 @@ int get_equator(std::forward_list<int> lst)
 
 ### Алгоритмическая сложность работы с последовательными контейнерами
 
+
 ![Алгоритмическая сложность работы с последовательными контейнерами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_sequential_algo_complexity.jpg) {.illustration}
+
 
 Кстати, алгоритмическая сложность операций над строкой `std::string` такая же, как над вектором: их внутреннее устройство схоже.
 
@@ -347,7 +355,9 @@ bool is_diagonal(std::array<std::array<int, N>, N> matrix)
 
 Упорядоченные ассоциативные контейнеры хранят в отсортированном виде ключи или пары ключ-значение. Доступ к элементу осуществляется по ключу и работает за `O(log(N)`.
 
+
 ![Ассоциативные контейнеры](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_assotiative.jpg) {.illustration}
+
 
 Такие контейнеры реализуются через [бинарные деревья поиска.](https://ru.wikipedia.org/wiki/%D0%94%D0%B2%D0%BE%D0%B8%D1%87%D0%BD%D0%BE%D0%B5_%D0%B4%D0%B5%D1%80%D0%B5%D0%B2%D0%BE_%D0%BF%D0%BE%D0%B8%D1%81%D0%BA%D0%B0) Чаще всего — через [красно-черные деревья.](https://ru.wikipedia.org/wiki/%D0%9A%D1%80%D0%B0%D1%81%D0%BD%D0%BE-%D1%87%D1%91%D1%80%D0%BD%D0%BE%D0%B5_%D0%B4%D0%B5%D1%80%D0%B5%D0%B2%D0%BE)
 
@@ -748,7 +758,9 @@ for (auto[it, it_end] = server_jobs.equal_range("stage"); it != it_end; ++it)
 
 ### Алгоритмическая сложность работы с ассоциативными контейнерами
 
+
 ![Алгоритмическая сложность работы с упорядоченными ассоциативными контейнерами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_associative_algo_complexity.jpg) {.illustration}
+
 
 ## Неупорядоченные ассоциативные контейнеры
 
@@ -770,7 +782,9 @@ i = hash(key) % n
 
 Для разрешения коллизий известно [несколько способов.](https://ru.wikipedia.org/wiki/%D0%A5%D0%B5%D1%88-%D1%82%D0%B0%D0%B1%D0%BB%D0%B8%D1%86%D0%B0#%D0%A0%D0%B0%D0%B7%D1%80%D0%B5%D1%88%D0%B5%D0%BD%D0%B8%D0%B5_%D0%BA%D0%BE%D0%BB%D0%BB%D0%B8%D0%B7%D0%B8%D0%B9) В реализациях стандартной библиотеки как правило используется метод цепочек. Иногда его называют методом списков, потому что каждый элемент массива указывает на односвязный список. Он содержит пары ключ-значение. Если коллизий по данному хеш-значению не было, список состоит из единственного элемента:
 
+
 ![Разрешение коллизий методом цепочек](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/hash_table_separate_chaining.jpg) {.illustration}
+
 
 Чтобы тип данных мог быть ключом в неупорядоченном ассоциативном контейнере, должны выполняться условия:
 - К нему применимо сравнение оператором `==`.
@@ -887,13 +901,17 @@ bool consists_of(std::string message, std::string magazine)
 
 ### Алгоритмическая сложность работы с неупорядоченными ассоциативными контейнерами
 
+
 ![Алгоритмическая сложность работы с неупорядоченными ассоциативными контейнерами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_unordered_associative_algo_complexity.jpg) {.illustration}
+
 
 ## Адаптеры
 
 Последовательные контейнеры реализуют плоские структуры данных, в которых нет иерархии или вложенности. Поверх плоских структур можно эффективно имплементировать несколько других структур данных. Это и есть адаптеры — обертки над последовательными контейнерами.
 
+
 ![Адаптеры](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_adapters.jpg) {.illustration}
+
 
 ### Очереди и стек
 
@@ -1002,7 +1020,9 @@ int main()
 
 ### Алгоритмическая сложность работы с адаптерами
 
+
 ![Алгоритмическая сложность работы с адаптерами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/container_adapters_algo_complexity.jpg) {.illustration}
+
 
 Требуется добавлять и удалять элементы с обоих концов контейнера. Других операций не планируется. Какой контейнер или адаптер подойдет для этого лучше всего? {.task_text}
 
@@ -1034,4 +1054,6 @@ std::priority_queue
 
 В качестве резюме этой главы отлично подходит таблица контейнеров, адаптеров и их алгоритмической сложности. Держите ее под рукой, если будете готовиться к собеседованиям.
 
+
 ![Алгоритмическая сложность работы с контейнерами и адаптерами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_algo_complexity_senjun_ru.jpg) {.illustration}
+
