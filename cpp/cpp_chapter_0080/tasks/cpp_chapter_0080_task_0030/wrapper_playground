@@ -9,7 +9,7 @@ int main()
     const int x = 11;
     std::println("Vector {}. Searching for value {}...", v, x);
     
-    auto it = b_search(v.begin(), v.end(), 11);
+    auto it = bin_search(v.begin(), v.end(), 11);
     if (it == v.end())
         std::println("Not found");
     else

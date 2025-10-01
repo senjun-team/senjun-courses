@@ -22,17 +22,17 @@ void check(const C & v, int x, int plan_index)
 {
     std::string cont = is_vector(v) ? "std::vector" : "std::list";
 
-    auto it = b_search(v.begin(), v.end(), x);
+    auto it = bin_search(v.begin(), v.end(), x);
     if (plan_index == -1)
     {
-        expect(it == v.end()) << std::format("b_search() didn't return end() while searching for value {} in {} {}. Instead it returned iterator to {}'th element", x, cont, v, std::distance(v.begin(), it)) << fatal;
+        expect(it == v.end()) << std::format("bin_search() didn't return end() while searching for value {} in {} {}. Instead it returned iterator to {}'th element", x, cont, v, std::distance(v.begin(), it)) << fatal;
         return;
     }
 
-    expect(it != v.end()) << std::format("b_search() returned end() while searching for value {} in {} {}", x, cont, v) << fatal;
+    expect(it != v.end()) << std::format("bin_search() returned end() while searching for value {} in {} {}", x, cont, v) << fatal;
     
     const std::size_t fact_index = std::distance(v.begin(), it);
-    expect(plan_index == fact_index) << std::format("b_search() returned wrong result while searching for value {} in {} {}. Expected iterator to element with index {}. But got iterator to element with index {}", x, cont, v, plan_index, fact_index) << fatal;
+    expect(plan_index == fact_index) << std::format("bin_search() returned wrong result while searching for value {} in {} {}. Expected iterator to element with index {}. But got iterator to element with index {}", x, cont, v, plan_index, fact_index) << fatal;
 }
 
 void check_case(const std::vector<int> & v)
