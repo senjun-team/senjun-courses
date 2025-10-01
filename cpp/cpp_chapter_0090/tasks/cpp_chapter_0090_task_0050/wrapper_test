@@ -24,6 +24,7 @@ int main()
         {
             Commands cmds;
             cmds.get_description("rd");
+            expect(false) << "Method get_description() must throw an exception of type std::out_of_range in case of unexistent command" << fatal;
         }
         catch(const std::out_of_range & oor)
         {
