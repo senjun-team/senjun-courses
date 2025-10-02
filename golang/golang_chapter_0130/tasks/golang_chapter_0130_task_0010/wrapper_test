@@ -67,8 +67,8 @@ func TestParseAll(t *testing.T) {
 		if gotError == nil {
 			for i, eq := range c.in.eqs {
 				if strings.TrimSpace(eq.(equipmentPrinter).sprintf()) != c.want[i] {
-					t.Errorf("for string: \n\n%v\n\n after parseAll() got"+
-						": \n\n%v\n\n want: \n\n%v\n\n", c.in.s[i], eq.(equipmentPrinter).sprintf(), c.want[i])
+					t.Errorf("for string: \n\n%v\n\n after parseAll() got: \n\n%v\n\n want: \n\n%v\n\n",
+						c.in.s[i], eq.(equipmentPrinter).sprintf(), c.want[i])
 				}
 			}
 		}
