@@ -66,28 +66,28 @@ func TestMain(t *testing.T) {
 	}
 
 	if valsForTesting[0] != "true" {
-		t.Fatalf("main() prints \"" + valsForTesting[0] + "\" as first value, not \"true\"")
+		t.Fatalf("main() prints %q as first value, not \"true\"", valsForTesting[0])
 	}
 	if valsForTesting[1] != "true" {
-		t.Fatalf("main() prints \"" + valsForTesting[1] + "\" as second value, not \"true\"")
+		t.Fatalf("main() prints %q as second value, not \"true\"", valsForTesting[1])
 	}
 	if valsForTesting[2] != "true" {
-		t.Fatalf("main() prints \"" + valsForTesting[2] + "\" as third value, not \"true\"")
+		t.Fatalf("main() prints %q as third value, not \"true\"", valsForTesting[2])
 	}
 	if valsForTesting[3] != "true" {
-		t.Fatalf("main() prints \"" + valsForTesting[3] + "\" as fourth value, not \"true\"")
+		t.Fatalf("main() prints %q as fourth value, not \"true\"", valsForTesting[3])
 	}
 	if valsForTesting[4] != "false" {
-		t.Fatalf("main() prints \"" + valsForTesting[4] + "\" as fifth value, not \"false\"")
+		t.Fatalf("main() prints %q as fifth value, not \"false\"", valsForTesting[4])
 	}
 	if valsForTesting[5] != "false" {
-		t.Fatalf("main() prints \"" + valsForTesting[5] + "\" as sixth value, not \"false\"")
+		t.Fatalf("main() prints %q as sixth value, not \"false\"", valsForTesting[5])
 	}
 	if valsForTesting[6] != "false" {
-		t.Fatalf("main() prints \"" + valsForTesting[6] + "\" as seventh value, not \"false\"")
+		t.Fatalf("main() prints %q as seventh value, not \"false\"", valsForTesting[6])
 	}
 	if valsForTesting[7] != "false" {
-		t.Fatalf("main() prints \"" + valsForTesting[7] + "\" as eighth value, not \"false\"")
+		t.Fatalf("main() prints %q as eighth value, not \"false\"", valsForTesting[7])
 	}
 
 }

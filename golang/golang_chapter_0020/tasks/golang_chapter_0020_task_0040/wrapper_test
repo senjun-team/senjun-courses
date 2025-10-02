@@ -61,19 +61,19 @@ func TestMain(t *testing.T) {
 	}
 
 	if valsForTesting[0] != "senior : 4" {
-		t.Fatalf("main() prints \"" + valsForTesting[0] + "\" as first value, not \"senior : 4\"")
+		t.Fatalf("main() prints %q as first value, not \"senior : 4\"", valsForTesting[0])
 	}
 	if valsForTesting[1] != "middle : 3" {
-		t.Fatalf("main() prints \"" + valsForTesting[1] + "\" as second value, not \"middle : 3\"")
+		t.Fatalf("main() prints %q as second value, not \"middle : 3\"", valsForTesting[1])
 	}
 	if valsForTesting[2] != "junior : 2" {
-		t.Fatalf("main() prints \"" + valsForTesting[2] + "\" as third value, not \"junior : 2\"")
+		t.Fatalf("main() prints %q as third value, not \"junior : 2\"", valsForTesting[2])
 	}
 	if valsForTesting[3] != "trainee : 1" {
-		t.Fatalf("main() prints \"" + valsForTesting[3] + "\" as fourth value, not \"trainee : 1\"")
+		t.Fatalf("main() prints %q as fourth value, not \"trainee : 1\"", valsForTesting[3])
 	}
 	if valsForTesting[4] != "bookkeeper : 0" {
-		t.Fatalf("main() prints \"" + valsForTesting[4] + "\" as fifth value, not \"bookkeeper : 0\"")
+		t.Fatalf("main() prints %q as fifth value, not \"bookkeeper : 0\"", valsForTesting[4])
 	}
 
 }
