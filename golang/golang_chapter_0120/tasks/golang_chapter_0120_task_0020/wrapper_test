@@ -1,0 +1,28 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestSetAmount(t *testing.T) {
+	trans := transaction{fromWho: `OOO "Horns and Hooves"`,
+		toWhere: `Nikolaev A.E.`}
+
+	cases := []dollars{
+		0,
+		200,
+		-150.7,
+		1,
+	}
+
+	for _, c := range cases {
+		trans.setAmount(c)
+		if c != trans.amount {
+			t.Errorf("after setAmount(%.2f) transaction.amount = %.2f, "+
+				"want: transaction.amount = %.2f",
+				c, trans.amount, c)
+		}
+		trans.amount = 0
+	}
+
+}

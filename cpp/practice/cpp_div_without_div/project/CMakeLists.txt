@@ -9,8 +9,27 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(STD_MODULE_FILE /usr/local/lib/std.pcm)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Werror -Wall -O2 -fmodule-file=std=${STD_MODULE_FILE}")
 
-add_executable(main main.cpp)
-add_executable(tests tests.cpp)
+add_executable(main)
+
+target_sources(main
+    PUBLIC
+    main.cpp
+    PUBLIC
+    FILE_SET senjun_modules TYPE CXX_MODULES FILES
+    div.cppm
+)
+
+add_executable(tests)
+
+target_sources(tests
+    PUBLIC
+    tests.cpp
+    PUBLIC
+    FILE_SET senjun_modules TYPE CXX_MODULES FILES
+    ut.cppm
+    div.cppm
+)
+
 # Docker-образ, внутри которого компилируется и запускается проект:
 # https://github.com/senjun-team/senjun-images/blob/main/cpp/Dockerfile
 
@@ -19,6 +38,5 @@ add_executable(tests tests.cpp)
 # В нем же можно посмотреть, какие версии clang, cmake и ninja точно подходят.
 
 # Затем выполните шаги:
-# mkdir build
 # cmake -Wno-dev -Bbuild -GNinja
 # cmake --build build/ -- -j4

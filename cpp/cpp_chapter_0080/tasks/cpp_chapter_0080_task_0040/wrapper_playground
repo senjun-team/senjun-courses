@@ -1,0 +1,10 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const std::vector<int> seq = {6, 6, 8, 8, 9};
+    const int x = 8;
+    std::println("count_vals({}, {}) == {}", seq, x, count_vals(seq, x));
+}

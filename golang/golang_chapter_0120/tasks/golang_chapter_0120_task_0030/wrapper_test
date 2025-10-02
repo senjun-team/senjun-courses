@@ -1,0 +1,77 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestGetAuthorBooks(t *testing.T) {
+	var lib library
+	lib.books = append(lib.books,
+		book{"J. R. R. Tolkien",
+			"The Hobbit, or There and Back Again", 310, 1937})
+	lib.books = append(lib.books,
+		book{"J. R. R. Tolkien",
+			"The Lord of the Rings", 1077, 1954})
+	lib.books = append(lib.books,
+		book{"George R. R. Martin",
+			"A Game of Thrones", 694, 1996})
+
+	cases := []struct {
+		in   string
+		want []book
+	}{
+		{"J. R. R. Tolkien",
+			[]book{{"J. R. R. Tolkien",
+				"The Lord of the Rings", 1077, 1954},
+				{"J. R. R. Tolkien",
+					"The Hobbit, or There and Back Again", 310, 1937}}},
+		{"George R. R. Martin",
+			[]book{{"George R. R. Martin",
+				"A Game of Thrones", 694, 1996}}},
+	}
+
+	for _, c := range cases {
+		got := lib.getAuthorBooks(c.in)
+		if !sameBookSlice(got, c.want) {
+			t.Errorf("for library:\n%v\n\n getAuthorBooks(%s) got:\n %v\n\nwant:\n%v",
+				lib, c.in, got, c.want)
+		}
+	}
+
+	var nilLib *library
+	author := "George R. R. Martin"
+	got := nilLib.getAuthorBooks(author)
+	want := []book{}
+
+	if len(got) != 0 {
+		t.Errorf("for library:\n%v\n\n getAuthorBooks(%s) got:\n %v\n\nwant:\n%v",
+			nilLib, author, got, want)
+	}
+}
+
+/*
+The sameBookSlice compares two []book slices
+in any order of elements.
+*/
+func sameBookSlice(x, y []book) bool {
+	if len(x) != len(y) {
+		return false
+	}
+	// create a map of book -> int
+	diff := make(map[book]int, len(x))
+	for _, _x := range x {
+		// 0 value for int is 0, so just increment a counter for the book
+		diff[_x]++
+	}
+	for _, _y := range y {
+		// If the book _y is not in diff bail out early
+		if _, ok := diff[_y]; !ok {
+			return false
+		}
+		diff[_y]--
+		if diff[_y] == 0 {
+			delete(diff, _y)
+		}
+	}
+	return len(diff) == 0
+}

@@ -1,0 +1,16 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    Commands commands;
+    commands.add_command("rmdir", "remove empty directories");
+    commands.add_command("less", "display the contents of a file");
+    commands.add_command("sed", "stream editor for transforming text");
+
+    commands.add_alias("rd", "rmdir");
+    commands.add_alias("o", "less");
+
+    std::println("Description for 'rd': {}", commands.get_description("rd"));
+}

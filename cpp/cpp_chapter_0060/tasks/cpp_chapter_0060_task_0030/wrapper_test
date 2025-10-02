@@ -1,5 +1,5 @@
-#include "ut.hpp"
-#include <format>
+import boost.ut;
+import std;
 
 #INJECT-b585472fa
 

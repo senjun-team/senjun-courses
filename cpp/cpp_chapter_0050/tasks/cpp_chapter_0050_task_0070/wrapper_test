@@ -1,5 +1,5 @@
-#include "ut.hpp"
-#include "test_helpers.h"
+import boost.ut;
+import TestHelpers;
 
 using db_handle = int;
 

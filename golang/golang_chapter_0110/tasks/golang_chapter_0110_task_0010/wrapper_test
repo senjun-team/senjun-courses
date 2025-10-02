@@ -1,0 +1,49 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestPrintList(t *testing.T) {
+
+	cases := []struct {
+		in   int
+		want string
+	}{
+		{0, "nil"},
+		{-5, "nil"},
+		{5, "0->5->10->15->20->nil"},
+		{3, "0->5->10->nil"},
+	}
+
+	for _, c := range cases {
+		old := os.Stdout // keep backup of the real stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+
+		outC := make(chan string)
+		// copy the output in a separate goroutine so printing can't block indefinitely
+		go func() {
+			var buf bytes.Buffer
+			io.Copy(&buf, r)
+			outC <- buf.String()
+		}()
+
+		beginNode := newList(c.in)
+		printList(beginNode)
+
+		// back to normal state
+		w.Close()
+		os.Stdout = old // restoring the real stdout
+		out := <-outC
+
+		// reading our temp stdout
+		if strings.TrimSpace(out) != c.want {
+			t.Errorf("printList(%d) prints %q, not %q", c.in, strings.TrimSpace(out), c.want)
+		}
+	}
+}

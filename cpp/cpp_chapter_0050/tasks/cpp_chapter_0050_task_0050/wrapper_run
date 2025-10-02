@@ -4,7 +4,7 @@ import std;
 
 int main()
 {
-    std::println("to_string(Rarity::COMMON)    = {}", to_string(Rarity::COMMON));
-    std::println("to_string(Rarity::RARE)      = {}", to_string(Rarity::RARE));
-    std::println("to_string(Rarity::LEGENDARY) = {}", to_string(Rarity::LEGENDARY));
+    std::println("to_string(Rarity::Common)    = {}", to_string(Rarity::Common));
+    std::println("to_string(Rarity::Rare)      = {}", to_string(Rarity::Rare));
+    std::println("to_string(Rarity::Legendary) = {}", to_string(Rarity::Legendary));
 }
