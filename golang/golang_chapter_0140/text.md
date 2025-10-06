@@ -1,4 +1,62 @@
 # Глава 14. Некоторые приемы по работе с интерфейсами
+## Сравнение интерфейсов
+Интерфейсы сравнимы, если сравнимы их конкретные типы: 
+```go {.example_for_playground}
+package main
+
+import "fmt"
+
+func main() {
+	var a interface{} = 10
+	var b interface{} = 20
+	fmt.Println(a == b)
+}
+``` 
+```
+false
+```
+
+Что выведет следующий код? В случае ошибки напишите `error`. {.task_text}
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+)
+
+type musicTrack struct {
+	id     int
+	name   string
+	author string
+	albums []int
+}
+
+func (m musicTrack) String() string {
+	return fmt.Sprintf("%s: %s", m.author, m.name)
+}
+
+func main() {
+	var m fmt.Stringer = musicTrack{10,
+		"Come Together",
+		"The Beatles",
+		[]int{1, 2, 3},
+	}
+	var m2 fmt.Stringer = musicTrack{10,
+		"Come Together",
+		"The Beatles",
+		[]int{2, 3},
+	}
+	fmt.Println(m == m2)
+}
+```
+
+```consoleoutput {.task_source #golang_chapter_0140_task_0010}
+```
+Вспомните, как сравниваются срезы. {.task_hint}
+```go {.task_answer}
+error
+```
 
 ## Сортировка
 На практике нам часто приходится сталкиваться с тем, чтобы отсортитровать какие-либо данные. Например, при выдаче списка файлов в папке мы можем отсортировать его по имени, дате или размеру файла. В Go для того чтобы организовать сортировку данных, удобно использовать `sort.Interface`.
@@ -95,7 +153,7 @@ func Reverse(data Interface) Interface {
 Память `memory` выделяется частями `chunk` по 16 значений типа `int`. Вся выделенная память представляется в виде односвязного списка `linkedList`, в котором каждое значение представлено в виде `memory`. Каждый чанк имеет `id`. Отсортируйте выделенную память по возрастанию `id` чанков.  {.task_text}
 
 
-```go {.task_source #golang_chapter_0130_task_0010}
+```go {.task_source #golang_chapter_0140_task_0020}
 package main
 
 import (
