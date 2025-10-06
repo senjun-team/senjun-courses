@@ -160,6 +160,8 @@ import (
 	"sort"
 )
 
+const errNilNode = "one of the nodes is nil"
+
 type memory struct {
 	id    int
 	chunk [16]int
@@ -187,7 +189,7 @@ func (list *linkedList) Len() int {
 
 func (list *linkedList) Less(i, j int) bool {
 	iNode := list.numberNode(i)
-	errNilNode := "one of the nodes is nil"
+
 	if iNode == nil {
 		panic(errNilNode)
 	}
@@ -200,7 +202,7 @@ func (list *linkedList) Less(i, j int) bool {
 
 func (list *linkedList) Swap(i, j int) {
 	iNode := list.numberNode(i)
-	errNilNode := "one of the nodes is nil"
+	
 	if iNode == nil {
 		panic(errNilNode)
 	}
