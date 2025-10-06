@@ -51,7 +51,7 @@ else
 
 ## Какие алгоритмы есть в стандартной библиотеке
 
-Стандарт языка описывает [сотни алгоритмов.](https://en.cppreference.com/w/cpp/algorithm) В прошлых главах вы уже познакомились с [std::for_each()](/courses/cpp/chapters/cpp_chapter_0010/#block-for-each), [std::clamp()](/courses/cpp/chapters/cpp_chapter_0010/#block-clamp), [std::min(), std::max()](/courses/cpp/chapters/cpp_chapter_0030/#block-min-max), [std::reverse()](/courses/cpp/chapters/cpp_chapter_0060/#block-vector), [std::find(), std::find_if()](/courses/cpp/chapters/cpp_chapter_0060/#block-find-if) и [std::sort()](/courses/cpp/chapters/cpp_chapter_0070/#block-sort).
+Стандарт языка описывает [сотни алгоритмов.](https://en.cppreference.com/w/cpp/algorithm) В прошлых главах вы уже познакомились с [std::for_each()](/courses/cpp/chapters/cpp_chapter_0010/#block-for-each), [std::clamp()](/courses/cpp/chapters/cpp_chapter_0010/#block-clamp), [std::min(), std::max()](/courses/cpp/chapters/cpp_chapter_0030/#block-min-max), [std::reverse()](/courses/cpp/chapters/cpp_chapter_0060/#block-vector), [std::find(), std::find_if()](/courses/cpp/chapters/cpp_chapter_0060/#block-find-if) и [std::sort()](/courses/cpp/chapters/cpp_chapter_0073/#block-sort).
 
 Перечислим самые популярные классы задач, решаемые с помощью алгоритмов. Для каждого из них приведем в пример по паре функций.
 - Изменение элементов диапазона.
