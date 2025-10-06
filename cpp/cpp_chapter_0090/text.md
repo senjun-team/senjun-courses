@@ -614,7 +614,7 @@ private:
 
 };
 ```
-Вы можете освежить в памяти [варианты вставки](/courses/cpp/chapters/cpp_chapter_0070/#block-insert) элементов в ассоциативный контейнер. {.task_hint}
+Вы можете освежить в памяти [варианты вставки](/courses/cpp/chapters/cpp_chapter_0073/#block-insert) элементов в ассоциативный контейнер. {.task_hint}
 ```c++ {.task_answer}
 class Commands
 {
