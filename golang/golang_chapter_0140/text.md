@@ -343,6 +343,144 @@ func main() {
 	fmt.Println()
 }
 ```
+## Пользовательские ошибки
+Необязательно использовать ошибки такими, какие они даются из коробки. Иногда полезно создать пользовательскую ошибку. Например, когда мы используем значения ошибок, которые нигде не меняются. Сделать переменную типа `error` константой невозможно:
+```go {.example_for_playground}
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+func main() {
+	const err = errors.New("some error")
+	fmt.Println(err)
+}
+```
+```
+./main.go:9:14: errors.New("some error") (value of interface type error) is not constant (exit status 1)
+```
+
+Однако выход из этой ситуации есть. Тип `error` является интерфейсом, который требует реализовать единственный метод:
+```go
+type error interface {
+	Error() string
+}
+``` 
+
+Сделаем псеводним для типа `string`, а затем реализуем этот метод для него: 
+```go
+package main
+
+type customErr string
+
+func (e customErr) Error() string {
+	return string(e)
+}
+
+func main() {
+	const customErr = customErr("some error")
+	customErr = "new error"
+}
+```
+```
+./main.go:11:2: cannot assign to customErr (neither addressable nor a map index expression) (exit status 1)
+```
+Теперь можем работать с ошибкой-константой. Попытка изменить константу приводит к ошибке компиляции.
+
+Пользователи приложения могут использовать различные поисковые движки. Когда пользователь использует поисковой движок, для него вызывается соответствующий метод. Например, `yandexSearch` или `googleSearch`. Они возвращают пользовательскую ошибку `customError`. Реализуйте `customError` так, чтобы ошибка представляла собой структуру. Первым полем этой структуры должен быть `userId` типа `int` — идентификатор пользователя, вторым — сообщение об ошибке `message` типа `string`. При формировании строки с ошибкой используйте следующий формат: {.task_text}
+```
+<id пользователя> : <сообщение об ошибке> {.task_text}
+```
+Например: 
+```
+3 : failed to log in
+```
+```go {.task_source #golang_chapter_0140_task_0030}
+package main
+
+import (
+	"fmt"
+)
+
+type appUser struct {
+	id    int
+	login string
+}
+
+func (a appUser) yandexSearch() error {
+	// некоторая логика
+	// ...
+	return customErr{a.id, "no internet"}
+}
+
+func (a appUser) googleSearch() error {
+	// некоторая логика
+	// ...
+	return customErr{a.id, "failed to log in"}
+}
+
+func main() {
+	user := appUser{3, "buba"}
+	err := user.yandexSearch()
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = user.googleSearch()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+```
+
+Создайте структуру `customErr` и реализуйте метод `Error() string` для получателя типа `customErr`. {.task_hint}
+
+```go  {.task_answer}
+package main
+
+import (
+	"fmt"
+)
+
+type customErr struct {
+	userId  int
+	message string
+}
+
+func (e customErr) Error() string {
+	return fmt.Sprintf("%d : %s", e.userId, e.message)
+}
+
+type appUser struct {
+	id    int
+	login string
+}
+
+func (a appUser) yandexSearch() error {
+	// некоторая логика
+	// ...
+	return customErr{a.id, "no internet"}
+}
+
+func (a appUser) googleSearch() error {
+	// некоторая логика
+	// ...
+	return customErr{a.id, "failed to log in"}
+}
+
+func main() {
+	user := appUser{3, "buba"}
+	err := user.yandexSearch()
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = user.googleSearch()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+```
 
 ## Интерфейс с нулевым указателем
 
