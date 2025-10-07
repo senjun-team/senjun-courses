@@ -343,3 +343,108 @@ func main() {
 	fmt.Println()
 }
 ```
+
+## Интерфейс с нулевым указателем
+
+Этот раздел рассказывает про одно неочевидное поведение компилятора Go. Интерфейс с нулевым указателем не нулевой. Чтобы лучше это понять, обратимся к следующему примеру.
+
+```go {.example_for_playground}
+package main
+
+import (
+	"errors"
+	"fmt"
+	"io"
+	"strconv"
+	"strings"
+)
+
+type filmT struct {
+	id           int
+	name         string
+	director     string
+	screenwriter string
+}
+
+type musicTrackT struct {
+	id     int
+	name   string
+	author string
+	albums []int
+}
+
+type mediaReader interface {
+	io.Reader
+}
+
+func (f *filmT) Read(p []byte) (n int, err error) {
+	values := strings.Split(string(p), ",")
+	if len(values) != 4 {
+		return 0, errors.New("invalid format")
+	}
+	id, err := strconv.Atoi(values[0])
+	if err != nil {
+		// fmt.Errorf возвращает ошибку в нужном формате
+		return 0, fmt.Errorf("invalid format: %s", err.Error())
+	}
+	f.id = id
+
+	// убираем все пробельные символы в начале и в конце
+	f.name = strings.TrimSpace(values[1])
+	f.director = strings.TrimSpace(values[2])
+	f.screenwriter = strings.TrimSpace(values[3])
+	return len(p), nil
+}
+
+func (m *musicTrackT) Read(p []byte) (n int, err error) {
+	// некоторая логика
+	// ...
+	return 0, nil
+}
+
+func AddNewMedia(m mediaReader,
+	media []mediaReader) []mediaReader {
+	if m != nil {
+		return append(media, m)
+	}
+	return media
+}
+
+func main() {
+	var film *filmT = &filmT{}
+	_, err := film.Read([]byte("1, Forrest Gump, Robert Zemeckis, Eric Roth"))
+	if err != nil {
+		panic(err)
+	}
+	var media []mediaReader
+	media = AddNewMedia(film, media)
+	var musicTrack *musicTrackT
+	media = AddNewMedia(musicTrack, media)
+	fmt.Println(media)
+}
+```
+```
+[0xc00010e0c0 <nil>]
+```
+Внутри `AddNewMedia` мы проверяем переменную `m` на `nil`. Переменная `musicTrack`, переданная в `m` в функции `main`, является нулевым указателем. Однако сама `m` не ялвяется `nil`. В итоге получаем, что в срезе `media` лежит `nil`. Очевидно, это не то, что мы хотели.
+
+Проблема решается использованием всюду типа `mediaReader`. Перепешим код из `main`, подставив в качестве типа для `film` и `musicTrack` — `mediaReader`. 
+```go
+func main() {
+	var film mediaReader = &filmT{}
+	_, err := film.Read([]byte("1, Forrest Gump, Robert Zemeckis, Eric Roth"))
+	if err != nil {
+		panic(err)
+	}
+	var media []mediaReader
+	media = AddNewMedia(film, media)
+	var musicTrack mediaReader
+	media = AddNewMedia(musicTrack, media)
+	fmt.Println(media)
+	fmt.Println(media[0])
+}
+```
+```
+[0xc00010e0c0]
+&{1 Forrest Gump Robert Zemeckis Eric Roth}
+```
