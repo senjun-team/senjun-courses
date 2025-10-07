@@ -72,16 +72,14 @@ func TestNewGame(t *testing.T) {
 		out := <-outC
 
 		if parseError(gotError) != parseError(c.err) {
-			t.Errorf("error of newGame(%d, %d)"+
-				" with rowsNumber=%d and colsNumber=%d: %s,\n want: %s",
+			t.Errorf("error of newGame(%d, %d) with rowsNumber=%d and colsNumber=%d: %s,\n want: %s",
 				c.x, c.y, c.g.rowsNumber, c.g.colsNumber,
 				parseError(gotError), parseError(c.err))
 			continue
 		}
 
 		if strings.TrimSpace(out) != c.want && gotError == nil {
-			t.Errorf("newGame(%d, %d) with rowsNumber=%d"+
-				" and colsNumber=%d prints:\n%s\n\nwant:\n\n%s",
+			t.Errorf("newGame(%d, %d) with rowsNumber=%d and colsNumber=%d prints:\n%s\n\nwant:\n\n%s",
 				c.x, c.y, c.g.rowsNumber, c.g.colsNumber,
 				strings.TrimSpace(out), c.want)
 		}

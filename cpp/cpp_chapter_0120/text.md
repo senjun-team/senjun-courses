@@ -4,7 +4,9 @@
 
 За свою 40-летнюю историю С++ так и не обзавелся стандартной системой сборки, но среди многообразия популярных инструментов [де-факто лидирует](https://www.jetbrains.com/lp/devecosystem-2023/cpp/#cpp_projectmodels_two_years) CMake. С одной стороны, изучение CMake несколько выходит за рамки курса по C++. Но с другой стороны, было бы странно погружаться в дебри языка и не уметь собирать проекты, состоящие более чем из пары-тройки файлов. Поэтому мы кратко разберемся, что такое CMake и как он упрощает сборку.
 
+
 ![Лого CMake](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/cmake.png) {.illustration}
+
 
 Как и в прошлой главе, в этой не будет задач. Вместо них вы самостоятельно поэкспериментируете со сборкой. Вы можете воспользоваться для этого нашим [Docker-образом.](/courses/cpp/chapters/cpp_chapter_0110/#block-docker-image)
 
@@ -39,7 +41,7 @@ demo/
 └── CMakeLists.txt
 ```
 
-Рассмотрим, как выглядит CMakeLists.txt, описывающий получение бинаря с именем `run` из `main.cpp`. Считаем, что в `main.cpp` не импортируются никакие модули.
+Рассмотрим, как выглядит CMakeLists.txt, описывающий получение бинарника с именем `run` из `main.cpp`. Считаем, что в `main.cpp` не импортируются никакие модули.
 
 ```
 cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
@@ -151,7 +153,7 @@ cmake -S hello_compiler/ -B build/
 cmake --build build/
 ```
 
-Если сборка прошла успешно, можно запустить бинарь:
+Если сборка прошла успешно, можно запустить бинарник:
 
 ```bash
 ./build/main
@@ -300,7 +302,7 @@ target_link_libraries(play_mp3_file PRIVATE audio)
 
 [Как вы помните,](/courses/cpp/chapters/cpp_chapter_0110/#block-optimizations) у компиляторов есть опции, указывающие, насколько активно нужно оптимизировать код: `-O0`, `-O1` и другие. `-O0` означает отсутствие оптимизиаций, а `-O3` — применение полного набора.
 
-Также у компиляторов есть опция `-g`, предназначенная для сохранения отладочных символов (debug info). Они добавляются прямо в бинарь или сохраняются отдельным файлом, чтобы у отладчика была возможность связать бинарный код с исходным кодом. Это нужно для отображения имен переменных и функций, стека вызовов и других полезных при отладке вещей.
+Также у компиляторов есть опция `-g`, предназначенная для сохранения отладочных символов (debug info). Они добавляются прямо в бинарник или сохраняются отдельным файлом, чтобы у отладчика была возможность связать бинарный код с исходным кодом. Это нужно для отображения имен переменных и функций, стека вызовов и других полезных при отладке вещей.
 
 Комбинация из этих и некоторых других опций компилятора описывает _тип сборки_. В CMake он задатся переменной `CMAKE_BUILD_TYPE`. Она принимает значения `Debug`, `Release`, `RelWithDebInfo` и [другие.](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html)
 
@@ -458,7 +460,9 @@ FetchContent_MakeAvailable(spdlog libunifex)
 - [Meson](https://mesonbuild.com/) — как и CMake, не занимается сборкой напрямую. Вместо Make по умолчанию использует [Ninja.](https://ninja-build.org/)
 - [Basel](https://bazel.build/start/cpp) — мультиязычная система сборки от Google.
 
+
 ![Лого SCons, Gradle, Meson, Basel](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-12/illustrations/cpp/meson_etc__logo.png) {.illustration}
+
 
 ## Пакетные менеджеры
 
@@ -470,7 +474,9 @@ FetchContent_MakeAvailable(spdlog libunifex)
 
 Все эти задачи решают пакетные менеджеры. В мире C++ два самых распространенных пакетных менеджера — это [Conan](https://docs.conan.io/2/tutorial.html) и [vcpkg.](https://learn.microsoft.com/en-us/vcpkg/) Оба легко встраиваются в CI/CD и умеют работать в связке с популярными системами автоматизации сборки.
 
+
 ![Лого Conan и vcpkg](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-12/illustrations/cpp/packaging.png) {.illustration}
+
 
 Можно ли жить без пакетных менеджеров? Вполне, хоть это и менее удобно. В таком случае разрешение зависимостей чаще всего организуется с помощью [git-сабмодулей](https://git-scm.com/book/en/v2/Git-Tools-Submodules) либо модули [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html) и [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) в CMake. Пакетирование при этом организуется стандартными средствами для создания rpm или deb пакетов. А версионирование и заливка пакета в репозиторий делегируется продуктам, отвечающим за CI/CD.
 
