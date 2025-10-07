@@ -21,9 +21,7 @@ false
 ```go {.example_for_playground}
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type musicTrack struct {
 	id     int
@@ -68,11 +66,13 @@ type Interface interface {
 	// Len возвращает количество элементов коллекции.
 	Len() int
 
-	// Less сообщает, должен ли элемент с индексом i сортироваться
+	// Less сообщает, должен ли элемент 
+	// с индексом i сортироваться
     // перед элементом с индесом j
 	Less(i, j int) bool
 
-	// Swap меняет местами элементы с индексами i и j
+	// Swap меняет местами 
+	// элементы с индексами i и j
 	Swap(i, j int)
 }
 ```
@@ -134,17 +134,13 @@ func main() {
 
 ```go
 type reverse struct {
-	// This embedded Interface permits Reverse to use the methods of
-	// another Interface implementation.
 	Interface
 }
 
-// Less returns the opposite of the embedded implementation's Less method.
 func (r reverse) Less(i, j int) bool {
 	return r.Interface.Less(j, i)
 }
 
-// Reverse returns the reverse order for data.
 func Reverse(data Interface) Interface {
 	return &reverse{data}
 }
@@ -400,9 +396,7 @@ func main() {
 ```go {.task_source #golang_chapter_0140_task_0030}
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type appUser struct {
 	id    int
@@ -439,9 +433,7 @@ func main() {
 ```go  {.task_answer}
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type customErr struct {
 	userId  int
@@ -481,6 +473,63 @@ func main() {
 	}
 }
 ```
+## Декларация типов 
+Рассмотрим следующий код: 
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+)
+
+type appUser struct {
+	id    int
+	login string
+}
+
+type yandexUser struct {
+	appUser
+}
+type googleUser struct {
+	appUser
+}
+
+type searcher interface {
+	search()
+}
+
+func (y yandexUser) String() string {
+	return fmt.Sprintf("%d : %s", y.id, y.login)
+}
+
+func (g googleUser) String() string {
+	return fmt.Sprintf("%d : %s", g.id, g.login)
+}
+
+func (y yandexUser) search() {
+	fmt.Printf("searching for yandex, %d : %s...",
+		y.id, y.login)
+}
+func (g googleUser) search() {
+	fmt.Printf("searching for google, %d : %s...",
+		g.id, g.login)
+}
+
+func main() {
+	var s fmt.Stringer
+	s = yandexUser{appUser{3, "buba"}}
+	fmt.Println(s)
+	s.search()
+}
+```
+```
+./main.go:43:4: s.search undefined (type fmt.Stringer has no field or method search) (exit status 1)
+```
+
+В функции `main` мы создали переменную `s` типа `fmt.Stringer` и присвоили ей значение типа `yandexUser`. Тип `yandexUser` удовлетворяет интерфейсу `fmt.Stringer`, поскольку реализует метод `String() string`. Мы можем вывести содержимое этой переменной в желаемом формате на экран. 
+
+Однако, что если теперь мы захотим выполнить метод `search()` для переменной `s`? Фактически в ней хранится переменная типа `yandexUser`, однако компилятор не даст нам выполнить метод. Ведь мы объявили переменную `s` с типом `fmt.Stringer`. На помощь приходит **декларация типов**:
+
 
 ## Интерфейс с нулевым указателем
 
