@@ -448,15 +448,19 @@ std::size_t count_unique(std::vector<T> v)
 
 }
 ```
-. {.task_hint}
+Воспользуйтесь перегрузкой, принимающей итераторы на диапазон. У получившегося временного объекта вызовите метод `size()`. {.task_hint}
 ```c++ {.task_answer}
-
+template<class T>
+std::size_t count_unique(std::vector<T> v)
+{
+    return std::set(v.begin(), v.end()).size();
+}
 ```
 
 
 ### The most vexing parse
 
-У прямой инициализации есть подводный камень, имя которому [the most vexing parse](https://en.wikipedia.org/wiki/Most_vexing_parse). Если переводить дословно, то это «самый раздражающий синтаксический разбор». Речь идет о правиле: все, что компилятор может трактовать как [объявление](/courses/cpp/chapters/cpp_chapter_0010/#block-declaration-definition) (declaration), должно рассматриваться как таковое. Это правило синтаксического анализа раздражает разработчиков, когда они хотят создать переменную, а получают объявление функции.
+У прямой инициализации есть подводный камень, имя которому [the most vexing parse](https://en.wikipedia.org/wiki/Most_vexing_parse). Если переводить дословно, то это «самый раздражающий синтаксический разбор». Речь идет о правиле: все, что компилятор может трактовать как [объявление](/courses/cpp/chapters/cpp_chapter_0010/#block-declaration-definition) (declaration), должно рассматриваться как таковое. Это правило синтаксического анализа раздражает разработчиков, когда они хотят завести переменную, а получают объявление функции.
 
 Рассмотрим с виду невинный пример: {#block-the-most-vexing-parse}
 
@@ -469,11 +473,11 @@ int main()
 }
 ```
 
-С точки зрения разработчика конструкция `int x();` выглядит как создание переменной `x`, инициализированной нулем. А с точки зрения компилятора это явно объявление функции `x()`, возвращающей `int`.
+С точки зрения разработчика конструкция `int x();` выглядит как создание переменной `x`, инициализированной нулем. А с точки зрения компилятора это объявление функции `x()`, возвращающей `int`.
 
-Откройте этот пример в [плэйграунде.](https://senjun.ru/playground/cpp/) Перейдите в файл CMakeLists.txt и убедитесь, что компилятору передается флаг `-Werror`, про который вы [узнали](/courses/cpp/chapters/cpp_chapter_0012/#block-flags) в предыдущей главе. После этого попробуйте собрать проект и посмотрите, как выглядит ошибка компиляции, связанная с the most vexing parse.
+Откройте этот пример в [плэйграунде.](https://senjun.ru/playground/cpp/) Перейдите в файл CMakeLists.txt и убедитесь, что компилятору передается [флаг -Werror.](/courses/cpp/chapters/cpp_chapter_0012/#block-flags) После этого попробуйте собрать проект и посмотрите, как выглядит ошибка компиляции, связанная с the most vexing parse.
 
-А теперь покажем, как избежать столкновения с the most vexing parse путем замены прямой инициализации на универсальную.
+А теперь покажем, как избежать столкновения с the most vexing parse.
  
 ## Uniform-initialization: универсальная инициализация
 
@@ -505,7 +509,7 @@ int c{static_cast<int>(8.7)}; // ОК
 
 В этом примере для инициализации переменной `c` мы явно привели типы через `static_cast`. Вы [познакомились с этим способом](/courses/cpp/practice/cpp_moving_average/#block-static-cast) в практике «Скользящее среднее».
 
-Универсальная инициализация обладает еще одним достоинством: она решает проблему the most vexing parse. Чтобы исправить ее в [примере кода](/courses/cpp/chapters/cpp_chapter_0013/#block-the-most-vexing-parse) из предыдущего раздела, достаточно заменить прямую инициализацию на универсальную:
+Универсальная инициализация обладает еще одним достоинством: она решает проблему the most vexing parse. Чтобы исправить ее в примере кода из предыдущего раздела, достаточно заменить прямую инициализацию на универсальную:
 
 ```c++
 // The most vexing parse: объявление функции x()
@@ -637,9 +641,38 @@ LoadJob make_new_job()
     return job;
 }
 ```
-. {.task_hint}
+Вместо прямой инициализации переменной `job` используйте универсальную. {.task_hint}
 ```c++ {.task_answer}
+enum class LoadStatus
+{
+    NotStarted,
+    InProgress,
+    Ok, 
+    Failed,
+    Canceled
+};
 
+struct LoadJob
+{
+    LoadJob(LoadStatus status)
+    {
+        load_status = status;
+    }
+
+    void start()
+    {
+        load_status = LoadStatus::InProgress;
+    }
+
+    LoadStatus load_status;
+};
+
+LoadJob make_new_job()
+{
+    LoadJob job{LoadStatus{}};
+    job.start();
+    return job;
+}
 ```
 
 ----------
