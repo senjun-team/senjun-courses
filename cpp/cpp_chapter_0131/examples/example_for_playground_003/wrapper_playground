@@ -3,7 +3,7 @@ import std;
 class Error
 {
 public:
-    Error(int code)
+    explicit Error(int code)
     {
         m_code = code;
     }
@@ -17,6 +17,7 @@ private:
     int m_code = 0;
 };
 
+// Форматтер для того чтобы выводить объект Error через println
 template<>
 struct std::formatter<Error> : public std::formatter<int>
 {

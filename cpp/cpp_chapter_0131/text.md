@@ -42,7 +42,7 @@ int count;
 
 Для [фундаментальных типов](/courses/cpp/chapters/cpp_chapter_0020/#block-fundamental-types) инициализация по умолчанию сводится к тотальному _отсутствию инициализации._ Компилятор выделяет под переменную область памяти, но не записывает туда никакого значения. В переменной может находиться что угодно!
 
-```c++
+```c++  {.example_for_playground}
 import std;
 
 int main()
@@ -94,7 +94,7 @@ int main()
 
 В этом коде нет UB, потому что глобальные и `static` переменные имеют статическое время жизни.
 
-```c++
+```c++  {.example_for_playground}
 import std;
 
 bool healthcheck_ok;
@@ -109,7 +109,7 @@ int main()
 
 В этом коде тоже нет UB, потому что `std::string` и `std::vector` — классы, а не фундаментальные типы. У них есть конструкторы по умолчанию, корректно инициализирующие объекты:
 
-```c++
+```c++  {.example_for_playground}
 import std;
 
 int main()
@@ -127,7 +127,7 @@ int main()
 
 Во-вторых, инициализация по умолчанию важна для разработки эффективного кода. Представьте офлайн навигатор. В нем заведена переменная, ожидающая сигнала от гироскопа. Зачем совершать избыточное действие и инициализировать ее заранее, если значение гарантированно придет с сенсора? Экономия заряда аккумулятора важнее.
 
-Область видимости локальной переменной начинается на строке с ее объявлением. Как считаете, что произойдет на строке с объявлением переменной `n`? Выберите один из вариантов: {.task_text}
+Область видимости локальной переменной начинается на строке с ее объявлением. Как считаете, что произойдет на строке с объявлением переменной `n`? Выберите один из вариантов: {.task_text #block-use-not-initialized}
 
 `err`: ошибка компиляции.  {.task_text}
 
@@ -174,7 +174,7 @@ distance = 5.5;        // Присваивание
 
 [Неявное приведение типов](https://en.cppreference.com/w/cpp/language/implicit_conversion) (implicit conversion) — это автоматическое преобразование одного типа в другой, выполняемое компилятором. 
 
-```c++
+```c++  {.example_for_playground .example_for_playground_001}
 int length = 8.7;       // double -> int
 double weight = true;   // bool -> double
 
@@ -205,7 +205,9 @@ length=8 weight=1
 
 Так выглядит приведение типов при копирующей инициализации объекта класса:
 
-```c++
+```c++  {.example_for_playground}
+import std;
+
 class Array
 {
 public:
@@ -236,18 +238,18 @@ int main()
     bool go_shopping = true;
     bool go_to_work = false;
 
-    int dist_to_shop = 2; // km
+    int dist_to_shop = 1; // km
     int dist_to_work = 3; // km
 
     int total_dist = go_shopping * dist_to_shop + go_to_work * dist_to_work;
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0130_task_0030}
+```consoleoutput {.task_source #cpp_chapter_0131_task_0030}
 ```
 В выражении, инициализирующем переменную `total_distance`, есть расширяющее преобразование `bool` к числу. {.task_hint}
 ```cpp {.task_answer}
-2
+1
 ```
 
 Неявные преобразования часто приводят к проблемам. Особенно [опасны](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-narrowing) сужающие преобразования. Во многих современных языках неявные преобразования запрещены. Например, в Kotlin и Rust нельзя переменную типа `int` инициализировать через `float`. И наоборот.
@@ -256,9 +258,9 @@ int main()
 
 ### Запрет неявного преобразования аргументов конструктора
 
-Неявное преобразование аргументов конструктора легко становится источником трудно обнаружимых ошибок:
+Неявное преобразование аргументов конструктора легко становится источником трудно обнаруживаемых ошибок:
 
-```c++
+```c++   {.example_for_playground .example_for_playground_002}
 import std;
 
 class Error
@@ -296,7 +298,7 @@ Handling error: 2 Retries left: 2
 
 Чтобы запретить неявные преобразования аргументов конструктора, пометьте его спецификатором [explicit](https://en.cppreference.com/w/cpp/language/explicit):
 
-```c++
+```c++    {.example_for_playground .example_for_playground_003}
 import std;
 
 class Error
@@ -336,7 +338,7 @@ main.cpp:36:5: error: no matching function for call to 'handle_error'
 
 Спецификатор `explicit` запрещает применение копирующей инициализации, для которой необходимо неявное приведение типов:
 
-```c++
+```c++    {.example_for_playground .example_for_playground_004}
 class Array
 {
 public:
@@ -376,7 +378,7 @@ double f()
 
 А это — прямая инициализация объекта класса:
 
-```c++
+```c++   {.example_for_playground}
 import std;
 
 struct TaskContext
@@ -391,7 +393,7 @@ struct TaskContext
     // Конструктор с параметрами
     TaskContext(int parent_proc_id, bool suspended)
     {
-        parend_id = parent_proc_id;
+        parent_id = parent_proc_id;
         is_suspended = suspended;
     }
 
@@ -404,11 +406,11 @@ int main()
     // Прямая инициализация
     TaskContext tc(9034, true);
 
-    std::println("{} {}", tc.parend_id, info.is_suspended);
+    std::println("{} {}", tc.parent_id, tc.is_suspended);
 }
 ``` 
 ```
-3 607
+9034 true
 ```
 
 Прямая инициализация предназначена для явного вызова необходимого конструктора. Компилятор перебирает все перегрузки конструктора и определяет, какая лучше соответствует переданным аргументам. А для встроенных типов она ведет себя так же, как копирующая:
@@ -441,7 +443,7 @@ std::println("{}", v);
 
 Реализуйте [шаблонную функцию](/courses/cpp/chapters/cpp_chapter_0050/#block-templates) `count_unique()`, которая принимает вектор и возвращает количество его уникальных элементов. Реализация должна занять одну строку. Вам поможет [одна из перегрузок](https://en.cppreference.com/w/cpp/container/unordered_set/unordered_set.html) конструктора `std::unordered_set`. Она создает множество из элементов, на которые указывает диапазон, ограниченный парой итераторов. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0130_task_0040}
+```c++ {.task_source #cpp_chapter_0131_task_0040}
 template<class T>
 std::size_t count_unique(std::vector<T> v)
 {
@@ -464,7 +466,7 @@ std::size_t count_unique(std::vector<T> v)
 
 Рассмотрим с виду невинный пример: {#block-the-most-vexing-parse}
 
-```c++
+```c++    {.example_for_playground}
 import std;
 
 int main()
@@ -531,7 +533,7 @@ std::vector<int> v = {1, 2, 3}; // То же самое, что и без '='
 
 Она подходит и для инициализации классов:
 
-```c++
+```c++   {.example_for_playground}
 import std;
 
 struct Range
@@ -560,7 +562,7 @@ int main()
 
 Универсальная инициализация может применяться для аргументов и возвращаемых значений функций:
 
-```c++
+```c++   {.example_for_playground}
 import std;
 
 std::pair<int, bool> get_val()
@@ -609,7 +611,7 @@ for (auto it{v.rbegin()}; it != v.rend(); ++it)
 
 С точки зрения разработчика конструкция `LoadJob job(LoadStatus());` выглядит как создание переменной `job` с вызовом конструктора `LoadJob(LoadStatus status)` и передачей в него нового объекта типа `LoadStatus`. У компилятора другое мнение на этот счет: он расценивает это как объявление функции `job()`, принимающей другую функцию, которая возвращает `LoadStatus` и не принимает параметров. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0130_task_0050}
+```c++ {.task_source #cpp_chapter_0131_task_0050}
 enum class LoadStatus
 {
     NotStarted,

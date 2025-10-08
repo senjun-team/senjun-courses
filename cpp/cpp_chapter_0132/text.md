@@ -6,7 +6,7 @@
 
 Но поле может быть встроенного типа, например, `char` или `int`, и не иметь конструктора. Тогда при инициализации по умолчанию в него не будет записано никакого значения. В поле будет лежать любой мусор:
 
-```c++
+```c++  {.example_for_playground}
 import std;
 
 struct Context
@@ -31,7 +31,7 @@ int main()
 
 Это инициализация поля по месту его объявления:
 
-```c++
+```c++   {.example_for_playground}
 import std;
 
 struct Context
@@ -45,7 +45,7 @@ int main()
 {
     Context ctx; // Поля корректно инициализируются
 
-    const std::size_t n = ctx.connections_count; // 1
+    const int n = ctx.connections_count; // 1
 }
 ```
 
@@ -71,7 +71,7 @@ struct Context
 
 Конструктор класса или структуры нужен для корректной инициализации объекта. В первую очередь для установки полей в требуемые значения. До сих пор мы [инициализировали поля](/courses/cpp/chapters/cpp_chapter_0050/#block-task-7) прямо в теле конструктора:
 
-```c++
+```c++   {.example_for_playground}
 import std;
 
 struct SessionInfo
@@ -109,9 +109,7 @@ int main()
 
 Перепишем наш пример с использованием списка инициализации полей:
 
-```c++
-import std;
-
+```c++    {.example_for_playground .example_for_playground_001}
 struct SessionInfo
 {
     SessionInfo()
@@ -135,7 +133,7 @@ SessionInfo() : requests_count{0}, user_id{1}
 
 Запомните правило: поля инициализируются в порядке своего объявления. А вовсе не в порядке перечисления в списке инициализации полей. Если они не совпадают, компилятор выдает [предупреждение:](https://clang.llvm.org/docs/DiagnosticsReference.html#wreorder-ctor)
 
-```c++
+```c++    {.example_for_playground .example_for_playground_002}
 struct Message
 {
     Message(std::string message, std::time_t updated, std::time_t created)
@@ -157,11 +155,11 @@ main.cpp:8:7: warning: initializer order does not match the declaration order
 
 Часть полей в списке инициализации конструктора может быть опущена. Это допустимо, если конструктор не имеет параметра, который бы влиял на поле, а само поле имеет адекватный конструктор по умолчанию:
 
-```c++
+```c++    {.example_for_playground .example_for_playground_003}
 struct Message
 {
     Message(std::string message, std::time_t updated, std::time_t created)
-    : text(message), time_updated(updated), time_created(created)
+    : time_created(created), time_updated(updated), text(message)
     { }
 
     // Поля time_created и time_updated уже инициализированы через DMI,
@@ -178,7 +176,37 @@ struct Message
 
 У списка инициализации конструктора есть недостаток. Если в классе несколько полей и перегрузок конструктора, то при удалении или добавлении поля легко ошибиться и сформировать неправильный список инициализации. Если поля имеют одинаковый тип или в игру вступает неявное приведение типов, то закравшуюся ошибку можно очень долго не замечать. Поэтому для инициализации полей константными значениями [выбирайте](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rc-in-class-initializer) DMI вместо списка инициализации конструктора.
 
-Спискок инициализации конструктора напрашивается в практике [«LRU кеш».](/courses/cpp/practice/cpp_lru_cache/) Используйте его и убедитесь, что тесты по-прежнему проходят.
+Список инициализации конструктора напрашивается в практике [«LRU кеш».](/courses/cpp/practice/cpp_lru_cache/) Используйте его и убедитесь, что тесты по-прежнему проходят.
+
+Что выведет этот код?  {.task_text}
+
+Напишите `err` в случае ошибки компиляции или `ub` в случае неопределенного поведения. {.task_text}
+
+```c++ {.example_for_playground}
+import std;
+
+class Storage
+{
+public:
+    int val;
+
+    Storage(): val(val)
+    { }
+};
+
+int main()
+{
+    Storage s{};
+    std::println("{}", s.val);
+}
+```
+
+```consoleoutput {.task_source #cpp_chapter_0132_task_0010}
+```
+В прошлой главе вы уже [сталкивались](/courses/cpp/chapters/cpp_chapter_0131/#block-use-not-initialized) с подобным кодом, в котором в выражении участвовал еще не проинициализированный объект. В этом коде поле класса иницилизируется собой. {.task_hint}
+```cpp {.task_answer}
+ub
+```
 
 ## Designated-initialization: назначенная инициализация
 
@@ -189,7 +217,7 @@ struct Message
 
 На помощь приходит [назначенная инициализация](https://en.cppreference.com/w/cpp/language/aggregate_initialization.html#Designated_initializers) (designated-initialization). Она появилась в C++20 и позволяет в инициализаторе перечислять имена полей:
 
-```c++
+```c++    {.example_for_playground}
 import std;
 
 struct GeoPoint
@@ -211,7 +239,7 @@ int main()
 
 Если добавить в структуру `GeoPoint` хотя бы пустой конструктор, то она перестанет быть агрегатом. И применение назначенной инициализации приведет к ошибке компиляции:
 
-```c++
+```c++    {.example_for_playground}
 import std;
 
 struct GeoPoint
@@ -246,7 +274,7 @@ error: ISO C++ requires field designators to be specified in declaration order; 
 
 Поля в инициализаторе нельзя менять местами, но часть из них можно пропустить. Пропущенным полям должны быть заданы значения по умолчанию через прямую инициализацию полей, иначе при обращении к ним вас ждет UB.
 
-```c++
+```c++    {.example_for_playground}
 import std;
 
 struct ConnInfo
@@ -269,7 +297,9 @@ int main()
  ConnInfo ci{.unix_socket_path{"/tmp/p0fsock"}, .port{7689}};
 ```
 
-Что выведет этот код? Напишите `err` в случае ошибки компиляции или `ub` в случае неопределенного поведения. {.task_text}
+Что выведет этот код?  {.task_text}
+
+Напишите `err` в случае ошибки компиляции или `ub` в случае неопределенного поведения. {.task_text}
 
 ```c++ {.example_for_playground}
 import std;
@@ -289,7 +319,7 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0132_task_0070}
+```consoleoutput {.task_source #cpp_chapter_0132_task_0020}
 ```
 Класс `CharacterRange` не является агрегатом, потому что имеет закрытые (`private`) поля. {.task_hint}
 ```cpp {.task_answer}
