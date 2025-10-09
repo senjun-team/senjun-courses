@@ -1,0 +1,69 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+struct test_case
+{
+    std::vector<int> v;
+    int n = 0;
+    int plan = 0;
+};
+
+void check_case(const test_case & c)
+{
+    const int fact = count_pairs(c.v, c.n);
+
+    expect(c.plan == fact) << std::format("calc_pairs({}, {}) returned {} instead of {}", c.v, c.n, fact, c.plan) << fatal;
+}
+
+int main()
+{
+    "corner cases"_test = [] {
+        std::vector<test_case> cases {
+            { .v = {}, .n = 0, .plan = 0 },
+            { .v = {}, .n = 9999, .plan = 0 },
+            { .v = {198}, .n = 1, .plan = 0 },
+            { .v = {1}, .n = 1, .plan = 0 },
+            { .v = {0}, .n = 0, .plan = 0 },
+            { .v = {1, 2}, .n = 5, .plan = 0 },
+            { .v = {5, 0}, .n = 5, .plan = 1 },
+        };
+
+        for (const auto & c: cases)
+            check_case(c);
+    };
+
+    "simple cases"_test = [] {
+        std::vector<test_case> cases {
+            { .v = {1, 2}, .n = 3, .plan = 1 },
+            { .v = {2, 1, 2}, .n = 3, .plan = 2 },
+            { .v = {2, 2}, .n = 4, .plan = 1 },
+            { .v = {2, 2, 2}, .n = 4, .plan = 3 },
+            { .v = {2, 1, 2, 3, 3}, .n = 4, .plan = 3 },
+            { .v = {5, 1, 0, 2, 4, 3}, .n = 3, .plan = 2 },
+            { .v = {5, 0, 0, 8, 1}, .n = 7, .plan = 0 },
+            { .v = {3, 2, 1, 2}, .n = 4, .plan = 2 },
+        };
+
+        for (const auto & c: cases)
+            check_case(c);
+    };
+
+
+    "different cases"_test = [] {
+        std::vector<test_case> cases {
+            { .v = {1, 2, 3, 2, 2, 4, 0}, .n = 4, .plan = 5 },
+            { .v = {1, 5, 7, -1, 5}, .n = 6, .plan = 3 },
+            { .v = {1, 1, 1, 1}, .n = 2, .plan = 6 },
+            { .v = {10, 12, 10, 15, -1}, .n = 125, .plan = 0 },
+        };
+
+        for (const auto & c: cases)
+            check_case(c);
+    };
+}
