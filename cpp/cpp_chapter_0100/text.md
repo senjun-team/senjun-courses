@@ -448,7 +448,7 @@ l
 
 Реализуйте функцию `score_sum()`. Она принимает словарь, в котором ключ — это id абитуриента, а значение — его оценка за экзамен. Второй параметр функции — id интересующего абитуриента. Функция должна вернуть сумму баллов, которые он получил за все экзамены. Если студент не найден, функция должна вернуть 0. {.task_text}
 
-Для суммирования используйте алгоритм [std::accumulate()](/courses/cpp/chapters/cpp_chapter_0080/#block-accumulate-overload). {.task_text}
+Для суммирования используйте алгоритм [std::accumulate()](/courses/cpp/chapters/cpp_chapter_0081/#block-accumulate-overload). {.task_text}
 
 Над функцией разместите подключение всех необходимых хедеров. Для справки используйте [cppreference](https://cppreference.com/). {.task_text}
 
@@ -459,7 +459,7 @@ std::size_t score_sum(std::flat_multimap<std::string, std::size_t> applicants,
 
 }
 ```
-Вам пригодится метод [equal_range()](/courses/cpp/chapters/cpp_chapter_0073/#block-equal-range), который есть у `multi`-версий контейнеров, в том числе у класса [std::flat_multimap](/courses/cpp/chapters/cpp_chapter_0080/#block-flat). {.task_hint}
+Вам пригодится метод [equal_range()](/courses/cpp/chapters/cpp_chapter_0073/#block-equal-range), который есть у `multi`-версий контейнеров, в том числе у класса [std::flat_multimap](/courses/cpp/chapters/cpp_chapter_0075/#block-flat). {.task_hint}
 ```c++ {.task_answer}
 #include <flat_map>
 #include <numeric>
