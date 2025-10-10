@@ -123,6 +123,11 @@ if (++a < 4)
 - Функция [std::abs()](https://en.cppreference.com/w/cpp/numeric/math/abs) для получения модуля числа.
 
 ```c++ {.task_source #cpp_chapter_0030_task_0010}
+ // Подключение заголовочного файла, в котором объявлены
+ // константы NAN и INFINITY
+ // Про заголовочные файлы вы узнаете в главе 10
+#include <cmath>
+
 /* cur_height   — текущая высота, м.
    prev_height  — предыдущая высота, м.
    elapsed_time — время (с), за которое произошло изменение высоты.
@@ -140,14 +145,8 @@ double vertical_flight_speed(double cur_height,
 ```
 Пример раннего выхода из функции: `if (elapsed_time <= 0) return INFINITY;`. {.task_hint}
 ```c++ {.task_answer}
-/* cur_height   — текущая высота, м.
-   prev_height  — предыдущая высота, м.
-   elapsed_time — время (с), за которое произошло изменение высоты.
+#include <cmath>
 
-   Возвращаемое значение — вертикальная скорость полета, м/с.
-   Если значение одной из высот ниже -500 м, то возвращается NAN.
-   Если время меньше либо равно 0, то возвращается INFINITY.
-*/
 double vertical_flight_speed(double cur_height,
                              double prev_height,
                              double elapsed_time)
