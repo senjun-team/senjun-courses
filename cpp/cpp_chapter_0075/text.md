@@ -6,7 +6,7 @@
 ![Адаптеры](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_adapters.jpg) {.illustration}
 
 
-## Очереди и стек
+## Класс queue
 
 Класс [std::queue](https://en.cppreference.com/w/cpp/container/queue) — это структура данных [очередь](https://ru.wikipedia.org/wiki/%D0%9E%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D1%8C_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)), в которой элементы добавляются с одного конца, а удаляются с другого.
 
@@ -25,11 +25,17 @@ std::println("{} {}", orders.front(), orders.back());
 201 8
 ```
 
-Очередь может быть организована поверх нескольких последовательных контейнеров. По умолчанию она использует `std::deque`, но с помощью аргумента шаблона дек можно заменить на список:
+
+![Очередь](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/improve-chapters-cmake/illustrations/cpp/queue.jpg) {.illustration}
+
+
+Очередь может быть организована поверх нескольких последовательных контейнеров. По умолчанию она использует `std::deque`, но через аргумент шаблона дек можно заменить на список:
 
 ```c++
 std::queue<int, std::list<int>> orders;
 ```
+
+## Класс priority_queue
 
 Класс [std::priority_queue](https://en.cppreference.com/w/cpp/container/priority_queue) — это [очередь с приоритетами](https://ru.wikipedia.org/wiki/%D0%9E%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D1%8C_%D1%81_%D0%BF%D1%80%D0%B8%D0%BE%D1%80%D0%B8%D1%82%D0%B5%D1%82%D0%BE%D0%BC_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)). Она поддерживает две операции: {#block-priority-queue}
 - Добавить элемент.
@@ -38,6 +44,15 @@ std::queue<int, std::list<int>> orders;
 Приоритет элемента определяется оператором `<`, но это можно переопределить.
 
 Очередь с приоритетами реализуется через [кучу (heap)](https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D1%87%D0%B0_(%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0_%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85)) поверх массива.
+
+```c++
+std::priority_queue<int> heap;
+```
+
+
+![Очередь с приоритетами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/improve-chapters-cmake/illustrations/cpp/priority_queue.jpg) {.illustration}
+
+
 
 Заведем очередь с приоритетами из задач на исполнение. Задача — это пара из приоритета типа `int` и названия типа `std::string`. Опертор `<` вначале сравнивает поля `first` двух объектов типа `std::pair`, затем — поля `second`. Для простой демонстрации работы контейнера нас это устраивает. 
 
@@ -93,7 +108,80 @@ int main()
 [-1000] shutdown
 ```
 
-Класс [std::stack](https://en.cppreference.com/w/cpp/container/stack) реализует [структуру данных стек](https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D0%B5%D0%BA), в которой элементы добавляются и удаляются только с одного конца.
+## Класс stack
+
+Класс [std::stack](https://en.cppreference.com/w/cpp/container/stack) реализует [структуру данных стек.](https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D0%B5%D0%BA) Она организована по принципу LIFO (Last-In, First-Out):  элементы добавляются и удаляются только с одного конца. Этот конец называется вершиной стека. Последний добавленный элемент будет первым элементом для взятия с вершины.
+
+Основные методы контейнера:
+- `push()` — добавление элемента на вершину стека.
+- `pop()` — удаление элемента с вершины.
+- `top()` — доступ к значению элемента на вершине.
+- `size()` — получение длины стека.
+- `empty()` — проверка, пуст ли стек.
+
+
+![Стек](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/improve-chapters-cmake/illustrations/cpp/stack.jpg) {.illustration}
+
+
+Работу стека отлично иллюстрирует класс для хранения истории посещения страниц в браузере:
+
+```c++
+import std;
+
+class BrowserHistory
+{
+public:
+    BrowserHistory()
+    {
+        std::println("Starting with empty stack of pages");
+    }
+
+    void visit_page(std::string page)
+    {
+        pages.push(page);
+        std::println("Visiting page {}. Stack size: {}", 
+                     page, pages.size());
+    }
+
+    void go_back()
+    {
+        if (!pages.empty())
+            pages.pop();
+        std::println("Going back from current page. Stack size: {}",
+                      pages.size());
+    }
+
+    std::string current_page()
+    {
+        if (pages.empty())
+            return "";
+        
+        std::println("Current page: {}", pages.top());
+        return pages.top();
+    }
+
+private:
+    std::stack<std::string> pages;
+};
+
+int main()
+{
+    BrowserHistory hist;
+    hist.visit_page("github.com");
+    hist.visit_page("duckduckgo.com");
+    hist.current_page();
+    hist.go_back();
+    hist.current_page();
+}
+```
+```
+Starting with empty stack of pages
+Visiting page github.com. Stack size: 1
+Visiting page duckduckgo.com. Stack size: 2
+Current page: duckduckgo.com
+Going back from current page. Stack size: 1
+Current page: github.com
+```
 
 ## flat-версии ассоциативных контейнеров {#block-flat}
 
@@ -121,11 +209,9 @@ int main()
 
 Напишите полное название вместе с неймспейсом. {.task_text}
 
-Если вам интересен практический пример похожего сценария, то откройте подсказку. {.task_text}
-
 ```consoleoutput {.task_source #cpp_chapter_0075_task_0070}
 ```
-[Work stealing](https://en.wikipedia.org/wiki/Work_stealing) — это известная стратегия балансировки параллельных вычислений. Она описывает, как распределять потоки выполнения по ядрам процессора. Стратегия получила свое название из-за того, что простаивающие ядра перехватывают часть работы у загруженных. Каждому ядру соотносится дек потоков. Потоки могут удаляться с обоих концов дека. Стратегия work stealing реализована в асинхронном рантайме [Tokio](https://tokio.rs/) для Rust, фреймворке [Fork/Join](https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html) для Java и библиотеке [Task Parallel Library](https://learn.microsoft.com/en-us/dotnet/standard/parallel-programming/task-parallel-library-tpl) для .NET. {.task_hint}
+Подойдет последовательный контейнер, который хранит данные в наборе массивов фиксированной длины. {.task_hint}
 ```cpp {.task_answer}
 std::deque
 ```

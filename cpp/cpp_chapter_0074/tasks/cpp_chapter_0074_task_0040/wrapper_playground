@@ -1,0 +1,12 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const std::vector<int> v = {1, 2, 3, 2, 2, 4, 0};
+    const int n = 4;
+    const int res = count_pairs(v, n);
+    bool ok = res == 5;
+    std::println("count_pairs({}, {}) returned {}. {}", v, n, res, ok ? "OK" : "WRONG RESULT");
+}
