@@ -376,12 +376,12 @@ func (e customErr) Error() string {
 }
 
 func main() {
-	const customErr = customErr("some error")
-	customErr = "new error"
+	const someErr = customErr("too many cats")
+	someErr = customErr("mew")
 }
 ```
 ```
-./main.go:11:2: cannot assign to customErr (neither addressable nor a map index expression) (exit status 1)
+./main.go:11:2: cannot assign to someErr (neither addressable nor a map index expression) (exit status 1)
 ```
 Теперь можем работать с ошибкой-константой. Попытка изменить константу приводит к ошибке компиляции.
 
