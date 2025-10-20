@@ -34,6 +34,45 @@ func main() {
 ```
 true
 ```
+Интерфейсы также сравнимы с `nil`:
+```go
+var baseNumber accountNumber
+if baseNumber == nil {
+	fmt.Println("Oops, something went wrong! There is no card")
+}
+```
+```
+Oops, something went wrong! There is no card
+```
+
+Однако стоит помнить, что интерфейс, содержащий `nil`, не обязательно является `nil`:
+```go {.example_for_playground}
+package main
+
+import "fmt"
+
+type X struct{}
+
+func main() {
+	for _, ifc := range []interface{}{
+		nil,                    // interface{}
+		(*X)(nil),              // преобразование к типу *X
+		(func(int) error)(nil), //
+		(map[string]int)(nil),  //
+		([]byte)(nil),          //
+	} {
+		// выводим тип и результат сравнения
+		fmt.Printf("%T (%t)\n", ifc, ifc == nil)
+	}
+}
+```
+```
+<nil> (true)
+*main.X (false)
+func(int) error (false)
+map[string]int (false)
+[]uint8 (false)
+```
 
 Что выведет следующий код? В случае ошибки напишите `error`. {.task_text}
 
