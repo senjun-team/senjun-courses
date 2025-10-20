@@ -85,7 +85,7 @@ type musicTrack struct {
 	id     int
 	name   string
 	author string
-	albums []int
+	albumIds []int
 }
 
 func (m musicTrack) String() string {
