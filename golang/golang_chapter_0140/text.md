@@ -6,14 +6,33 @@ package main
 
 import "fmt"
 
+type bankAccountNumber struct {
+	firstGroup  uint16
+	secondGroup uint16
+	thirdGroup  uint16
+	fourthGroup uint16
+}
+
+func (b bankAccountNumber) number() string {
+	return fmt.Sprintf("%d-%d-%d-%d", b.firstGroup,
+		b.secondGroup, b.thirdGroup, b.fourthGroup)
+}
+
+type accountNumber interface {
+	number() string
+}
+
 func main() {
-	var a interface{} = 10
-	var b interface{} = 20
-	fmt.Println(a == b)
+	var baseNumber accountNumber = bankAccountNumber{1234,
+		5678, 4321, 8765}
+	var newNumber accountNumber = bankAccountNumber{1234,
+		5678, 4321, 8765}
+
+	fmt.Println(baseNumber == newNumber)
 }
 ``` 
 ```
-false
+true
 ```
 
 Что выведет следующий код? В случае ошибки напишите `error`. {.task_text}
