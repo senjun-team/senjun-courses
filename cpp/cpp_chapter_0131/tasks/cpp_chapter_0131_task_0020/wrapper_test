@@ -1,12 +1,21 @@
-import boost.ut;
 import TestHelpers;
+import std;
 
 int main()
 {
-    using namespace boost::ut;
+    std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
 
-    "check user input"_test = [] {
-        std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
-        expect(user_input == "ub");
-    };
+    if (user_input == "err")
+    {
+        std::println(std::cerr, "Область видимости переменной начинается со строки с ее объявлением, поэтому с точки зрения компилятора выражение корректно.");
+        return 1;   
+    }
+
+    if (user_input == "ok")
+    {
+        std::println(std::cerr, "В выражении участвует еще не проинициализированный объект.");
+        return 1;
+    }
+
+    return user_input == "ub" ? 0 : 1;
 }
