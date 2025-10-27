@@ -124,8 +124,9 @@ type Interface interface {
 	// Len возвращает количество элементов коллекции.
 	Len() int
 
+	// Less является компаратором.
 	// Less сообщает, должен ли элемент 
-	// с индексом i сортироваться
+	// с индексом i оказаться
     // перед элементом с индексом j
 	Less(i, j int) bool
 
@@ -134,7 +135,7 @@ type Interface interface {
 	Swap(i, j int)
 }
 ```
-В качестве простого примера можно привести сортировку среза целых чисел: 
+В качестве простого примера можно привести сортировку среза целых чисел по возрастанию: 
 
 ```go {.example_for_playground}
 package main
@@ -163,26 +164,8 @@ func main() {
 ```
 
 Чтобы отсортировать срез в обратном порядке, необходимо поступить следующим образом: 
-```go {.example_for_playground}
-package main
-
-import (
-	"fmt"
-	"sort"
-)
-
-type intSlice []int
-
-func (p intSlice) Len() int           { return len(p) }
-func (p intSlice) Less(i, j int) bool { return p[i] < p[j] }
-func (p intSlice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-
-func main() {
-    s := intSlice{100, 80, 200, 3756, 0}
-	fmt.Println(s)
-	sort.Sort(sort.Reverse(s))
-	fmt.Println(s)
-}
+```go
+sort.Sort(sort.Reverse(s))
 ```
 ```
 [3756 200 100 80 0]
@@ -262,7 +245,7 @@ func main() {
 
 ```
 
-Чтобы отсортировать односвязный список, достаточно изменить адреса соответствующих указателей. {.task_hint}
+Чтобы отсортировать односвязный список, достаточно изменить адреса соответствующих указателей. Мы уже имели дело с односвязным списком в [задаче 1 главы 11](https://senjun.ru/courses/golang/chapters/golang_chapter_0110/#block-3). С указателями мы впервые столкнулись в [задаче 1 главы 1](https://senjun.ru/courses/golang/chapters/golang_chapter_0010/#block-18) {.task_hint}
 
 ```go  {.task_answer}
 package main
@@ -398,7 +381,7 @@ func main() {
 }
 ```
 ## Пользовательские ошибки
-Необязательно использовать ошибки такими, какие они даются из коробки. Иногда полезно создать пользовательскую ошибку. Например, когда мы используем значения ошибок, которые нигде не меняются. Сделать переменную типа `error` константой невозможно:
+В некоторых случаях вместо стандартных ошибок удобнее создать свои. Например, когда мы используем значения ошибок, которые нигде не меняются. Сделать переменную типа `error` константой невозможно:
 ```go {.example_for_playground}
 package main
 
@@ -427,19 +410,19 @@ type error interface {
 ```go
 package main
 
-type customErr string
+type appErr string
 
-func (e customErr) Error() string {
+func (e appErr) Error() string {
 	return string(e)
 }
 
 func main() {
-	const someErr = customErr("too many cats")
-	someErr = customErr("mew")
+	const noInternetErr = appErr("No internet")
+	noInternetErr = appErr("Connection is lost")
 }
 ```
 ```
-./main.go:11:2: cannot assign to someErr (neither addressable nor a map index expression) (exit status 1)
+./main.go:11:2: cannot assign to noInternetErr (neither addressable nor a map index expression) (exit status 1)
 ```
 Теперь можем работать с ошибкой-константой. Попытка изменить константу приводит к ошибке компиляции.
 
@@ -746,6 +729,6 @@ func main() {
    *  `Less(i, j int) bool` 
    *  `Swap(i, j int)`.
 3. Чтобы сортировать данные в обратном порядке, необходимо использовать функцию `sort.Reverse`. Ее применяют к переменной, после чего вызывают функцию `Sort` от результата.
-4. В Go есть возможность для создание пользовательских ошибок. Это особенно удобно для создания ошибок-констант.
+4. В Go есть возможность для создание пользовательских ошибок. Это особенно удобно для создания ошибок-констант. Это позволяет обезопасить себя от непреднамеренного изменения значения ошибки, которое по смыслу меняться не должно.
 5. Декларация типов позволяет сообщить компилятору о том, с переменной какого типа мы сейчас работаем.
 6. Интерфейс с нулевым указателем — это не то же самое, что нулевой интерфейс.
