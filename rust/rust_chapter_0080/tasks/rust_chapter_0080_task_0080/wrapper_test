@@ -1,0 +1,106 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_assignments)]
+
+#INJECT-b585472fa
+
+mod test {
+
+    #[derive(Debug)]
+    pub enum TestResult {
+        WrongResult,
+    }
+
+    pub struct TestCase {
+        left: f64,
+        right: f64,
+        expected: u64,
+    }
+
+    impl TestCase {
+        pub fn new(left: f64, right: f64, expected: u64) -> TestCase {
+            TestCase {
+                left: left,
+                right: right,
+                expected: expected,
+            }
+        }
+    }
+
+    fn format_f64(value: f64) -> String {
+        const E_FORMAT_EXP: u32 = 21;
+        let exp = value.abs().log10().floor().abs() as u32;
+
+        if exp < E_FORMAT_EXP || value == 0.0 {
+            format!("{}", value)
+        } else {
+            format!("{:e}", value)
+        }
+    }
+
+    pub fn test_distance_ulp(cases: &Vec<TestCase>) -> Result<(), TestResult> {
+        for cur in cases {
+            let result = super::distance_ulp(cur.left, cur.right);
+            if result != cur.expected {
+                println!(
+                    "Ошибка! Входные параметры:\n\
+                    - left:  {}\n\
+                    - right: {}\n\
+                    Результат:\n\
+                    - ожидаемый:  {}\n\
+                    - полученный: {}",
+                    format_f64(cur.left),
+                    format_f64(cur.right),
+                    cur.expected,
+                    result
+                );
+                return Err(TestResult::WrongResult);
+            }
+        }
+        Ok(())
+    }
+}   // mod test
+
+fn main() -> Result<(), test::TestResult> {
+    use test::*;
+
+    let near_zero = f64::from_bits(1);
+    let near_max = f64::from_bits(f64::MAX.to_bits() - 1);
+    let near_min = f64::from_bits(f64::MIN.to_bits() - 1);
+
+    let test_cases: Vec<TestCase> = vec![
+        TestCase::new(-0.0, 0.0, 0),
+        TestCase::new(0.0, near_zero, 1),
+        TestCase::new(-0.0, near_zero, 1),
+        TestCase::new(0.0, 1.0, 4607182418800017408),
+        TestCase::new(0.0, 1.0, 4607182418800017408),
+        TestCase::new(-0.0, 1.0, 4607182418800017408),
+        TestCase::new(-0.0, -1.0, 4607182418800017408),
+        TestCase::new(0.0, -1.0, 4607182418800017408),
+        TestCase::new(1.0, -1.0, 2 * 4607182418800017408),
+        TestCase::new(1.0, 1.0 + f64::EPSILON, 1),
+        TestCase::new(-1.0, -1.0 - f64::EPSILON, 1),
+        TestCase::new(42.0, 42.0, 0),
+        TestCase::new(-42.0, -42.0, 0),
+        TestCase::new(10.0, 100.0, 14918173765664768),
+        TestCase::new(-10.0, -100.0, 14918173765664768),
+        TestCase::new(100.0, -10.0, 9258556408943607808),
+        TestCase::new(-100.0, 10.0, 9258556408943607808),
+        TestCase::new(0.0, f64::MAX, 9218868437227405311),
+        TestCase::new(0.0, f64::MIN, 9218868437227405311),
+        TestCase::new(f64::MIN, f64::MAX, 2 * 9218868437227405311),
+        TestCase::new(near_max, f64::MAX, 1),
+        TestCase::new(near_min, f64::MIN, 1),
+        TestCase::new(f64::NAN, 42.0, u64::MAX),
+        TestCase::new(42.0, f64::NAN, u64::MAX),
+        TestCase::new(f64::INFINITY, 42.0, u64::MAX),
+        TestCase::new(42.0, f64::INFINITY, u64::MAX),
+        TestCase::new(f64::NAN, f64::NAN, u64::MAX),
+        TestCase::new(f64::INFINITY, f64::INFINITY, u64::MAX),
+        TestCase::new(f64::NAN, f64::INFINITY, u64::MAX),
+        TestCase::new(f64::INFINITY, f64::NAN, u64::MAX),
+    ];
+
+    test_distance_ulp(&test_cases)
+}

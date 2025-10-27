@@ -1,0 +1,29 @@
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult
+}
+
+fn main() -> Result<(), TestResult> {
+
+    let values = [(1, 2), (0, 1), (0, -1), (0, 0), (5, 5), (-1000, -100), (-43, -43)];
+    let expected = [2, 1, 0, 0, 5, -100, -43];
+    let mut count = 0;
+    for (a, b) in values {
+        let result1 = max(a, b);
+        let result2 = max(b, a);
+        if result1 != expected[count] {
+            println!("Неправильный результат '{}' для входных значений '{}' и '{}', ожидаемый результат — '{}'.", result1, a, b, expected[count]);
+            return Err(TestResult::WrongResult);
+        }
+
+        if result2 != expected[count] {
+            println!("Неправильный результат '{}' для входных значений '{}' и '{}', ожидаемый результат — '{}'.", result2, b, a, expected[count]);
+            return Err(TestResult::WrongResult);
+        }
+        count += 1;
+    }
+
+    Ok(())
+}

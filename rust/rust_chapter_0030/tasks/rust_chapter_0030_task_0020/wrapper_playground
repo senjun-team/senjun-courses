@@ -1,0 +1,9 @@
+#INJECT-b585472fa
+
+fn main() {
+    let pairs = [(10, 20), (20, 10), (50, 50), (-1, 0), (0, -1)];
+
+    for (a, b) in pairs {
+        println!("max("{}, {}")	=> {}", a, b, max(a, b));
+    }
+}

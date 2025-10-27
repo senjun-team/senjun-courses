@@ -1,0 +1,17 @@
+#INJECT-b585472fa
+
+fn check_and_print(left: f64, right: f64, epsilon: f64) {
+    let equal = approx_equal_abs(left, right, epsilon);
+    println!(
+        "approx_equal_abs({}, {}, {}) -> {}",
+        left, right, epsilon, equal
+    );
+}
+
+fn main() {
+    let left = 1.5;
+    let right = 1.49799999999999999822;
+    check_and_print(left, right, 0.1);
+    check_and_print(left, right, 0.01);
+    check_and_print(left, right, 0.001);
+}

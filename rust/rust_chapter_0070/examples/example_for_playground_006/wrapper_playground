@@ -1,0 +1,7 @@
+#INJECT-b585472fa
+
+fn main() {
+    let val = 100000_i32;
+    let res = clamp(val, -9999, 9999);
+    println!("{val} => {res}");
+}

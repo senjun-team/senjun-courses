@@ -1,0 +1,42 @@
+#[derive(Debug)]
+enum TestResult {
+    MissedDefinition,
+    MissedOperation,
+    AssertRequired
+}
+
+fn remove_whitespace(text: &str) -> String {
+    text.chars().filter(|c| !c.is_whitespace()).collect()
+}
+
+fn main() -> Result<(), TestResult> {
+
+let text: String = remove_whitespace(r#"#INJECT-b585472fa"#);
+
+if !text.contains("letexternal") {
+    println!("Должна быть объявлена переменная 'external'.");
+    return Err(TestResult::MissedDefinition);
+}
+
+if !text.contains("letsum") && !text.contains("letmutsum") {
+    println!("Должна быть объявлена переменная 'sum'.");
+    return Err(TestResult::MissedDefinition);
+}
+
+if !text.contains("{letinternal") {
+    println!("Во внутреннем блоке должна быть объявлена переменная 'internal'.");
+    return Err(TestResult::MissedDefinition);
+}
+
+if !text.contains("sum=external+internal;}") && !text.contains("sum=internal+external;}") && !text.contains("sum=internal;}") {
+    println!("Во внутреннем блоке должна быть операция сложения переменных 'external' и 'internal'.");
+    return Err(TestResult::MissedOperation);
+}
+
+if !text.contains("assert!(sum==42)") {
+    println!("Проверка 'assert!(sum == 42)' должна присутствовать в коде задачи.");
+    return Err(TestResult::AssertRequired);
+}
+
+Ok(())
+}

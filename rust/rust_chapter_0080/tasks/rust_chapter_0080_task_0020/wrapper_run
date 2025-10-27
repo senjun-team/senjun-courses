@@ -1,0 +1,19 @@
+#INJECT-b585472fa
+
+fn main() {
+    let cases = vec![
+        (1.2, -0.99, 0.99, 0.0),
+        (-1.2, -0.99, 0.99, 0.0),
+        (0.85, -0.99, 0.99, 0.0),
+        (f64::INFINITY, -0.99, 0.99, 0.0),
+        (f64::NAN, -0.99, 0.99, 0.0),
+    ];
+
+    for cur in &cases {
+        let res = clamp(cur.0, cur.1, cur.2, cur.3);
+        println!(
+            "clamp({}, {}, {}, {:.1})\t-> {}",
+            cur.0, cur.1, cur.2, cur.3, res
+        );
+    }
+}

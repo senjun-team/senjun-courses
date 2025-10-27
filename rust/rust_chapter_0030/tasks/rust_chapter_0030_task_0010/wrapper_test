@@ -1,0 +1,28 @@
+﻿#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult
+}
+
+fn main() -> Result<(), TestResult> {
+
+    let seasons = ["Spring", "Summer", "Autumn", "Winter", "invalid"];
+    let expected: [u32;5] = [1, 2, 3, 4, 0];
+    let mut count = 0;
+    for season in seasons {
+        let season_number = calc_season_number(season);
+        if season_number != expected[count] {
+            println!("Неправильный результат '{}' для входного значения '{}', ожидаемый результат — '{}'.", season_number, season, expected[count]);
+            return Err(TestResult::WrongResult);
+        }
+        count += 1;
+    }
+
+    for season in seasons {
+        let season_number = calc_season_number(season);
+        println!(r#"number_of_season("{}")	=> {}"#, season, season_number);
+    }
+    
+    Ok(())
+}

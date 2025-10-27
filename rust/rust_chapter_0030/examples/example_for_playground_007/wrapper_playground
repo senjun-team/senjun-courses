@@ -1,0 +1,7 @@
+#INJECT-b585472fa
+
+fn main() {
+    let arr = &[-2, 5, 6, -9];
+    println!("array: {:?}", arr);
+    println!("sum of positive: {}", sum_positive(arr));
+}

@@ -1,0 +1,45 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_assignments)]
+
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult
+}
+
+fn check_and_print(value: u32, expected: u32) -> Result<(), TestResult> {
+    let result = switch_endian(value);
+
+    if result == expected {
+        Ok(())
+    } else {
+        println!(
+            "Ошибка! Значения:\n\
+            - входное    — {:08X}\n\
+            - ожидаемое  — {:08X}\n\
+            - полученное — {:08X}",
+            value, expected, result);
+        Err(TestResult::WrongResult)
+    }
+}
+
+fn main() -> Result<(), TestResult> {
+
+    let test_cases: Vec<u32> = vec![
+        u32::MIN,
+        u32::MAX,
+        0x0000FFFF_u32,
+        0x01020304_u32,
+        0xA0B0C0D0_u32
+    ];
+
+    for case in test_cases.iter() {
+        check_and_print(case.to_le(), case.to_be())?;
+        check_and_print(case.to_be(), case.to_le())?;
+    }
+
+    Ok(())
+}

@@ -1,0 +1,47 @@
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult
+}
+
+fn main() -> Result<(), TestResult> {
+
+    let values_array = vec![
+        vec![7, 4, 10, 20, 30, 40],
+        vec![2, 1, 100, 5, 8, 11, 10, 13],
+        vec![7, 3, 18, 43, 250],
+        vec![7, 3, 18, 43],
+        vec![7, 3, 18],
+        vec![7, 3],
+        vec![4, 0],
+        vec![4, 0, 7, 3, 18, 43, 250, 2, 2, 101, 202],
+        vec![7, 3, 18, 43, 250, 4, 0, 2, 2, 101, 202],
+        vec![7, 3, 18, 43, 250, 2, 2, 101, 202, 4, 0],
+        vec![4, 0, 4, 0, 4, 0, 4, 0],
+        vec![0, 4, 10, 20, 30, 40],
+        vec![2, 2, 101, 202, 0, 4, 10, 20, 30, 40],
+        vec![16, 4, 10, 20, 30, 40],
+        vec![2, 2, 101, 202, 16, 4, 10, 20, 30, 40],
+        vec![9, 4, 254, 0, 213, 0, 3, 6, 20],
+        vec![15, 2, 21, 22, 1, 3, 31, 32, 33, 8, 1, 0],
+        vec![5],
+        vec![]
+    ];
+    let expected = [
+        true, false, true, false, false, false, true, true, true, true, true,
+        false, false, false, false, false, true, false, false];
+
+    let mut count = 0;
+    for values in values_array.iter() {
+        let result = validate(values);
+        if result != expected[count] {
+            println!("Неправильный результат '{}' для входных значений '{:?}', ожидаемый результат — '{}'.", result, values, expected[count]);
+            return Err(TestResult::WrongResult);
+        }
+
+        count += 1;
+    }
+
+    Ok(())
+}

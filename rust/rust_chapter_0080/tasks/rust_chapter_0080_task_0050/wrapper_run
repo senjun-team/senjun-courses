@@ -1,0 +1,52 @@
+#![deny(dead_code)]
+
+#INJECT-b585472fa
+
+mod control {
+    pub struct Probe {
+        count: u64,
+        limit: u64,
+        pill: f32,
+    }
+
+    impl Probe {
+        pub fn new(limit: u64, pill: f32) -> Probe {
+            assert!(pill > 0.0);
+            Probe { count: 0, limit: limit, pill: pill }
+        }
+
+        pub fn collect(&mut self, weight: f32) -> bool {
+            const MIN_WEIGHT: f32 = 1.0;
+            weight > MIN_WEIGHT && {
+                if self.count >= self.limit {
+                    false
+                } else {
+                    self.count += 1;
+                    true
+                }
+            }
+        }
+
+        pub fn last_collected(&self) -> f32 {
+            self.pill
+        }
+    }
+} // mod control
+
+fn main() {
+    test(19.0, 5.0e-6, 10000000);
+    test(400.0, 1.0e-5, 10000000);
+}
+
+fn test(storage: f32, pill: f32, limit: u64) {
+    let mut probe = control::Probe::new(limit, pill);
+    let result = packing(storage, &mut probe);
+    let packed = storage - result;
+
+    println!("Входные параметры:");
+    println!("  {} — вес продукции в накопительной камере,", storage);
+    println!("  {} — вес одной таблетки.", pill);
+    println!("Результат:");
+    println!("  {:.5} — вес оставшейся продукции после расфасовки,", result);
+    println!("  {:.5} — вес расфасованной продукции.\n", packed);
+}

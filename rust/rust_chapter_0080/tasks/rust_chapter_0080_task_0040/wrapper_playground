@@ -1,0 +1,16 @@
+#INJECT-b585472fa
+
+fn main() {
+    let floats: Vec<f32> = vec![
+        -1.0,
+        0.0,
+        1.0,
+        1.0 + f32::EPSILON,
+        std::f32::consts::PI,
+        1023.0,
+    ];
+
+    for val in floats {
+        println!("is_integer({}) -> {}", val, is_integer(val.to_bits()));
+    }
+}

@@ -1,0 +1,52 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_assignments)]
+
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult,
+}
+
+struct TestCase {
+    numbers: Vec<f32>,
+    expected: f32,
+}
+
+fn approx_equal_abs(left: f32, right: f32, epsilon: f32) -> bool {
+    left == right || (left - right).abs() <= epsilon
+}
+
+fn test_rms(cases: &Vec<TestCase>) -> Result<(), TestResult> {
+    for cur in cases {
+        let result = rms(&cur.numbers);
+        if !approx_equal_abs(result, cur.expected, 0.0001) {
+            println!(
+                "Ошибка! Входные параметры:\n\
+                - {:?}\n\
+                Результат:\n\
+                - ожидаемый  — {}\n\
+                - полученный — {}",
+                cur.numbers, cur.expected, result
+            );
+            return Err(TestResult::WrongResult);
+        }
+    }
+    Ok(())
+}
+
+fn main() -> Result<(), TestResult> {
+    let test_cases: Vec<TestCase> = vec![
+        TestCase { numbers: vec![11.0], expected: 11.0 },
+        TestCase { numbers: vec![42.0, 42.0, 42.0, 42.0, 42.0], expected: 42.0 },
+        TestCase { numbers: vec![2_f32.sqrt(), 2.0, 3.0, 7.0], expected: 4.0 },
+        TestCase { numbers: vec![9.0, 27.0, 81.0], expected: 49.568134 },
+        TestCase { numbers: vec![0.0, 2.0, 1.0, 0.0, 0.0], expected: 1.0 },
+        TestCase { numbers: vec![1.0e-40, 2.1e-40, 9.9e-41, 8.5e-39, 7.2e-30], expected: 0.0 },
+        TestCase { numbers: vec![1.1, 22.0, 0.009, f32::MAX], expected: f32::INFINITY },
+    ];
+
+    test_rms(&test_cases)
+}

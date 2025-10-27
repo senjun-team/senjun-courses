@@ -1,0 +1,60 @@
+#INJECT-b585472fa
+
+struct TempStat {
+    desc: String,
+    c: f64,
+    f: f64,
+}
+
+fn print_table(t_stats: &Vec<TempStat>) {
+    println!(
+        "|{:^20}|{:^12}|{:^12}|",
+        "Температура", "Цельсий", "Фаренгейт"
+    );
+
+    for stat in t_stats {
+        println!(
+            "| {:<18} | {:>7.2} °C | {:>7.2} °F |",
+            stat.desc,
+            to_celsius(stat.f),
+            to_fahrenheit(stat.c)
+        );
+    }
+}
+
+fn main() {
+    let t_stats: Vec<TempStat> = vec![
+        TempStat {
+            desc: "Абсолютный ноль".into(),
+            c: -273.15,
+            f: -459.67,
+        },
+        TempStat {
+            desc: "Кипение азота".into(),
+            c: -195.8,
+            f: -320.44,
+        },
+        TempStat {
+            desc: "Пересечение шкал".into(),
+            c: -40.0,
+            f: -40.0,
+        },
+        TempStat {
+            desc: "Замерзание воды".into(),
+            c: 0.0,
+            f: 32.0,
+        },
+        TempStat {
+            desc: "Кипение воды".into(),
+            c: 100.0,
+            f: 212.0,
+        },
+        TempStat {
+            desc: "Поверхность Солнца".into(),
+            c: 5526.0,
+            f: 9978.8,
+        },
+    ];
+
+    print_table(&t_stats);
+}

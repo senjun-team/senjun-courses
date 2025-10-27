@@ -1,0 +1,20 @@
+#[derive(Debug)]
+enum TestResult {
+    MissedDefinition
+}
+
+fn remove_whitespace(text: &str) -> String {
+    text.chars().filter(|c| !c.is_whitespace()).collect()
+}
+
+fn main() -> Result<(), TestResult> {
+
+let text: String = remove_whitespace(r#"#INJECT-b585472fa"#);
+
+if !text.contains("let_unused") {
+    println!("Должна быть объявлена переменная '_unused'.");
+    return Err(TestResult::MissedDefinition);
+}
+
+Ok(())
+}
