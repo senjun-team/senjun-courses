@@ -1,0 +1,36 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "simple is better than complex\n":
+    print(f"Console output is invalid")
+    exit(1)
+
+
+if 'citation' not in locals():
+    print("There is no `citation` variable")
+    exit(1)
+
+if type(citation) is not str:
+    print("Variable 'citation' is not a string")
+    exit(1)
+
+if citation != "simple is better than complex":
+    print("Variable 'citation' value is not 'simple is better than complex'")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if user_code.find('join') == -1:
+    print("There is no expected 'join' call in user solution")
+    exit(1)

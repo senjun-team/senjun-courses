@@ -1,0 +1,7 @@
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.strip().replace(" ", "")
+if text.find("[0,2]") == -1:
+    exit(1)

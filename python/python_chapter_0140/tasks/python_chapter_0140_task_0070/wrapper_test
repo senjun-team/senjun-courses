@@ -1,0 +1,35 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "x" not in globals():
+    print("Variable 'x' doesn't exist")
+    exit(1)
+
+if type(x) is not frozenset:
+    print("Variable 'x' is not a 'frozenset'")
+    exit(1)
+
+res = mystdout.getvalue()
+if len(res) != len("frozenset({'frozenset', 'int', 'bool'})\n"):
+    print("Solution output isn't correct")
+    exit(1)
+
+if res.find("frozenset({'") == -1:
+    print("Solution output isn't correct")
+    exit(1)
+
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if s.find("frozenset(") == -1:
+    print("Solution doesn't contain frozenset() call")
+    exit(1)

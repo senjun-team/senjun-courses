@@ -1,0 +1,22 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "5 8\n":
+    print("Solution output isn't correct")
+    exit(1)
+
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if s.find(";") != -1:
+    print("Not all ';' are removed from code")
+    exit(1)

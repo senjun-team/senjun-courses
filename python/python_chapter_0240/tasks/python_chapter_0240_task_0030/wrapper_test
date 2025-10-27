@@ -1,0 +1,19 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'lst' not in locals():
+    print("There is no `lst` variable")
+    exit(1)
+
+if lst != ['even', 'odd', 'even', 'odd', 'even', 'odd', 'even', 'odd', 'even', 'odd', 'even', 'odd', 'even', 'odd', 'even', 'odd', 'even', 'odd', 'even', 'odd']:
+    print("lst has invalid value")
+    exit(1)

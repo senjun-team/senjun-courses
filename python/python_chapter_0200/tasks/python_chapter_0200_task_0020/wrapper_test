@@ -1,0 +1,14 @@
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find("importshutilassh") == -1:
+    print("There is no 'import shutil as sh' statement in solution")
+    exit(1)
+
+
+if text.find('print(sh.disk_usage("/"))') == -1 and text.find("print(sh.disk_usage('/'))") == -1:
+    print("There is no call to print(sh.disk_usage('/')) in solution")
+    exit(1)

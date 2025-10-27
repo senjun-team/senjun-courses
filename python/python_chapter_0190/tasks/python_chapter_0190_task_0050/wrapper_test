@@ -1,0 +1,6 @@
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.strip() != "1":
+    exit(1)

@@ -1,0 +1,25 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "285\n":
+    print("Console output is invalid")
+    exit(1)
+    
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find('(i*i') == -1:
+    print("Please use generator expression instead of list comprehension")
+    exit(1)

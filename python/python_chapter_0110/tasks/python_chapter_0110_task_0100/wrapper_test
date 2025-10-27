@@ -1,0 +1,32 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "['Sparse', 'dense']\n":
+    print(f"Console output is invalid")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+""".replace(" ", "")
+
+if user_code.find('delwords') == -1:
+    print("There is no expected 'del' call in user solution")
+    exit(1)
+
+if user_code.find('delwords[1:') == -1:
+    print("To delete the first item in the list, start the slice from index 1")
+    exit(1)
+
+
+if user_code.find('delwords[1:-1]') == -1:
+    print("To delete the last item in the list, use index -1 in slice")
+    exit(1)

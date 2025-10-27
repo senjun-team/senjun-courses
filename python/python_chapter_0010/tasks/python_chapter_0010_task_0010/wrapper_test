@@ -1,0 +1,22 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if 'err_service_unavailable' not in locals():
+    print("There is no `err_service_unavailable` variable")
+    exit(1)
+
+if type(err_service_unavailable) is not int:
+    print("Variable is not an integer")
+    exit(1)
+
+if err_service_unavailable != 503:
+    print("Variable value is not 503")
+    exit(1)

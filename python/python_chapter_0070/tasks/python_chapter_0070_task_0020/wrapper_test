@@ -1,0 +1,31 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "calc" not in globals():
+    print("Functional object 'calc' doesn't exist")
+    exit(1)
+
+if not callable(calc):
+    print("'calc' is not a callable object")
+    exit(1)
+
+tests = [[0, 0, 0, 0], 
+         [-2, 2, 0, -4], 
+         [7, 8, 15, -1],
+         [11, 6, 17, 5]]
+
+for a, b, ab_sum_plan, ab_diff_plan in tests:
+    ab_sum, ab_diff = calc(a, b)
+
+    if ab_sum != ab_sum_plan or ab_diff != ab_diff_plan:
+        print(f"Invalid lambda output for arguments: {a}, {b}.")
+        exit(1)
+

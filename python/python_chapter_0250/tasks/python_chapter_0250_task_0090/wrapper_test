@@ -1,0 +1,35 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if len(mystdout.getvalue()) != len("{'a': 1, 'b': 2, 'c': 4, 'd': 6, 'e': 7}\n"):
+    print("Console output is not correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find("merged={**d1,**d2,**d3}") == -1:
+    print("There is no merging statement")
+    exit(1)
+
+if "merged" not in globals():
+    print("Variable merged doesn't exist")
+    exit(1)
+
+if type(merged) is not dict:
+    print("merged is not a dict")
+    exit(1)
+
+if merged  != {'a': 1, 'b': 2, 'c': 4, 'd': 6, 'e': 7}:
+    print("merged has invalid value")
+    exit(1)

@@ -1,0 +1,16 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+print_res = mystdout.getvalue()
+
+if print_res != "log\ncomplicated\nAugust\n":
+    print("Console output isn't correct")
+    exit(1)

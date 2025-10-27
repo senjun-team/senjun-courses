@@ -1,0 +1,77 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+
+if print_res != "Setting value headphones\nGetting value\nSetting value headphones001\n":
+    print("Console output is invalid")
+    exit(1)
+
+
+if 'Product' not in locals():
+    print("There is no `Product` class")
+    exit(1)
+
+if type(Product) is not type:
+    print("Variable 'Product' is not a class")
+    exit(1)
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.count("@property") < 1:
+    print("Please use @property to decorate number() getter")
+    exit(1)
+
+if text.count("@number.setter") < 1:
+    print("Please use @number.setter to decorate number() setter")
+    exit(1)
+
+if 'headphones' not in locals():
+    print("There is no `headphones` object")
+    exit(1)
+
+if type(headphones) is not Product:
+    print("Variable 'headphones' is not an instance of Product")
+    exit(1)
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+try:
+
+    item = Product("item", 16, 8)
+    x = item.number
+    if x != "item":
+        print('property "number" returned invalid value after initialization of Product("item", 16, 8)')
+        exit(1)
+
+except Exception as e:
+    sys.stdout = old_stdout
+    print(f"Error while working with instance of Product('item', 16, 8): {e}")
+    exit(1)
+
+try:
+    item = Product("item", 1, 1)
+    item.number = "item+"
+    sys.stdout = old_stdout
+    print("'number' setter must check that 'number' contains only letters and numbers")
+    exit(1)
+except ValueError as e:
+    pass
+except Exception as e:
+    sys.stdout = old_stdout
+    print("'number' setter must throw ValueError in case of invalid field format")
+    exit(1)
+
+
+

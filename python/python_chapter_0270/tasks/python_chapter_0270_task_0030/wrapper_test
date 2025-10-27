@@ -1,0 +1,51 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+print_res = print_res.strip()
+if len(print_res) != len("2.03 seconds"):
+    print('Console output length is not equal to example output "2.03 seconds"')
+    exit(1)
+
+try:
+    sec = float(print_res[0:4])
+except:
+    print('Console output deosn\'t start with floating-point number (4 characters, e.g. 2.03)')
+    exit(1)
+
+if not print_res.endswith(" seconds"):
+    print('Console output format is not equal to example output format "2.03 seconds"')
+    exit(1)
+
+if 'print_exec_time' not in locals():
+    print("There is no `print_exec_time` function")
+    exit(1)
+
+
+if 'slumber' not in locals():
+    print("There is no `slumber` function")
+    exit(1)
+
+if not callable(print_exec_time):
+    print("Variable 'print_exec_time' is not a function")
+    exit(1)
+
+if not callable(slumber):
+    print("Variable 'slumber' is not a function")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("@print_exec_time") == -1:
+    print("There is no function decorated with @print_exec_time")
+    exit(1)

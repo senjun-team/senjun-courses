@@ -1,0 +1,19 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'rps' not in locals():
+    print("There is no 'rps' variable")
+    exit(1)
+
+if rps != [3000, 1100, 4000]:
+    print("rps has invalid value")
+    exit(1)

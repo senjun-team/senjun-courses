@@ -1,0 +1,17 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+
+res = mystdout.getvalue()
+
+if res != "<class 'str'> True\n<class 'float'> True\n<class 'bool'> True\n<class 'list'> False\n<class 'set'> False\n<class 'NoneType'> True\n<class 'frozenset'> True\n<class 'tuple'> True\n":
+    print("Solution output is not correct.")
+    exit(1)

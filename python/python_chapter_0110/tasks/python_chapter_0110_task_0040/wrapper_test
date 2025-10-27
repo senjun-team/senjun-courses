@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "[9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1]\n":
+    print(f"Console output is invalid")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if user_code.replace(" ", "").find("lst[::-1]") == -1:
+    print("There is no expected slice extraction in user solution")
+    exit(1)

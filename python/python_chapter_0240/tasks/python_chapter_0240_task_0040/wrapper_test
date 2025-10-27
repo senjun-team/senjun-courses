@@ -1,0 +1,19 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'common' not in locals():
+    print("There is no `common` variable")
+    exit(1)
+
+if common != [4, 5]:
+    print("common has invalid value")
+    exit(1)

@@ -1,0 +1,61 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "Storage" not in globals():
+    print("Class Storage doesn't exist")
+    exit(1)
+
+if type(Storage) is not type:
+    print("'Storage' is not a class")
+    exit(1)
+
+try:
+    s = Storage(10)
+except Exception as e:
+    print(f"Unexpected error while instantiating Storage(10): {e}")
+    exit(1)
+
+try:
+    s = Storage(10)
+    res = s.__str__()
+    if type(res) is not str:
+        print(f"__str__() method must return string")
+        exit(1)
+    if len(res) < len("Storage") + 2:
+        print(f"__str__() returned too short string")
+        exit(1)
+
+    if res.find("object at") != -1:
+        print(f"__str__() overload should not return default __str__() result")
+        exit(1)
+except Exception as e:
+    print(f"Unexpected error while analyzing __str__() method: {e}")
+    exit(1)
+
+try:
+    s = Storage(10)
+    res = s.__repr__()
+    if type(res) is not str:
+        print(f"__repr__() method must return string")
+        exit(1)
+
+    if res.find("object at") != -1:
+        print(f"__repr__() overload should not return default __repr__() result")
+        exit(1)
+
+    res_short = res.replace(" ", "")
+
+    if res_short != "Storage(10)" and res_short != "Storage(message_size_limit=10)":
+        print("__repr__() should return string in format Storage(val) or Storage(message_size_limit=val)")
+        exit(1)
+except Exception as e:
+    print(f"Unexpected error while analyzing __repr__() method: {e}")
+    exit(1)

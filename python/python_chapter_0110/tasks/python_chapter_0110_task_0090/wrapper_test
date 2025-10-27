@@ -1,0 +1,30 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "is_item_in_list" not in globals():
+    print("Function is_item_in_list() doesn't exist")
+    exit(1)
+
+if not callable(is_item_in_list):
+    print("'is_item_in_list' is not a function")
+    exit(1)
+
+tests = [[[1, 2, 3, 4], 3, True], 
+         [[1, 2, 3, 4], 5, False], 
+         [[None, True, "s"], "s", True],
+         [[None, True, "s"], "m", False]]
+
+for lst, val, plan in tests:
+    res = is_item_in_list(lst, val)
+
+    if res != plan:
+        print(f"Invalid function output for arguments: {lst}, {val}.")
+        exit(1)

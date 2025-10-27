@@ -1,0 +1,34 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if 'max_val' not in locals():
+    print("There is no `max_val` variable")
+    exit(1)
+
+if type(max_val) is not int:
+    print("Variable 'max_val' is not an integer")
+    exit(1)
+
+if max_val != 255:
+    print("Variable 'max_val' value is not 255")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if user_code.find("int(") == -1:
+    print("Please use int() to convert string to integer")
+    exit(1)
+
+if user_code.find("'255'") == -1 and user_code.find('"255"') == -1:
+    print("Please use string as an argument for int()")
+    exit(1)

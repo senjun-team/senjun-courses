@@ -1,0 +1,33 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if 'x' not in locals():
+    print("There is no `x` variable")
+    exit(1)
+
+if type(x) is not str:
+    print("Variable 'x' is not a string")
+    exit(1)
+
+if x != "grep":
+    print("Variable 'x' has unexpected value")
+    exit(1)
+
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+user_code = user_code.replace(" ", "")
+
+if user_code.find('x=commands[') == -1:
+    print("There is no valid slice assignement for 'x' variable")
+    exit(1)

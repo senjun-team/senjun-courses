@@ -1,0 +1,7 @@
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.strip().replace(" ", "")
+if text != "252":
+    exit(1)

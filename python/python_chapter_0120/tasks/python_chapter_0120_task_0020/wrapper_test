@@ -1,0 +1,39 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "True\nFalse\nFalse\nFalse\n":
+    print(f"Console output is invalid")
+    exit(1)
+
+if 't1' not in locals():
+    print("There is no `t1` variable")
+    exit(1)
+
+if type(t1) is not tuple:
+    print("Variable 't1' is not a tuple")
+    exit(1)
+
+if 't2' not in locals():
+    print("There is no `t2` variable")
+    exit(1)
+
+if type(t2) is not tuple:
+    print("Variable 't2' is not a tuple")
+    exit(1)
+
+if t1 != (1, ["A"], 2):
+    print("Variable 't1' value is invalid")
+    exit(1)
+
+if t2 != (1, [], 2):
+    print("Variable 't2' value is invalid")
+    exit(1)

@@ -1,0 +1,30 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "common_letters" not in globals():
+    print("Variable 'common_letters' doesn't exist")
+    exit(1)
+
+if type(common_letters) is not set:
+    print("Variable 'common_letters' is not a 'set'")
+    exit(1)
+
+if mystdout.getvalue() != "{'b', 'c'}\n" and mystdout.getvalue() != "{'c', 'b'}\n":
+    print("Solution output isn't correct")
+    exit(1)
+
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if s.find(".intersection(") == -1:
+    print("Solution doesn't contain intersection() call")
+    exit(1)

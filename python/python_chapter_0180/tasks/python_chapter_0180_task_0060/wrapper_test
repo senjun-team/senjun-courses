@@ -1,0 +1,21 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue().find("extend <method 'extend' of 'list' objects>") == -1:
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("list.__dict__") == -1:
+    print("There is no call to list.__dict__")
+    exit(1)

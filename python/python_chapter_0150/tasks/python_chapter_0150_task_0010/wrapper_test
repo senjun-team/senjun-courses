@@ -1,0 +1,32 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "to_dict" not in globals():
+    print("Function to_dict() doesn't exist")
+    exit(1)
+
+if not callable(to_dict):
+    print("'to_dict' is not a function")
+    exit(1)
+
+tests = [[["first", 2, "third", {4, 44}, "first"],  {'first': 4, 2: 1, 'third': 2}], 
+         ]
+
+for test in tests:
+    items, plan = test
+
+    fact = to_dict(items)
+
+    if fact != plan:
+        print(f"Error in solution for input: '{items}'.")
+        exit(1)
+
+

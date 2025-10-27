@@ -1,0 +1,33 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'valid_keys' not in locals():
+    print("There is no `valid_keys` variable")
+    exit(1)
+
+if type(valid_keys) is not set:
+    print("Variable 'valid_keys' is not a set")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find("valid_keys=set(filter(None,keys))") == -1:
+    print("'valid_keys' should be filled from set() from filter() with None 1st argument")
+    exit(1)
+
+if valid_keys != {'u', 'r', 'h', 'd'}:
+    print("valid_keys != {'u', 'r', 'h', 'd'}")
+    exit(1)

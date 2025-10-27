@@ -1,0 +1,28 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+text = text.replace("'", '"')
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if text.find('weather_forecast(city="Omsk",date="tomorrow")') == -1:
+    print("There is no call to weather_forecast() with keyworded arguments")
+    exit(1)
+
+
+if text.find('weather_forecast(**{"city":"Omsk","date":"tomorrow"}') == -1 and text.find('weather_forecast(**dict(') == -1:
+    print("There is no call to weather_forecast() with unpacked keyworded arguments")
+    exit(1)
+
+if text.count("weather_forecast") != 4:
+    print("There is no call to weather_forecast() with unpacked keyworded arguments")
+    exit(1)

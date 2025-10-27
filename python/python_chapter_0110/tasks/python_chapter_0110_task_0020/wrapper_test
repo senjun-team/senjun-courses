@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "[['A', 'B', 'C'], ['D', 'NEW', 'F']]\n":
+    print(f"Console output of matrix is invalid")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if user_code.replace(" ", "").find("matrix[-1][-2]") == -1:
+    print("There is no setting of matrix element by negative indices in user solution")
+    exit(1)

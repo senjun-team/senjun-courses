@@ -1,0 +1,39 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'count' not in locals():
+    print("There is no `count` variable")
+    exit(1)
+
+if type(count) is not int:
+    print("Variable 'count' is not an integer")
+    exit(1)
+
+if count != 6:
+    print("Variable 'count' value is not 6")
+    exit(1)
+
+arr = print_res.strip().split("\n")
+if len(arr) != 3:
+    print(f"Expected 3 lines of output in console, but got {len(arr)}")
+    exit(1)
+
+if arr[0] != "<class 'int'>":
+    print(f"First line of output is not a class name")
+    exit(1)
+
+for val in arr[1:]:
+    try:
+        x = int(val)
+    except:
+        print(f"One of output lines for 'count' id is not an id")
+        exit(1)

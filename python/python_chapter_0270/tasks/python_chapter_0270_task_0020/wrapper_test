@@ -1,0 +1,43 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if not print_res.isupper():
+    print("Console output is not uppercase")
+    exit(1)
+
+if 'to_uppercase' not in locals():
+    print("There is no `to_uppercase` function")
+    exit(1)
+
+
+if 'get_random_string' not in locals():
+    print("There is no `get_random_string` function")
+    exit(1)
+
+if not callable(to_uppercase):
+    print("Variable 'to_uppercase' is not a function")
+    exit(1)
+
+if not callable(get_random_string):
+    print("Variable 'get_random_string' is not a function")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("@to_uppercase") == -1:
+    print("There is no function decorated with @to_uppercase")
+    exit(1)
+
+if not get_random_string().isupper():
+    print("get_random_string() doesn't return uppercase letters")

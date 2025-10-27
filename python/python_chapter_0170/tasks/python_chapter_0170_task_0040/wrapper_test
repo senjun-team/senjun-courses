@@ -1,0 +1,78 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+for c in ["Validator", "TextValidator", "ValueValidator"]:
+    if c not in globals():
+        print(f"Class {c} doesn't exist")
+        exit(1)
+
+inherits = False
+
+try:
+    if Protocol in Validator.__bases__:
+        inherits = True
+except Exception as e:
+    pass
+
+if not inherits:
+    try:
+        if typing.Protocol in Validator.__bases__:
+            inherits = True
+    except Exception as e:
+        pass
+
+if not inherits:
+    print(f"Validator doesn't inherit Protocol")
+    exit(1)
+
+try:
+    tests = [
+        ["abc", "a", True], 
+        ["abcd", "e", False],
+        ["", "x", False],
+        ["a", "a", True],
+        ["a", "b", False],
+        ["abc", "abcdef", False]
+         ]
+
+    for test in tests:
+        init_val, argument, plan = test
+        t = TextValidator(init_val)
+        fact = t.is_valid(argument)
+
+        if fact != plan:
+            print(f"TextValidator initialized with alphabet '{init_val}' returned {fact} in method is_valid() for argument {argument}.")
+            exit(1)
+except Exception as e:
+    print(f"Unexpected error while testing TextValidator: {e}")
+    exit(1)
+
+
+try:
+    tests = [
+        [0, 10, 5, True], 
+        [0, 10, 12, False],
+        [-2, -1, 0, False],
+        [-4, -1, -3, True],
+        [100, 200, 40, False],
+        [100, 200, 150, True]
+         ]
+
+    for test in tests:
+        min_val, max_val, argument, plan = test
+        v = ValueValidator(min_val, max_val)
+        fact = v.is_valid(argument)
+
+        if fact != plan:
+            print(f"ValueValidator initialized with values {min_val} and {max_val} returned {fact} in method is_valid() for argument {argument}.")
+            exit(1)
+except Exception as e:
+    print(f"Unexpected error while testing ValueValidator: {e}")
+    exit(1)

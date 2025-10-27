@@ -1,0 +1,24 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "8 even\n3 odd\n16 even\n":
+    print("Solution output isn't correct")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+user_code = user_code.replace(" ", "")
+
+if user_code.find('2==0else') == -1 and user_code.find('2else') == -1:
+    print("There is no valid ternary operator for setting 'res'")
+    exit(1)

@@ -1,0 +1,46 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+
+if "get_square_root" not in globals():
+    print("Function get_square_root() doesn't exist")
+    exit(1)
+
+if not callable(get_square_root):
+    print("'get_square_root' is not a function")
+    exit(1)
+
+
+tests = [[10, (3.1622776601683795, '3.16')],
+         [5, (2.23606797749979, '2.24')],
+         [36, (6.0, '6.00')]
+         ]
+
+for val, plan in tests:
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+    fact = get_square_root(val)
+    sys.stdout = old_stdout
+
+    if len(fact) != len(plan):
+        print(f"Error in solution for input: '{val}'. Invalid tuple length.")
+        exit(1)
+
+    if abs(fact[0] - plan[0]) > 0.1:
+        print(f"Error in solution for input: '{val}'. Invalid 1st tuple value.")
+        exit(1)
+
+    if fact[1] != plan[1]:
+        print(f"Error in solution for input: '{val}'. Invalid 2nd tuple value.")
+        exit(1)
+    
+

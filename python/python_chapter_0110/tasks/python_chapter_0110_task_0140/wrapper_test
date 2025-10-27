@@ -1,0 +1,31 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "add_word" not in globals():
+    print("Function add_word() doesn't exist")
+    exit(1)
+
+if not callable(add_word):
+    print("'add_word' is not a function")
+    exit(1)
+
+if add_word("Test") != ["test"]:
+    print('add_word("Test") should return ["test"]')
+    exit(1)
+
+lst = []
+if add_word("Test", lst) != ["test"]:
+    print('add_word("Test", lst) should return ["test"]')
+    exit(1)
+
+if add_word("Next") != ["next"]:
+    print('add_word("Next") should return ["next"]')
+    exit(1)

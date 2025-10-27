@@ -1,0 +1,49 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "messages" not in globals():
+    print("Variable 'messages' doesn't exist")
+    exit(1)
+
+try:
+    with open("messages.txt", "r") as file:
+        text = file.read()
+        if text != "msg1\nmsg2\n":
+            print("messages.txt: file contents isn't equal to expected value")
+            exit(1)
+except FileNotFoundError as fnfe:
+    print(f"There is no file messages.txt")
+    exit(1)
+except Exception as e:
+    print(f"Couldn't open file messages.txt")
+    exit(1)
+
+
+try:
+    with open("messages_uppercase.txt", "r") as file:
+        text = file.read()
+        if text != "MSG1\nMSG2\n":
+            print("messages_uppercase.txt: file contents isn't equal to expected value")
+            exit(1)
+except FileNotFoundError as fnfe:
+    print(f"There is no file messages_uppercase.txt")
+    exit(1)
+except Exception as e:
+    print(f"Couldn't open file messages_uppercase.txt")
+    exit(1)
+
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if s.find("f_out,") == -1 and s.find("f_out_upper,") == -1:
+    print("Please use two 'with' constructions in single expression")
+    exit(1)

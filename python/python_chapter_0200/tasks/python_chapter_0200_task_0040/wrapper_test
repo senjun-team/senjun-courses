@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "True\n('documents/scans/passport', '.pdf')\n":
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find("fromos.pathimportexists,splitext") == -1 and text.find("fromos.pathimportsplitext,exists") == -1:
+    print("There is no import statement for splitext() and exists()")
+    exit(1)

@@ -1,0 +1,32 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "not_eq" not in globals():
+    print("Function not_eq() doesn't exist")
+    exit(1)
+
+if not callable(not_eq):
+    print("'not_eq' is not a function")
+    exit(1)
+
+tests = [[1, 2, 3, True], 
+         [1, 1, 3, False], 
+         [1, 2, 1, False],
+         [1, 2, 2, False],
+         [1, 1, 1, False],
+         [1, 10, 100, True]]
+
+for a, b, c, plan in tests:
+    res = not_eq(a, b, c)
+
+    if res != plan:
+        print(f"Invalid function output for arguments {a}, {b}, {c}.")
+        exit(1)

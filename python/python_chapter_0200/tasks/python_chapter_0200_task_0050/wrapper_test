@@ -1,0 +1,26 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue().find("<class 'module'>\nFast implementation of the datetime type.") == -1:
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("import datetime") == -1:
+    print("There is no import statement for datetime module")
+    exit(1)
+
+if text.find(".today()") == -1:
+    print("There is no call to datetime.datetime.today()")
+    exit(1)
+

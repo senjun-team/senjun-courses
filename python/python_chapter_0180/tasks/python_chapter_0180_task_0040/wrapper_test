@@ -1,0 +1,29 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "True\n":
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.replace(" ", "").find("isinstance(lst,object)") == -1:
+    print(f"Couldn't find valid call to isinstance()")
+    exit(1)
+
+if "lst" not in globals():
+    print("Object lst doesn't exist")
+    exit(1)
+
+if type(lst) is not list:
+    print("'lst' is not a list")
+    exit(1)

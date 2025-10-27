@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "8\n6\n4\n2\n0\n":
+    print(f"Console output is invalid")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if user_code.replace(" ", "").find('range(8,-') == -1:
+    print("There is no expected 'range' call in user solution")
+    exit(1)

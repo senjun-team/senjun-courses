@@ -1,0 +1,6 @@
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if s.strip().lower().replace(" ", "") != "error":
+    exit(1)
