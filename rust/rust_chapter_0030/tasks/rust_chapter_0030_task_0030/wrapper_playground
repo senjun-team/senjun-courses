@@ -1,0 +1,7 @@
+#INJECT-b585472fa
+
+fn main() {
+    let arr = vec![0, 1, 2, 3, 1, 5];
+    let x = 1;
+    println!("{}", count(&arr, x));
+}

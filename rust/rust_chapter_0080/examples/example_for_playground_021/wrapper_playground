@@ -1,0 +1,7 @@
+fn approx_equal_abs(left: f64, right: f64, epsilon: f64) -> bool {
+    left == right || (left - right).abs() <= epsilon
+}
+
+fn main() {
+    #INJECT-b585472fa
+}

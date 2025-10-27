@@ -1,0 +1,129 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_assignments)]
+
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult,
+}
+
+struct TestCase {
+    two_complement: i32,
+    direct_code: i32,
+}
+
+fn abs_direct_code(dcode: i32) -> i32 {
+    dcode & i32::MAX
+}
+
+fn format_direct_code(dcode: i32) -> String {
+    if dcode >= 0 {
+        format!("{}", abs_direct_code(dcode))
+    } else {
+        format!("-{}", abs_direct_code(dcode))
+    }
+}
+
+fn format_result(result: (i32, bool)) -> String {
+    format!("({}, {})", format_direct_code(result.0), result.1)
+}
+
+fn print_error_to_direct_code(acode: i32, result: (i32, bool), expected: (i32, bool)) {
+    println!(
+        "Ошибка при вызове функции to_direct_code({0}). Результат:\n\
+        - ожидаемый  — {1}\n\
+        - полученный — {2}\n\
+        Прямой код двоичном виде:\n\
+        - ожидаемый  — {3:032b}\n\
+        - полученный — {4:032b}\n",
+        acode,
+        format_result(expected),
+        format_result(result),
+        expected.0,
+        result.0
+    );
+}
+
+fn print_error_from_direct_code(dcode: i32, result: i32, expected: i32) {
+    println!(
+        "Ошибка при вызове функции from_direct_code({0}). Результат:\n\
+        - ожидаемый  — {1}\n\
+        - полученный — {2}\n\
+        Дополнительный код двоичном виде:\n\
+        - ожидаемый  — {1:032b}\n\
+        - полученный — {2:032b}\n",
+        format_direct_code(dcode),
+        expected,
+        result
+    );
+}
+
+fn main() -> Result<(), TestResult> {
+    let test_cases: Vec<TestCase> = vec![
+        TestCase {
+            two_complement: i32::MAX,
+            direct_code: i32::MAX,
+        },
+        TestCase {
+            two_complement: 5508912,
+            direct_code: 5508912,
+        },
+        TestCase {
+            two_complement: 0,
+            direct_code: 0,
+        },
+        TestCase {
+            two_complement: -1,
+            direct_code: -2147483647,
+        },
+        TestCase {
+            two_complement: -512,
+            direct_code: -2147483136,
+        },
+        TestCase {
+            two_complement: i32::MIN + 1,
+            direct_code: -1,
+        },
+    ];
+
+    for case in test_cases.iter() {
+        let result = to_direct_code(case.two_complement);
+        let expected = (case.direct_code, false);
+        if result != expected {
+            print_error_to_direct_code(case.two_complement, result, expected);
+            return Err(TestResult::WrongResult);
+        }
+
+        let result = from_direct_code(case.direct_code);
+        if result != case.two_complement {
+            print_error_from_direct_code(case.direct_code, result, case.two_complement);
+            return Err(TestResult::WrongResult);
+        }
+    }
+
+    let i32_min = TestCase {
+        two_complement: i32::MIN,
+        direct_code: i32::MIN,
+    };
+    let result = to_direct_code(i32_min.two_complement);
+    let expected = (i32_min.direct_code, true);
+    if result != expected {
+        print_error_to_direct_code(i32_min.two_complement, result, expected);
+        return Err(TestResult::WrongResult);
+    }
+
+    let minus_zero = TestCase {
+        two_complement: 0,
+        direct_code: i32::MIN,
+    };
+    let result = from_direct_code(minus_zero.direct_code);
+    if result != minus_zero.two_complement {
+        print_error_from_direct_code(minus_zero.direct_code, result, minus_zero.two_complement);
+        return Err(TestResult::WrongResult);
+    }
+
+    Ok(())
+}

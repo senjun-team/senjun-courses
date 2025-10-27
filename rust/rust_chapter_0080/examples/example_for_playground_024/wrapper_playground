@@ -1,0 +1,10 @@
+fn approx_equal_rel(left: f64, right: f64, epsilon: f64) -> bool {
+    left == right || {
+        let max = left.abs().max(right.abs());
+        (left - right).abs() <= max * epsilon
+    }
+}
+
+fn main() {
+    #INJECT-b585472fa
+}

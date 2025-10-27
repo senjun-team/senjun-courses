@@ -1,0 +1,9 @@
+fn calc (v: i64) -> i64 {
+    v + 10
+}
+
+fn main() {
+    #INJECT-b585472fa
+    
+    println!("{}", result);
+}

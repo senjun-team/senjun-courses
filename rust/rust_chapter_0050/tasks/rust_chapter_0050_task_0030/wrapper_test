@@ -1,0 +1,60 @@
+use std::mem;
+
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult
+}
+
+fn main() -> Result<(), TestResult> {
+
+    let max_bits = mem::size_of::<usize>() * 8;
+    let left_bit = 1 << (max_bits - 1);
+
+    let values = vec![
+        0,
+        1,
+        512,
+        left_bit,
+        0b1111,
+        0b11110000,
+        0b1000110011101111,
+        0b1111011100110001,
+        0b111111001111111011111100,
+        usize::MAX
+    ];
+
+    let expected = vec![
+        0,
+        1,
+        1,
+        1,
+        4,
+        4,
+        4,
+        4,
+        7,
+        max_bits
+    ];
+
+    let mut index = 0;
+    for val in values.iter() {
+
+        let result = seq_len(*val);
+        if result != expected[index] {
+            println!(
+                "Ошибка! Входные параметры:\n\
+                - целое — {} (0b{:b})\n\
+                Результат:\n\
+                - ожидаемый — {}\n\
+                - полученный — {}",
+                val, val, expected[index], result);
+            return Err(TestResult::WrongResult);
+        }
+
+        index += 1;
+    }
+
+    Ok(())
+}

@@ -1,0 +1,7 @@
+#INJECT-b585472fa
+
+fn main() {
+    let data = vec![4, 0, 7, 3, 18, 43, 250, 2, 2, 101, 202];
+
+    println!("{}", validate(&data));
+}

@@ -1,0 +1,10 @@
+#INJECT-b585472fa
+
+fn main() {
+    let seasons = ["Spring", "Summer", "Autumn", "Winter", "Sprinter"];
+
+    for season in seasons {
+        let season_number = calc_season_number(season);
+        println!("number_of_season("{}") => {}", season, season_number);
+    }
+}

@@ -1,0 +1,5 @@
+#INJECT-b585472fa
+
+fn main() {
+    print_logical_ops();
+}

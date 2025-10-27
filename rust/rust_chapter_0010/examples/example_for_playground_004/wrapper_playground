@@ -1,0 +1,5 @@
+fn main() {
+    #INJECT-b585472fa
+    
+    println!("{}", s2);
+}
