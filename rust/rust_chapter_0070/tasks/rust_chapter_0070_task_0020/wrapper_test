@@ -1,0 +1,187 @@
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_assignments)]
+
+#INJECT-b585472fa
+
+#[deny(dead_code)]
+mod exec {
+    #[derive(Debug)]
+    pub enum RuntimeError {
+        MissedTasks,
+        AbortedTasks,
+    }
+
+    pub struct Config<'a> {
+        messages: Vec<(u32, &'a str)>,
+    }
+
+    impl<'a> Config<'a> {
+        pub fn read() -> Config<'static> {
+            Config {
+                messages: vec![
+                    (0, "check the minimum correct execution time"),
+                    (50 * 60, "check the some correct execution time"),
+                    (u32::MAX / 1000000, "check the biggest correct execution time"),
+                    (u32::MAX / 1000000 + 1, "check the lowest incorrect execution time"),
+                    (150 * 60, "check the some incorrect execution time"),
+                    (u32::MAX, "check the maximum incorrect execution time"),
+                ],
+            }
+        }
+
+        pub fn queue_params(&self) -> Vec<(u32, &'a str)> {
+            self.messages.clone()
+        }
+
+        pub fn pool_params(&self) -> u32 {
+            self.messages.len() as u32
+        }
+    }
+
+    #[derive(Clone, Debug)]
+    pub struct Job {
+        info: String,
+        time_s: u32,
+        time_mks: u32,
+    }
+
+    impl Job {
+        pub fn new(info: &str, time_s: u32, time_mks: u32) -> Job {
+            Job {
+                info: String::from(info),
+                time_s: time_s,
+                time_mks: time_mks
+            }
+        }
+
+        fn get_data(&self) -> (u32, u32) {
+            (self.time_s, self.time_mks)
+        }
+
+        pub fn get_info(&self) -> &str {
+            &self.info
+        }
+    }
+
+    pub struct RunnerPool {
+        total: usize,
+        passed: usize,
+        failed: usize,
+    }
+
+    impl RunnerPool {
+        pub fn new(cfg: &Config) -> RunnerPool {
+            RunnerPool {
+                total: cfg.pool_params() as usize,
+                passed: 0,
+                failed: 0,
+            }
+        }
+
+        pub fn execute(&mut self, id: u32, job: &Job, time: u32) {
+            let (time_s, expected) = job.get_data();
+            self.passed += 1;
+
+            if time != expected {
+                self.failed += 1;
+
+                println!(
+                    "Ошибка! Входные параметры:\n\
+                    - задание {} — '{}'\n\
+                    - время исполнения — {} с\n\
+                    Результат:\n\
+                    - ожидаемое время исполнения — {} мкс\n\
+                    - полученное время исполнения — {} мкс\n",
+                    id, job.get_info(), time_s, expected, time);
+            }
+        }
+
+        pub fn stop_all(&self) -> Result<(), RuntimeError> {
+
+            if self.failed > 0 {
+                Err(RuntimeError::AbortedTasks)
+            } else if self.passed < self.total {
+                Err(RuntimeError::MissedTasks)
+            } else {
+                Ok(())
+            }
+        }
+    }
+} // mod exec
+
+#[deny(dead_code)]
+mod comm {
+
+    #[derive(Debug)]
+    pub struct Message {
+        job: crate::exec::Job,
+        id: u32,
+        time: u32,
+    }
+
+    fn to_micros(sec: u32) -> u32 {
+        match sec.checked_mul(1000000) {
+            Some(val) => val,
+            None => 0,
+        }
+    }
+
+    impl Message {
+        pub fn new(id: u32, info: &str, time: u32) -> Message {
+            Message {
+                id: id,
+                job: crate::exec::Job::new(info, time, to_micros(time)),
+                time: time,
+            }
+        }
+
+        pub fn get_id(&self) -> u32 {
+            self.id
+        }
+
+        pub fn get_time_limit(&self) -> u32 {
+            self.time
+        }
+
+        pub fn get_job(&self) -> &crate::exec::Job {
+            &self.job
+        }
+
+        pub fn to_string(&self) -> String {
+            format!("{}, {}s, {}", self.id, self.time, self.job.get_info())
+        }
+    }
+
+    #[derive(Debug)]
+    pub enum PopResult {
+        Value(Message),
+        Eof,
+    }
+
+    pub struct Queue<'a> {
+        messages: Vec<(u32, &'a str)>,
+        pos: usize,
+    }
+
+    impl<'a> Queue<'a> {
+        pub fn new(cfg: &crate::exec::Config<'a>) -> Queue<'a> {
+            Queue {
+                messages: cfg.queue_params(),
+                pos: 0,
+            }
+        }
+
+        pub fn pop(&mut self) -> PopResult {
+            if self.pos >= self.messages.len() {
+                PopResult::Eof
+            } else {
+                let (time, info) = self.messages[self.pos];
+                let msg = Message::new(self.pos as u32, info, time);
+                let _unused = msg.to_string();
+                self.pos += 1;
+                PopResult::Value(msg)
+            }
+        }
+    }
+} // mod comm

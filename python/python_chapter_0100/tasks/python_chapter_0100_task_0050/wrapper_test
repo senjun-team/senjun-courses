@@ -1,0 +1,29 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "concat" not in globals():
+    print("Function concat() doesn't exist")
+    exit(1)
+
+if not callable(concat):
+    print("'concat' is not a function")
+    exit(1)
+
+tests = [["", "a", "bc", "d", "abcd"], 
+         ["--", "ab", "c", "d", "ab--c--d"], 
+         [".", "a", "b", "c", "a.b.c"]]
+
+for sep, s1, s2, s3, plan in tests:
+    res = concat(sep, s1, s2, s3)
+
+    if res != plan:
+        print(f"Invalid function output for arguments: '{sep}', '{s1}', '{s2}', '{s3}'.")
+        exit(1)

@@ -1,0 +1,62 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+
+if print_res != "16\n":
+    print("Console output is invalid")
+    exit(1)
+
+
+if 'Product' not in locals():
+    print("There is no `Product` class")
+    exit(1)
+
+if type(Product) is not type:
+    print("Variable 'Product' is not a class")
+    exit(1)
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.count("@property") < 1:
+    print("Please use @property to decorate count_available() method")
+    exit(1)
+
+
+if 'scanner' not in locals():
+    print("There is no `scanner` object")
+    exit(1)
+
+if type(scanner) is not Product:
+    print("Variable 'scanner' is not an instance of Product")
+    exit(1)
+
+try:
+    x = scanner.count_available
+    if x != 16:
+        print("scanner.count_available is not equal to 16")
+        exit(1)
+except Exception as e:
+    print(f"Couldn't call scanner.count_available: {e}")
+    exit(1)
+
+try:
+    item = Product("item", 10, 2)
+    n = item.count_available
+    if n != 8:
+        print("count_available returns wrong value for count_total=10 and count_reserved=2")
+        exit(1)
+except Exception as e:
+    print(f"Couldn't get count_available for instance of Product('item', 10, 2): {e}")
+    exit(1)

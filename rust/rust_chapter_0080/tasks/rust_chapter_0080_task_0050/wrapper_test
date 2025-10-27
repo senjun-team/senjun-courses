@@ -1,0 +1,150 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_assignments)]
+
+#INJECT-b585472fa
+
+mod control {
+    struct PseudoRand {
+        values: Vec<u64>,
+        index: usize,
+    }
+
+    impl PseudoRand {
+        fn new(values: &[u64]) -> PseudoRand {
+            PseudoRand { values: Vec::from(values), index: 0 }
+        }
+
+        fn sample(&mut self) -> u64 {
+            let prev_index = self.index;
+            self.index += 1;
+            if self.index >= self.values.len() {
+                self.index = 0;
+            }
+            self.values[prev_index]
+        }
+
+        fn max(&self) -> u64 {
+            let max_val = self.values.iter().max();
+            match max_val {
+                Some(max_value) => *max_value,
+                None => 0,
+            }
+        }
+    }
+
+    fn approx_equal_abs(left: f32, right: f32, epsilon: f32) -> bool {
+        left == right || (left - right).abs() <= epsilon
+    }
+
+    pub struct Probe {
+        rnd: PseudoRand,
+        count: u64,
+        limit: u64,
+        last: u64,
+        pill: f32,
+        storage: f32,
+    }
+
+    impl Probe {
+        pub fn new(limit: u64, pill: f32, storage: f32) -> Probe {
+            assert!(pill > 0.0);
+            let max = storage / pill;
+
+            let limit = if !max.is_finite() {
+                limit
+            } else {
+                let max = max as u64;
+                if max < limit {
+                    max
+                } else {
+                    limit
+                }
+            };
+
+            const VALUES: [u64; 20] = [3, 1, 1, 1, 1, 2, 1, 1, 1, 4, 2, 1, 1, 1, 3, 1, 3, 2, 1, 1];
+            Probe { rnd: PseudoRand::new(&VALUES), count: 0, limit: limit, last: 0, pill: pill, storage: storage }
+        }
+
+        pub fn collect(&mut self, weight: f32) -> bool {
+            const MIN_WEIGHT: f32 = 1.0;
+            weight > MIN_WEIGHT && {
+                if self.count >= self.limit {
+                    false
+                } else {
+                    self.last = self.rnd.sample();
+                    self.count += self.last;
+                    true
+                }
+            }
+        }
+
+        pub fn last_collected(&self) -> f32 {
+            self.last as f32 * self.pill
+        }
+
+        pub fn check(&self, remains: f32) -> bool {
+            let packed = self.pill * self.count as f32;
+            let expected = self.storage - packed;
+            let epsilon = self.pill * self.rnd.max() as f32;
+
+            if approx_equal_abs(remains, expected, epsilon) {
+                true
+            } else {
+                println!(
+                    "Ошибка! Входнoй параметр:\n\
+                    - {} — вес продукции в накопительной камере.\n\
+                    Результат:\n\
+                    - ожидаемый  — {}±{}\n\
+                    - полученный — {}\n",
+                    self.storage, expected, epsilon, remains
+                );
+                println!(
+                    "Дополнительная информация:\n\
+                    - {} — вес одной таблетки,\n\
+                    - {} — действительное количество расфасованных таблеток,\n\
+                    - {} — действительный вес расфасованной продукции.\n",
+                    self.pill, self.count, packed
+                );
+                false
+            }
+        }
+    }
+} // mod control
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult,
+}
+
+struct TestCase {
+    storage: f32,
+    pill: f32,
+    limit: u64,
+}
+
+fn main() -> Result<(), TestResult> {
+    let test_cases: Vec<TestCase> = vec![
+        TestCase {storage: 600.0, pill: 3.0e-6, limit: 100000000},
+        TestCase {storage: 400.0, pill: 1.0e-5, limit: 40000000},
+        TestCase {storage: 200.0, pill: 5e-6, limit: 20},
+        TestCase {storage: 100.0, pill: 1.0e-5, limit: 10000000},
+        TestCase {storage: 20.0, pill: 1.0e-4, limit: 10000000},
+        TestCase {storage: 0.0, pill: 1.0e-5, limit: 10000000},
+    ];
+
+    for case in &test_cases {
+        if !test(case.storage, case.pill, case.limit) {
+            return Err(TestResult::WrongResult);
+        }
+    }
+
+    Ok(())
+}
+
+fn test(storage: f32, pill: f32, limit: u64) -> bool {
+    let mut probe = control::Probe::new(limit, pill, storage);
+    let result = packing(storage, &mut probe);
+    probe.check(result)
+}

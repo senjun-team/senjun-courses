@@ -1,0 +1,27 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+for val in ["books_total", "books_popular", "books_sold_out"]:
+    if  val not in globals():
+        print(f"Set '{val}' doesn't exist")
+        exit(1)
+
+if books_total != set(["Fluent Python", "Python Cookbook", "Python crash course", "Learning python", "Python in a nutshell"]):
+    print("'books_total' doesn't contain all available or purchased books")
+    exit(1)
+
+if books_popular != set(["Fluent Python",]):
+    print("'books_popular' doesn't contain books which are still available and which were purchased")
+    exit(1)
+
+if books_sold_out != set(["Learning python", "Python in a nutshell",]):
+    print("'books_sold_out' doesn't contain purchased and not available anymore books")
+    exit(1)

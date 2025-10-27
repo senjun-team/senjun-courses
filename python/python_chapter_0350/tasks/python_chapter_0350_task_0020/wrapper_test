@@ -1,0 +1,57 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue().strip()
+
+lines = print_res.split("\n")
+if len(lines) != 2:
+    print("Console output is invalid. Expected 2 lines with float numbers")
+    exit(1)
+
+
+for line in lines:
+    try:
+        float(line)
+    except Exception as e:
+        print("Console output is invalid. Expected 2 lines with floats")
+        exit(1)
+
+
+if 'S' not in locals():
+    print("There is no `S` class")
+    exit(1)
+
+if type(S) is not type:
+    print("Variable 'S' is not a class")
+    exit(1)
+
+if 'results_slots' not in locals():
+    print("There is no `results_slots` variable")
+    exit(1)
+
+if 'field_rw' not in locals():
+    print("There is no `field_rw` function")
+    exit(1)
+
+
+if not callable(field_rw):
+    print("`field_rw` is not a function")
+    exit(1)
+
+try:
+    m_obj = getattr(S, '__slots__', None)
+        
+    if set(m_obj) != set(["field"]):
+        print("Please define slots in S")
+        exit(1)
+
+except Exception as e:
+    print(f"Exception while checking slots in S: {e}")
+    exit(1)

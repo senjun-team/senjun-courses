@@ -1,0 +1,39 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'Name' not in locals():
+    print("There is no `Name` class")
+    exit(1)
+
+if type(Name) is not type:
+    print("Variable 'Name' is not a class")
+    exit(1)
+
+try:
+    n = Name()
+    for m in ["__get__", "__set__", "__delete__"]:
+        m_obj = getattr(n, m, None)
+        if not callable(m_obj):
+            print(f"{m} method is not implemented")
+            exit(1)
+
+except Exception as e:
+    print(f"Exception while checking 'Name' methods: {e}")
+    exit(1)
+
+if 'name' not in Server.__dict__:
+    print("'name' is not a class field in 'Server'")
+    exit(1)
+
+if type(Server.__dict__["name"]) is not Name:
+    print("'name' field type is not 'Name'")
+    exit(1)

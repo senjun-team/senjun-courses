@@ -1,0 +1,39 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "['65 km/h', '100 km/h', '90 km/h', '120 km/h']\n":
+    print("print() output is incorrect")
+    exit(1)
+
+if 'res' not in locals():
+    print("There is no `res` variable")
+    exit(1)
+
+if type(res) is not list:
+    print("Variable 'res' is not a list")
+    exit(1)
+
+if res != ['65 km/h', '100 km/h', '90 km/h', '120 km/h']:
+    print("'res' value is incorrect")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("map(") == -1:
+    print("There is no map() call")
+    exit(1)
+
+if text.find("filter(") == -1:
+    print("There is no filter() call")
+    exit(1)

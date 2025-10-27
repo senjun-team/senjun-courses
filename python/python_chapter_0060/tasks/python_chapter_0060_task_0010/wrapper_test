@@ -1,0 +1,45 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+print_res = mystdout.getvalue()
+
+if "print_sum" not in globals():
+    print("Function print_sum() doesn't exist")
+    exit(1)
+
+if not callable(print_sum):
+    print("'print_sum' is not a function")
+    exit(1)
+
+
+if print_sum.__doc__ is None or len(print_sum.__doc__) < 2:
+    print("Please add readable docstring to function")
+    exit(1)
+
+
+tests = [[1, 1, "2\n"], 
+         [-1, 1, "0\n"], 
+         [-2, 1, "-1\n"],
+         [200, 45, "245\n"]]
+
+for a, b, plan in tests:
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+    print_sum(a, b)
+    sys.stdout = old_stdout
+    fact = mystdout.getvalue()
+    if fact != plan:
+        print(f"Invalid function output for arguments: {a}, {b}.")
+        exit(1)
+
+if print_res != "11\n":
+    print("Console output isn't correct")
+    exit(1)

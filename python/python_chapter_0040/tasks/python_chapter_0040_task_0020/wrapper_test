@@ -1,0 +1,33 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if 's_descr' not in locals():
+    print("There is no `s_descr` variable")
+    exit(1)
+
+if type(s_descr) is not str:
+    print("Variable 's_descr' is not a string")
+    exit(1)
+
+if s_descr != "short string":
+    print("Variable 's_descr' has unexpected value")
+    exit(1)
+
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+user_code = user_code.replace(" ", "")
+
+if user_code.find('79else') == -1 and user_code.find('80else') == -1:
+    print("There is no valid ternary operator for setting 's_descr'")
+    exit(1)

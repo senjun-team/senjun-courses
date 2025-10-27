@@ -1,0 +1,24 @@
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    DeclarationRequired
+}
+
+fn remove_whitespace(text: &str) -> String {
+    text.chars().filter(|c| !c.is_whitespace()).collect()
+}
+
+fn main() -> Result<(), TestResult> {
+
+    let text: String = remove_whitespace(r#"#INJECT-b585472fa"#);
+
+    if !text.contains("fnimplication(a:bool,b:bool)->bool{") {
+        println!("Отсутствует объявление функции:\n`fn implication(a: bool, b: bool) -> bool`");
+        return Err(TestResult::DeclarationRequired);
+    }
+
+    print_logical_ops();
+
+    Ok(())
+}

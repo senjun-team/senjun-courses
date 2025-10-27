@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "[10, 11, 12, 13, 14]\n":
+    print(f"Console output is invalid")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if user_code.replace(" ", "").find('list(range(10,15') == -1:
+    print("There is no expected list creation from range in user solution")
+    exit(1)

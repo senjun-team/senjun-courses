@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "1 go\n2 rust\n3 ruby\n4 c++\n5 c\n":
+    print("Console output is invalid")
+    exit(1)
+    
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find('enumerate') == -1:
+    print("Please use enumerate() in loop")
+    exit(1)

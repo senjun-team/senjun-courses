@@ -1,0 +1,40 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "1\n":
+    print("Print output is invalid")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find('collections') == -1:
+    print("There is no import of collections module")
+    exit(1)
+
+if text.find('defaultdict') == -1:
+    print("There is no usage of defaultdict class")
+    exit(1)
+
+if 'clicks' not in locals():
+    print("There is no `clicks` object")
+    exit(1)
+
+from collections import defaultdict
+if type(clicks) is not defaultdict:
+    print("clicks object is not a defaultdict")
+    exit(1)
+
+if clicks.get("news") != 1:
+    print('clicks["news"] != 1')
+    exit(1)

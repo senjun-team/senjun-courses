@@ -1,0 +1,58 @@
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult,
+}
+
+fn validate_and_print(matrix: &Vec<Vec<i32>>, min: i32, max: i32, expected: bool) -> bool {
+    let result = check(&matrix, min, max);
+    if result != expected {
+        println!(
+            r#"Результат check(&matrix, min, max) -> {result} — неверный.
+Ожидается {expected} для min = {min}, max = {max} и
+matrix = {matrix:?}."#
+        );
+        false
+    } else {
+        true
+    }
+}
+
+fn test(matrix: &Vec<Vec<i32>>, test_data: &Vec<(i32, i32, bool)>) -> bool {
+    for min_max_res in test_data {
+        if !validate_and_print(matrix, min_max_res.0, min_max_res.1, min_max_res.2) {
+            return false;
+        }
+    }
+    return true;
+}
+
+fn main() -> Result<(), TestResult> {
+    let matrix_1: Vec<Vec<i32>> = vec![
+        vec![10, 20, 20, 10],
+        vec![30, 50, 60, 0],
+        vec![70, 40, 40, -10],
+    ];
+    let test_data_1 = vec![(-10, 70, true), (0, 100, false), (-100, 60, false)];
+
+    let matrix_2: Vec<Vec<i32>> = vec![vec![9, 9, 9], vec![9, 9, 9], vec![9, 9, 9]];
+    let test_data_2 = vec![(9, 9, true), (10, 100, false), (-8, 8, false)];
+
+    let matrix_3: Vec<Vec<i32>> =
+        vec![vec![0, 1, 2], vec![3, 4, 5], vec![6, 7, 8], vec![9, 10, 11]];
+    let test_data_3 = vec![(0, 11, true), (1, 11, false), (-10, 10, false)];
+
+    let matrix_4: Vec<Vec<i32>> = vec![vec![80, 60, 40, 20], vec![9, 7, 5, 3], vec![0, -1, -2, -3]];
+    let test_data_4 = vec![(-3, 80, true), (-2, 80, false), (-3, 79, false)];
+
+    if !test(&matrix_1, &test_data_1)
+        || !test(&matrix_2, &test_data_2)
+        || !test(&matrix_3, &test_data_3)
+        || !test(&matrix_4, &test_data_4)
+    {
+        Err(TestResult::WrongResult)
+    } else {
+        Ok(())
+    }
+}

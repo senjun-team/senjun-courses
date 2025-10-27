@@ -1,0 +1,83 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "{'roguelike', 'hack and slash rpg'}\n" and print_res != "{'hack and slash rpg', 'roguelike'}\n":
+    print("Invalid print() output")
+    exit(1)
+
+if 'get_best_genres' not in locals():
+    print("There is no `get_best_genres` function")
+    exit(1)
+
+if not callable(get_best_genres):
+    print("'get_best_genres' is not a function")
+    exit(1)
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("itertools") == -1:
+    print("There is no import of itertools")
+    exit(1)
+
+
+if text.find("chain") == -1:
+    print("There is no call to chain()")
+    exit(1)
+
+
+if text.find("map") == -1:
+    print("There is no call to map()")
+    exit(1)
+
+
+if text.find("filter") == -1:
+    print("There is no call to filter()")
+    exit(1)
+
+tests = [[
+            [
+                [{"title": "Tower defense", "avg_rating": 3.4}, { "title": "Hack and Slash RPG", "avg_rating": 3.6}],
+                [{"title": "Hack and Slash RPG", "avg_rating": 3.7}, {"title": "Roguelike", "avg_rating": 4.1}]
+            ],
+            {'roguelike', 'hack and slash rpg'}
+    ],
+    [
+            [
+                [{"title": "A", "avg_rating": 3.4}, { "title": "B", "avg_rating": 3.6}],
+                []
+            ],
+            {'b'}
+    ],
+    [
+            [
+                [],
+            ],
+            set()
+    ],
+    [
+            [
+                [{"title": "A", "avg_rating": 1.0}, { "title": "B", "avg_rating": 5.0}, { "title": "C", "avg_rating": 2.0}],
+                [{"title": "D", "avg_rating": 1.7}, {"title": "D", "avg_rating": 4.1}],
+                [{"title": "F", "avg_rating": 4.7}, {"title": "G", "avg_rating": 1.1}]
+            ],
+            {'b', 'd', 'f'}
+    ],
+]
+for test, plan in tests:
+    fact = get_best_genres(*test)
+    if fact != plan:
+        print(f"Invalid return value {fact} of get_best_genres() for input:\n{test}")
+        exit(1)
+

@@ -1,0 +1,29 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "to_fahrenheit" not in globals():
+    print("Function to_fahrenheit() doesn't exist")
+    exit(1)
+
+if not callable(to_fahrenheit):
+    print("'to_fahrenheit' is not a function")
+    exit(1)
+
+tests = [[0, 32], 
+         [-5, 23], 
+         [25, 77]]
+
+for celsius, plan in tests:
+    res = to_fahrenheit(celsius)
+
+    if res != plan:
+        print(f"Invalid function output for argument {celsius}.")
+        exit(1)

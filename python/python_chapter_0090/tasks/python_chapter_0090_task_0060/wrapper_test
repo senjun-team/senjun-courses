@@ -1,0 +1,31 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "my_xor" not in globals():
+    print("Function my_xor() doesn't exist")
+    exit(1)
+
+if not callable(my_xor):
+    print("'my_xor' is not a function")
+    exit(1)
+
+tests = [[False, False, False], 
+         [False, True, True],
+         [True, False, True],
+         [True, True, False]
+         ]
+
+for a, b, plan in tests:
+    res = my_xor(a, b)
+
+    if res is not plan:
+        print(f"Invalid function output for arguments {a}, {b}.")
+        exit(1)

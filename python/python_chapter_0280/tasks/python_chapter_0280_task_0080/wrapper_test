@@ -1,0 +1,36 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'a2' not in locals():
+    print("There is no `a2` variable")
+    exit(1)
+
+if 'b2' not in locals():
+    print("There is no `b2` variable")
+    exit(1)
+
+if a2 != ["A", "B", "C"]:
+    print("'a2' has invalid value")
+
+if b2 != ["D", "E", "F"]:
+    print("'b2' has invalid value")
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find("zip(*paired)") == -1:
+    print("There is no proper call to zip for a2, b2 assignement")
+    exit(1)

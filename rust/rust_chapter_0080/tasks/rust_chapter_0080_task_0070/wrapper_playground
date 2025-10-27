@@ -1,0 +1,37 @@
+#INJECT-b585472fa
+
+#[derive(Clone, Debug)]
+struct ProbeData {
+    probe_1: f64,
+    probe_2: f64,
+    probe_3: f64,
+    epsilon: f64,
+}
+
+impl ProbeData {
+    fn new(probe_1: f64, probe_2: f64, probe_3: f64, epsilon: f64) -> ProbeData {
+        ProbeData {
+            probe_1: probe_1,
+            probe_2: probe_2,
+            probe_3: probe_3,
+            epsilon: epsilon,
+        }
+    }
+}
+
+fn main() {
+    let cases: Vec<ProbeData> = vec![
+        ProbeData::new(0.41, 0.45, 0.49, 0.1),
+        ProbeData::new(9.28, 8.01, 9.32, 0.1),
+        ProbeData::new(107.5, f64::NAN, 108.1, 0.01),
+        ProbeData::new(962.9, 407.5, 110.1, 0.1),
+    ];
+
+    for cur in cases {
+        let result = analyze(cur.probe_1, cur.probe_2, cur.probe_3, cur.epsilon);
+        println!(
+            "analyze({}, {}, {}, {}) -> {}",
+            cur.probe_1, cur.probe_2, cur.probe_3, cur.epsilon, result
+        );
+    }
+}

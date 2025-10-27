@@ -1,0 +1,33 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 's' not in locals():
+    print("There is no `s` variable")
+    exit(1)
+
+if type(s) is not set:
+    print("Variable 's' is not a set")
+    exit(1)
+
+if s != {'s9', 's-1', 's45', 's1024', 's0'}:
+    print("Variable 's' value is not correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find("map(") == -1:
+    print("'s' should be filled with the help of map()")
+    exit(1)

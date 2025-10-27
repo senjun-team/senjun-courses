@@ -1,0 +1,28 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "{'user_1': {'monthly'}}\n":
+    print("Print output is invalid")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find('subscriptions.setdefault(') == -1:
+    print("There is no call to subscriptions.setdefault()")
+    exit(1)
+
+
+if subscriptions.get("user_1") != set(["monthly"]):
+    print('subscriptions["user_1"] has invalid value')
+    exit(1)

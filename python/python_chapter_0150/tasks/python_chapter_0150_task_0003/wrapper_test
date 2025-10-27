@@ -1,0 +1,11 @@
+s = r"""
+#INJECT-ESCAPED-b585472fa
+""".strip().lower()
+
+try:
+    l = s.split(" ")
+    l.sort()
+    if l != ['a', 'o', 't']:
+        exit(1)
+except Exception as e:
+    exit(1)

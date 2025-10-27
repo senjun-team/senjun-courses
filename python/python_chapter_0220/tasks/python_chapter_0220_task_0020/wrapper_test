@@ -1,0 +1,35 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "x must be True\n":
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+if text.find("print(res)") == -1:
+    print("There is no print(res) statement in solution")
+    exit(1)
+
+if text.find("res=e") == -1:
+    print("There is no 'res=e' assignment in solution")
+    exit(1)
+
+if "res" not in globals():
+    print("Variable res doesn't exist")
+    exit(1)
+
+if type(res) is not AssertionError:
+    print("res is not an instance of AssertionError")
+    exit(1)
+

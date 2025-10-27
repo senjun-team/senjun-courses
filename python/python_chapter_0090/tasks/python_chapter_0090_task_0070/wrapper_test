@@ -1,0 +1,34 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "left_shift" not in globals():
+    print("Function left_shift() doesn't exist")
+    exit(1)
+
+if not callable(left_shift):
+    print("'left_shift' is not a function")
+    exit(1)
+
+tests = [[5, None, None], 
+         [None, 1, None],
+         [None, None, None],
+         [5, 1, 10],
+         [5, 2, 20],
+         [1, 2, 4],
+         [1, 3, 8]
+         ]
+
+for a, b, plan in tests:
+    res = left_shift(a, b)
+
+    if res != plan:
+        print(f"Invalid function output for arguments {a}, {b}.")
+        exit(1)

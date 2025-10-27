@@ -1,0 +1,27 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "(<class 'object'>,)\nTrue\n":
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find("issubclass(type,object)") == -1:
+    print(f"Couldn't find valid call to issubclass()")
+    exit(1)
+
+if text.find("type.__bases__") == -1:
+    print(f"Couldn't find valid call to type.__bases__")
+    exit(1)

@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']\n":
+    print(f"Console output is invalid")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+""".replace(" ", "")
+
+if user_code.find('lst[2:5]=') == -1:
+    print("There is no expected slice assignement in user solution")
+    exit(1)

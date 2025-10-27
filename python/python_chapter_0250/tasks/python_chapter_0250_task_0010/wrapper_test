@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+solution = mystdout.getvalue()
+
+if solution != "a\nb\nc\n" and solution != 'a b c\n':
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+if text.find("=s") == -1:
+    print("There is no unpacking statement for 's'")
+    exit(1)

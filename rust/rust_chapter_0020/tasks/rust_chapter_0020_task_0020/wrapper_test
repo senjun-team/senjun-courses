@@ -1,0 +1,38 @@
+#[derive(Debug)]
+enum TestResult {
+    InvalidInitialization,
+    MissedDefinition,
+    ExpectIncrement,
+    AssertRequired
+}
+
+fn remove_whitespace(text: &str) -> String {
+    text.chars().filter(|c| !c.is_whitespace()).collect()
+}
+
+fn main() -> Result<(), TestResult> {
+
+let text: String = remove_whitespace(r#"#INJECT-b585472fa"#);
+
+if !text.contains("letmutcounter:u32") {
+    println!("Должна быть объявлена изменяемая переменная 'counter' типа 'u32'.");
+    return Err(TestResult::MissedDefinition);
+}
+
+if !text.contains("letmutcounter:u32=0") && !text.contains("counter=0") {
+    println!("Для переменной 'counter' должно быть установлено начальное значение равное 0.");
+    return Err(TestResult::InvalidInitialization);
+}
+
+if !text.contains("counter+=1") && !text.contains("counter=counter+1") {
+    println!("Необходимо инкрементировать значение переменной 'counter' на 1.");
+    return Err(TestResult::ExpectIncrement);
+}
+
+if !text.contains("assert!(counter==1)") {
+    println!("Проверка 'assert!(counter == 1)' должна присутствовать в коде задачи.");
+    return Err(TestResult::AssertRequired);
+}
+
+Ok(())
+}

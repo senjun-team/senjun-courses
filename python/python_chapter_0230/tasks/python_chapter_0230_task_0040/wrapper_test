@@ -1,0 +1,40 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'search' not in locals():
+    print("There is no `search` coroutine")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("yield") == -1:
+    print("There is no call to yield in 'search'")
+    exit(1)
+
+try:
+    x = search("x")
+    next(x)
+
+    if x.send("abc") != -1:
+        print("'search' for substring 'x' returned wrong result for string 'abc'")
+        exit(1)
+    
+    if x.send("axc") != 1:
+        print("'search' for substring 'x' returned wrong result for string 'axc'")
+        exit(1)
+
+        
+except Exception as e:
+    print(f"Couldn't iterate 'search': {e}")
+    exit(1)

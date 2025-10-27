@@ -1,0 +1,45 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "check_str" not in globals():
+    print("Function check_str() doesn't exist")
+    exit(1)
+
+if not callable(check_str):
+    print("'check_str' is not a function")
+    exit(1)
+
+tests = [
+    ["text", False],
+    ["", False],
+    [1, True],
+    [[1, 2, 3], True],
+    [{"a": "b"}, True],
+    [True, True],
+    [0.5, True]]
+
+for test in tests:
+    s, throws = test
+
+    try:
+        check_str(s)
+    except TypeError:
+        if not throws:
+            print(f"Function 'check_str()' raises exception for input: {s}")
+            exit(1)
+        continue
+    except:
+        print("Function `check_str()` raises exception type not equal to TypeError")
+        exit(1)
+
+    if throws:
+        print(f"Function `check_str()` doesn't raise exception for input: {s}")
+        exit(1)

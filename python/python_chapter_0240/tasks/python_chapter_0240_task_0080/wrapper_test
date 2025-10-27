@@ -1,0 +1,27 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'cubes' not in locals():
+    print("There is no 'cubes' variable")
+    exit(1)
+
+if list(cubes) != [125, 6859, 97336, 1030301]:
+    print(f"cubes has invalid value: {cubes}")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if user_code.find(":=") == -1:
+    print("Please use operator walrus")
+    exit(1)

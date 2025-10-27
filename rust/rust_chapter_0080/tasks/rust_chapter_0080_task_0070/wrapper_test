@@ -1,0 +1,96 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_assignments)]
+
+#INJECT-b585472fa
+
+mod test {
+    #[derive(Debug)]
+    pub enum TestResult {
+        WrongResult,
+    }
+
+    pub struct TestCase {
+        probe_1: f64,
+        probe_2: f64,
+        probe_3: f64,
+        epsilon: f64,
+        expected: f64,
+    }
+
+    impl TestCase {
+        pub fn new(probe_1: f64, probe_2: f64, probe_3: f64, epsilon: f64, expected: f64) -> TestCase {
+            TestCase {
+                probe_1: probe_1,
+                probe_2: probe_2,
+                probe_3: probe_3,
+                epsilon: epsilon,
+                expected: expected,
+            }
+        }
+    }
+
+    fn check_test_result(left: f64, right: f64, epsilon: f64) -> bool {
+        left == right || left.is_nan() && right.is_nan() || {
+            let max = left.abs().max(right.abs());
+            (left - right).abs() <= max * epsilon
+        }
+    }
+
+    pub fn test_analyze(cases: &Vec<TestCase>) -> Result<(), TestResult> {
+        for cur in cases {
+            let result = super::analyze(cur.probe_1, cur.probe_2, cur.probe_3, cur.epsilon);
+            if !check_test_result(result, cur.expected, cur.epsilon) {
+                println!(
+                    "Ошибка! Входные параметры:\n\
+                    - probe_1: {}\n\
+                    - probe_2: {}\n\
+                    - probe_3: {}\n\
+                    - epsilon: {}\n\
+                    Результат:\n\
+                    - ожидаемый:  {}\n\
+                    - полученный: {}",
+                    cur.probe_1, cur.probe_2, cur.probe_3, cur.epsilon, cur.expected, result
+                );
+                return Err(TestResult::WrongResult);
+            }
+        }
+        Ok(())
+    }
+} // mod test
+
+fn main() -> Result<(), test::TestResult> {
+    use test::*;
+
+    let near_zero = f64::from_bits(1);
+    let test_cases: Vec<TestCase> = vec![
+        TestCase::new(0.41, 0.45, 0.49, 0.1, (0.41 + 0.45 + 0.49) / 3.0),
+        TestCase::new(0.41, 0.49, 0.45, 0.1, (0.41 + 0.49 + 0.45) / 3.0),
+        TestCase::new(0.49, 0.45, 0.41, 0.1, (0.49 + 0.45 + 0.41) / 3.0),
+        TestCase::new(0.45, 0.41, 0.49, 0.1, (0.45 + 0.41 + 0.49) / 3.0),
+        TestCase::new(0.0, 0.0, 0.0, near_zero, 0.0),
+        TestCase::new(1000.0, 1000.0, 1000.0, near_zero, 1000.0),
+        TestCase::new(0.51, 0.41, 0.45, 0.1, (0.41 + 0.45) / 2.0),
+        TestCase::new(500.0, 1000.0, 1000.0, near_zero, 1000.0),
+        TestCase::new(f64::NAN, 1000.0, 1000.0, near_zero, 1000.0),
+        TestCase::new(f64::INFINITY, 1000.0, 1000.0, near_zero, 1000.0),
+        TestCase::new(f64::NEG_INFINITY, 1000.0, 1000.0, near_zero, 1000.0),
+        TestCase::new(0.41, 0.51, 0.45, 0.1, (0.41 + 0.45) / 2.0),
+        TestCase::new(1000.0, 500.0, 1000.0, near_zero, 1000.0),
+        TestCase::new(1000.0, f64::NAN, 1000.0, near_zero, 1000.0),
+        TestCase::new(1000.0, f64::INFINITY, 1000.0, near_zero, 1000.0),
+        TestCase::new(1000.0, f64::NEG_INFINITY, 1000.0, near_zero, 1000.0),
+        TestCase::new(0.41, 0.45, 0.51, 0.1, (0.41 + 0.45) / 2.0),
+        TestCase::new(1000.0, 1000.0, 500.0, near_zero, 1000.0),
+        TestCase::new(1000.0, 1000.0, f64::NAN, near_zero, 1000.0),
+        TestCase::new(1000.0, 1000.0, f64::INFINITY, near_zero, 1000.0),
+        TestCase::new(1000.0, 1000.0, f64::NEG_INFINITY, near_zero, 1000.0),
+        TestCase::new(0.2, 0.3, 0.4, 0.01, f64::NAN),
+        TestCase::new(f64::NAN, f64::NAN, f64::NAN, 0.1, f64::NAN),
+        TestCase::new(f64::INFINITY, f64::INFINITY, f64::INFINITY, 0.1, f64::NAN),
+        TestCase::new(f64::NEG_INFINITY, f64::NEG_INFINITY, f64::NEG_INFINITY, 0.1, f64::NAN),
+    ];
+
+    test_analyze(&test_cases)
+}

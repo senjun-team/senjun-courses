@@ -1,0 +1,21 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "True\n":
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.replace(" ", "").find("issubclass(list,object)") == -1:
+    print(f"Couldn't find valid call to issubclass()")
+    exit(1)

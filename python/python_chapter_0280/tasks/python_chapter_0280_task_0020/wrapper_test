@@ -1,0 +1,54 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'discounted' not in locals():
+    print("There is no `discounted` variable")
+    exit(1)
+
+if type(discounted) is not dict:
+    print("Variable 'discounted' is not a dict")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find("discounted=dict(map(") == -1:
+    print("'discounted' should be filled from dict() from map()")
+    exit(1)
+
+if len(discounted) != 3:
+    print("'discounted' length is not correct")
+    exit(1)
+for k, v in discounted.items():
+    if k == "corn":
+        if round(v, 2) != round(5.044, 2):
+            print("Invalid values in dictionary")
+            exit(1)
+        continue
+    
+    if k == "noodle":
+        if round(v, 2) != round(6.305, 2):
+            print("Invalid values in dictionary")
+            exit(1)
+        continue
+
+    if k == "mayonnaise":
+        if round(v, 2) != round(0.97, 2):
+            print("Invalid values in dictionary")
+            exit(1)
+        continue
+
+    print(f"Invalid key in 'discounted': {k}")
+    exit(1)

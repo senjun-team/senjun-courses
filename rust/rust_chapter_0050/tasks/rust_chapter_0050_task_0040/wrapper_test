@@ -1,0 +1,61 @@
+#INJECT-b585472fa
+
+#[derive(Debug)]
+struct Size(u32, u32);
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult
+}
+
+fn main() -> Result<(), TestResult> {
+
+    let size_array = vec![
+        Size(12, 5),
+        Size(5, 12),
+        Size(7, 8),
+        Size(8, 7),
+        Size(9, 6),
+        Size(6, 9),
+        Size(1, 1),
+        Size(10, 10),
+        Size(100, 10),
+        Size(10, 100),
+        Size(0, 0),
+    ];
+
+    let expected = vec![
+        6,
+        6,
+        8,
+        8,
+        3,
+        3,
+        1,
+        1,
+        10,
+        10,
+        0,
+    ];
+
+    let mut index = 0;
+    for Size(width, height) in size_array.iter() {
+
+        let result = split_into_squares(*width, *height);
+        if result != expected[index] {
+            println!(
+                "Ошибка! Входные параметры:\n\
+                - ширина — {}\n\
+                - высота — {}\n\
+                Результат:\n\
+                - ожидаемый — {}\n\
+                - полученный — {}",
+                width, height, expected[index], result);
+            return Err(TestResult::WrongResult);
+        }
+
+        index += 1;
+    }
+
+    Ok(())
+}

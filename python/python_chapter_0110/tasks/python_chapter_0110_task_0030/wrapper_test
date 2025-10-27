@@ -1,0 +1,24 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "['pointer', 'reference']\n":
+    print(f"Console output of l2 is invalid")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = user_code.replace(" ", "")
+if text.find("l2=l1[:]") == -1 and text.find("l2:=l1[:]") == -1:
+    print("There is no expected slice assignement in user solution")
+    exit(1)

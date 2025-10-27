@@ -1,0 +1,54 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "A~B~C\n":
+    print('Console output is not correct')
+    exit(1)
+
+if 'str_checker' not in locals():
+    print("There is no `str_checker` function")
+    exit(1)
+
+if 'concat' not in locals():
+    print("There is no `concat` function")
+    exit(1)
+
+if not callable(str_checker):
+    print("Variable 'str_checker' is not a function")
+    exit(1)
+
+if not callable(concat):
+    print("Variable 'concat' is not a function")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("@str_checker") == -1:
+    print("There is no function decorated with @str_checker")
+    exit(1)
+
+if concat("X", "Y", "Z") != "X~Y~Z":
+    print('concat("X", "Y", "Z") returned invalid result')
+    exit(1)
+
+try:
+    concat("X", 2, "Z")
+except ValueError as E:
+    pass
+except Exception as e:
+    print('concat("X", 2, "Z") throwed invalid exception type')
+    exit(1)
+else:
+    print('concat("X", 2, "Z") should throw an exception')
+    exit(1)

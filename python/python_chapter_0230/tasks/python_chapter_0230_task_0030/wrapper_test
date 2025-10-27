@@ -1,0 +1,37 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+
+if 'even_sequence' not in locals():
+    print("There is no `even_sequence` generator")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("yield") == -1:
+    print("There is no call to yield in 'even_sequenct'")
+    exit(1)
+
+try:
+    for x in even_sequence():
+        if x % 2 != 0:
+            print(f"'even_sequnce' returned odd number: {x}")
+            exit(1)
+        
+        if x > 10:
+            break
+        
+except Exception as e:
+    print(f"Couldn't iterate 'even_sequence': {e}")
+    exit(1)

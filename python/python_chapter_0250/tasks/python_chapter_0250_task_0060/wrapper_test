@@ -1,0 +1,7 @@
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "").replace('"', "'")
+if text.find("['e','t']") == -1:
+    exit(1)

@@ -1,0 +1,29 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "abs_sort" not in globals():
+    print("Function abs_sort() doesn't exist")
+    exit(1)
+
+if not callable(abs_sort):
+    print("'abs_sort' is not a function")
+    exit(1)
+
+tests = [[[9, 0, -2, -10, 20, 4], [20, -10, 9, 4, -2, 0]],
+         [[2, -2, 3, -3, 4, -4, 1, -1], [4, -4, 3, -3, 2, -2, 1, -1]]]
+
+for lst, plan in tests:
+    lst_before = lst[:]
+    abs_sort(lst)
+
+    if lst != plan:
+        print(f"Invalid sorting for list: {lst_before}.")
+        exit(1)

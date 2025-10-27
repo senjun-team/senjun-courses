@@ -1,0 +1,27 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+output = mystdout.getvalue()
+
+if output != "division by zero is forbidden\n":
+    print("Console output is not equal to the exception message in task text")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+code_blocks = ["try:", "except ZeroDivisionError"]
+
+for block in code_blocks:
+    if user_code.find(block) == -1:
+        print("Please add exception handling for ZeroDivisionError")
+        exit(1)

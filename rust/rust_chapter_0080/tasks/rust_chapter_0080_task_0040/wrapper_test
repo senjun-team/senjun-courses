@@ -1,0 +1,121 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_assignments)]
+
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult,
+}
+
+struct TestCase {
+    value: f32,
+    expected: bool,
+}
+
+fn test_is_integer(cases: &Vec<TestCase>) -> Result<(), TestResult> {
+    for cur in cases {
+        let result = is_integer(cur.value.to_bits());
+        if result != cur.expected {
+            println!(
+                "Ошибка! Входнoй параметр:\n\
+                {}\n\
+                Результат:\n\
+                - ожидаемый  — {}\n\
+                - полученный — {}",
+                cur.value, cur.expected, result
+            );
+            return Err(TestResult::WrongResult);
+        }
+    }
+    Ok(())
+}
+
+fn main() -> Result<(), TestResult> {
+    let test_cases: Vec<TestCase> = vec![
+        TestCase {
+            value: f32::MIN,
+            expected: true,
+        },
+        TestCase {
+            value: 9000001.0,
+            expected: true,
+        },
+        TestCase {
+            value: -8000000.5,
+            expected: false,
+        },
+        TestCase {
+            value: -1023.5,
+            expected: false,
+        },
+        TestCase {
+            value: -1023.0,
+            expected: true,
+        },
+        TestCase {
+            value: -1.0 - f32::EPSILON,
+            expected: false,
+        },
+        TestCase {
+            value: -1.0,
+            expected: true,
+        },
+        TestCase {
+            value: -1.0 + f32::EPSILON,
+            expected: false,
+        },
+        TestCase {
+            value: -f32::from_bits(1),
+            expected: false,
+        },
+        TestCase {
+            value: -0.0,
+            expected: true,
+        },
+        TestCase {
+            value: 0.0,
+            expected: true,
+        },
+        TestCase {
+            value: f32::from_bits(1),
+            expected: false,
+        },
+        TestCase {
+            value: 1.0 - f32::EPSILON,
+            expected: false,
+        },
+        TestCase {
+            value: 1.0,
+            expected: true,
+        },
+        TestCase {
+            value: 1.0 + f32::EPSILON,
+            expected: false,
+        },
+        TestCase {
+            value: 1023.0,
+            expected: true,
+        },
+        TestCase {
+            value: 1023.5,
+            expected: false,
+        },
+        TestCase {
+            value: 8000000.5,
+            expected: false,
+        },
+        TestCase {
+            value: 9000001.0,
+            expected: true,
+        },
+        TestCase {
+            value: f32::MAX,
+            expected: true,
+        },
+    ];
+
+    test_is_integer(&test_cases)
+}

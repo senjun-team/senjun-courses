@@ -1,0 +1,36 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if len(mystdout.getvalue()) == 0:
+    print("Console output is empty")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find("globalstats") == -1:
+    print("There is no 'global stats' statement in solution")
+    exit(1)
+
+if "stats" not in globals():
+    print("Variable stats doesn't exist")
+    exit(1)
+
+if "load_stats" not in globals():
+    print("load_stats() doesn't exist")
+    exit(1)
+
+if not callable(load_stats):
+    print("load_stats() is not a function")
+    exit(1)
+

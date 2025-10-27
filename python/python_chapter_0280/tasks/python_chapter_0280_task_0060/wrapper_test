@@ -1,0 +1,90 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "4\n":
+    print("print() output is incorrect")
+    exit(1)
+
+if 'get_total_clicks' not in locals():
+    print("There is no `get_total_clicks` function")
+    exit(1)
+
+if not callable(get_total_clicks):
+    print("'get_total_clicks' is not a function")
+    exit(1)
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("functools") == -1:
+    print("There is no functools import")
+    exit(1)
+
+if text.find("reduce") == -1:
+    print("There is no reduce() call")
+    exit(1)
+
+
+test1 = []
+res1 = 0
+
+test2 = [
+    {
+        "is_bot": False,
+        "clicks": 10,
+    },
+    {
+        "is_bot": False,
+        "clicks": 20,
+    },
+    {
+        "is_bot": False,
+        "clicks": 30,
+    }
+]
+res2 = 60
+
+test3 = [
+    {
+        "is_bot": True,
+        "clicks": 10,
+    },
+    {
+        "is_bot": True,
+        "clicks": 20,
+    },
+    {
+        "is_bot": True,
+        "clicks": 30,
+    }
+]
+res3 = 0
+
+test4 = [
+    {
+        "is_bot": True,
+        "clicks": 10,
+    },
+    {
+        "is_bot": False,
+        "clicks": 20,
+    }
+]
+res4 = 20
+
+for test, res in [(test1, res1), (test2, res2), (test3, res3), (test4, res4)]:
+    if get_total_clicks(test) != res:
+        print(f"Invalid return value of get_total_clicks() for input:\n{test}")
+        exit(1)
+

@@ -1,0 +1,36 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "analyze" not in globals():
+    print("Function analyze() doesn't exist")
+    exit(1)
+
+if not callable(analyze):
+    print("'analyze' is not a function")
+    exit(1)
+
+tests = [[ {1, 2, 3}, {2, 3, 4},  "a is b's superset: False. Count of common elements: 2.\n"], 
+         [ {1, 2, 3, 4}, {2, 3, 4},  "a is b's superset: True. Count of common elements: 3.\n"],
+         ]
+
+for test in tests:
+    a, b, plan = test
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+    analyze(a, b)
+    sys.stdout = old_stdout
+    fact = mystdout.getvalue()
+
+    if fact != plan:
+        print(f"Error in solution for input: a={a}, b={b}. Expected: {plan}")
+        exit(1)
+
+

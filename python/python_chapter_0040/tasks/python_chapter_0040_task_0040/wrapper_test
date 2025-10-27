@@ -1,0 +1,41 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("match") == -1 or text.find("case") == -1:
+    print(f"There is no match/case in solution: {text}")
+    exit(1)
+
+
+if "parse_option" not in globals():
+    print("Function parse_option() doesn't exist")
+    exit(1)
+
+if not callable(parse_option):
+    print("'parse_option' is not a function")
+    exit(1)
+
+tests = [["save_to_file", "Saving data to file..."], 
+         ["log_statistics", "Dumping stats to logs..."], 
+         ["quit", "Quitting..."],
+         ["", "Unsupported option"],
+         ["invalid command", "Unsupported option"]]
+
+for option, plan in tests:
+    res = parse_option(option)
+
+    if res != plan:
+        print(f"Invalid function output for argument: '{option}'.")
+        exit(1)

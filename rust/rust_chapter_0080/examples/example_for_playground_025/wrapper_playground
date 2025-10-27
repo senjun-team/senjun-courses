@@ -1,0 +1,9 @@
+#INJECT-b585472fa
+
+fn main() {
+    assert!(approx_equal_ulp(5e-324, 0.0, 1));
+    println!("{:e} == {} with ulp {}\n", 5e-324, 0.0, 1);
+
+    println!("5e-324.to_bits() -> {}", 5e-324_f64.to_bits());
+    println!("0.to_bits()      -> {}", 0.0_f64.to_bits());
+}

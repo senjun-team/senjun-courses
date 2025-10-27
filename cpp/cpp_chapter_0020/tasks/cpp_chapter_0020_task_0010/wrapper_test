@@ -1,13 +1,9 @@
-import boost.ut;
 import TestHelpers;
+import std;
 
 int main()
 {
-    using namespace boost::ut;
-
-    "check user input"_test = [] {
-        std::string user_input = hlp::remove_spaces(R"(#INJECT-b585472fa)");
-        std::ranges::sort(user_input);
-        expect(user_input == "346");
-    };
+    std::string user_input = hlp::remove_spaces(R"(#INJECT-b585472fa)");
+    std::ranges::sort(user_input);
+    return user_input == "346" ? 0 : 1;
 }

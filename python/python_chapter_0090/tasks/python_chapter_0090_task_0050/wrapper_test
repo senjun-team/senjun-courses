@@ -1,0 +1,33 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "is_eq_abs" not in globals():
+    print("Function is_eq_abs() doesn't exist")
+    exit(1)
+
+if not callable(is_eq_abs):
+    print("'is_eq_abs' is not a function")
+    exit(1)
+
+tests = [[37.001, 37.002, 0.1, True], 
+         [37.001, 37.002, 1e-5, False], 
+         [1, 2, 10, True],
+         [1.01, 1.02, 1, True],
+         [1.01, 1.02, 0.1, True],
+         [1.01, 1.02, 0.01, False],
+         [1.01, 1.02, 0.001, False]]
+
+for a, b, eps, plan in tests:
+    res = is_eq_abs(a, b, eps)
+
+    if res is not plan:
+        print(f"Invalid function output for arguments {a}, {b}, {eps}.")
+        exit(1)

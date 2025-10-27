@@ -1,0 +1,31 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+for name in ["get_tuple", "get_false", "shutdown", "format"]:
+    if name not in globals():
+        print(f"Function '{name}' doesn't exist")
+        exit(1)
+
+if not callable(get_tuple):
+    print("'get_tuple' is not a function")
+    exit(1)
+
+if not callable(get_false):
+    print("'get_false' is not a function")
+    exit(1)
+
+if not callable(shutdown):
+    print("'shutdown' is not a function")
+    exit(1)
+
+if not callable(format):
+    print("'format' is not a function")
+    exit(1)

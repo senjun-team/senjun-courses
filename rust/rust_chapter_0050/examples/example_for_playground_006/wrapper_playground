@@ -1,0 +1,14 @@
+#INJECT-b585472fa
+
+fn main() {
+    let desired = 16;
+    let array = vec![2, 5, 16, 31, 52];
+
+    println!("in array {array:?}");
+    print!("value {desired} ");
+
+    match binary_search(&array, desired) {
+        Some(pos) => println!("was found at index {pos}"),
+        None => println!("was not found")
+    }
+}

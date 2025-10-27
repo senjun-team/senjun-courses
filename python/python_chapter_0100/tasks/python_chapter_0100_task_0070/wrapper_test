@@ -1,0 +1,29 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "f" not in globals():
+    print("Function f() doesn't exist")
+    exit(1)
+
+if not callable(f):
+    print("'f' is not a function")
+    exit(1)
+
+tests = [[8428662384, 24, "User '8428662384' visited page 24 times"], 
+         [234235, 0, "User '234235' visited page 0 times"], 
+         [102988342345, 109, "User '102988342345' visited page 109 times"]]
+
+for user_id, visits, plan in tests:
+    res = f(user_id, visits)
+
+    if res != plan:
+        print(f"Invalid function output for arguments: '{user_id}', '{visits}'.")
+        exit(1)

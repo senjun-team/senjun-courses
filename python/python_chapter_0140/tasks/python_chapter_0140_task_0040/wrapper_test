@@ -1,0 +1,36 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "avg_unique" not in globals():
+    print("Function avg_unique() doesn't exist")
+    exit(1)
+
+if not callable(avg_unique):
+    print("'avg_unique' is not a function")
+    exit(1)
+
+tests = [[ ["Y", "Y", "TTT"],  2], 
+         [ ["STRING"], 6],
+         [ ["AAAA", "B", "C", "DD", "DD", "XT"], (4 + 1 + 1 + 2 + 2) / 5]
+         ]
+
+for test in tests:
+    strings, plan = test
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+    fact = avg_unique(*strings)
+    sys.stdout = old_stdout
+
+    if fact != plan:
+        print(f"Error in solution for input: '{strings}'.")
+        exit(1)
+
+

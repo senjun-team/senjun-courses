@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "Paragraph title is suitable. Words count: 3\n":
+    print("Solution output isn't correct")
+    exit(1)
+
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if user_code.find(":=") == -1:
+    print("There is no operator walrus call in solution")
+    exit(1)

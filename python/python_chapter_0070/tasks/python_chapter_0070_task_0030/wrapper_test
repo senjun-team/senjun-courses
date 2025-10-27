@@ -1,0 +1,39 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if "to_next_step" not in globals():
+    print("Functional object 'to_next_step' doesn't exist")
+    exit(1)
+
+if not callable(to_next_step):
+    print("'to_next_step' is not a callable object")
+    exit(1)
+
+plan = "Press any key to continue\n"
+
+if len(print_res) <= 1:
+    print("Don't forget to call to_next_step()")
+    exit(1)
+
+if print_res != plan:
+    print("Console output isn't correct")
+    exit(1)
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+to_next_step()
+sys.stdout = old_stdout
+fact = mystdout.getvalue()
+if fact != plan:
+    print("Console output isn't correct")
+    exit(1)

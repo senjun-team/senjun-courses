@@ -1,0 +1,77 @@
+from io import StringIO
+import sys
+import time
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "TimeIt" not in globals():
+    print("Class 'TimeIt' doesn't exist")
+    exit(1)
+
+try:
+    getattr(TimeIt, "__enter__")
+    getattr(TimeIt, "__exit__")
+except AttributeError as e:
+    print("Please implements methods __enter__() and __exit__()")
+    exit(1)
+
+if not callable(getattr(TimeIt, "__enter__")) or not callable(getattr(TimeIt, "__exit__")):
+    print("__enter__() and __exit__() must be methods")
+    exit(1)
+
+try:
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+    with TimeIt():
+        pass
+    sys.stdout = old_stdout
+    fact = mystdout.getvalue()
+
+    if fact != "Started measuring execution time...\nExecution time: 0 seconds. Catched exception: False\n":
+        print("Console output isn't correct for construction 'with TimeIt(): pass'")
+        exit(1)
+except Exception as e:
+    sys.stdout = old_stdout
+    print(f"Context manager 'TimeIt' must handle all exceptions. Got: {e}")
+    exit(1)
+
+try:
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+    with TimeIt():
+        x = 1 / 0
+    sys.stdout = old_stdout
+    fact = mystdout.getvalue()
+
+    if fact != "Started measuring execution time...\nExecution time: 0 seconds. Catched exception: True\n":
+        print("Console output isn't correct for construction 'with TimeIt(): x = 1 / 0'")
+        exit(1)
+except Exception as e:
+    sys.stdout = old_stdout
+    print(f"Context manager 'TimeIt' must handle all exceptions. Got: {e}")
+    exit(1)
+
+
+try:
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+    with TimeIt():
+        time.sleep(1)
+    sys.stdout = old_stdout
+    fact = mystdout.getvalue()
+
+    if fact != "Started measuring execution time...\nExecution time: 1 seconds. Catched exception: False\n":
+        print("Console output isn't correct for construction 'with TimeIt(): time.sleep(1)'")
+        exit(1)
+except Exception as e:
+    sys.stdout = old_stdout
+    print(f"Context manager 'TimeIt' must handle all exceptions. Got: {e}")
+    exit(1)
+
+
+

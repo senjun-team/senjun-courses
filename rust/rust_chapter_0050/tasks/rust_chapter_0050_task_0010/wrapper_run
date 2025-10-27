@@ -1,0 +1,27 @@
+#![deny(unused_variables)]
+#![deny(unused_mut)]
+#![deny(unused_assignments)]
+#![allow(dead_code)]
+
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    DeclarationRequired
+}
+
+fn remove_whitespace(text: &str) -> String {
+    text.chars().filter(|c| !c.is_whitespace()).collect()
+}
+
+fn main() -> Result<(), TestResult> {
+
+    let text: String = remove_whitespace(r#"#INJECT-b585472fa"#);
+
+    if !text.contains("fnmove_to_end(arr:&mutVec<i32>,val:i32){") {
+        println!("Отсутствует объявление функции:\n`fn move_to_end(arr: &mut Vec<i32>, val: i32)`");
+        return Err(TestResult::DeclarationRequired);
+    }
+
+    Ok(())
+}

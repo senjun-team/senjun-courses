@@ -1,0 +1,48 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+
+if print_res != "Child field\nChild setter\n":
+    print("Console output is invalid")
+    exit(1)
+
+
+if 'Child' not in locals():
+    print("There is no `Child` class")
+    exit(1)
+
+if type(Child) is not type:
+    print("Variable 'Child' is not a class")
+    exit(1)
+
+
+try:
+    if Child.__base__ != Parent:
+        print(f"Invalid parent class in Child inheritance tree")
+        exit(1)
+
+except Exception as e:
+    print(f"Exception while checking class 'Child': {e}")
+    exit(1)
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.count("@property") < 2:
+    print("Please use @property to decorate field() method")
+    exit(1)
+
+if text.count("@field.setter") < 2:
+    print("Please use @field.setter to create setter method")
+    exit(1)

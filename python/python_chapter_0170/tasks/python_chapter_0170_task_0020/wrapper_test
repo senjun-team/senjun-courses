@@ -1,0 +1,33 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+fact_stdout = mystdout.getvalue()
+plan_stdout = "X\n"
+if  fact_stdout != plan_stdout:
+    print(f"Console output isn't correct. Expected:\n{plan_stdout}")
+    exit(1)
+
+for c in ["X", "Y", "Z", "Tail"]:
+    if c not in globals():
+        print(f"Class {c} doesn't exist")
+        exit(1)
+
+mtd = getattr(Tail, "f", None)
+if not callable(mtd):
+    print(f"Please implement f() method in 'Tail'")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.replace(" ", "").find("super(") == -1:
+    print("Couldn't find valid super() call in f()")
+    exit(1)

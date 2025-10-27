@@ -1,0 +1,50 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+fact_stdout = mystdout.getvalue()
+plan_stdout = "Constructor\nInstance method. This is instance field. This is class field\nClass method. This is class field\nStatic method\nClass method. This is class field\nStatic method\n"
+if  fact_stdout != plan_stdout:
+    print("Console output isn't correct")
+    exit(1)
+
+if "TestClass" not in globals():
+    print("Class TestClass doesn't exist")
+    exit(1)
+
+if type(TestClass) is not type:
+    print("'TestClass' is not a class")
+    exit(1)
+
+for m in ["instance_method", "class_method", "static_method"]:
+    mtd = getattr(TestClass, m, None)
+    if not callable(mtd):
+        print(f"Please implement {m} method in 'TestClass'")
+        exit(1)
+
+try:
+    t = TestClass()
+    m_obj = getattr(t, "instance_method", None)
+    if not callable(m_obj):
+        print(f"{m} method should belong to object")
+        exit(1)
+
+    m_class = getattr(TestClass, "class_method", None)
+    if not callable(m_class):
+        print(f"{m} method should belong to class")
+        exit(1)
+
+    import types
+    if not isinstance(t.static_method, types.FunctionType):
+        print(f"{m} method should be static")
+        exit(1)
+
+except Exception as e:
+    print(f"Exception while checking methods: {e}")
+    exit(1)

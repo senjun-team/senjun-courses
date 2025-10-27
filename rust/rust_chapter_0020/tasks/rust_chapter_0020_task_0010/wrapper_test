@@ -1,0 +1,32 @@
+﻿#[derive(Debug)]
+enum TestResult {
+    ExpectMutable,
+    ExpectIncrement,
+    AssertRequired
+}
+
+fn remove_whitespace(text: &str) -> String {
+    text.chars().filter(|c| !c.is_whitespace()).collect()
+}
+
+fn main() -> Result<(), TestResult> {
+
+let text: String = remove_whitespace(r#"#INJECT-b585472fa"#);
+
+if !text.contains("letmutm") {
+    println!("Необходимо объявить изменяемую переменную 'm'.");
+    return Err(TestResult::ExpectMutable);
+}
+
+if !text.contains("m+=") && !text.contains("m=m+") {
+    println!("Необходимо инкрементировать значение переменной 'm'.");
+    return Err(TestResult::ExpectIncrement);
+}
+
+if !text.contains("assert!(m==5)") {
+    println!("Проверка 'assert!(m == 5)' должна присутствовать в коде задачи.");
+    return Err(TestResult::AssertRequired);
+}
+ 
+Ok(())
+}

@@ -1,0 +1,51 @@
+#INJECT-b585472fa
+
+fn abs_direct_code(dcode: i32) -> i32 {
+    dcode & i32::MAX
+}
+
+fn format_direct_code(dcode: i32) -> String {
+    if dcode >= 0 {
+        format!("{}", abs_direct_code(dcode))
+    } else {
+        format!("-{}", abs_direct_code(dcode))
+    }
+}
+
+fn print_to_direct_code(acode: i32, converted: (i32, bool)) {
+    println!(
+        "to_direct_code({}) -> ({}, {})",
+        acode,
+        format_direct_code(converted.0),
+        converted.1
+    );
+    println!("    in:  {:032b}", acode);
+    println!("    out: {:032b}\n", converted.0);
+}
+
+fn print_from_direct_code(dcode: i32, acode: i32) {
+    println!(
+        "from_direct_code({}) -> {}",
+        format_direct_code(dcode),
+        acode
+    );
+    println!("    in:  {:032b}", dcode);
+    println!("    out: {:032b}\n", acode);
+}
+
+fn main() {
+    let acodes: [i32; 3] = [3073, -1, i32::MIN];
+    let dcodes: [i32; 3] = [
+        702624,
+        i32::MIN,    // -0
+        -2147483548, // -100
+    ];
+
+    for rev in &acodes {
+        print_to_direct_code(*rev, to_direct_code(*rev));
+    }
+
+    for dir in &dcodes {
+        print_from_direct_code(*dir, from_direct_code(*dir));
+    }
+}
