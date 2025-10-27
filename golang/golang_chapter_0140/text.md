@@ -45,7 +45,7 @@ if baseNumber == nil {
 Oops, something went wrong! There is no card
 ```
 
-Однако стоит помнить, что интерфейс, содержащий `nil`, не обязательно является `nil`:
+Однако стоит помнить, что интерфейс, содержащий `nil`, необязательно является `nil`:
 ```go {.example_for_playground}
 package main
 
