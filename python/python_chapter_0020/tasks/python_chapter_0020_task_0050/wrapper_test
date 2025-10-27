@@ -1,0 +1,20 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+for line in s.split("\n"):
+    if line.startswith("while"):
+        if len(line.strip()) > 18:
+            print("line with 'while' is too long")
+            exit(1)

@@ -1,0 +1,58 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "UpperCaseError" not in globals():
+    print("Class UpperCaseError doesn't exist")
+    exit(1)
+
+if type(UpperCaseError) != type:
+    print("UpperCaseError is not a class")
+    exit(1)
+
+if not issubclass(UpperCaseError, BaseException):
+    print("UpperCaseError must derive from BaseException class")
+    exit(1)
+
+if "upper_case_check" not in globals():
+    print("Class upper_case_check doesn't exist")
+    exit(1)
+
+if not callable(upper_case_check):
+    print("'upper_case_check' is not a function")
+    exit(1)
+
+tests = [
+    ["", True],
+    ["aaa", True],
+    ["aAa", True],
+    ["A", False],
+    ["AA", False],
+    ["Aaaa", False]]
+
+for test in tests:
+    s, throws = test
+    try:
+        upper_case_check(s)
+    except UpperCaseError as e:
+        if not throws:
+            print(f"Function 'upper_case_check()' raises exception for input: '{s}'")
+            exit(1)
+
+        continue
+    except Exception:
+        print(f"Function 'upper_case_check()' raises invalid exception type for input: '{s}'")
+        exit(1)
+
+    if throws:
+        print(f"Function `upper_case_check()` doesn't raise exception for input: '{s}'")
+        exit(1)
+    
+

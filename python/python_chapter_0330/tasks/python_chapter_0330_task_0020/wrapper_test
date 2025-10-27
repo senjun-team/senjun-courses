@@ -1,0 +1,18 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "word_count" not in globals():
+    print("Function 'word_count' doesn't exist")
+    exit(1)
+
+if not callable(word_count):
+    print("'word_count' is not a function")
+    exit(1)

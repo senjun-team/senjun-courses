@@ -1,0 +1,24 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "0 -> 0\n2 -> 4\n4 -> 8\n":
+    print("Print output is invalid")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find('numbers.items()') == -1:
+    print("There is no call to numbers.items()")
+    exit(1)
+

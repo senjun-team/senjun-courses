@@ -1,0 +1,61 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue().strip()
+
+lines = print_res.split("\n")
+if len(lines) != 2:
+    print("Console output is invalid. Expected 2 lines with integer numbers")
+    exit(1)
+
+
+for line in lines:
+    try:
+        int(line)
+    except Exception as e:
+        print("Console output is invalid. Expected 2 lines with integers")
+        exit(1)
+
+
+if 'MessageSlots' not in locals():
+    print("There is no `MessageSlots` class")
+    exit(1)
+
+if type(MessageSlots) is not type:
+    print("Variable 'MessageSlots' is not a class")
+    exit(1)
+
+if 'messages_slots' not in locals():
+    print("There is no `messages_slots` variable")
+    exit(1)
+
+if type(messages_slots) is not list:
+    print("Variable 'messages_slots' is not a list")
+    exit(1)
+
+try:
+    m_obj = getattr(MessageSlots, '__slots__', None)
+        
+    if set(m_obj) != set(["_id", "_text"]):
+        print("Please define slots in MessageSlots")
+        exit(1)
+
+except Exception as e:
+    print(f"Exception while checking slots in MessageSlots: {e}")
+    exit(1)
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("pympler") == -1:
+    print("Please use pympler.asizeof.asizeof() to define lists sizes")
+    exit(1)

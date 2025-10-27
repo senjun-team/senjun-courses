@@ -1,0 +1,35 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "print_set" not in globals():
+    print("Function print_set() doesn't exist")
+    exit(1)
+
+if not callable(print_set):
+    print("'print_set' is not a function")
+    exit(1)
+
+tests = [["ABAABB", "{'B', 'A'}\n2\n", "{'A', 'B'}\n2\n"], 
+         [("A", "A", "B"), "{'B', 'A'}\n2\n", "{'A', 'B'}\n2\n"], 
+         [["A"], "{'A'}\n1\n", "{'A'}\n1\n"]]
+
+for test in tests:
+    obj, plan1, plan2 = test
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+    print_set(obj)
+    sys.stdout = old_stdout
+    fact = mystdout.getvalue()
+    if fact != plan1 and fact != plan2:
+        print(f"Error in solution for input: '{obj}'.")
+        exit(1)
+
+

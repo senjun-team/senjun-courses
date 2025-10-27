@@ -1,0 +1,35 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if 'a' not in locals():
+    print("There is no `a` variable")
+    exit(1)
+
+if type(a) is not int:
+    print("Variable 'a' is not an integer")
+    exit(1)
+
+if a != 8:
+    print("Variable 'a' value is not 8")
+    exit(1)
+
+
+if 'b' not in locals():
+    print("There is no `b` variable")
+    exit(1)
+
+if type(b) is not int:
+    print("Variable 'b' is not an integer")
+    exit(1)
+
+if b != 10:
+    print("Variable 'b' value is not 10")
+    exit(1)

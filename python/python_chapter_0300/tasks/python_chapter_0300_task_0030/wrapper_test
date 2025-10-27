@@ -1,0 +1,25 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+strings = [
+"Thread 1 acquiring lock 1...",
+"Thread 2 acquiring lock 1...",
+"Thread 1 acquiring lock 2...",
+"Thread 1 acquired 2 locks!",
+"Thread 2 acquiring lock 2...",
+"Thread 2 acquired 2 locks!"
+]
+
+for s in strings:
+    if print_res.find(s) == -1:
+        print(f'Expected line "{s}" in console output')
+        exit(1)

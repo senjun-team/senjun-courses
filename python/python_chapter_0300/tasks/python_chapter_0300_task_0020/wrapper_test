@@ -1,0 +1,27 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+if "g" not in globals():
+    print("Function 'g' doesn't exist")
+    exit(1)
+
+if not callable(g):
+    print("'g' is not a function")
+    exit(1)
+
+
+lock_test = Lock()
+g(lock_test)
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res.find("g() acquired lock\nf() acquired lock\n") == -1:
+    print(f"Print output is invalid: {print_res}")
+    exit(1)

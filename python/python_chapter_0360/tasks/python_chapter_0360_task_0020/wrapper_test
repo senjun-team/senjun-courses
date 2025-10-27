@@ -1,0 +1,88 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue().strip()
+
+lines = print_res.split("\n")
+if len(lines) < 2:
+    print("Console output is invalid. Expected 2 lines with floats")
+    exit(1)
+
+
+for i, line in enumerate(lines):
+    try:
+        x = float(line)
+        if i == 0:
+            if x < 113 or x > 114:
+                print(f"Invalid area value in console. Expected 113.097. Got {x}")
+                exit(1)
+        if i == 1:
+            if x < 37 or x > 38:
+                print(f"Invalid cirumferenct value in console. Expected 37.69. Got {x}")
+                exit(1)
+    except Exception as e:
+        print("Console output is invalid. Expected 2 lines with integers")
+        exit(1)
+
+
+if 'Circle' not in locals():
+    print("There is no `Circle` class")
+    exit(1)
+
+if type(Circle) is not type:
+    print("Variable 'Circle' is not a class")
+    exit(1)
+
+
+try:
+    c_test = Circle(0, 0, 1)
+        
+    if getattr(c_test, 'r', None) is None:
+        print("Please define radius getter and setter")
+        exit(1)
+
+            
+    if getattr(c_test, 'area', None) is None:
+        print("Please define area getter")
+        exit(1)
+
+    if getattr(c_test, 'circumference', None) is None:
+        print("Please define circumference getter")
+        exit(1)
+
+    if c_test.r != 1.0:
+        print("Invalid r getter return value for Circle(0, 0, 1)")
+        exit(1)
+
+    if c_test.area < 3.13 or c_test.area > 3.15:
+        print(f"Invalid area value for Circle(0, 0, 1). Expected 3.14. Got {c_test.area}")
+        exit(1)
+
+    if c_test.circumference < 6.2 or c_test.circumference > 6.3:
+        print(f"Invalid cirumference value in console. Expected 6.28. Got {c_test.circumference}")
+        exit(1)
+
+
+except Exception as e:
+    print(f"Exception while checking Cirlce class: {e}")
+    exit(1)
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("@property") == -1:
+    print("Please use @property to define getters")
+    exit(1)
+
+if text.find("@r.setter") == -1:
+    print("Please use @r.setter to define radius setter")
+    exit(1)

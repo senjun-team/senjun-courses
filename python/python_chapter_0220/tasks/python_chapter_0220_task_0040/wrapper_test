@@ -1,0 +1,22 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "global: 1\nf(): 1\ninner(): 1\n":
+    print("print() output isn't correct")
+    exit(1)
+
+if "x" not in globals():
+    print("Variable x doesn't exist")
+    exit(1)
+
+if x != 1:
+    print("x is not equal to 1")
+    exit(1)
+

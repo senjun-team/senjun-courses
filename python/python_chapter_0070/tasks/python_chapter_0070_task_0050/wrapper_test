@@ -1,0 +1,40 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+
+if "f" not in globals():
+    print("Functional object 'f' doesn't exist")
+    exit(1)
+
+if not callable(f):
+    print("'f' is not a callable object")
+    exit(1)
+
+tests = [
+    [[1], {}, "1\n"],
+    [[1, 2], {}, "1\n2\n"],
+    [[], {"k1": 1}, "k1\n"],
+    [[], {"k1": 1, "k2": 2}, "k1\nk2\n"],
+    [[1, 2, 3], {"k1": 1, "k2": 2, "k3": 3}, "1\n2\n3\nk1\nk2\nk3\n"]
+]
+
+for test in tests:
+    args, kwargs, plan = test
+
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+    f(*args, **kwargs)
+    fact = mystdout.getvalue()
+    sys.stdout = old_stdout
+    
+    if fact != plan:
+        print(f"Console output isn't correct. Expected: {plan} But got: {fact}")
+        exit(1)

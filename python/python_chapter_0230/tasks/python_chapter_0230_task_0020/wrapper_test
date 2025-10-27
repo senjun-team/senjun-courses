@@ -1,0 +1,41 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "a=1\nb=2\n":
+    print("Invalid print() output")
+    exit(1)
+
+if 'KVIterator' not in locals():
+    print("There is no `KVIterator` class")
+    exit(1)
+
+if not hasattr(KVIterator, '__iter__') or not callable(KVIterator.__iter__):
+    print("Please implement __iter__() in KVIterator")
+    exit(1)
+
+if not hasattr(KVIterator, '__next__') or not callable(KVIterator.__next__):
+    print("Please implement __next__() in KVIterator")
+    exit(1)
+
+test = {1: "x", 2: "y", 3: "z"}
+try:
+    for k, v in KVIterator(test):
+        if k not in {1, 2, 3}:
+            print(f"Couldn't iterate test dataset {test} with KVIterator (iterator returned invalid key)")
+            exit(1)
+        if v not in {"x", "y", "z"}:
+            print(f"Couldn't iterate test dataset {test} with KVIterator (iterator returned invalid value)")
+            exit(1)
+        
+except Exception as e:
+    print(f"Couldn't iterate test dataset {test} with KVIterator: {e}")
+    exit(1)

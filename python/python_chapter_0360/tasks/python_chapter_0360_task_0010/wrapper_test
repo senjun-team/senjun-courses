@@ -1,0 +1,60 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+
+if print_res != "#a903fc\nDeleting hex: Hex attribute can not be deleted\n":
+    print("Console output is invalid")
+    exit(1)
+
+
+if 'Color' not in locals():
+    print("There is no `Color` class")
+    exit(1)
+
+if type(Color) is not type:
+    print("Variable 'Color' is not a class")
+    exit(1)
+
+
+try:
+    color_test = Color(64, 50, 168)
+    if color_test.hex != "#4032a8":
+        print(f"Invalid hex value for Color(64, 50, 168): {color_test.hex}. Expected: #4032a8")
+        exit(1)
+
+    try:
+        del color_test.hex
+    except AttributeError:
+        pass
+    except Exception as e:
+        print(f"Invalid exception type on 'hex' property deletion: {e}")
+        exit(1)
+    else:
+        print("Please raise exception on hex property deletion")
+        exit(1)
+
+except Exception as e:
+    print(f"Exception while checking class 'Color': {e}")
+    exit(1)
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("@property") == -1:
+    print("Please use @property to decorate hex() method")
+    exit(1)
+
+if text.find("@hex.deleter") == -1:
+    print("Please use @hex.deleter to create deleter method")
+    exit(1)

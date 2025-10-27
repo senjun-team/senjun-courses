@@ -1,0 +1,48 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+
+if print_res.find("Parent f(3)\nResult: 15\n\nChild f(3)\nResult: 90") == -1:
+    print("Console output is invalid")
+    exit(1)
+
+
+if 'Parent' not in locals():
+    print("There is no `Parent` class")
+    exit(1)
+
+if type(Parent) is not type:
+    print("Variable 'Parent' is not a class")
+    exit(1)
+
+
+if 'Child' not in locals():
+    print("There is no `Child` class")
+    exit(1)
+
+if type(Child) is not type:
+    print("Variable 'Child' is not a class")
+    exit(1)
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+if text.find("Parent=type(") == -1:
+    print("Please use type() to create Parent class")
+    exit(1)
+
+if text.find("Child=type(") == -1:
+    print("Please use type() to create Parent class")
+    exit(1)

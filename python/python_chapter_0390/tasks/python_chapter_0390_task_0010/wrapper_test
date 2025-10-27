@@ -1,0 +1,25 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "count=0\n":
+    print("Print output is invalid")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find('clicks.get("blog",0)') == -1 and text.find("clicks.get('blog',0)"):
+    print("There is no proper call to get() in code")
+    exit(1)

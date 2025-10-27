@@ -1,0 +1,31 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "112272535095293 is prime: True\n112582705942171 is prime: True\n102272535065492 is prime: False\n115280095190773 is prime: True\n115797848077099 is prime: True\n1099726899285419 is prime: False\n":
+    print("Print output is invalid")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("ProcessPoolExecutor") == -1:
+    print("There is no ProcessPoolExecutor usage in code")
+    exit(1)
+
+if text.find(".map(") == -1:
+    print("There is no map() call in code")
+    exit(1)
+
+if text.find("zip(") == -1:
+    print("There is no zip() call in code")
+    exit(1)

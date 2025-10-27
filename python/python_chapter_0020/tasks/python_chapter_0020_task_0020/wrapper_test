@@ -1,0 +1,14 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "1\n2\n3\n4\n5\n6\n7\n8\n9\n":
+    print("Solution output isn't correct")
+    exit(1)

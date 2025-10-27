@@ -1,0 +1,39 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "print_letters" not in globals():
+    print("Function print_letters() doesn't exist")
+    exit(1)
+
+if not callable(print_letters):
+    print("'print_letters' is not a function")
+    exit(1)
+
+
+tests = [["", "no spaces\n"],
+         ["tEst", "E\nno spaces\n"],
+         ["ABC", "A\nB\nC\nno spaces\n"],
+         ["ABC DE", "A\nB\nC\n"],
+         ["aAb cCd", "A\n"]
+         ]
+
+for s, plan in tests:
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+    print_letters(s)
+    sys.stdout = old_stdout
+    fact = mystdout.getvalue()
+    if fact != plan:
+        print(f"Error in solution for input: '{s}'. Expected: '{plan}'")
+        exit(1)
+    
+
+

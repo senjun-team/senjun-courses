@@ -1,0 +1,36 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "calc_visits" not in globals():
+    print("Function calc_visits() doesn't exist")
+    exit(1)
+
+if not callable(calc_visits):
+    print("'calc_visits' is not a function")
+    exit(1)
+
+tests = [[  [6, 6, 4, 6], {6: 3, 4: 1}], 
+         [  [], {}], 
+         [  [1], {1: 1}], 
+         [  [1, 1], {1: 2}], 
+         [  [1, 2, 3, 4, 5], {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}], 
+         ]
+
+for test in tests:
+    users, plan = test
+
+    fact = calc_visits(users)
+
+    if fact != plan:
+        print(f"Error in solution for input: {users}. Expected: {plan}")
+        exit(1)
+
+

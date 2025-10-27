@@ -1,0 +1,25 @@
+from io import StringIO
+import sys
+import os
+
+
+FILE_NAME = "senjun.py"
+
+if os.path.exists(FILE_NAME):
+    os.remove(FILE_NAME)
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if os.path.exists(FILE_NAME):
+    os.remove(FILE_NAME)
+
+if print_res.find("tick\nexists!\n") == -1:
+    print(f"Invalid console output: expected at least one line with 'tick' and line with 'exists!'")
+    exit(1)
+

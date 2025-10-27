@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+for name in ["format", "modify"]:
+    if name not in globals():
+        print(f"Function '{name}' doesn't exist")
+        exit(1)
+
+if not callable(modify):
+    print("'modify' is not a function")
+    exit(1)
+
+if not callable(format):
+    print("'format' is not a function")
+    exit(1)

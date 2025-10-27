@@ -1,0 +1,22 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if 'API_URL' not in locals():
+    print("There is no `API_URL` variable")
+    exit(1)
+
+if type(API_URL) is not str:
+    print("Variable is not a string")
+    exit(1)
+
+if API_URL != "https://api.senjun.dev.ru":
+    print("Variable has unexpected value")
+    exit(1)

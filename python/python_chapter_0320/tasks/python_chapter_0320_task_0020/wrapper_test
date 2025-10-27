@@ -1,0 +1,33 @@
+from io import StringIO
+import sys
+import time
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("await asyncio.sleep") == -1:
+    print("Please use non-blocking sleep()")
+    exit(1)
+
+
+start = time.time()
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+finish = time.time()
+
+if finish - start > 4:
+    print("Executing more than 4 seconds")
+    exit(1)
+
+
+expected = "Task A: Computing 0+1\nTask B: Computing 0+1\nTask A: Computing 1+2\nTask B: Computing 1+2\nTask A: Sum = 3\nTask B: Computing 3+3\nTask B: Sum = 6\n"
+
+if print_res != expected:
+    print(f"Wrong output. Expected:\n{expected}\nGot:{print_res}")
+    exit(1)

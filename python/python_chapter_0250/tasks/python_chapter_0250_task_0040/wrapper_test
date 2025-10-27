@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+solution = mystdout.getvalue()
+
+if solution != "1 4 9\n" and solution != '1\n4\n9\n':
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+if text.find("range(1,") == -1:
+    print("There is no expected range() call")
+    exit(1)

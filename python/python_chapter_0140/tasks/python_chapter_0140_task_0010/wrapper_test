@@ -1,0 +1,26 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+try:
+    x = int(print_res)
+except:
+    print("Console output is not a tuple's hash")
+    exit(1)
+
+
+if "tpl" not in globals():
+    print("Tuple 'tpl' doesn't exist")
+    exit(1)
+
+if tpl != (None, -2, False, 145.5, (2, 4, 8), "wednesday"):
+    print("Tuple's value is unexpected")
+    exit(1)

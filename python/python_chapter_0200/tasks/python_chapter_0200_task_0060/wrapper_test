@@ -1,0 +1,29 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if not mystdout.getvalue().startswith("3."):
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("import os") == -1:
+    print("There is no import statement for os module")
+    exit(1)
+
+if text.find(".environ") == -1:
+    print("There is no call to os.environ")
+    exit(1)
+
+if text.find("PYTHON_VERSION") == -1:
+    print("There is no call to PYTHON_VERSION key in os.environ")
+    exit(1)

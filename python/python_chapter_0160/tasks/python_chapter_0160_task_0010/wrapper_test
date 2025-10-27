@@ -1,0 +1,108 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "ResponseStats" not in globals():
+    print("Class ResponseStats doesn't exist")
+    exit(1)
+
+if type(ResponseStats) is not type:
+    print("'ResponseStats' is not a class")
+    exit(1)
+
+for m in ["add_response", "response_count", "http_err_pct"]:
+    mtd = getattr(ResponseStats, m, None)
+    if not callable(mtd):
+        print(f"Please implement {m} method in 'ResponseStats' class")
+        exit(1)
+
+# Test case to check than object is properly instantiated
+try:
+    stats = ResponseStats()
+except Exception as e:
+    print(f"Couldn't instantiate class object: stats = ResponseStats()")
+    exit(1)
+
+# Check add_response() signature
+try:
+    stats = ResponseStats()
+    res = stats.add_response(200)
+    if res is not None:
+        print(f"add_response() shouldn't return any values")
+        exit(1)
+
+except Exception as e:
+    print(f"Couldn't call add_response() with single argument 200: {e}")
+    exit(1)
+
+# Check response_count() signature
+try:
+    stats = ResponseStats()
+    res = stats.response_count(200)
+    if res != 0:
+        print("response_count() should return 0 if add_response() was never called")
+        exit(1)
+
+except Exception as e:
+    print(f"Couldn't call response_count() with single argument 200: {e}")
+    exit(1)
+
+# Check http_err_pct() signature
+try:
+    stats = ResponseStats()
+    res = stats.http_err_pct()
+    if res != 0:
+        print("http_err_pct() should return 0 if add_response() was never called")
+        exit(1)
+
+except Exception as e:
+    print(f"Couldn't call http_err_pct() without arguments: {e}")
+    exit(1)
+
+# Simple case
+try:
+    stats = ResponseStats()
+    codes = [100, 200, 200, 300, 400, 500, 200]
+
+    for code in codes:
+        stats.add_response(code)
+    
+    err_pct = stats.http_err_pct()
+
+    err_pct_plan = 2.0 / len(codes) * 100
+    
+    if round(err_pct_plan) != round(err_pct):
+        print(f"http_err_pct() should return {err_pct_plan:.2f} for codes {codes}")
+        exit(1)
+
+except Exception as e:
+    print(f"Exception while running tests: {e}")
+    exit(1)
+
+
+# 100% case
+try:
+    stats = ResponseStats()
+    codes = [401, 402, 503, 503, 404, 404, 403, 403]
+
+    for code in codes:
+        stats.add_response(code)
+    
+    err_pct = stats.http_err_pct()
+
+    err_pct_plan = 100.0
+    
+    if round(err_pct_plan) != round(err_pct):
+        print(f"http_err_pct() should return {err_pct_plan:.2f} for codes {codes}")
+        exit(1)
+
+except Exception as e:
+    print(f"Exception while running tests: {e}")
+    exit(1)

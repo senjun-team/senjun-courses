@@ -1,0 +1,47 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue().find("field VALUE\n") == -1:
+    print("print() output isn't correct")
+    exit(1)
+
+if "DataRow" not in globals():
+    print("Class DataRow doesn't exist")
+    exit(1)
+
+if type(DataRow) is not type:
+    print("'DataRow' is not a class")
+    exit(1)
+
+if "dr" not in globals():
+    print("Object dr doesn't exist")
+    exit(1)
+
+if type(dr) is not DataRow:
+    print("'dr' is not a DataRow instance")
+    exit(1)
+
+field = getattr(dr, "field", None)
+if not field:
+    print("There is no 'field' attribute in 'dr' object")
+    exit(1)
+
+if dr.field != "VALUE":
+    print("'field' value is not equal to 'VALUE'")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("dr.__dict__") == -1:
+    print("There is no call to dr.__dict__")
+    exit(1)

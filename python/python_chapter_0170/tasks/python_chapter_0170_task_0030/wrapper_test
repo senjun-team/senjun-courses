@@ -1,0 +1,85 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+for c in ["Navigation", "CarNavigation", "TransitNavigation"]:
+    if c not in globals():
+        print(f"Class {c} doesn't exist")
+        exit(1)
+
+if Navigation not in CarNavigation.__bases__:
+    print(f"CarNavigation doesn't inherit Navigation")
+    exit(1)
+
+if Navigation not in TransitNavigation.__bases__:
+    print(f"TransitNavigation doesn't inherit Navigation")
+    exit(1)
+
+inherits = False
+
+try:
+    if ABC in Navigation.__bases__:
+        inherits = True
+except Exception as e:
+    pass
+
+if not inherits:
+    try:
+        if abc.ABC in Navigation.__bases__:
+            inherits = True
+    except Exception as e:
+        pass
+
+if not inherits:
+    print(f"Navigation doesn't inherit ABC")
+    exit(1)
+
+
+text = '''
+#INJECT-ESCAPED-b585472fa
+'''
+
+if text.count("@abstractmethod") < 2 and text.count("@abc.abstractmethod") < 2:
+    print("Couldn't find @abstractmethod usage in Navigation class")
+    exit(1)
+
+try:
+    n = CarNavigation()
+    n.build_route(1, 2)
+    n.get_maneuvers()
+except Exception as e:
+    print(f"Unexpected error while instantiating CarNavigation and calling its 2 methods: {e}")
+    exit(1)
+
+try:
+    n = TransitNavigation()
+    n.build_route(1, 2)
+    n.get_maneuvers()
+except Exception as e:
+    print(f"Unexpected error while instantiating TransitNavigation and calling its 2 methods: {e}")
+    exit(1)
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+nc = CarNavigation()
+nc.build_route(1, 2)
+nc.get_maneuvers()
+
+nt = TransitNavigation()
+nt.build_route(1, 2)
+nt.get_maneuvers()
+
+sys.stdout = old_stdout
+fact = mystdout.getvalue().replace(" ", "")
+plan1="CarNavigation.build_route.\nCarNavigation.get_maneuvers.\nTransitNavigation.build_route.\nTransitNavigation.get_maneuvers.\n"
+plan2 = "CarNavigation.build_route\nCarNavigation.get_maneuvers\nTransitNavigation.build_route\nTransitNavigation.get_maneuvers\n"
+if fact != plan1 and fact != plan2:
+    print("Console output in methods should be in format: \"class. method\"")
+    exit(1)

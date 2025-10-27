@@ -1,0 +1,25 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+print_res = mystdout.getvalue()
+
+if print_res != "XX century!\n":
+    print("Console output isn't correct")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+user_code = user_code.replace(" ", "")
+if user_code.find("1900<x<2") == -1 and user_code.find(">x>1900") == -1:
+    print("Incorrect comparison operator chaining")
+    exit(1) 

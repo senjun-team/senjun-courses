@@ -1,0 +1,40 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'expensive' not in locals():
+    print("There is no `expensive` variable")
+    exit(1)
+
+if type(expensive) is not dict:
+    print("Variable 'expensive' is not a dict")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find("expensive=dict(filter(") == -1:
+    print("'expensive' should be filled from dict() from filter()")
+    exit(1)
+
+if len(expensive) != 2:
+    print("'expensive' length is not correct")
+    exit(1)
+
+for k, v in expensive.items():
+    if k == "corn" or k == "noodle":
+        continue
+
+    print(f"Invalid key in 'expensive': {k}")
+    exit(1)
