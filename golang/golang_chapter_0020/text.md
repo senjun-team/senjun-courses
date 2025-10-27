@@ -22,7 +22,7 @@ fmt.Println("Is it a working day:", working, "[", weekday, "]")
 Здесь `&&` означает конъюнкцию, логическое `И`.
 
 
-Наудачу бросают 20-ти гранный кубик. Выпавшее значение сохраняется в переменной `coub`. В случае, если значение `coub` больше 10, выведите на экран `true`, иначе — `false`. Для вывода значения на экран воспользуйтесь функцией `fmt.Println()`. {.task_text}
+Наудачу бросают 20-ти гранный кубик. Выпавшее значение сохраняется в переменной `coub`. В случае, если значение `coub` больше 10, выведите на экран `true`, иначе — `false`. {.task_text}
 
 ```go {.task_source #golang_chapter_0020_task_0010}
 package main
@@ -38,7 +38,8 @@ func isLucky(coub int) (lucky bool){
 }
 
 func main() {
-    coub := rand.Intn(19) + 1
+    coub := rand.Intn(20) + 1
+    // вывод значения на экран
     fmt.Println(isLucky(coub))
 }
 ```
@@ -59,7 +60,7 @@ func isLucky(coub int) (lucky bool){
 }
 
 func main() {
-    coub := rand.Intn(19) + 1
+    coub := rand.Intn(20) + 1
     fmt.Println(isLucky(coub))
 }
 ```
