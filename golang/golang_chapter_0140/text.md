@@ -245,7 +245,7 @@ func main() {
 
 ```
 
-Чтобы отсортировать односвязный список, достаточно изменить адреса соответствующих указателей. Мы уже имели дело с односвязным списком в [задаче 1 главы 11](https://senjun.ru/courses/golang/chapters/golang_chapter_0110/#block-3). С указателями мы впервые столкнулись в [задаче 1 главы 1](https://senjun.ru/courses/golang/chapters/golang_chapter_0010/#block-18) {.task_hint}
+Чтобы отсортировать односвязный список, достаточно изменить адреса соответствующих указателей. Мы уже имели дело с односвязным списком в [задаче 1 главы 11](/courses/golang/chapters/golang_chapter_0110/#block-list). С указателями мы впервые столкнулись в [задаче 1 главы 1](/courses/golang/chapters/golang_chapter_0010/#block-pointer) {.task_hint}
 
 ```go  {.task_answer}
 package main
