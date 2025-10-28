@@ -110,7 +110,7 @@ func main() {
 ```consoleoutput {.task_source #golang_chapter_0140_task_0010}
 ```
 Вспомните, как сравниваются срезы. {.task_hint}
-```go {.task_answer}
+```{.task_answer}
 error
 ```
 
