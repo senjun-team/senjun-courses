@@ -223,7 +223,7 @@ func main() {
 }
 ```
 
-Реализуйте цикл и сохраните все ключи хеш-таблицы, которые не нужны. Затем, во втором цикле, удалите соответствующие элементы. {.task_hint}
+Реализуйте цикл и удалите все ключи хеш-таблицы, которые не нужны. {.task_hint}
 
 ```go {.task_answer}
 package main
@@ -243,7 +243,7 @@ func randLenStr(val float64, pseudoRandGen *rand.Rand) string {
 	fractionalPartLen := pseudoRandGen.Intn(prec) + 1
 	strVal := strconv.FormatFloat(val, 'f', prec, 64)
 	integerPartLen := strings.IndexRune(strVal, '.') + 1
-	return strVal[:integerPartLen + fractionalPartLen]
+	return strVal[:integerPartLen+fractionalPartLen]
 }
 
 func calculateConsts(seed int64) map[string]string {
@@ -264,23 +264,18 @@ func calculateConsts(seed int64) map[string]string {
 func chooseConsts(consts map[string]string) {
 	const fractionalPartMinLen = 5
 
-	var keysToDelete []string
-
 	for key, val := range consts {
 		pointIndex := strings.IndexRune(val, '.')
-		if pointIndex == -1 || len(val[pointIndex + 1:]) < fractionalPartMinLen {
-			keysToDelete = append(keysToDelete, key)
+		if pointIndex == -1 ||
+			len(val[pointIndex+1:]) < fractionalPartMinLen {
+			delete(consts, key)
 		}
-	}
-
-	for _, key := range keysToDelete {
-		delete(consts, key)
 	}
 }
 
 func main() {
-	// аргумент можно менять для отладки 
-	consts := calculateConsts(42) 
+	// аргумент можно менять для отладки
+	consts := calculateConsts(42)
 	fmt.Println(consts)
 	chooseConsts(consts)
 	fmt.Println(consts)
