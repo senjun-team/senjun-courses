@@ -158,7 +158,7 @@ int right = 100;
 int request_count; // Здесь может быть что угодно!
 ```
 
-Поэтому при создании переменной [обязательно задавайте ей значение.](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es20-always-initialize-an-object) {#block-initialization}
+Поэтому при создании переменной обязательно задавайте ей значение. {#block-initialization}
 
 Чтобы изменить значение переменной, применяется уже знакомый вам **оператор присваивания** (assignment operator):
 
