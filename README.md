@@ -9,7 +9,7 @@ Senior Junior — это курсы для эффективного изучен
 - На сайте: https://senjun.ru
 - В телеграм-боте: https://t.me/sen_jun_bot
 
-[![Курсы можно проходить на сайте и в боте](https://github.com/senjun-team/senjun-courses/blob/main/about/site_senjun_ru_and_tg_bot.png)](https://github.com/senjun-team/senjun-courses)
+[![Курсы можно проходить на сайте и в боте](https://github.com/senjun-team/senjun-courses/blob/new-readme/about/senjun_site_and_tg_bot.png)](https://github.com/senjun-team/senjun-courses)
 
 ## Обратная связь
 
