@@ -123,11 +123,14 @@ int main()
     "Exec query"_test = [] {
         using namespace case3;
 
+        const std::string message = 
+        "\nDBConn exec() method must call exec_db_query()\n"
+        "exec_db_query() returns true in case of successful query\n";
         DBConn c("postgresql://user:secret@localhost");
-        expect(c.exec("select * from table")) << "\nDBConn exec() method must call exec_db_query()\n" << fatal;
-        is_query_successful = false;
 
-        expect(!c.exec("select * from table")) << "\nDBConn exec() method must call exec_db_query()\n" << fatal;
+        expect(c.exec("select * from table")) << message << fatal;
+        is_query_successful = false;
+        expect(!c.exec("select * from table")) << message << fatal;
     };
 
     "handle_metrics() throws"_test = [] {

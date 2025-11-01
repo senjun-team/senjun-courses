@@ -610,8 +610,9 @@ public:
 
     bool exec(std::string query)
     {
-        return is_open() ? 
-        exec_db_query(m_handle, query.c_str()) == 0 : false;
+        if (!is_open())
+            return false;
+        return exec_db_query(m_handle, query.c_str());
     }
 
 private:
