@@ -15,7 +15,7 @@
 
 Шаблонный класс `std::pair` позволяет хранить пару объектов. Типы объектов задаются двумя параметрами шаблона и могут отличаться. А доступ к объектам осуществляется через поля `first` и `second`.
 
-```c++  {.example_for_playground .example_for_playground_006}
+```cpp  {.example_for_playground .example_for_playground_006}
 std::pair<std::size_t, std::string> user = {507, "bot_master"};
 
 std::size_t id = user.first;
@@ -26,7 +26,7 @@ std::string login = user.second;
 
 Контейнер [std::map](https://ru.cppreference.com/w/cpp/container/map) предназначен для хранения пар ключ-значение с уникальным ключом. Элементы `std::map` — это объекты класса `std::pair`. Шаблон класса `std::map` принимает два параметра: тип ключа и тип значения. Ключи хранятся отсортированными по возрастанию.
 
-```c++  {.example_for_playground .example_for_playground_007}
+```cpp  {.example_for_playground .example_for_playground_007}
 // Ключ - имя пользователя.
 // Значение - Unix timestamp последнего логина
 std::map<std::string, std::time_t> user_last_login = {
@@ -45,7 +45,7 @@ std::println("{}", user_last_login);
 
 Обращение через `[]` _создает_ ключ, если он отсутствует, и к нему привязывается значение по умолчанию.
 
-```c++  {.example_for_playground .example_for_playground_008}
+```cpp  {.example_for_playground .example_for_playground_008}
 // Ключ существует, получаем его значение
 std::time_t login_time_a = user_last_login["Alice"];
 
@@ -60,7 +60,7 @@ std::println("{}", user_last_login);
 
 Добавление ключа в случае его отсутствия может быть нежелательным. Если по логике программы ключ _обязан_ присутствовать в контейнере, используйте метод `at()`. Он вернет значение либо в случае его отсутствия бросит исключение. 
 
-```c++  {.example_for_playground .example_for_playground_009}
+```cpp  {.example_for_playground .example_for_playground_009}
 try
 {
     std::time_t login_time_e = user_last_login.at("Eve");
@@ -74,7 +74,7 @@ catch(const std::out_of_range & e)
 
 На случаи, когда уверенности в присутствии ключа нет, предусмотрен метод `find()`. Он принимает ключ и возвращает итератор.
 
-```c++  {.example_for_playground .example_for_playground_010}
+```cpp  {.example_for_playground .example_for_playground_010}
 auto it = user_last_login.find("Eve");
 
 if (it == user_last_login.end())
@@ -92,7 +92,7 @@ else
 
 В реальном коде практически никогда не требуется явное получение из итератора переменной класса `std::pair`. Доступ к ключу и значению организуется проще:
 
-```c++
+```cpp
 std::println("Key: {}. Value: {}", (*it).first, (*it).second);
 ```
 
@@ -100,11 +100,11 @@ std::println("Key: {}. Value: {}", (*it).first, (*it).second);
 
 В C++ есть оператор `->`, позволяющий выразить то же самое, но короче. Эти две записи эквивалентны:
 
-```c++
+```cpp
 (*it).first
 ```
 
-```c++
+```cpp
 it->first
 ```
 
@@ -112,28 +112,28 @@ it->first
 
 Цикл по итераторам:
 
-```c++  {.example_for_playground .example_for_playground_011}
+```cpp  {.example_for_playground .example_for_playground_011}
 for (auto it = user_last_login.begin(); it != user_last_login.end(); ++it)
     std::println("Key: {}. Value: {}", it->first, it->second);
 ```
 
 Цикл `range-for`:
 
-```c++  {.example_for_playground .example_for_playground_012}
+```cpp  {.example_for_playground .example_for_playground_012}
 for (std::pair<std::string, std::time_t> record: user_last_login)
     std::println("Key: {}. Value: {}", record.first, record.second);
 ```
 
 При обходе контейнера через `range-for` мы работаем с парами ключ-значение. Вместо явного указания типа можно использовать `auto`:
 
-```c++  {.example_for_playground .example_for_playground_013}
+```cpp  {.example_for_playground .example_for_playground_013}
 for (auto record: user_last_login)
     std::println("Key: {}. Value: {}", record.first, record.second);
 ```
 
 Чтобы в цикле _изменять_ значения по ключу, используйте цикл с итераторами. В главе про ссылки вы узнаете, как это делать в цикле `range-for`.
 
-```c++  {.example_for_playground .example_for_playground_014}
+```cpp  {.example_for_playground .example_for_playground_014}
 for (auto it = user_last_login.begin(); it != user_last_login.end(); ++it)
     it->second = 0;
 ```
@@ -142,7 +142,7 @@ for (auto it = user_last_login.begin(); it != user_last_login.end(); ++it)
 
 Оператор `[]` добавляет значение по ключу либо перезаписывает уже существующее. Используйте его, если вам не требуется отличать вставку от перезаписи:
 
-```c++   {.example_for_playground .example_for_playground_015}
+```cpp   {.example_for_playground .example_for_playground_015}
 // Ключ - id сервера, значение - имя
 std::map<std::size_t, std::string> server_names;
 
@@ -151,7 +151,7 @@ server_names[902] = "stage";
 
 Метод [try_emplace()](https://en.cppreference.com/w/cpp/container/map/try_emplace) принимает ключ и значение. Он возвращает пару из итератора и флага. Флаг равен `true`, если вставка произошла, и `false`, если элемент по ключу уже существовал. Замены значения существующего элемента на новое не происходит. А возвращаемый итератор в любом случае указывает на элемент по ключу.
 
-```c++   {.example_for_playground .example_for_playground_016}
+```cpp   {.example_for_playground .example_for_playground_016}
 std::map<std::size_t, std::string> server_names;
 
 std::size_t server_id = 902;
@@ -167,7 +167,7 @@ else
 
 Чтобы в случае существования ключа обновить его значение, есть метод [insert_or_assign()](https://en.cppreference.com/w/cpp/container/map/insert_or_assign).
 
-```c++ {.example_for_playground .example_for_playground_017}
+```cpp {.example_for_playground .example_for_playground_017}
 auto [it, inserted] = server_names.insert_or_assign(server_id, name);
 
 if (inserted)
@@ -180,7 +180,7 @@ else
 
 Для **удаления** элемента предусмотрен метод [erase()](https://en.cppreference.com/w/cpp/container/map/erase). У него несколько перегрузок для удаления по ключу, итератору и диапазону итераторов. Перегрузка, принимающая ключ, возвращает количество удаленных элементов (0 или 1). А перегрузки с итераторами возвращают итератор на элемент после удаленного.
 
-```c++
+```cpp
 bool removed = server_names.erase("stage") > 0;
 ```
 
@@ -196,7 +196,7 @@ bool removed = server_names.erase("stage") > 0;
 1 start_course
 ```
 
-```c++ {.task_source #cpp_chapter_0073_task_0040}
+```cpp {.task_source #cpp_chapter_0073_task_0040}
 bool is_less(std::pair<std::string, std::size_t> left,
              std::pair<std::string, std::size_t> right)
 {
@@ -214,7 +214,7 @@ void print_frequency(std::vector<std::string> words)
 }
 ```
 Заполните контейнер `std::map`, ключами которого будут слова, а значениями — их частоты. Затем заполните вектор, хранящий пары со словами и частотами. К вектору примените функцию сортировки с предикатом `is_less()`. Например: `std::sort(v.begin(), v.end(), is_less)`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 bool is_less(std::pair<std::string, std::size_t> left,
              std::pair<std::string, std::size_t> right)
 {
@@ -257,7 +257,7 @@ void print_frequency(std::vector<std::string> words)
 
 Класс [std::set](https://en.cppreference.com/w/cpp/container/set) нужен, чтобы работать со множеством уникальных ключей. В отличие от `std::map`, значения к ним не привязаны. В целом эти контейнеры схожи за исключением некоторых нюансов. Например, У `std::set` нет метода `try_emplace()`, потому что он не имел бы особого смысла. Вместо него есть метод [emplace()](https://en.cppreference.com/w/cpp/container/set/emplace).
 
-```c++ {.example_for_playground .example_for_playground_018}
+```cpp {.example_for_playground .example_for_playground_018}
 std::set<std::string> words = {"a", "the"};
 
 words.emplace("then");
@@ -287,7 +287,7 @@ a then
 
 Класс диапазона `IPv4Range` позволяет перечислить все входяшие в него ip-адреса. Он пригоден для обхода циклом [range-for](/courses/cpp/chapters/cpp_chapter_0040/#block-range-for). Также можно воспользоваться методами `cbegin()`, `cend()` и `find()`, которые возвращают `IPv4Range::const_iterator` на начало, конец и на указанный ip-адрес соответственно. Размер диапазона можно получить с помощью метода `size()`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0073_task_0100}
+```cpp {.task_source #cpp_chapter_0073_task_0100}
 class IPv4Pool
 {
 public:
@@ -311,7 +311,7 @@ private:
 };
 ```
 Заведите множество `std::set` для хранения зарезервированных ip-адресов. Для поиска свободного ip-адреса обойдите диапазон, переданный в конструкторе пула. В цикле проверяйте наличие текущего адреса в множестве зарезервированных. Верните первый не найденный среди зарезервированных адресов. Для освобождения ip-адреса достаточно удалить его из множества зарезервированных. Предложенное решение неэффективно при резервировании большого количества ip-адресов сразу. Подумайте над более оптимальным вариантом. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 class IPv4Pool
 {
 public:
@@ -360,7 +360,7 @@ private:
 
 В C++17 в `std::set` был добавлен метод `merge()`. Он нужен, чтобы объединять два множества:
 
-```c++ {.example_for_playground .example_for_playground_019}
+```cpp {.example_for_playground .example_for_playground_019}
 std::set<int> a = {1, 2, 3};
 std::set<int> b = {0, 2, 4};
 
@@ -376,7 +376,7 @@ std::println("{}", a);
 
 В классах [std::multimap](https://en.cppreference.com/w/cpp/container/multimap) и [std::multiset](https://en.cppreference.com/w/cpp/container/multiset) ключи могут повторяться. Допустим, у нас есть несколько серверов, на которых выполняются задания. Мы могли бы представить это как `std::map` с ключом — именем сервера и значением — вектором заданий:
 
-```c++ {.example_for_playground .example_for_playground_020}
+```cpp {.example_for_playground .example_for_playground_020}
 std::map<std::string, std::vector<std::string>> server_jobs;
 
 auto [it, inserted] = server_jobs.try_emplace("stage", 
@@ -389,7 +389,7 @@ if (!inserted)
 
 А можно использовать `std::multimap`. Его метод [equal_range()](https://en.cppreference.com/w/cpp/container/multimap/equal_range) принимает ключ и возвращает итераторы на начало и конец диапазона элементов с этим ключом. У `std::multimap` нет метода `try_emplace()`, потому что пара ключ-значение может быть добавлена, даже если ключ уже существует в контейнере. Вместо него есть метод [emplace()](https://en.cppreference.com/w/cpp/container/multimap/emplace). {#block-equal-range}
 
-```c++ {.example_for_playground .example_for_playground_021}
+```cpp {.example_for_playground .example_for_playground_021}
 std::multimap<std::string, std::string> server_jobs;
 
 server_jobs.emplace("stage", "db_replication");

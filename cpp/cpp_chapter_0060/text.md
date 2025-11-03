@@ -35,7 +35,7 @@
 
 Посмотрим, как выглядит использование связки контейнеров, алгоритмов и итераторов. Заведем строку `s` и динамический массив `v`. Оба контейнера имеют методы `begin()` и `end()`. Они возвращают итераторы на первый элемент и на позицию за последним элементом. Вызовем [функцию std::reverse(),](https://en.cppreference.com/w/cpp/algorithm/reverse) которая меняет порядок элементов на обратный. Она принимает итераторы на начало и конец диапазона, который нужно «перевернуть»: {#block-vector}
 
-```c++ {.example_for_playground .example_for_playground_001}
+```cpp {.example_for_playground .example_for_playground_001}
 std::string s = "spam";
 std::vector<int> v = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -63,7 +63,7 @@ String: maps. Vector: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
 
 Разберем это на примере цикла по строке. Вы успели познакомиться с двумя вариантами перебора строки: циклом `for` по индексам и циклом `range-for` по символам:
 
-```c++  {.example_for_playground .example_for_playground_002}
+```cpp  {.example_for_playground .example_for_playground_002}
 std::string s = "string";
 
 for (std::size_t i = 0; i < s.size(); ++i)
@@ -77,7 +77,7 @@ for (char c: s)
 
 Цикл через итераторы абсолютно одинаков для строк, массивов и _любых_ контейнеров:
 
-```c++ {.example_for_playground .example_for_playground_003}
+```cpp {.example_for_playground .example_for_playground_003}
 for(std::string::iterator it = s.begin(); it != s.end(); ++it)
     std::println("{}", *it);
 ```
@@ -120,7 +120,7 @@ for(std::string::iterator it = s.begin(); it != s.end(); ++it)
 Итераторы по каждому из стандартных контейнеров относятся к одной из этих категорий. Например, итераторы по строке являются итераторами произвольного доступа.
 Так выглядит изменение символов строки в цикле по итераторам:
 
-```c++  {.example_for_playground .example_for_playground_004}
+```cpp  {.example_for_playground .example_for_playground_004}
 std::string s = "iteration over string";
 
 for(std::string::iterator it = s.begin(); it != s.end(); ++it)
@@ -137,7 +137,7 @@ iteration_over_string
 
 Перебирать контейнеры можно и с помощью цикла `while`:
 
-```c++   {.example_for_playground .example_for_playground_018}
+```cpp   {.example_for_playground .example_for_playground_018}
 std::string card = "MasterCard N:5200 8282 8282 8210";
 std::size_t hide_count = 12;
 
@@ -161,14 +161,14 @@ MasterCard N:**** **** **** 8210
 
 В своем решении используйте итераторы. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0060_task_0020}
+```cpp {.task_source #cpp_chapter_0060_task_0020}
 bool is_palindrome(std::string text)
 {
 
 }
 ```
 Чтобы проверить, является ли строка палиндромом, нужно сравнить ее нулевой символ с последним, первый — с предпоследним и так до середины строки. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 bool is_palindrome(std::string text)
 {
     if (text.empty())
@@ -196,7 +196,7 @@ bool is_palindrome(std::string text)
 
 А [std::distance()](https://en.cppreference.com/w/cpp/iterator/distance) принимает итераторы на границы диапазона. И возвращает, сколько элементов расположено между этими границами, включая начальный элемент диапазона и не включая последний. {#block-distance}
 
-```c++ {.example_for_playground}
+```cpp {.example_for_playground}
 import std;
 
 // Параметром шаблона может быть литерал простого типа,
@@ -243,7 +243,7 @@ a character cannot be found by predicate
 
 Важно знать, что `std::distance()` может вернуть _отрицательное_ значение. Это допустимо, если переданы итераторы произвольного доступа (random access), а итератор на начало диапазона достижим из итератора на конец:
 
-```c++
+```cpp
 std::string menu_item = "FAQ";
 std::println("{}", std::distance(menu_item.end(), menu_item.begin()));
 ```
@@ -255,10 +255,10 @@ std::println("{}", std::distance(menu_item.end(), menu_item.begin()));
 
 В своем решении используйте алгоритмы `std::find_if()` и `std::distance()`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0060_task_0010}
+```cpp {.task_source #cpp_chapter_0060_task_0010}
 ```
 У шаблона единственный параметр — тип предиката. Назовем его `Fn`. Тогда функция будет выглядеть так: `template<class Fn> std::size_t index_of(std::string s, Fn pred)`. Внутри функции нужно вызвать `std::find_if()` от итераторов на начало и конец строки и предиката `pred`. Если итератор, который вернет `std::find_if()`, равен `s.end()`, нужно бросить исключение. Иначе вернуть расстояние от начала строки до этого итератора. Для этого вызовите функцию `std::distance()`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 template<class Fn>
 std::size_t index_of(std::string s, Fn pred)
 {
@@ -277,7 +277,7 @@ std::size_t index_of(std::string s, Fn pred)
 
 Взгляните на этот код. Он не скомпилируется. Удостоверьтесь в этом, запустив его в плэйграунде.
 
-```c++  {.example_for_playground .example_for_playground_005}
+```cpp  {.example_for_playground .example_for_playground_005}
 const std::string s = "string";
 
 for(std::string::iterator it = s.begin(); it != s.end(); ++it)
@@ -288,14 +288,14 @@ for(std::string::iterator it = s.begin(); it != s.end(); ++it)
 
 Исправим ошибку компиляции заменой типа итератора `it`:
 
-```c++  {.example_for_playground .example_for_playground_006}
+```cpp  {.example_for_playground .example_for_playground_006}
 for(std::string::const_iterator it = s.begin(); it != s.end(); ++it)
     std::println("{}", *it);
 ```
 
 Как это работает? Почему метод `begin()` возвращает итераторы разных типов? Все просто: методы класса можно перегружать. Причем перегрузка возможна не только по уникальному набору параметров, но и по квалификатору `const`, который относится целиком к методу. Методы объявляют константными, если внутри них не изменяются поля класса. У метода `begin()` класса `vector` есть две перегрузки. И при вызове метода от константного объекта класса компилятор выбирает перегрузку, помеченную `const`:
 
-```c++
+```cpp
 template<typename T, typename Alloc>
 class vector
 {
@@ -319,7 +319,7 @@ class vector
 - Исключить случайную модификацию контейнера.
 - Подчеркнуть намерение только читать значения. Код станет яснее.
 
-```c++  {.example_for_playground .example_for_playground_007}
+```cpp  {.example_for_playground .example_for_playground_007}
 std::string s = "string"; // Не константная строка
 
 for(std::string::const_iterator it = s.cbegin(); it != s.cend(); ++it)
@@ -332,35 +332,35 @@ for(std::string::const_iterator it = s.cbegin(); it != s.cend(); ++it)
 
 Как и любую константу, константный итератор нельзя менять:
 
-```c++  {.example_for_playground .example_for_playground_008}
+```cpp  {.example_for_playground .example_for_playground_008}
 const std::string::iterator it = s.begin();
 ++it; // Упс!
 ```
 
 Зато можно менять значение объекта, на который он _указывает_. Ведь сам итератор при этом не меняется. Меняется значение элемента контейнера.
 
-```c++   {.example_for_playground .example_for_playground_009}
+```cpp   {.example_for_playground .example_for_playground_009}
 const std::string::iterator it = s.begin();
 *it = 'A'; // Ок
 ```
 
 В случае с `const_iterator` ситуация обратная. Его можно менять:
 
-```c++   {.example_for_playground .example_for_playground_010}
+```cpp   {.example_for_playground .example_for_playground_010}
 std::string::const_iterator it = s.cbegin();
 ++it; // Ок
 ```
 
 Но через такой итератор нельзя модифицировать значение объекта, на который он указывает:
 
-```c++   {.example_for_playground .example_for_playground_011}
+```cpp   {.example_for_playground .example_for_playground_011}
 std::string::const_iterator it = s.cbegin();
 *it = 'A'; // Ошибка
 ```
 
 И, конечно, в обоих случаях через итератор удастся прочитать значение элемента.
 
-```c++  {.example_for_playground .example_for_playground_012}
+```cpp  {.example_for_playground .example_for_playground_012}
 const std::string::iterator c_it = s.begin();
 std::string::const_iterator it_c = s.cbegin();
 
@@ -369,7 +369,7 @@ std::println("{} {}", *c_it, *it_c); // Ок
 
 Через сочетание квалификатора `const` и типа `const_iterator` можно получить итератор, через который нельзя менять вообще ничего. Только читать:
 
-```c++  {.example_for_playground .example_for_playground_013}
+```cpp  {.example_for_playground .example_for_playground_013}
 const std::string::const_iterator it = s.cbegin();
 ++it;      // Ошибка
 *it = 'A'; // Ошибка
@@ -391,7 +391,7 @@ char c = *it; // Ок
 
 Так выглядит обратный проход по строке:
 
-```c++   {.example_for_playground .example_for_playground_014}
+```cpp   {.example_for_playground .example_for_playground_014}
 std::string s = "string";
 
 for(std::string::reverse_iterator it = s.rbegin(); it != s.rend(); ++it)
@@ -404,14 +404,14 @@ for(std::string::reverse_iterator it = s.rbegin(); it != s.rend(); ++it)
 
 Напишите тело этой функции с использованием обратных итераторов. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0060_task_0070}
+```cpp {.task_source #cpp_chapter_0060_task_0070}
 std::string hide_password(std::string logpass)
 {
     
 }
 ```
 С помощью обратных итераторов организуйте цикл по строке. Замените все символы на `'*'`, пока не достигните символа `':'`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 std::string hide_password(std::string logpass)
 {
     for (std::string::reverse_iterator it = logpass.rbegin();
@@ -428,7 +428,7 @@ std::string hide_password(std::string logpass)
 
 Чтобы получить из обратного итератора обычный, предусмотрен метод `base()`. Он возвращает обычный итератор на элемент, который на одну позицию ближе к концу контейнера. Это нужно, чтобы итератор `rbegin()` можно было соотнести `begin()`, а `rend()` — итератору `end()`.
 
-```c++  {.example_for_playground .example_for_playground_015}
+```cpp  {.example_for_playground .example_for_playground_015}
 std::string s = "string";
 
 std::string::reverse_iterator rit = s.rbegin(); // g
@@ -442,7 +442,7 @@ std::string::iterator it = rit.base();          // g
 
 Во-вторых, через декремент не получится корректно проитерироваться в обратном порядке вплоть до самого первого элемента. Так писать нельзя:
 
-```c++
+```cpp
 std::string s = "string";
 
 for(std::string::iterator it = s.end(); it != s.begin() - 1; --it)
@@ -453,7 +453,7 @@ for(std::string::iterator it = s.end(); it != s.begin() - 1; --it)
 
 Напишите тело функции `find_last()`, которая принимает пару _обратных_ итераторов на начало и конец диапазона строки и символ. Функция должна вернуть итератор типа `std::string::iterator` на _последнее_ вхождение символа в строку либо итератор на конец диапазона, если символ не найден. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0060_task_0030}
+```cpp {.task_source #cpp_chapter_0060_task_0030}
 std::string::iterator find_last(std::string::reverse_iterator rbegin,
                                 std::string::reverse_iterator rend,
                                 char c)
@@ -462,7 +462,7 @@ std::string::iterator find_last(std::string::reverse_iterator rbegin,
 }
 ```
 С помощью обратных итераторов организуйте цикл по строке. Как только символ, на который указывает обратный итератор `rit`, совпадет с искомым, верните `(rit + 1).base()`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 std::string::iterator find_last(std::string::reverse_iterator rbegin,
                                 std::string::reverse_iterator rend,
                                 char c)
@@ -483,14 +483,14 @@ std::string::iterator find_last(std::string::reverse_iterator rbegin,
 
 Если всегда указывать тип итератора, код выглядит громоздким:
 
-```c++
+```cpp
 for(std::string::iterator it = s.begin(); it != s.end(); ++it)
     std::println("{}", *it);
 ```
 
 Поэтому вместо типа зачастую пишут [ключевое слово auto.](https://en.cppreference.com/w/cpp/language/auto) Оно было введено в C++11 и позволяет компилятору самостоятельно определять тип переменной на основании того, как она инициализируется. Это называется автоматическим выводом типа.
 
-```c++   {.example_for_playground .example_for_playground_016}
+```cpp   {.example_for_playground .example_for_playground_016}
 for(auto it = s.begin(); it != s.end(); ++it)
     std::println("{}", *it);
 ```
@@ -503,7 +503,7 @@ for(auto it = s.begin(); it != s.end(); ++it)
 
 Заведем итератор на элемент строки. А затем удалим из строки все символы `'t'` с помощью функции [std::erase().](https://en.cppreference.com/w/cpp/container/vector/erase2) После этого итератор станет невалидным:
 
-```c++  {.example_for_playground .example_for_playground_017}
+```cpp  {.example_for_playground .example_for_playground_017}
 std::string s = "iterator invalidation";
 auto it = std::find(s.begin(), s.end(), 't');
 
@@ -524,7 +524,7 @@ std::println("{}", *it); // Неопределенное поведение
 
 Есть ли в этом коде UB? `Y/N`. {.task_text}
 
-```c++
+```cpp
 std::string title = "Discussion";
 auto it = title.begin();
 title = "";
@@ -541,7 +541,7 @@ N
 
 [Метод строки erase()](https://en.cppreference.com/w/cpp/string/basic_string/erase) удаляет символ, на который указывает итератор, и _возвращает_ итератор на следующий за ним символ либо на `end()`, если удаленный символ был последним. {.task_text}
 
-```c++
+```cpp
 std::string text = "See also";
 
 for (auto it = text.begin(); it != text.end(); ++it)
@@ -572,13 +572,13 @@ Y
 
 Эта задача имеет короткое и изящное решение. Если оно не приходит вам в голову, прочтите подсказку. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0060_task_0060}
+```cpp {.task_source #cpp_chapter_0060_task_0060}
 std::string rearrange_words(std::string s)
 {
 }
 ```
 Сначала разверните строку целиком. Строка `not a bug` превратится в `gub a ton`. Затем разверните каждое слово по отдельности: `bug a not`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 std::string rearrange_words(std::string s)
 {
     std::reverse(s.begin(), s.end());

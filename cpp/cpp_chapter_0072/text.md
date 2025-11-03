@@ -10,7 +10,7 @@
 
 Тип элемента — это первый параметр шаблона класса `std::vector`. У шаблона есть и другие параметры, но мы не будем их задавать, то есть воспользуемся значениями по умолчанию. {#block-initialization}
 
-```c++
+```cpp
 std::vector<std::string> directions = {"left", "backward", "right"};
 ```
 
@@ -18,7 +18,7 @@ std::vector<std::string> directions = {"left", "backward", "right"};
 
 Для доступа к элементам по индексу используется оператор `[]`:
 
-```c++ {.example_for_playground .example_for_playground_001}
+```cpp {.example_for_playground .example_for_playground_001}
 std::vector<double> fractions = {0.05, 0.20, 0.80, 0.95};
 
 double a = fractions[3]; // ok
@@ -31,7 +31,7 @@ double b = fractions[4];
 
 Есть ли в этом коде UB? `Y/N`. {.task_text}
 
-```c++
+```cpp
 std::vector<char> buffer = {'0', '0', '0', '0', '0'};
 
 for (std::size_t i = 0; i <= buffer.size(); ++i)
@@ -47,7 +47,7 @@ Y
 
 Чтобы не писать проверок, но при этом избежать UB, предусмотрен метод `at()`. Если индекс выходит за границы массива, метод бросает исключение `std::out_of_range`:
 
-```c++ {.example_for_playground .example_for_playground_002}
+```cpp {.example_for_playground .example_for_playground_002}
 const std::vector<std::string> headers = {"Accept", "Cookie", "Expires"};
 
 try
@@ -72,7 +72,7 @@ catch(const std::out_of_range & e)
 - `erase()` — удаляет один или несколько элементов. Вызов `v.erase(it)` удалит элемент, на который указывает итератор `it`. А `v.erase(it_start, it_end)` удалит элементы в диапазоне. У метода несколько [перегрузок.](https://en.cppreference.com/w/cpp/container/vector/erase) Метод возвращает итератор за последним удаленным элементом.
 - `clear()` — удаляет все элементы.
 
-```c++  {.example_for_playground .example_for_playground_003}
+```cpp  {.example_for_playground .example_for_playground_003}
 std::vector<std::string> column_names = {"id", "username", "date_joined"};
 
 column_names.push_back("is_superuser");
@@ -92,7 +92,7 @@ id email username date_joined is_superuser
 
 Выделение нового блока памяти, перенос в него элементов и освобождение старого блока — это медленные операции. Их можно избежать, если максимальное количество элементов известно заранее. Для этого используется метод `reserve()`. Он принимает количество элементов и сразу выделяет память нужного объема.
 
-```c++ {.example_for_playground .example_for_playground_004}
+```cpp {.example_for_playground .example_for_playground_004}
 std::vector<int> data;
 std::println("size: {}, capacity: {}", data.size(), data.capacity());
 
@@ -114,14 +114,14 @@ size: 5, capacity: 1000
 
 Если вам нужно уточнить информацию о методах контейнера, воспользуйтесь [cppreference.](https://en.cppreference.com/w/cpp/container/vector) Не стесняйтесь подглядывать туда при решении задач. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0072_task_0020}
+```cpp {.task_source #cpp_chapter_0072_task_0020}
 std::vector<int> merge(std::vector<int> v_left, std::vector<int> v_right)
 {
 
 }
 ```
 Перемещайтесь по обоим векторам и в каждый момент времени сравнивайте пару элементов из `v_left` и `v_right`. Если элемент из `v_left` меньше, добавляйте его в результирующий вектор и сдвигайте итератор по `v_left` вперед. Иначе добавляйте в результирующий вектор значение из `v_right` и перемещайте вперед итератор по этому вектору. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 std::vector<int> merge(std::vector<int> v_left, std::vector<int> v_right)
 {
     std::vector<int> res;
@@ -153,7 +153,7 @@ std::vector<int> merge(std::vector<int> v_left, std::vector<int> v_right)
 
 Тип и количество элементов — это параметры шаблона массива.
 
-```c++
+```cpp
 template<class T, std::size_t N>
 struct array
 {
@@ -163,7 +163,7 @@ struct array
 
 Создание массива из 4-х элементов типа `double`:
 
-```c++
+```cpp
 std::array<double, 4> interpolated_data = {77.0, 77.2, 76.99, 77.3};
 ```
 
@@ -178,7 +178,7 @@ std::array<double, 4> interpolated_data = {77.0, 77.2, 76.99, 77.3};
 0  0  2
 ```
 
-```c++ {.task_source #cpp_chapter_0072_task_0060}
+```cpp {.task_source #cpp_chapter_0072_task_0060}
 template<std::size_t N>
 bool is_diagonal(std::array<std::array<int, N>, N> matrix)
 {
@@ -186,7 +186,7 @@ bool is_diagonal(std::array<std::array<int, N>, N> matrix)
 }
 ```
 Главная диагональ матрицы состоит из элементов с одинаковыми индексами: `matrix[0][0]`, `matrix[1][1]` и так далее. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 template<std::size_t N>
 bool is_diagonal(std::array<std::array<int, N>, N> matrix)
 {
@@ -216,7 +216,7 @@ bool is_diagonal(std::array<std::array<int, N>, N> matrix)
 
 Заведем дек `d` и поработаем с ним:
 
-```c++  {.example_for_playground .example_for_playground_005}
+```cpp  {.example_for_playground .example_for_playground_005}
 std::deque<int> d = {7, 6, 2, 0, 3, 9, 0, 1, 5, 3, 5, 5};
 std::println("   {}", d); // Пробелы для отступа слева
 
@@ -272,14 +272,14 @@ forward
 - Список: `5 -> 2 -> 4 -> 8 -> 1`. Результат: 4. Сумма элементов `5, 2` меньше суммы элементов `8, 1`. Сумма `5, 2, 4` уже больше значения `1`.
 - Список: `100 -> 50 -> 25 -> 12`. Результат: 100. Это единственный элемент, для которого сумма _до_ меньше суммы _после._
 
-```c++ {.task_source #cpp_chapter_0072_task_0030}
+```cpp {.task_source #cpp_chapter_0072_task_0030}
 int get_equator(std::forward_list<int> lst)
 {
 
 }
 ```
 Заведите вектор и заполните его в процессе итерирования по списку `lst`. Сохраняйте в вектор сумму элементов, включая данный. Длина вектора будет совпадать с длиной списка. Например, для списка `5 -> 2 -> 4 -> 8 -> 1` вы получите вектор `5, 7, 11, 19, 20`. В этом же проходе по списку сохраните в переменную сумму всех элементов. Затем проитеритуйтесь по вектору. Зная общую сумму элементов списка и частичную сумму, хранящуюся в элементе вектора, легко вычислить сумму элементов до данного и после данного. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 int get_equator(std::forward_list<int> lst)
 {
     std::vector<int> sums;

@@ -72,7 +72,7 @@ moving_average = 3.0
 
 Пример работы с объектом класса:
 
-```c++
+```cpp
 MovingAverage ma = MovingAverage(2);
 
 ma.add(-5);
@@ -89,7 +89,7 @@ std::size_t n = ma.window_size(); // 2
 
 В C++ результат деления одного целого на другое — это тоже целое:
 
-```c++
+```cpp
 int a = 10;
 std::size_t b = 6;
 std::print("{}", a / b); // 1
@@ -101,7 +101,7 @@ std::print("{}", a / b); // 1
 static_cast<целевой тип>(выражение)
 ```
 
-```c++
+```cpp
 int a = 10;
 std::size_t b = 6;
 std::print("{}", static_cast<double>(a) / b); // 1.6667

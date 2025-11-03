@@ -126,7 +126,7 @@ std::println("{}", numbers);
 
 Так, в C++ целочисленная переменная не может внезапно превратиться в строку. Компилятор просто не даст вам собрать и запустить такой код:
 
-```c++ {.example_for_playground .example_for_playground_004}
+```cpp {.example_for_playground .example_for_playground_004}
 int len_km = 6;
 len_km = "six km"; // ошибка
 ```
@@ -142,7 +142,7 @@ error: invalid conversion from 'const char*' to 'int'
 
 Исправьте тип возвращаемого значения. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0010_task_0010}
+```cpp {.task_source #cpp_chapter_0010_task_0010}
 std::string get_price_with_discount(double price, bool has_promocode)
 {
     if (has_promocode)
@@ -154,7 +154,7 @@ std::string get_price_with_discount(double price, bool has_promocode)
 }
 ```
 Функция возвращает строку. Но в теле функции видно, что намерением было вернуть число с плавающей точкой. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 double get_price_with_discount(double price, bool has_promocode)
 {
     if (has_promocode)
@@ -174,7 +174,7 @@ double get_price_with_discount(double price, bool has_promocode)
 
 Пример неявного приведения типов: для преобразования числа с плавающей точкой в целое компилятор просто отбрасывает дробную часть:
 
-```c++ {.example_for_playground .example_for_playground_005}
+```cpp {.example_for_playground .example_for_playground_005}
 int len_km = 6.8;
 
 std::println("{}", len_km);
@@ -187,7 +187,7 @@ std::println("{}", len_km);
 
 Вы можете воспользоваться подсказкой. Она доступна по кнопке со знаком вопроса. {.task_text}
 
-```c++ {.example_for_playground .example_for_playground_003}
+```cpp {.example_for_playground .example_for_playground_003}
 bool x = '&';
 
 std::println("{}", x);
@@ -202,7 +202,7 @@ true
 
 В C++ возможно и **явное приведение типов** (explicit cast). Есть специальная языковая конструкция и встроенные функции для явного указания, к какому типу требуется привести значение. Пример:
 
-```c++
+```cpp
 std::size_t stream_size = 65536;       // беззнаковое целое
 int n = static_cast<int>(stream_size); // приводим к знаковому целому
 ```
@@ -416,7 +416,7 @@ C++ — удачный выбор для:
 
 Если возникнут сложности, воспользуйтесь подсказкой. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0010_task_0040}
+```cpp {.task_source #cpp_chapter_0010_task_0040}
 // Импортируйте стандартную библиотеку.
 
 // Определите функцию main — точку входа в программу:
@@ -434,7 +434,7 @@ C++ — удачный выбор для:
 // для чего он нужен.
 ```
 Модуль стандартной библиотеки называется `std`. Воспользуйтесь функцией `std::println()` из этого модуля. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 import std;
 
 int main()

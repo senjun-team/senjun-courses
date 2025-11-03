@@ -10,7 +10,7 @@
 
 Класс [std::queue](https://en.cppreference.com/w/cpp/container/queue) — это структура данных [очередь](https://ru.wikipedia.org/wiki/%D0%9E%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D1%8C_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)), в которой элементы добавляются с одного конца, а удаляются с другого.
 
-```c++ {.example_for_playground .example_for_playground_023}
+```cpp {.example_for_playground .example_for_playground_023}
 std::queue<int> orders;
 
 orders.push(152);
@@ -31,7 +31,7 @@ std::println("{} {}", orders.front(), orders.back());
 
 Очередь может быть организована поверх нескольких последовательных контейнеров. По умолчанию она использует `std::deque`, но через аргумент шаблона дек можно заменить на список:
 
-```c++
+```cpp
 std::queue<int, std::list<int>> orders;
 ```
 
@@ -45,7 +45,7 @@ std::queue<int, std::list<int>> orders;
 
 Очередь с приоритетами реализуется через [кучу (heap)](https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D1%87%D0%B0_(%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0_%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85)) поверх массива.
 
-```c++
+```cpp
 std::priority_queue<int> heap;
 ```
 
@@ -56,7 +56,7 @@ std::priority_queue<int> heap;
 
 Заведем очередь с приоритетами из задач на исполнение. Задача — это пара из приоритета типа `int` и названия типа `std::string`. Опертор `<` вначале сравнивает поля `first` двух объектов типа `std::pair`, затем — поля `second`. Для простой демонстрации работы контейнера нас это устраивает. 
 
-```c++ {.example_for_playground}
+```cpp {.example_for_playground}
 import std;
 
 void execute_task(std::pair<int, std::string> task)
@@ -125,7 +125,7 @@ int main()
 
 Работу стека отлично иллюстрирует класс для хранения истории посещения страниц в браузере:
 
-```c++
+```cpp
 import std;
 
 class BrowserHistory

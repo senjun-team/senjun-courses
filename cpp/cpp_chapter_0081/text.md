@@ -6,7 +6,7 @@
 
 Умение своевременно использовать алгоритмы отличает опытного C++ разработчика от новичка. Взгляните на наивную реализацию поиска максимального элемента вектора:
 
-```c++  {.example_for_playground .example_for_playground_001}
+```cpp  {.example_for_playground .example_for_playground_001}
 std::vector<double> temperatures = read_temperatures();
 
 if (temperatures.empty())
@@ -29,7 +29,7 @@ else
 
 Перепишем этот пример с использованием алгоритма [std::max_element()](https://en.cppreference.com/w/cpp/algorithm/max_element):
 
-```c++  {.example_for_playground .example_for_playground_002}
+```cpp  {.example_for_playground .example_for_playground_002}
 std::vector<double> temperatures = read_temperatures();
 
 const auto it_max = std::max_element(temperatures.begin(), temperatures.end());
@@ -86,7 +86,7 @@ else
 
 Многие алгоритмы принимают итераторы на диапазон внутри контейнера. Он включает итератор на начало и _не_ включает итератор на конец:
 
-```c++ {.example_for_playground .example_for_playground_003}
+```cpp {.example_for_playground .example_for_playground_003}
 std::vector<int> vals = {1, 2, 3, 4, 5, 6};
 
 // Переворачиваем последовательность элементов
@@ -109,7 +109,7 @@ std::println("{}", vals);
 
 В этом примере мы получаем итератор на элемент, а затем меняем его значение:
 
-```c++ {.example_for_playground .example_for_playground_004}
+```cpp {.example_for_playground .example_for_playground_004}
 std::array<int, 5> raw_data = {9, -1, 2, 2, 3};
 
 auto it = std::find(raw_data.begin(), raw_data.end(), -1);
@@ -127,7 +127,7 @@ std::println("{}", raw_data);
 
 С функцией `std::distance()` вы [познакомились](/courses/cpp/chapters/cpp_chapter_0060/#block-distance) в главе про итераторы. {.task_text}
 
-```c++ {.example_for_playground}
+```cpp {.example_for_playground}
 import std;
 
 int main()
@@ -154,7 +154,7 @@ int main()
 
 Чтобы искать элементы начиная с конца диапазона, в алгоритм поиска передаются [обратные итераторы:](/courses/cpp/chapters/cpp_chapter_0060/#block-reverse-iterators)
 
-```c++ {.example_for_playground .example_for_playground_005}
+```cpp {.example_for_playground .example_for_playground_005}
 std::deque<int> d = {5, 6, 10, 10, 1};
 
 auto rit = std::find(d.rbegin(), d.rend(), 10);
@@ -174,14 +174,14 @@ std::println("{}", std::distance(d.begin(), (rit + 1).base()));
 
 Попробуйте решить задачу двумя способами: сначала через `std::find_if()`, а затем через `std::any_of()`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0081_task_0020}
+```cpp {.task_source #cpp_chapter_0081_task_0020}
 bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 {
 
 }
 ```
 Вам потребуется завести вспомогательную функцию-предикат, которая сравнивает поле `first` объекта `std::pair` с нужным заголовком. И в случае успеха ищет в поле `second` подстроку `"gzip"`. Вам пригодится метод строки `find()`, с которым вы [уже работали.](/courses/cpp/chapters/cpp_chapter_0030/#block-string-find) {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 bool accepts(std::pair<std::string, std::string> header)
 {
     if (header.first != "Accept-Encoding")
@@ -228,7 +228,7 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 
 Не у всех контейнеров итераторы поддерживают инкремент через `+` и `+=`. Для перемещения итератора на `n` позиций вперед используйте функцию [std::advance()](https://cppreference.com/w/cpp/iterator/advance): `std::advance(it, n)`. Если `n` — отрицательное число, то итератор передвинется на `n` позиций назад. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0081_task_0030}
+```cpp {.task_source #cpp_chapter_0081_task_0030}
 template<class It, class Val>
 It bin_search(It first, It last, Val x)
 {
@@ -236,7 +236,7 @@ It bin_search(It first, It last, Val x)
 }
 ```
 Определите длину диапазона через `std::distance()`. Середина диапазона находится на половине длины от его начала. Сдвигайте середину диапазона функцией `std::advance()`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 template<class It, class Val>
 It bin_search(It first, It last, Val x)
 {
@@ -266,7 +266,7 @@ It bin_search(It first, It last, Val x)
 
 В стандартной библиотеке есть алгоритм [std::binary_search()](https://en.cppreference.com/w/cpp/algorithm/binary_search). Но он лишь _проверяет,_ что диапазон содержит интересующий элемент:
 
-```c++ {.example_for_playground .example_for_playground_006}
+```cpp {.example_for_playground .example_for_playground_006}
 std::string s = "abcdefg";
 std::println("{}", std::binary_search(s.begin() + 2, s.end() - 1, 'e'));
 ```
@@ -282,7 +282,7 @@ true
 
 С помощью этих алгоритмов определим диапазон отсортированного вектора `v`, в котором находятся элементы, равные 5:
 
-```c++ {.example_for_playground .example_for_playground_007}
+```cpp {.example_for_playground .example_for_playground_007}
 int x = 5;
 std::vector<int> v = {2, 2, 5, 5, 5, 8, 9};
     
@@ -305,7 +305,7 @@ upper bound. index = 5. value = 8
 
 Если элемент отсутствует в диапазоне, `std::lower_bound()` и `std::upper_bound()` возвращают одинаковый результат:
 
-```c++ {.example_for_playground .example_for_playground_008}
+```cpp {.example_for_playground .example_for_playground_008}
 int x = 6;
 std::vector<int> v = {2, 5, 9, 11};
 auto it_l = std::lower_bound(v.begin(), v.end(), x);
@@ -331,14 +331,14 @@ upper bound. index = 2. value = 9
 
 Например, для вектора `[6, 6, 8, 8, 9]` и значения 8 функция должна вернуть 2. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0081_task_0040}
+```cpp {.task_source #cpp_chapter_0081_task_0040}
 std::size_t count_vals(std::vector<int> data, int val)
 {
 
 }
 ```
 Для получения диапазона элементов, равных `val`, воспользуйтесь [std::equal_range()](https://en.cppreference.com/w/cpp/algorithm/equal_range). Функция возвращает пару итераторов. Верните расстояние между ними, вызвав [std::distance()](https://en.cppreference.com/w/cpp/iterator/distance). {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 std::size_t count_vals(std::vector<int> data, int val)
 {
     const auto it_pair = std::equal_range(data.begin(), data.end(), val);
@@ -352,7 +352,7 @@ std::size_t count_vals(std::vector<int> data, int val)
 - `std::count()` принимает итераторы на диапазон и значение. И возвращает количество элементов диапазона, равных значению.
 - `std::count_if()` вместо значения принимает предикат.
 
-```c++ {.example_for_playground}
+```cpp {.example_for_playground}
 import std;
 
 int main()
@@ -371,7 +371,7 @@ int main()
 
 Чему равно значение переменной `n`? {.task_text}
 
-```c++   {.example_for_playground}
+```cpp   {.example_for_playground}
 import std;
 
 bool is_neg(int val)
@@ -399,7 +399,7 @@ int main()
 
 Функция `std::accumulate()` принимает итераторы на диапазон и начальное значение. И возвращает сумму начального значения с элементами диапазона:
 
-```c++   {.example_for_playground .example_for_playground_016}
+```cpp   {.example_for_playground .example_for_playground_016}
 std::vector<double> distances = {34.3, 18.0, 51.5};
 
 // Тип возвращаемого значения совпадает с типом третьего аргумента:
@@ -415,7 +415,7 @@ std::println("{}", total_distance);
 
 Функция `get_average()` принимает вектор чисел и возвращает их среднее арифметическое. В ней допущена ошибка. Исправьте ее и перепишите код с использованием `std::accumulate()`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0081_task_0090}
+```cpp {.task_source #cpp_chapter_0081_task_0090}
 double get_average(std::vector<int> values)
 {
     double sum = 0.0;
@@ -427,7 +427,7 @@ double get_average(std::vector<int> values)
 }
 ```
 В исходной реализации функции если вектор `values` пуст, происходит деление на ноль. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 double get_average(std::vector<int> values)
 {
     if (values.empty())
@@ -445,7 +445,7 @@ double get_average(std::vector<int> values)
 
 Функция [std::to_string()](https://en.cppreference.com/w/cpp/string/basic_string/to_string) переводит число в строку.  {.task_text}
 
-```c++
+```cpp
 import std;
 
 std::string dot_fold(std::string left, int right)

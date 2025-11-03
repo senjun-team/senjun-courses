@@ -10,7 +10,7 @@
 - Если `n` четное, делить его на 2.
 - Если `n` нечетное, умножать на 3 и прибавлять 1. 
 
-```c++  {.example_for_playground}
+```cpp  {.example_for_playground}
 import std;
 
 int collatz_multiply(int x) 
@@ -47,7 +47,7 @@ main.cpp:5:36: error: use of undeclared identifier 'collatz_divide'
 
 Объявление функции состоит из возвращаемого типа, имени функции и параметров. После объявления ставится оператор `;`.
 
-```c++
+```cpp
 int collatz_multiply(int x);
 ```
 
@@ -59,7 +59,7 @@ int collatz_multiply(int x);
 
 Чтобы исправить пример кода с гипотезой Коллатца, разместим объявления функций до их использования:
 
-```c++  {.example_for_playground}
+```cpp  {.example_for_playground}
 import std;
 
 int collatz_multiply(int x);
@@ -99,7 +99,7 @@ Checking Collatz conjecture for 17
 
 В случае ошибки напишите `err`. {.task_text}
 
-```c++ {.example_for_playground}
+```cpp {.example_for_playground}
 import std;
 
 int main()
@@ -122,7 +122,7 @@ err
 
 Объявление класса не включает реализацию его методов:
 
-```c++ {.example_for_playground .example_for_playground_001}
+```cpp {.example_for_playground .example_for_playground_001}
 class Message
 {
 public:
@@ -139,7 +139,7 @@ private:
 
 Объявление класса в связке с реализацией методов считается определением класса. При реализации метода _вне_ тела класса перед методом указывается имя класса, отделенное от имени метода оператором разрешения области видимости `::`.
 
-```c++  {.example_for_playground .example_for_playground_002}
+```cpp  {.example_for_playground .example_for_playground_002}
 Message::Message(std::string raw_text)
 {
     msg = parse_message(raw_text);
@@ -167,7 +167,7 @@ std::time_t Message::get_timestamp()
 
 В реализации используется [очередь с приоритетами.](/courses/cpp/chapters/cpp_chapter_0075/#block-priority-queue) {.task_text}
 
-```c++ {.task_source #cpp_chapter_0100_task_0020}
+```cpp {.task_source #cpp_chapter_0100_task_0020}
 class NthLargest
 {
 public:
@@ -185,7 +185,7 @@ private:
 };
 ```
 Очередь с приоритетами реализует структуру данных [куча](https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D1%87%D0%B0_(%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0_%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85)) (heap). По умолчанию элемент с наибольшим значением ключа находится на вершине кучи. Чтобы на вершине оказался наименьший элемент, шаблонный класс `std::priority_queue` был инстанцирован компаратором `std::greater` вместо `std::less`. Вам осталось контроллировать количество элементов кучи. Оно не должно превосходить `n`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 class NthLargest
 {
 public:
@@ -254,7 +254,7 @@ hello_compiler/
 
 В файле `hello_compiler.h` разместим объявление функции, которая выводит информацию о компиляторе. Она принимает строку. Класс `std::string` объявлен в хедере `string`, и нам надо подключить его через директиву препроцессора `#include`.
 
-```c++
+```cpp
 // hello_compiler.h
 #include <string>
 
@@ -268,7 +268,7 @@ void show_compiler_info(std::string compiler);
 
 Файл `hello_compiler.cpp` содержит определение `show_compiler_info()` и вспомогательную функцию `binary_name()`. Обратите внимание, что `show_compiler_info()` находится в пространстве имен `sys`, как и в хедере.
 
-```c++
+```cpp
 // hello_compiler.cpp
 #include <cstdlib>
 #include <map>
@@ -307,7 +307,7 @@ void show_compiler_info(std::string compiler)
 
 Теперь вызовем `show_compiler_info()` из `main.cpp`. Чтобы функция стала доступна в этом файле, нужно подключить хедер с ее объявлением. 
 
-```c++
+```cpp
 // main.cpp
 #include "hello_compiler.h"
 
@@ -342,7 +342,7 @@ Thread model: posix
 
 Препроцессор — это часть компилятора, отвечающая за первичную обработку кода. Он обнаруживает и обрабатывает строки в коде, начинающиеся с символа решетки `#`. За ним следует ключевое слово и опционально параметры:
 
-```c++
+```cpp
 #keyword params
 ```
 
@@ -350,7 +350,7 @@ Thread model: posix
 
 Ключевое слово `include` заменяет строку с директивой содержимым файла. Имя файла — обязательный параметр для ключевого слова `include`:
 
-```c++
+```cpp
 #include "common/logging.hpp"
 ```
 
@@ -360,7 +360,7 @@ Thread model: posix
 
 Заведем макрос `PI` и используем его при выводе в консоль:
 
-```c++  {.example_for_playground}
+```cpp  {.example_for_playground}
 #include <print>
 
 #define PI 3.1415926
@@ -376,7 +376,7 @@ int main()
 
 В процессе сборки проекта директива `#define` исчезнет, а по месту ее использования произойдет _макроподстановка_ — текстовая замена имени макроса на его тело:
 
-```c++
+```cpp
 std::println("{}", 3.1415926);
 ```
 
@@ -392,7 +392,7 @@ std::println("{}", 3.1415926);
 - `hello_compiler.h`, чтобы реализовать объявленный в нем интерфейс.
 - `cstdlib`, `map` и `print` из стандартной библиотеки, чтобы воспользоваться предоставляемыми ими объявлениями.
 
-```c++
+```cpp
 #include <cstdlib>
 #include <map>
 #include <print>
@@ -429,7 +429,7 @@ hello_compiler/
 
 Тогда подключение `hello_compiler.h` в `main.cpp` будет выглядеть так:
 
-```c++
+```cpp
 #include "utils/hello_compiler.h"
 ```
 
@@ -452,7 +452,7 @@ l
 
 Над функцией разместите подключение всех необходимых хедеров. Для справки используйте [cppreference](https://cppreference.com/). {.task_text}
 
-```c++ {.task_source #cpp_chapter_0100_task_0040}
+```cpp {.task_source #cpp_chapter_0100_task_0040}
 std::size_t score_sum(std::flat_multimap<std::string, std::size_t> applicants, 
                       std::string id)
 {
@@ -460,7 +460,7 @@ std::size_t score_sum(std::flat_multimap<std::string, std::size_t> applicants,
 }
 ```
 Вам пригодится метод [equal_range()](/courses/cpp/chapters/cpp_chapter_0073/#block-equal-range), который есть у `multi`-версий контейнеров, в том числе у класса [std::flat_multimap](/courses/cpp/chapters/cpp_chapter_0075/#block-flat). {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 #include <flat_map>
 #include <numeric>
 #include <string>
@@ -520,7 +520,7 @@ std::size_t score_sum(std::flat_multimap<std::string, std::size_t> applicants,
 
 Вы уже неоднократно импортировали модуль стандартной библиотеки:
 
-```c++
+```cpp
 import std;
 ```
 
@@ -528,7 +528,7 @@ import std;
 
 Импортирование собственного модуля выглядит точно так же:
 
-```c++
+```cpp
 import codecs;
 ```
 
@@ -540,7 +540,7 @@ import codecs;
 
 В [первой практике](/courses/cpp/practice/cpp_div_without_div/) «Деление без деления» имя модуля `div` соответствует имени его файла `div.cppm`. Но имена не обязаны совпадать: мы могли бы назвать файл и `custom_math.cppm`. Так выглядит содержимое `div.cppm`:
 
-```c++
+```cpp
 export module div;                                      // module declaration
 
 import std;                                             // import declaration
@@ -561,7 +561,7 @@ export std::size_t divide(std::size_t a, std::size_t b) // export declaration
 
 **Экспорт каждого интересующего объявления по отдельности.** Если объявление находится внутри пространства имен, то оно тоже автоматически экспортируется наружу. Этот способ применяется, когда экспортируемых объявлений не очень много:
 
-```c++
+```cpp
 export void f();
 
 namespace A
@@ -572,7 +572,7 @@ export void g();
 
 **Экспорт блока `{}`,** объединяющего объявления. Этот способ удобен, если нужно экспортировать много объявлений:
 
-```c++
+```cpp
 export {
 void f();
 void g();
@@ -581,7 +581,7 @@ void g();
 
 **Экспорт пространства имен:**
 
-```c++
+```cpp
 export namespace A
 {
 void f();
@@ -593,7 +593,7 @@ void g();
 
 Структура модуля немного усложняется, если внутри него требуется подключить хедер. Рассмотрим это на примере модуля из [второй практики](/courses/cpp/practice/cpp_moving_average/) «Скользящее среднее»:
 
-```c++
+```cpp
 module;                        // global module fragment
 
 #include <cmath>
@@ -619,7 +619,7 @@ public:
 
 Вернемся к модулю `div` из [первой практики.](/courses/cpp/practice/cpp_div_without_div/) В файле модуля есть импорт `std`:
 
-```c++
+```cpp
 export module div;
 
 import std;
@@ -632,7 +632,7 @@ export std::size_t divide(std::size_t a, std::size_t b)
 
 Модуль `div` подключается в `main.cpp`. Обратите внимание, что рядом есть импорт `std`:
 
-```c++
+```cpp
 import std;
 import div;
 
@@ -644,7 +644,7 @@ int main()
 
 Без этого импорта интерпретатор бы не обнаружил тип `std::size_t`:
 
-```c++
+```cpp
 import div;
 
 int main()
@@ -662,7 +662,7 @@ main.cpp:5:10: error: declaration of 'size_t' must be imported from module 'std'
 
 Можно сделать удобнее: при импорте `std` внутри `div` прокинуть этот импорт наружу. Организуется это с помощью ключевого слова `export`:
 
-```c++
+```cpp
 export import std;
 ```
 
@@ -685,7 +685,7 @@ hello_compiler/
 
 Модуль `hello_compiler.cppm` содержит одну внутреннюю и одну экспортируемую функцию: {#block-project-modules}
 
-```c++
+```cpp
 // hello_compiler.cppm
 export module hello_compiler;
 
@@ -716,7 +716,7 @@ export void show_compiler_info(std::string compiler)
 
 Модуль подключается в `main.cpp`:
 
-```c++
+```cpp
 // main.cpp
 import hello_compiler;
 
@@ -732,7 +732,7 @@ int main()
 
 Так выглядит использование модуля `std`:
 
-```c++
+```cpp
 // Подключение экспортируемых модулем объявлений
 import std;
 
@@ -745,7 +745,7 @@ int main()
 
 А так выглядит его реализация:
 
-```c++
+```cpp
 export module std;
 
 export namespace std
