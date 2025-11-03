@@ -9,7 +9,7 @@
 
 Чтобы выполнять различные действия в зависимости от условия, используется конструкция `if-else`. Условием может быть любое выражение, приводимое к `bool`:
 
-```c++
+```cpp
 if (условное выражение)
     Инструкция для true
 else
@@ -22,15 +22,15 @@ else
 
 С простыми инструкциями вы уже знакомы. Они оканчиваются точкой с запятой:
 
-```c++
+```cpp
 return 0;
 ```
 
-```c++
+```cpp
 char quit = 'Q';
 ```
 
-```c++
+```cpp
 std::println("{}", a > b);
 ```
 
@@ -38,7 +38,7 @@ std::println("{}", a > b);
 
 В этом примере каждая ветка условия — это блок:
 
-```c++ {.example_for_playground .example_for_playground_001}
+```cpp {.example_for_playground .example_for_playground_001}
 const std::string filename = "scale_2400.png";
 
 if (filename.contains('.'))
@@ -54,7 +54,7 @@ else
 
 И третий вид инструкций — управляющие. К ним, например, относятся условия и циклы. В данном примере `if-else` — это одна управляющая инструкция, ветки которой содержат по блоку:
 
-```c++
+```cpp
 if (a > b)
 {
     // ...
@@ -77,7 +77,7 @@ else
 
 В данном случае скобки обязательны:
 
-```c++ {.example_for_playground .example_for_playground_002}
+```cpp {.example_for_playground .example_for_playground_002}
 std::size_t cpu_count = 0;
 
 if (cpu_count == 0)
@@ -89,7 +89,7 @@ if (cpu_count == 0)
 
 А здесь скобки можно опустить:
 
-```c++  {.example_for_playground .example_for_playground_003}
+```cpp  {.example_for_playground .example_for_playground_003}
 const std::string s = "Some user input";
 
 if (s.empty())
@@ -100,7 +100,7 @@ else
 
 Чему равно значение `a`? {.task_text}
 
-```c++
+```cpp
 int a = 3;
 
 if (++a < 4)
@@ -122,7 +122,7 @@ if (++a < 4)
 - Константа `INFINITY` — [бесконечность](https://en.cppreference.com/w/cpp/numeric/math/INFINITY).
 - Функция [std::abs()](https://en.cppreference.com/w/cpp/numeric/math/abs) для получения модуля числа.
 
-```c++ {.task_source #cpp_chapter_0030_task_0010}
+```cpp {.task_source #cpp_chapter_0030_task_0010}
  // Подключение заголовочного файла, в котором объявлены
  // константы NAN и INFINITY
  // Про заголовочные файлы вы узнаете в главе 10
@@ -144,7 +144,7 @@ double vertical_flight_speed(double cur_height,
 }
 ```
 Пример раннего выхода из функции: `if (elapsed_time <= 0) return INFINITY;`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 #include <cmath>
 
 double vertical_flight_speed(double cur_height,
@@ -171,11 +171,11 @@ double vertical_flight_speed(double cur_height,
 
 Вам поможет метод строки [find().](https://en.cppreference.com/w/cpp/string/basic_string/find) Он принимает подстроку или символ и опциональный параметр — индекс, начиная с которого искать вхождение. По умолчанию это 0. Метод возвращает индекс первого вхождения либо константу `std::string::npos`, означающую, что подстрока не найдена. Тип возвращаемого значения — `std::size_t`. {.task_text #block-string-find}
 
-```c++ {.task_source #cpp_chapter_0030_task_0020}
+```cpp {.task_source #cpp_chapter_0030_task_0020}
 
 ```
 Пример проверки индекса символа: `email.find('.', i) != std::string::npos`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 bool is_valid(std::string email)
 {
     const std::size_t i = email.find('@');
@@ -194,7 +194,7 @@ bool is_valid(std::string email)
 
 Перед вами цепочка `if-else` для сравнения цвета из RGB-палитры с тремя значениями. Префикс `0x` нужен для обозначения шестнадцатеричных чисел:
 
-```c++
+```cpp
 if (color_code == 0x80ED99)
 {
     std::println("Light green");
@@ -221,7 +221,7 @@ else
 
 Этот код «лесенкой» выглядит ужасно. Поэтому подобные вложенные условия лучше форматировать без отступов и избыточных фигурных скобок. Ведь `if-else` — это инструкция, а вокруг единственной инструкции скобки можно не ставить. Такой код проще воспринимать:
 
-```c++ {.example_for_playground .example_for_playground_004}
+```cpp {.example_for_playground .example_for_playground_004}
 if (color_code == 0x80ED99)
 {
     std::println("Light green");
@@ -249,7 +249,7 @@ if (color_code == 0x80ED99)
 
 Например:
 
-```c++ {.example_for_playground .example_for_playground_005}
+```cpp {.example_for_playground .example_for_playground_005}
 std::println("{}", price < 250 ? "cheap" : "expensive");
 ```
 
@@ -257,7 +257,7 @@ std::println("{}", price < 250 ? "cheap" : "expensive");
 
 Перепишем этот `if-else` на тернарный оператор:
 
-```c++
+```cpp
 int status_code = 0;
 
 if (request_body_len > max_len)
@@ -272,7 +272,7 @@ else
 
 Отказ от `if-else` позволяет сделать переменную `status_code` константой:
 
-```c++
+```cpp
 const int status_code = (request_body_len > max_len) ? -1 : handle_request();
 ```
 
@@ -284,7 +284,7 @@ error: right operand to ? is void, but left operand is of type 'int'
 
 Перепишите функцию `max()` с использованием тернарного оператора. Тело функции должно состоять из единственной инструкции. {.task_text #block-max}
 
-```c++ {.task_source #cpp_chapter_0030_task_0030}
+```cpp {.task_source #cpp_chapter_0030_task_0030}
 int max(int a, int b)
 {
     if (a > b)
@@ -296,7 +296,7 @@ int max(int a, int b)
 }
 ```
 Оператор `return` должен вернуть результат применения тернарного оператора к условию `a > b`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 int max(int a, int b)
 {
     return a > b ? a : b;
@@ -309,7 +309,7 @@ int max(int a, int b)
 
 Конструкция `switch-case` удобна, когда требуется сравнивать выражение с набором константных значений. Это [более читабельная](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-switch-if) замена вложенных `if-else`:
 
-```c++
+```cpp
 switch(выражение)
 {
     case значение_1: 
@@ -335,7 +335,7 @@ switch(выражение)
 
 Так выглядит `switch-case` для сопоставления символа со значениями:
 
-```c++  {.example_for_playground .example_for_playground_006}
+```cpp  {.example_for_playground .example_for_playground_006}
 char user_input = 'y';
 
 switch(user_input)
@@ -369,7 +369,7 @@ Yes
 
 В большинстве случаев после выполнения `case` требуется выйти из `switch`. Для этого используется оператор `break`. Если его нет, то выполнение **продолжится** до следующего `break` или до самого конца `switch`:
 
-```c++   {.example_for_playground .example_for_playground_007}
+```cpp   {.example_for_playground .example_for_playground_007}
 const std::size_t number_system = 10;
 
 switch(number_system)
@@ -397,7 +397,7 @@ Other
 
 Что выведется в консоль? {.task_text}
 
-```c++ {.example_for_playground .example_for_playground_008}
+```cpp {.example_for_playground .example_for_playground_008}
 const std::size_t mark = 3;
 
 switch(mark)
@@ -426,7 +426,7 @@ cba
 
 Что выведется в консоль? {.task_text}
 
-```c++  {.example_for_playground .example_for_playground_009}
+```cpp  {.example_for_playground .example_for_playground_009}
 const std::size_t mark = 1;
 
 switch(mark)
@@ -456,7 +456,7 @@ bad
 
 Перепишите эту функцию с применением `switch-case`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0030_task_0060}
+```cpp {.task_source #cpp_chapter_0030_task_0060}
 void log_state(int code)
 {
     std::string state = "";
@@ -478,7 +478,7 @@ void log_state(int code)
 }
 ```
 Не забудьте про `break` и `default`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 void log_state(int code)
 {
     std::string state = "";

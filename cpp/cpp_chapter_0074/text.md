@@ -36,7 +36,7 @@ i = hash(key) % n
 
 Множество ключей [std::unordered_set](https://en.cppreference.com/w/cpp/container/unordered_set) используется для быстрой проверки на уникальность и для подсчета количества уникальных объектов.
 
-```c++ {.example_for_playground .example_for_playground_022}
+```cpp {.example_for_playground .example_for_playground_022}
 std::unordered_set<std::string> bluetooth_protocols = {"BNEP"};
 
 bluetooth_protocols.insert("RFCOMM");
@@ -57,7 +57,7 @@ Set: {"SDP", "RFCOMM"} Size: 2
 
 Метод [insert()](https://en.cppreference.com/w/cpp/container/unordered_set/insert.html) контейнера `std::unordered_set`, как и этот же метод других контейнеров, позволяет вставлять целые диапазоны: 
 
-```c++
+```cpp
 bluetooth_protocols.insert(src.begin(), src.end())
 ```
 
@@ -75,14 +75,14 @@ bluetooth_protocols.insert(src.begin(), src.end())
 
 Эта задача имеет короткое решение, работающее за `O(N)`. Если оно не приходит вам в голову, воспользуйтесь подсказкой. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0074_task_0040}
+```cpp {.task_source #cpp_chapter_0074_task_0040}
 int count_pairs(std::vector<int> v, int n)
 {
 
 }
 ```
 Заведите частотный словарь `freq` с ключами — элементами `v` и значениями — их частотой. Вначале словарь пустой. Перебирайте все элементы `v`. Для каждого элемента `x` рассчитайте его потенциальную пару: `y = n - x`. Если `y` уже содержится в словаре, прибавьте его частоту к `res`. После чего сделайте инкремент частоты `x` в `freq`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 int count_pairs(std::vector<int> v, int n)
 {
     std::unordered_map<int, int> freq;
@@ -108,14 +108,14 @@ int count_pairs(std::vector<int> v, int n)
 
 В своем решении используйте `std::unordered_map`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0074_task_0050}
+```cpp {.task_source #cpp_chapter_0074_task_0050}
 bool consists_of(std::string message, std::string magazine)
 {
 
 }
 ```
 Заведите вспомогательную функцию, которая принимает строку и возвращает `std::unordered_map`, ключи которого — символы, а значения — их частота в строке. Это частотный словарь. Примените эту функцию к тексту журнала. Затем проитерируйтесь по посланию и проверьте, что каждый символ в нем (кроме пробела) содержится в частотном словаре. Если символ найден, уменьшайте по этому ключу частоту на 1. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 std::unordered_map<char, std::size_t> to_dict(std::string text)
 {
     std::unordered_map<char, std::size_t> dict;
@@ -168,14 +168,14 @@ bool consists_of(std::string message, std::string magazine)
 
 В своем решении используйте `std::unordered_multiset`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0074_task_0060}
+```cpp {.task_source #cpp_chapter_0074_task_0060}
 bool consists_of(std::string message, std::string magazine)
 {
 
 }
 ```
 Заведите контейнер `std::unordered_multiset`, в который добавьте все буквы из текста журнала. Затем проитерируйтесь по тексту послания. Если буква из послания найдена в контейнере, удаляйте ее. Если не найдена, это будет означать, что текст послания составить нельзя. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 bool consists_of(std::string message, std::string magazine)
 {
     std::unordered_multiset<char> mag_chars;

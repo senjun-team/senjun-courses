@@ -10,7 +10,7 @@
 
 Тело цикла `while` выполняется, пока справедливо условие:
 
-```c++
+```cpp
 while(условное выражение)
 {
     // Тело цикла
@@ -19,7 +19,7 @@ while(условное выражение)
 
 Цикл `while` используют, если в теле цикла требуется изменять его условие. Либо если количество итераций не известно заранее:
 
-```c++
+```cpp
 while (!user_pressed_stop && !end_of_playlist)
 {
     play_next_song();
@@ -28,7 +28,7 @@ while (!user_pressed_stop && !end_of_playlist)
 
 Еще один распространенный сценарий применения `while` — вечный цикл:
 
-```c++
+```cpp
 while(true)
 {
     cmd = read_console_command();
@@ -56,10 +56,10 @@ while(true)
 - GCD равен GCD от `a - b` и `b`, если `a` больше `b`.
 - GCD равен GCD от `a` и `b - a`, если `a` меньше `b`.
 
-```c++ {.task_source #cpp_chapter_0040_task_0010}
+```cpp {.task_source #cpp_chapter_0040_task_0010}
 ```
 В цикле `while` проверяйте условие `a != b`. Внутри цикла изменяйте значения `a` и `b`. После выхода из цикла `a` будет равен наибольшему общему делителю. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 std::size_t gcd(std::size_t a, std::size_t b)
 {
     while (a != b)
@@ -82,7 +82,7 @@ std::size_t gcd(std::size_t a, std::size_t b)
 
 Для обхода элементов контейнера идиоматичнее использовать цикл `for`. Но никто не может запретить вам организовать обход через `while`:
 
-```c++ {.example_for_playground .example_for_playground_001}
+```cpp {.example_for_playground .example_for_playground_001}
 std::string s = "341453TNY";
 std::size_t i = 0;
 
@@ -104,7 +104,7 @@ XXXXXXTNY
 
 Цикл `do-while` отличается от `while` порядком действий: сначала исполняется тело цикла, а затем проверяется условие. Это означает, что вне зависимости от условия тело выполнится хотя бы один раз.
 
-```c++
+```cpp
 do
 {
     // Тело цикла
@@ -113,7 +113,7 @@ do
 
 К циклу `do-while` часто прибегают при чтении данных из внешнего источника. Первое чтение произойдет в любом случае, а последующие — если останутся данные:
 
-```c++
+```cpp
 int data_size = 0;
 
 do
@@ -128,7 +128,7 @@ do
 
 Вместо формального определения начнем с примера. Перепишем этот `while` на `for`:
 
-```c++  {.example_for_playground .example_for_playground_002}
+```cpp  {.example_for_playground .example_for_playground_002}
 int i = 5;
 
 while(i <= 25)
@@ -143,7 +143,7 @@ while(i <= 25)
 
 Так выглядит цикл `for`, делающий то же самое:
 
-```c++  {.example_for_playground .example_for_playground_003}
+```cpp  {.example_for_playground .example_for_playground_003}
 for (int i = 5; i <= 25; i += 5)
 {
     std::print("{} ", i);
@@ -157,7 +157,7 @@ for (int i = 5; i <= 25; i += 5)
 
 Так цикл `for` выглядит в общем виде:
 
-```c++
+```cpp
 for (инициализация; условие; итерация)
 {
     // Тело цикла
@@ -166,7 +166,7 @@ for (инициализация; условие; итерация)
 
 Любое из этих выражений может отсутствовать. Если опустить все три, то получится вечный цикл:
 
-```c++
+```cpp
 for(;;)
 {
     // Бесконечный цикл
@@ -179,10 +179,10 @@ for(;;)
 
 В своем решении используйте цикл `for`.  {.task_text}
 
-```c++ {.task_source #cpp_chapter_0040_task_0020}
+```cpp {.task_source #cpp_chapter_0040_task_0020}
 ```
 В инициализаторе цикла заведите счетчик. В условии цикла проверьте, что он меньше длин обеих строк. В теле цикла сравните символы строк по этому индексу. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 std::size_t common_prefix_len(std::string s1, std::string s2)
 {
     std::size_t len = 0;
@@ -213,14 +213,14 @@ std::size_t common_prefix_len(std::string s1, std::string s2)
 1x2=2 2x2=4 3x2=6  
 1x3=3 2x3=6 3x3=9   {.task_text}
 
-```c++ {.task_source #cpp_chapter_0040_task_0030}
+```cpp {.task_source #cpp_chapter_0040_task_0030}
 void show_multiplication_table(int n)
 {
 
 }
 ```
 Организуйте вложенный цикл. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 void show_multiplication_table(int n)
 {
     for (int i = 1; i <= n; ++i)
@@ -242,7 +242,7 @@ void show_multiplication_table(int n)
 
 Так выглядит подсчет гласных букв английского алфавита в строке с помощью `range-for`:
 
-```c++  {.example_for_playground .example_for_playground_004}
+```cpp  {.example_for_playground .example_for_playground_004}
 const std::string vowels = "aeiou";
 const std::string text = "what are vowels?";
 
@@ -264,7 +264,7 @@ Number of vowels in text: 5
 
 Общий вид цикла `range-for`:
 
-```c++
+```cpp
 for(инициализация переменной: диапазон)
 {
     // Тело цикла
@@ -277,12 +277,12 @@ for(инициализация переменной: диапазон)
 
 В своем решении воспользуйтесь циклом range-for. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0040_task_0040}
+```cpp {.task_source #cpp_chapter_0040_task_0040}
 
 
 ```
 Пример цикла: `for (char letter: s)`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 std::size_t count_letter(std::string s, char c)
 {
     std::size_t count = 0;

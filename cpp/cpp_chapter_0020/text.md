@@ -38,13 +38,13 @@ C++ — регистрозависимый язык. Поэтому `count`, `Co
 
 Перед вами два разных подхода к форматированию:
 
-```c++  {.example_for_playground}
+```cpp  {.example_for_playground}
 int main() {
     int x = 5 + (2 - 1);
 }
 ```
 
-```c++  {.example_for_playground}
+```cpp  {.example_for_playground}
 int main()
 {
   int x=5+(2-1);
@@ -59,7 +59,7 @@ int main()
 
 Так выглядит минимальная программа на C++, которая ничего не делает:
 
-```c++  {.example_for_playground}
+```cpp  {.example_for_playground}
 int main() { }
 ```
 
@@ -69,7 +69,7 @@ int main() { }
 
 В нашем примере тело функции пустое: `{ }`. Но как же тогда формируется статус завершения? Функция `main()` — особая: при отсутствии явно возвращаемого значения она возвращает 0. Для наглядности мы можем вернуть его явно:
 
-```c++  {.example_for_playground}
+```cpp  {.example_for_playground}
 int main()
 { 
     return 0;
@@ -90,7 +90,7 @@ int main()
 
 Рассмотрим реализацию функции `is_error()` и ее вызов:
 
-```c++  {.example_for_playground}
+```cpp  {.example_for_playground}
 import std;
 
 bool is_error(int http_code)
@@ -121,10 +121,10 @@ int main()
 - Принимает вещественное число типа `double` — температуру в градусах по Цельсию.
 - Возвращает градусы по шкале Фаренгейта (`double`). Формула: `°F = °C × 9.0/5.0 + 32.0`. Чтобы ее реализовать, воспользуйтесь операторами для сложения `+`, умножения `*` и деления `/`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0020_task_0020}
+```cpp {.task_source #cpp_chapter_0020_task_0020}
 ```
 Возвращаемое функцией значение, если параметр называется `celsius`: `celsius * 9.0 / 5.0 + 32.0`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 double to_fahrenheit(double celsius)
 {
     return celsius * 9.0 / 5.0 + 32.0;
@@ -135,34 +135,34 @@ double to_fahrenheit(double celsius)
 
 Чтобы создать переменную, укажите ее тип и имя. А затем через оператор `=` проинициализируйте значением:
 
-```c++
+```cpp
 int request_count = 0;
 ```
 
 После типа можно перечислять несколько переменных, разделенных запятой:
 
-```c++
+```cpp
 int left = -100, right = 100;
 ```
 
 Однако делать так [не рекомендуется:](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-name-one) такой код сложно читать. Лучше заводите по одной переменной на одну строку:
 
-```c++
+```cpp
 int left = -100;
 int right = 100;
 ```
 
 В некоторых языках действует правило: если переменной не задано значение явно, то она инициализируется значением по умолчанию. C++ к таким языкам не относится:
 
-```c++
+```cpp
 int request_count; // Здесь может быть что угодно!
 ```
 
-Поэтому при создании переменной обязательно задавайте ей значение. {#block-initialization}
+Поэтому при создании переменной [обязательно задавайте ей значение.](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es20-always-initialize-an-object) {#block-initialization}
 
 Чтобы изменить значение переменной, применяется уже знакомый вам **оператор присваивания** (assignment operator):
 
-```c++
+```cpp
 double default_len = 6.7;
 double len = default_len;
 
@@ -171,7 +171,7 @@ len = len + 2; // 8.7
 
 Чему равны значения `a` и `b`? Введите их через пробел. {.task_text}
 
-```c++   {.example_for_playground .example_for_playground_004}
+```cpp   {.example_for_playground .example_for_playground_004}
 int a = -1
 int b = 4;
 int c = a;
@@ -192,7 +192,7 @@ b = c;
 
 Константы помечаются квалификатором типа [const](https://en.cppreference.com/w/cpp/language/cv). Попытка перезаписи константы приведет к ошибке компиляции. Квалификатор `const` может стоять как слева от типа, так и справа:
 
-```c++
+```cpp
 const int equator_len_km  = 40075;
 int const winter_avg_temp = -5;
 ```
@@ -210,19 +210,19 @@ int const winter_avg_temp = -5;
 
 Большие числовые значения удобно разбивать по разрядам символом штриха `'`:
 
-```c++
+```cpp
 int avg_dist_to_moon_km = 384'400;
 ```
 
 В [литералах](https://en.wikipedia.org/wiki/Literal_(computer_programming)) типа `double` целая часть отделяется от дробной точкой.
 
-```c++
+```cpp
 double weight = 1008.9;
 ```
 
 Тип `double` поддерживает экспоненциальную запись числа. Она удобна для компактного представления длинных значений.
 
-```c++
+```cpp
 double a = 3e6;   //  3x10^6  = 3'000'000.0
 double b = -7e-2; // -7x10^-2 =  -0.07
 ```
@@ -242,7 +242,7 @@ double b = -7e-2; // -7x10^-2 =  -0.07
 
 Логический тип `bool` может принимать два значения: `true` и `false`.
 
-```c++
+```cpp
 bool is_eq = false;
 bool has_open_connections = true;
 ```
@@ -251,13 +251,13 @@ bool has_open_connections = true;
 
 Переменную символьного типа `char` можно инициализировать символом в одинарных кавычках:
 
-```c++
+```cpp
 char letter = 'S';
 ```
 
 А можно кодом символа из [ASCII-таблицы:](https://www.asciitable.com/)
 
-```c++
+```cpp
 char letter = 83;
 ```
 
@@ -267,7 +267,7 @@ char letter = 83;
 
 Используйте тип `void` в качестве типа возвращаемого значения функции, если она ничего не возвращает:
 
-```c++ {.example_for_playground}
+```cpp {.example_for_playground}
 void show_warning()
 {
     std::println("Something went wrong");
@@ -276,7 +276,7 @@ void show_warning()
 
 Кстати, вызывать `return` в конце такой функции не обязательно. Но его можно использовать для раннего выхода (early exit):
 
-```c++
+```cpp
 if (!is_connection_opened)
 {
     return;
@@ -301,7 +301,7 @@ if (!is_connection_opened)
 
 Под капотом `std::size_t` — псевдоним (alias) для одного из фундаментальных беззнаковых целых типов.
 
-```c++
+```cpp
 import std;
 
 int main()
@@ -320,7 +320,7 @@ int main()
 
 Если `std::size_t` — всего лишь псевдоним фундаментального типа, то `std::string` — полноценный класс, содержащий методы для работы со строкой.
 
-```c++
+```cpp
 import std;
 
 int main()
@@ -361,7 +361,7 @@ h 25
 
 Чтобы поменять приоритет выполнения операторов, они группируются скобками:
 
-```c++
+```cpp
 int x = (a + 5) * 8;
 ```
 
@@ -375,7 +375,7 @@ int x = (a + 5) * 8;
 
 Выражения сравнения приводятся к типу `bool`. **Выражение** (expression) — это последовательность операторов и операндов.
 
-```c++
+```cpp
 bool a = 8.1 < 16;  // true
 bool b = -5 != -5;  // false
 
@@ -387,7 +387,7 @@ bool d = s.size() == 4; // false
 
 Чему равно значение `b`? {.task_text}
 
-```c++  {.example_for_playground .example_for_playground_005}
+```cpp  {.example_for_playground .example_for_playground_005}
 std::string text = "Operator";
 
 bool b = text[text.size() - 1] == text[3];
@@ -407,7 +407,7 @@ true
 - `||` — «ИЛИ»: `has_gps_location || connected_to_wifi`.
 - `!`  — «НЕ» (отрицание): `!is_valid`.
 
-```c++ {.example_for_playground .example_for_playground_001}
+```cpp {.example_for_playground .example_for_playground_001}
 bool is_online = true;
 bool is_updated = false;
 
@@ -419,11 +419,11 @@ XOR — это булева функция, также известная как
 
 Напишите свою реализацию `hello_xor()`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0020_task_0050}
+```cpp {.task_source #cpp_chapter_0020_task_0050}
 
 ```
 Функция возвращает `true` тогда и только тогда, когда один из аргументов равен `true`, а другой — `false`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 bool hello_xor(bool a, bool b)
 {
     return (!a && b) || (a && !b);
@@ -445,7 +445,7 @@ bool hello_xor(bool a, bool b)
 
 [Операторы составного присваивания](https://en.cppreference.com/w/cpp/language/operator_assignment) (compound assignment) объединяют присваивание переменной с арифметическим действием над ней. Их ввели в язык, чтобы записывать простые арифметические действия более кратко:
 
-```c++
+```cpp
 x += 5;  // x = x + 5
 x -= y;  // x = x - y
 x *= 10; // x = x * 10;
@@ -457,7 +457,7 @@ x %= 2;  // x = x % 2;
 
 Увеличение или уменьшение значения на единицу можно записывать еще короче! [Оператор инкремента](https://en.cppreference.com/w/cpp/language/operator_incdec) `++` увеличивает значение на 1, а оператор декремента `--` уменьшает. Эти операторы применимы _только_ к целым числам.
 
-```c++
+```cpp
 ++x; // Эквивалентно x+=1
 --x; // Эквивалентно x-=1
 ```
@@ -466,7 +466,7 @@ x %= 2;  // x = x % 2;
 
 Есть и постфиксная форма: в ней `++` и `--` указываются после переменной. Это называется пост-инкрементом и пост-декрементом:
 
-```c++
+```cpp
 x++;
 x--;
 ```
@@ -475,14 +475,14 @@ x--;
 
 Префиксный оператор сначала изменяет переменную на 1, а потом возвращает значение: {#block-pre-increment}
 
-```c++
+```cpp
 a = 2;
 b = ++a; // a=3, b=3
 ```
 
 Постфиксный оператор сначала возвращает значение переменной, и лишь затем увеличивает ее на 1:
 
-```c++
+```cpp
 a = 2;
 b = a++; // a=3, b=2
 ```
@@ -491,7 +491,7 @@ b = a++; // a=3, b=2
 
 И еще одно важное отличие: префиксные формы возвращают саму переменную, а постфиксные — ее неизменяемую копию. Поэтому такой код не скомпилируется:
 
-```c++
+```cpp
 --i++;
 ```
 
@@ -523,7 +523,7 @@ error: expression is not assignable
 
 Нужны ли скобки, чтобы это выражение вычислилось как ожидается? `y/n`. {.task_text}
 
-```c++
+```cpp
 width < 0 || volume / length <= max_val
 ```
 
@@ -542,7 +542,7 @@ n
 
 Ремарка: это пример плохого кода. В реальных проектах избегайте подобных трудночитаемых конструкций. Однако они встречаются на собеседованиях. {.task_text}
 
-```c++  {.example_for_playground .example_for_playground_002}
+```cpp  {.example_for_playground .example_for_playground_002}
 int a = 1, b = 2, c = 3;
 int x = a-- - b++ - c--;
 ```
@@ -558,7 +558,7 @@ int x = a-- - b++ - c--;
 
 В случае ошибки напишите `err`. {.task_text}
 
-```c++  {.example_for_playground .example_for_playground_003}
+```cpp  {.example_for_playground .example_for_playground_003}
 int c = 2;
 int C = 5;
 std::print("{}", c++ * ++C);

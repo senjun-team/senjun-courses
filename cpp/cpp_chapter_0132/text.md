@@ -6,7 +6,7 @@
 
 Но поле может быть встроенного типа, например, `char` или `int`, и не иметь конструктора. Тогда при инициализации по умолчанию в него не будет записано никакого значения. В поле будет лежать любой мусор:
 
-```c++  {.example_for_playground}
+```cpp  {.example_for_playground}
 import std;
 
 struct Context
@@ -31,7 +31,7 @@ int main()
 
 Это инициализация поля по месту его объявления:
 
-```c++   {.example_for_playground}
+```cpp   {.example_for_playground}
 import std;
 
 struct Context
@@ -51,7 +51,7 @@ int main()
 
 Вместо копирующей инициализации через оператор `=` поля можно инициализировать универсально:
 
-```c++
+```cpp
 struct Context
 {
     // DMI, универсальная инициализация:
@@ -61,7 +61,7 @@ struct Context
 ```
 
 Прямая инициализация полей появилась в C++11. Она работает по правилам:
-- Поля инициализируются в порядке своего объявления. В примере выше сначала инициализируется `is_logged_in`, а затем `connections_count`.
+- Поля инициализируются в порядке своего объявления. В примере выше сначала инициализируется `requests_count`, а затем `user_id`.
 - Это происходит _до_ вызова [конструктора.](/courses/cpp/chapters/cpp_chapter_0050/#block-constructors-destructors})
 - Значение, заданное полю через прямую инициализацию, можно переопределить в конструкторе.
 
@@ -71,7 +71,7 @@ struct Context
 
 Конструктор класса или структуры нужен для корректной инициализации объекта. В первую очередь для установки полей в требуемые значения. До сих пор мы [инициализировали поля](/courses/cpp/chapters/cpp_chapter_0050/#block-task-7) прямо в теле конструктора:
 
-```c++   {.example_for_playground}
+```cpp   {.example_for_playground}
 import std;
 
 struct SessionInfo
@@ -109,7 +109,7 @@ int main()
 
 Перепишем наш пример с использованием списка инициализации полей:
 
-```c++    {.example_for_playground .example_for_playground_001}
+```cpp    {.example_for_playground .example_for_playground_001}
 struct SessionInfo
 {
     SessionInfo()
@@ -126,14 +126,14 @@ struct SessionInfo
 
 Список инициализации указывается _после_ круглых скобок с параметрами конструктора и _до_ его тела. В нем после оператора `:` через запятую перечисляются поля с присваиваемыми им в скобках значениями. Можно использовать круглые скобки для прямой инициализации, а можно фигурные для универсальной:
 
-```c++
+```cpp
 SessionInfo() : requests_count{0}, user_id{1}
 { }
 ```
 
 Запомните правило: поля инициализируются в порядке своего объявления. А вовсе не в порядке перечисления в списке инициализации полей. Если они не совпадают, компилятор выдает [предупреждение:](https://clang.llvm.org/docs/DiagnosticsReference.html#wreorder-ctor)
 
-```c++    {.example_for_playground .example_for_playground_002}
+```cpp    {.example_for_playground .example_for_playground_002}
 struct Message
 {
     Message(std::string message, std::time_t updated, std::time_t created)
@@ -155,7 +155,7 @@ main.cpp:8:7: warning: initializer order does not match the declaration order
 
 Часть полей в списке инициализации конструктора может быть опущена. Это допустимо, если конструктор не имеет параметра, который бы влиял на поле, а само поле имеет адекватный конструктор по умолчанию:
 
-```c++    {.example_for_playground .example_for_playground_003}
+```cpp    {.example_for_playground .example_for_playground_003}
 struct Message
 {
     Message(std::string message, std::time_t updated, std::time_t created)
@@ -182,7 +182,7 @@ struct Message
 
 Напишите `err` в случае ошибки компиляции или `ub` в случае неопределенного поведения. {.task_text}
 
-```c++ {.example_for_playground}
+```cpp {.example_for_playground}
 import std;
 
 class Storage
@@ -217,7 +217,7 @@ ub
 
 На помощь приходит [назначенная инициализация](https://en.cppreference.com/w/cpp/language/aggregate_initialization.html#Designated_initializers) (designated-initialization). Она появилась в C++20 и позволяет в инициализаторе перечислять имена полей:
 
-```c++    {.example_for_playground}
+```cpp    {.example_for_playground}
 import std;
 
 struct GeoPoint
@@ -239,7 +239,7 @@ int main()
 
 Если добавить в структуру `GeoPoint` хотя бы пустой конструктор, то она перестанет быть агрегатом. И применение назначенной инициализации приведет к ошибке компиляции:
 
-```c++    {.example_for_playground}
+```cpp    {.example_for_playground}
 import std;
 
 struct GeoPoint
@@ -264,7 +264,7 @@ main.cpp:13:14: error: initialization of non-aggregate type 'GeoPoint' with a de
 
 Передавайте поля в инициализатор строго в том порядке, в котором они объявлены в классе. Иначе компилятор выдаст предупреждение. А в случае переданного флага `-Werror` завершит сборку с ошибкой:
 
-```c++
+```cpp
 GeoPoint p{.lon=6.0, .lat=1.0}; // lat и lon идут в неправильном порядке
 ```
 ```
@@ -274,7 +274,7 @@ error: ISO C++ requires field designators to be specified in declaration order; 
 
 Поля в инициализаторе нельзя менять местами, но часть из них можно пропустить. Пропущенным полям должны быть заданы значения по умолчанию через прямую инициализацию полей, иначе при обращении к ним вас ждет UB.
 
-```c++    {.example_for_playground}
+```cpp    {.example_for_playground}
 import std;
 
 struct ConnInfo
@@ -293,7 +293,7 @@ int main()
 
 Вместо копирующей инициализации полей можно использовать универсальную:
 
-```c++
+```cpp
  ConnInfo ci{.unix_socket_path{"/tmp/p0fsock"}, .port{7689}};
 ```
 
@@ -301,7 +301,7 @@ int main()
 
 Напишите `err` в случае ошибки компиляции или `ub` в случае неопределенного поведения. {.task_text}
 
-```c++ {.example_for_playground}
+```cpp {.example_for_playground}
 import std;
 
 class CharacterRange
@@ -336,7 +336,7 @@ err
 
 Если структура или класс является агрегатом и вы считаете, что уместно было бы явно прописать имена полей, пользуйтесь назначенной инициализацией:
 
-```c++
+```cpp
 // designated-initialization: назначенная инициализация
 std::pair<int, char> p{.first = 1, .second = 'A'};
 ```

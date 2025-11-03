@@ -8,7 +8,7 @@
 
 Перегрузка функций — один из видов [полиморфизма.](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%BB%D0%B8%D0%BC%D0%BE%D1%80%D1%84%D0%B8%D0%B7%D0%BC_(%D0%B8%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0)) Она избавляет от придумывания разных имен функций, которые делают практически одно и то же, но для разных параметров. Это упрощает кодовую базу.
 
-```c++  {.example_for_playground .example_for_playground_001}
+```cpp  {.example_for_playground .example_for_playground_001}
 void log_error(std::size_t error_code)
 {
     std::println("Error. Code: {}", error_code);
@@ -55,7 +55,7 @@ int main()
 
 У каждого из подходов есть свои достоинства и недостатки. В проекте «Деление без деления», который вы только что выполнили, реализован первый подход. В нем деление на ноль обрабатывается через возврат специального значения:
 
-```c++
+```cpp
 inline std::size_t divide(std::size_t a, std::size_t b)
 {
     if (b == 0)
@@ -66,7 +66,7 @@ inline std::size_t divide(std::size_t a, std::size_t b)
 
 Во всех местах вызова `divide()` нужно не забыть проверку: вдруг вернулось значение, говорящее об ошибке?
 
-```c++
+```cpp
 const std::size_t res = divide(blob_len, chunk_len);
 
 if (res == std::numeric_limits<std::size_t>::max())
@@ -75,7 +75,7 @@ if (res == std::numeric_limits<std::size_t>::max())
 
 Давайте перепишем этот код. Чтобы избежать деления на ноль, бросим исключение [оператором throw:](https://en.cppreference.com/w/cpp/language/throw)
 
-```c++
+```cpp
 inline std::size_t divide(std::size_t a, std::size_t b)
 {
     if (b == 0)
@@ -90,7 +90,7 @@ inline std::size_t divide(std::size_t a, std::size_t b)
 
 Блок `catch` и является обработчиком. Он перехватывает и обрабатывает исключения указанного класса и его потомков.
 
-```c++
+```cpp
 try
 {
     const std::size_t res = divide(blob_len, chunk_len);
@@ -115,7 +115,7 @@ catch(const std::runtime_error & e)
 
 Требуется переписать код таким образом, чтобы исключение обрабатывалось в функции `handle_daily_stats()`: в консоль должна выводиться ошибка, возвращаемая методом `what()`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0050_task_0020}
+```cpp {.task_source #cpp_chapter_0050_task_0020}
 void handle_daily_stats()
 {
     if (!filter())
@@ -141,7 +141,7 @@ void handle_daily_stats()
 
 ```
 В функцию `handle_daily_stats()` добавьте конструкцию `try-catch`. В блоке `try` последовательно вызовите функции `filter()`, `sort()`, `count()`, а также выведите в консоль строку `"success"`. В блоке `catch` перехватите исключение `const std::runtime_error & e` и выведите в консоль строку, возвращаемую методом `e.what()`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 void handle_daily_stats()
 {
     try
@@ -167,7 +167,7 @@ void handle_daily_stats()
 
 [Пространство имен](https://en.cppreference.com/w/cpp/language/namespace) (namespace) — это область в коде, объединяющая логически связанные функции, константы, классы и другие сущности.
 
-```c++  {.example_for_playground .example_for_playground_002}
+```cpp  {.example_for_playground .example_for_playground_002}
 namespace Net
 {
     const std::string loopback = "127.0.0.1";
@@ -180,7 +180,7 @@ namespace Net
 
 Для обращения к содержимому пространства имен применяется оператор разрешения области видимости `::`.
 
-```c++  {.example_for_playground .example_for_playground_003}
+```cpp  {.example_for_playground .example_for_playground_003}
 std::println(Net::loopback);
 
 std::println(Net::get_hostname("192.0.2.1"));
@@ -209,7 +209,7 @@ boost::asio::ip::tcp::acceptor
 
 Перечисление — это тип, значения которого ограничены набором именованных констант. Во многих код-стайлах имена констант задаются заглавными буквами:
 
-```c++   {.example_for_playground .example_for_playground_004}
+```cpp   {.example_for_playground .example_for_playground_004}
 // Создаем новый тип
 enum HashType
 {
@@ -224,7 +224,7 @@ HashType hash_type = SHA2;
 
 Мы завели тип `HashType`. Переменные этого типа принимают одно из 3-х значений: `MD5`, `SHA1`, `SHA2`. Под капотом каждая из этих констант равна какому-то целому числу. За счет этого компилятор может выполнить неявное преобразование: привести значение типа `HashType` к целочисленному типу.
 
-```c++  {.example_for_playground .example_for_playground_005}
+```cpp  {.example_for_playground .example_for_playground_005}
 // Оба варианта обращения к константам корректны:
 int k = HashType::MD5;
 int m = SHA1;
@@ -240,7 +240,7 @@ std::println("{} {} {}", k, m, n);
 
 Взгляните еще раз на то, как выглядит создание перечисления. Создадим новый тип `Compression`, переменные которого могут принимать два значения — `QuickLZ` и `LZ4`:
 
-```c++   {.example_for_playground .example_for_playground_006}
+```cpp   {.example_for_playground .example_for_playground_006}
 enum Compression
 {
     QuickLZ,
@@ -252,7 +252,7 @@ enum Compression
 
 Так выглядит одновременное создание нового типа `Compression` и переменной этого типа `compression_method`:
 
-```c++   {.example_for_playground .example_for_playground_007}
+```cpp   {.example_for_playground .example_for_playground_007}
 enum Compression
 {
     QuickLZ,
@@ -270,7 +270,7 @@ compression_method = LZ4;
 
 Каковы целочисленные значения, принимаемые перечислением `State`? Укажите их через пробел. {.task_text}
 
-```c++
+```cpp
 enum State
 {
     Initialized,
@@ -295,7 +295,7 @@ enum State
 
 Такое поведение порождает массу ошибок. Чтобы их избежать, в C++11 был введен `enum class`. Он ничем не отличается от обычного `enum` кроме запрета неявных преобразований и безопасной работы с именами констант. [Старайтесь всегда использовать](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Renum-class) `enum class` вместо `enum`.
 
-```c++   {.example_for_playground .example_for_playground_008}
+```cpp   {.example_for_playground .example_for_playground_008}
 enum class ByteOrder
 {
     Native       = 1,
@@ -314,13 +314,13 @@ int n = ByteOrder::Native;         // Ошибка
 
 В теле функции используйте `switch-case`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0050_task_0050}
+```cpp {.task_source #cpp_chapter_0050_task_0050}
 // Перечисление Rarity
 
 // Функция to_string()
 ```
 После объявления `enum class` не забудьте точку с запятой. Объявление `Rarity` должно идти до объявления функции `to_string()`. Все возвращаемые функцией строки начинаются с заглавной буквы. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 enum class Rarity
 {
     Common,
@@ -353,16 +353,16 @@ std::string to_string(Rarity rarity)
 
 Верхнеуровнево класс выглядит так:
 
-```c++
+```cpp
 class имя_класса
 {
     // содержимое: поля и методы
 };
 ```
 
-Данные класса хранятся в его полях. { #block-class-message }
+Данные класса хранятся в его полях. {#block-class-message}
 
-```c++
+```cpp
 class Message
 {
 public:
@@ -373,9 +373,9 @@ public:
 
 [Спецификатор доступа](https://en.cppreference.com/w/cpp/language/access) `public` означает, что перечисленные после него поля и методы составляют его публичный интерфейс и открыты пользователям класса.
 
-Методы класса выглядят как функции, определенные внутри класса. Они имеют доступ ко всем его полям и методам. Методы могут иметь перегрузки. { #block-class-unixtimestamp }
+Методы класса выглядят как функции, определенные внутри класса. Они имеют доступ ко всем его полям и методам. Методы могут иметь перегрузки. {#block-class-unixtimestamp}
 
-```c++   {.example_for_playground .example_for_playground_009}
+```cpp   {.example_for_playground .example_for_playground_009}
 class UnixTimestamp
 {
 public:
@@ -393,7 +393,7 @@ public:
 
 Обратите внимание, что поле `seconds` мы инициализировали нулем, то есть явно задали его значение по умолчанию:
 
-```c++
+```cpp
 std::time_t seconds = 0;
 ```
 
@@ -401,7 +401,7 @@ std::time_t seconds = 0;
 
 Для обращения к полям и методам _объекта класса_ используется оператор доступа к элементу `.`:
 
-```c++   {.example_for_playground .example_for_playground_010}
+```cpp   {.example_for_playground .example_for_playground_010}
 UnixTimestamp ts;
 
 ts.seconds = 1153044000;
@@ -412,7 +412,7 @@ ts.show_days();
 
 Рассмотрим класс `Task`, описывающий задачу в типичном таск-трекере. У него есть методы для логирования времени работы над задачей и обновления ее статуса. Поля, хранящие время и статус, сделаны приватными. В некоторых код-стайлах приватные поля именуются с префиксом `m_` (member). { #block-class-task }
 
-```c++ {.example_for_playground .example_for_playground_011}
+```cpp {.example_for_playground .example_for_playground_011}
 enum class State { Todo = 1, InProgress = 2, Done = 3 };
 
 class Task
@@ -447,7 +447,7 @@ private:
 
 А теперь поработаем с объектом класса `Task`:
 
-```c++ {.example_for_playground .example_for_playground_012}
+```cpp {.example_for_playground .example_for_playground_012}
 Task t;
 t.update_state(State::InProgress);
 t.log_work_hours(5);
@@ -470,10 +470,10 @@ t.show_work_hours();
 
 Чтобы хранить состояние устройства, заведите 3 приватных поля: `is_on` — включено устройство или нет; `time_started` — время запуска; `time_checked` — время последнего хэлсчека. При объявлении полей обязательно проинициализируйте их. Значение по умолчанию `is_on` равно `false` (устройство должно быть выключено до явного вызова `start()`); а время запуска и время хэлсчека по умолчанию должны быть равны 0. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0050_task_0060}
+```cpp {.task_source #cpp_chapter_0050_task_0060}
 ```
 Метод `start()` должен устанавливать поле `is_on` в `true`, а `time_started` в `get_cur_time()`. Метод `stop()` должен устанавливать `is_on` в `false`. Метод `set_latest_healthcheck()` должен проверять `is_on` и бросать `std::logic_error`. А если устройство включено, устанавливать `time_checked` в `get_cur_time()`. Метод `is_acitve()` должен возвращать результат выражения `is_on && get_cur_time() < time_checked + 60`. А метод `uptime()` — результат выражения `is_on ? get_cur_time() - time_started : 0`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 class Device
 {
 public:
@@ -535,7 +535,7 @@ private:
 - Если деструктор не указан явно, для класса создается деструктор по умолчанию. Он вызывает деструкторы полей класса.
 - Деструктор срабатывает в момент удаления объекта. Практически никогда не требуется вызывать его напрямую.
 
-```c++  {.example_for_playground .example_for_playground_013}
+```cpp  {.example_for_playground .example_for_playground_013}
 class File
 {
 public:
@@ -574,7 +574,7 @@ int main()
 
 Затем перепишите в соответствии с этими изменениями класса функцию `handle_metrics()`. Перехватывать в ней исключения не нужно: они обрабатываются в коде, вызывающем `handle_metrics()`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0050_task_0070}
+```cpp {.task_source #cpp_chapter_0050_task_0070}
 class DBConn
 {
 public:
@@ -641,7 +641,7 @@ void handle_metrics()
 }
 ```
 Заведите конструктор `DBConn(std::string conn_str)`, открывающий подключение к БД. Закрывайте подключение в деструкторе `~DBConn()`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 class DBConn
 {
 public:
@@ -681,7 +681,7 @@ void handle_metrics()
 
 Помимо классов в C++ есть [структуры](https://en.cppreference.com/w/c/language/struct) (struct). Они очень похожи. Но поля и методы класса по умолчанию приватные (private). А у структуры — публичные (public):
 
-```c++  {.example_for_playground .example_for_playground_014}
+```cpp  {.example_for_playground .example_for_playground_014}
 struct UserMessage
 {
     std::size_t id = 0;
@@ -699,7 +699,7 @@ msg.text = "C++: Simula in wolf’s clothing";
 
 Например, координата точки на плоскости состоит из двух значений. Изменение любого из них не приводит координату в неконсистентное состояние.
 
-```c++  {.example_for_playground .example_for_playground_015}
+```cpp  {.example_for_playground .example_for_playground_015}
 struct Point
 {
     double x = 0.0;
@@ -728,7 +728,7 @@ Message UnixTimestamp
 
 Рассмотрим функцию `max()`:
 
-```c++
+```cpp
 int max(int a, int b)
 {
     return a < b ? b : a;
@@ -739,7 +739,7 @@ int max(int a, int b)
 
 Так давайте же научим `max()` работать с параметрами любого типа. Создадим шаблон функции:
 
-```c++   {.example_for_playground .example_for_playground_016}
+```cpp   {.example_for_playground .example_for_playground_016}
 template<class T> // T - параметр шаблона
 T max(T a, T b)   // a и b - параметры функции
 {
@@ -753,7 +753,7 @@ T max(T a, T b)   // a и b - параметры функции
 
 А теперь убедимся, что при вызове функция умеет принимать аргументы самых разных типов!
 
-```c++   {.example_for_playground .example_for_playground_017}
+```cpp   {.example_for_playground .example_for_playground_017}
 max(5, 6);              // 6
 max('z', 'a');          // z
 max(1.01, 1.02);        // 1.02
@@ -761,7 +761,7 @@ max(1.01, 1.02);        // 1.02
 
 Как это работает? В процессе сборки программы компилятор находит все вызовы шаблонных функций. Для каждого уникального набора аргументов он _инстанцирует_ шаблон: порождает обычную функцию из шаблона функции. Практически это означает, что компилятор вместо программиста многократно копирует одну и ту же функцию, меняя лишь типы. В нашем примере это компилятор создал три _специализации шаблона:_
 
-```c++
+```cpp
 int max(int a, int b) { return a < b ? b : a; }
 
 char max(char a, char b) {return a < b ? b : a; }
@@ -771,7 +771,7 @@ double max(double a, double b) { return a < b ? b : a; }
 
 Порой без подсказки компилятор не может самостоятельно вывести все типы, чтобы инстанцировать шаблон. Тогда их требуется явно указать _при вызове_ функции. В случае с `max()` это избыточно: компилятор сам определяет тип `T`, ведь это тип переданных в функцию аргументов. Тем не менее, мы можем задать аргумент шаблона явно, передав его в треугольных скобках:
 
-```c++ {.example_for_playground .example_for_playground_018}
+```cpp {.example_for_playground .example_for_playground_018}
 max<int>(5, 6);
 max<char>('z', 'a');
 max<double>(1.01, 1.02);
@@ -783,10 +783,10 @@ max<double>(1.01, 1.02);
 
 Например, у нас есть строка `std::string s="generic"` и предикат `bool is_a(char c) {return c == 'a'; }`. Вызов `str_none_of(s, is_a)` должен вернуть `true`. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0050_task_0090}
+```cpp {.task_source #cpp_chapter_0050_task_0090}
 ```
 У шаблона должен быть единственный параметр, например `class Fn`. Тогда функция будет выглядеть так: `bool str_none_of(std::string s, Fn pred)`. В ней в цикле по каждому символу `c` строки `s` нужно применить предикат: `pred(c)`. Если он хотя бы раз вернул `true`, функция возвращает `false`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 template<class Fn>
 bool str_none_of(std::string s, Fn pred)
 {

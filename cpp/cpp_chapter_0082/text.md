@@ -6,7 +6,7 @@
 
 Функция [std::is_sorted()](https://en.cppreference.com/w/cpp/algorithm/is_sorted) проверяет, отсортирован ли диапазон. А [std::sort()](https://en.cppreference.com/w/cpp/algorithm/sort) сортирует его. Обе функции работают с сортировкой по возрастанию. Для строк это называется [лексикографическим порядком.](https://ru.wikipedia.org/wiki/%D0%9B%D0%B5%D0%BA%D1%81%D0%B8%D0%BA%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%D0%B9_%D0%BF%D0%BE%D1%80%D1%8F%D0%B4%D0%BE%D0%BA) Для сортировки по возрастанию используется сравнение оператором `<`.
 
-```c++   {.example_for_playground .example_for_playground_009}
+```cpp   {.example_for_playground .example_for_playground_009}
 std::deque<double> d = {3.1, 8.0, 56.5};
 std::println("{}", std::is_sorted(d.begin(), d.end()));
 
@@ -30,14 +30,14 @@ false
 
 Функция должна отработать _быстрее,_ чем за квадратичное время `O(N^2)`. Исходный массив можно изменять. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0082_task_0060}
+```cpp {.task_source #cpp_chapter_0082_task_0060}
 bool contains_duplicate(std::vector<int> v)
 {
 
 }
 ```
 Сначала отсортируйте вектор. Сложность сортировки — `O(N * log(N))` Затем пройдитесь по вектору, чтобы сравнить соседние элементы за `O(N)`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 bool contains_duplicate(std::vector<int> v)
 {
     if (v.empty())
@@ -71,7 +71,7 @@ bool contains_duplicate(std::vector<int> v)
 
 **Компаратор** — это функция-предикат от двух параметров. Она возвращает `true`, если первый параметр меньше, чем второй. Чтобы сортировать по убыванию, а не по возрастанию, достаточно передать [std::greater<T>()](https://en.cppreference.com/w/cpp/utility/functional/greater), где `T` — тип элементов диапазона.
 
-```c++
+```cpp
 bool is_sorted = std::is_sorted(days.begin(),
                                 days.end(),
                                 std::greater<DayOfWeek>());
@@ -97,7 +97,7 @@ bool is_sorted = std::is_sorted(days.begin(),
 
 Найдите ошибку в компараторе и исправьте ее. Чтобы посмотреть, как `has_higher_priority()` применяется в коде, откройте эту задачу в плэйграунде. {.task_text}
 
-```c++ {.task_source #cpp_chapter_0082_task_0050}
+```cpp {.task_source #cpp_chapter_0082_task_0050}
 struct Product
 {
     int id = 0;
@@ -118,7 +118,7 @@ bool has_higher_priority(Product a, Product b)
 ```
 
 Допустим, в функцию переданы два объекта `Product` с полями `popularity=1000, rating=4` и `popularity=100, rating=5`. В зависимости от того, в каком порядке они попадут в функцию, `has_higher_priority()` вернет разный результат! Это означает нарушение аксиомы антисимметричности. Чтобы исправить это, нужно добавить дополнительную проверку для сравнений поля `rating`. Условие `a.rating > b.rating` нужно дополнить: `a.popularity == b.popularity && a.rating > b.rating`. {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 struct Product
 {
     int id = 0;
@@ -142,7 +142,7 @@ bool has_higher_priority(Product a, Product b)
 
 Добавить элементы одного контейнера в конец другого не так просто, как хотелось бы. Например, вектор, в отличие от строк, не поддерживает конкатенацию через оператор `+=`: 
 
-```c++
+```cpp
 std::string s1 = "prefix";
 std::string s2 = " suffix";
 
@@ -156,7 +156,7 @@ prefix suffix
 
 Вместо простой конкатенации для векторов используется алгоритм [std::copy](https://en.cppreference.com/w/cpp/algorithm/copy). Он принимает итераторы на входной диапазон и итератор на начало выходного диапазона:
 
-```c++
+```cpp
 template<class InputIt, class OutputIt>
 OutputIt copy(InputIt first, InputIt last, OutputIt d_first)
 {  /* Реализация */  }
@@ -166,7 +166,7 @@ OutputIt copy(InputIt first, InputIt last, OutputIt d_first)
 
 На примере `std::copy()` скажем про важную, но неочевидную особенность работы с алгоритмами. Если алгоритм не предназначен для модификации входного диапазона, но технически это допускает, будьте осторожны. Функция не должна изменять значения внутри входного диапазона или инвалидировать итераторы. Это приведет к UB. В случае с `std::copy()` это происходит, если входной и выходной диапазоны пересекаются:
 
-```c++
+```cpp
 std::vector<int> source = {6, 8, 2};
 
 auto it = source.begin() + 1;
@@ -179,7 +179,7 @@ std::copy(source.begin(), source.end(), it); // UB
 
 Например, UB есть в этом коде. Мы копируем 3 элемента из `source` по итератору _за_ последний элемент `destination`:
 
-```c++  {.example_for_playground .example_for_playground_010}
+```cpp  {.example_for_playground .example_for_playground_010}
 std::vector<int> source = {6, 8, 2};
 std::vector<int> destination = {1, 1, 1};
 
@@ -188,7 +188,7 @@ std::copy(source.begin(), source.end(), destination.end()); // UB
 
 Чтобы избавиться от UB, заранее обеспечьте выходной диапазон необходимого размера. Сделаем это с помощью метода вектора [resize()](https://en.cppreference.com/w/cpp/container/vector/resize):
 
-```c++ {.example_for_playground .example_for_playground_011}
+```cpp {.example_for_playground .example_for_playground_011}
 std::vector<int> source = {6, 8, 2};
 std::vector<int> destination = {1, 1, 1};
 
@@ -213,7 +213,7 @@ std::println("{}", destination);
 
 Чтобы получить этот итератор-адаптер для контейнера, предусмотрена функция [std::back_inserter](https://en.cppreference.com/w/cpp/iterator/back_inserter). Она принимает контейнер и возвращает `std::back_insert_iterator`. 
 
-```c++  {.example_for_playground .example_for_playground_012}
+```cpp  {.example_for_playground .example_for_playground_012}
 std::vector<int> source = {6, 8, 2};
 std::vector<int> destination = {1, 1, 1};
 
@@ -227,7 +227,7 @@ std::println("{}", destination);
 
 Для вставки в начало контейнера есть итератор-адаптер [std::front_insert_iterator](https://en.cppreference.com/w/cpp/iterator/front_insert_iterator). Под капотом он вызывает метод `push_front()` контейнера. Чтобы получить этот итератор-адаптер, есть функция [std::front_inserter](https://en.cppreference.com/w/cpp/iterator/front_inserter).
 
-```c++  {.example_for_playground .example_for_playground_013}
+```cpp  {.example_for_playground .example_for_playground_013}
 std::list<int> source = {6, 8, 2};
 std::list<int> destination = {1, 1, 1};
 
@@ -251,7 +251,7 @@ std::println("{}", destination);
 - Реклама: `[0x0b, 0x0a, 0x0d]`.
 - Результат после вставки рекламы: `[0x2a, 0x17, 0x14, 0x17, 0x01, 0x01, 0x0b, 0x0a, 0x0d, 0x01, 0x01, 0x55, 0x7c, 0x20]`.
 
-```c++ {.task_source #cpp_chapter_0082_task_0070}
+```cpp {.task_source #cpp_chapter_0082_task_0070}
 std::vector<char> insert_ad(
     std::vector<char> stream, // аудиопоток
     std::vector<char> tag,    // метка для вставки рекламы
@@ -261,7 +261,7 @@ std::vector<char> insert_ad(
 }
 ```
 Для поиска последовательности внутри другой последовательности воспользуйтесь [std::search()](https://en.cppreference.com/w/cpp/algorithm/search). Для определения смещения при последующем поиске пригодится [std::distance()](https://en.cppreference.com/w/cpp/iterator/distance). Для копирования будет нужна связка [std::copy()](https://en.cppreference.com/w/cpp/algorithm/copy) и [std::inserter()](https://en.cppreference.com/w/cpp/iterator/inserter). {.task_hint}
-```c++ {.task_answer}
+```cpp {.task_answer}
 std::vector<char> insert_ad(
     std::vector<char> stream, // аудиопоток
     std::vector<char> tag,    // метка для вставки рекламы
@@ -293,7 +293,7 @@ std::vector<char> insert_ad(
 
 Для удаления элементов из диапазона предназначены алгоритмы [std::remove и std::remove_if](https://en.cppreference.com/w/cpp/algorithm/remove). Но будьте бдительны: они ничего не удаляют.
 
-```c++  {.example_for_playground .example_for_playground_014}
+```cpp  {.example_for_playground .example_for_playground_014}
 std::vector<int> v = {1, 2, 3, 3, 2, 1};
 std::println("vector={}", v);
 
@@ -317,7 +317,7 @@ range without removed elements ends at 3'th element from 0:
 
 Использование `std::remove()` и `erase()` в связке известно как [идиома erase-remove.](https://en.wikipedia.org/wiki/Erase%E2%80%93remove_idiom)
 
-```c++  {.example_for_playground .example_for_playground_015}
+```cpp  {.example_for_playground .example_for_playground_015}
 std::vector<int> v = {1, 2, 3, 3, 2, 1};
 
 auto it = std::remove(v.begin(), v.end(), 2);
@@ -331,7 +331,7 @@ vector=[1, 3, 3, 1]
 
 Чаще всего вызовы `std::remove()` и `erase()` записываются в одну строку:
 
-```c++
+```cpp
 std::vector<int> v = {1, 2, 3, 3, 2, 1};
 
 v.erase(std::remove(v.begin(), v.end(), 2), v.end());
@@ -348,7 +348,7 @@ vector=[1, 3, 3, 1]
 
 Функции стандартной библиотеки ничего не знают об устройстве контейнеров. Они реализуют обобщенные алгоритмы, работающие с итераторами. А методы класса, напротив, обладают полной информацией о его организации. За счет этого они эффективнее:
 
-```c++   {.example_for_playground .example_for_playground_017}
+```cpp   {.example_for_playground .example_for_playground_017}
 std::unordered_map<int, std::string> warning_codes =
 {
     {52, "API is deprecated"},
