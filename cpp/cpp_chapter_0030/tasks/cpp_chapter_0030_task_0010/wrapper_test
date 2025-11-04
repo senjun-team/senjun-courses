@@ -14,7 +14,9 @@ struct TestCase
 
 void check(const TestCase & c, double plan)
 {
-    const double fact = vertical_flight_speed(c.cur_height, c.prev_height, c.elapsed_time);
+    const double fact = vertical_flight_speed(c.cur_height,
+                                              c.prev_height,
+                                              c.elapsed_time);
     
     const std::string msg = std::format(
         "\nvertical_flight_speed({}, {}, {}) must return {} but returned {}\n",
@@ -69,10 +71,11 @@ int main()
             {.cur_height=-500, .prev_height=-498.2, .elapsed_time=0.2},
         };
 
-        const auto calc = [](const TestCase & c) { return  std::abs(c.cur_height - c.prev_height) / c.elapsed_time; };
+        const auto calc = [](const TestCase & c) {
+            return (c.cur_height - c.prev_height) / c.elapsed_time;
+        };
 
         for (const auto & c: cases)
             check(c, calc(c));
-
     };
 }
