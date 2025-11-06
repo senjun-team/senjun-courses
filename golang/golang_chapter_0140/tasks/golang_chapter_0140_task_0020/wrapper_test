@@ -1,0 +1,114 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+	"testing"
+)
+
+type caseT struct {
+	in   *linkedList
+	want *linkedList
+}
+
+const memorySize = 16
+
+type chunkT [memorySize]int
+
+func TestSort(t *testing.T) {
+	var cases []caseT = []caseT{noElementExample(),
+		oneElementExample(), simpleExample()}
+
+	for _, c := range cases {
+		original := c.in.sprint()
+		sort.Sort(c.in)
+		if !c.in.isEqual(c.want) {
+			t.Errorf("after sorting: \n%s\n gets: \n%s\n, want: \n%s\n",
+				original, c.in.sprint(), c.want.sprint())
+		}
+	}
+}
+
+func simpleExample() caseT {
+	mem0 := memory{2, [memorySize]int{1, 2, 3}}
+	mem1 := memory{3, [memorySize]int{0, 0, 4, 5, 6}}
+	mem2 := memory{1, [memorySize]int{7, 0, 8}}
+	mem3 := memory{0, [memorySize]int{9, 10}}
+	in := &linkedList{&linkedNode{
+		&linkedNode{
+			&linkedNode{
+				&linkedNode{nil,
+					mem3}, mem2}, mem1}, mem0}}
+	want := &linkedList{&linkedNode{
+		&linkedNode{
+			&linkedNode{
+				&linkedNode{nil,
+					mem1}, mem0}, mem2}, mem3}}
+	return caseT{in, want}
+}
+
+func oneElementExample() caseT {
+	mem := memory{5, [memorySize]int{4}}
+	in := &linkedList{&linkedNode{nil, mem}}
+	return caseT{in, in}
+}
+
+func noElementExample() caseT {
+	in := &linkedList{}
+	return caseT{in, in}
+}
+
+func (a *linkedList) isEqual(b *linkedList) bool {
+	if a.len() != b.len() {
+		return false
+	}
+
+	an := a.begin
+	bn := b.begin
+
+	for an != nil {
+		if an.value.id != bn.value.id {
+			return false
+		}
+		if !chunkT(an.value.chunk).isEqual(chunkT(bn.value.chunk)) {
+			return false
+		}
+		an = an.next
+		bn = bn.next
+	}
+	return true
+}
+
+func (list *linkedList) len() int {
+	n := list.begin
+	counter := 0
+
+	for n != nil {
+		counter++
+		n = n.next
+	}
+	return counter
+}
+
+func (a chunkT) isEqual(b chunkT) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func (list *linkedList) sprint() (res string) {
+	node := list.begin
+	for node != nil {
+		res += fmt.Sprint(node.value)
+		res += fmt.Sprint("->")
+		node = node.next
+	}
+	res += fmt.Sprint("nil")
+	return
+}
