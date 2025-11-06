@@ -430,9 +430,9 @@ func main() {
 ```
 <id пользователя> : <сообщение об ошибке> {.task_text}
 ```
-Например: 
+Например: {.task_text}
 ```
-3 : failed to log in
+3 : failed to log in {.task_text}
 ```
 ```go {.task_source #golang_chapter_0140_task_0030}
 package main
