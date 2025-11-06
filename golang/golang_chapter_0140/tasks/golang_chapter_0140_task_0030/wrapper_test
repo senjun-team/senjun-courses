@@ -1,0 +1,43 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestSearch(t *testing.T) {
+	cases := []struct {
+		in         appUser
+		wantYandex string
+		wantGoogle string
+	}{
+		{
+			appUser{3, "buba"},
+			"3 : no internet",
+			"3 : failed to log in",
+		},
+		{
+			appUser{0, "admin"},
+			"0 : no internet",
+			"0 : failed to log in",
+		},
+	}
+
+	for _, c := range cases {
+		if err, ok := c.in.yandexSearch().(customErr); ok {
+			if err.Error() != c.wantYandex {
+				t.Errorf("from yandexSearch() with user id %d get error:\n%s\nwant:\n%s\n",
+					c.in.id, err.Error(), c.wantYandex)
+			}
+		} else {
+			t.Errorf("from yandexSearch() get:\n%v\nit is not customError", err)
+		}
+		if err, ok := c.in.googleSearch().(customErr); ok {
+			if err.Error() != c.wantGoogle {
+				t.Errorf("from googleSearch() with user id %d get error:\n%s\nwant:\n%s\n",
+					c.in.id, err.Error(), c.wantGoogle)
+			}
+		} else {
+			t.Errorf("from googleSearch get:\n%v\nit is not customError", err)
+		}
+	}
+}
