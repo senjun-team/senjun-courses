@@ -553,26 +553,28 @@ else
 // ...
 ```
 
-Если переменная, инициализирумая в заголовке условия или цикла, приводится к `bool`, то можно использовать упрощённую инициализацию вида
+В заголовках инструкций `if` и `while` можно использовать инициализацию, совмещённую с проверкой, если инициализируемая переменная приводится к `bool`:
+
 ```cpp
 if (init-statement)  { /* ... */ }
+while (init-statement)  { /* ... */ }
 ```
 
 Вот пара примеров:
 
 ```cpp
-    if (int return_code = command())
-    {
-        log_error(return_code);
-    }
+if (int return_code = command())
+{
+    log_error(return_code);
+}
 ```
 
 ```cpp
-    while (int len = read_chunk())
-    {
-        process_chunk();
-        std::println("{} bytes read", len);
-    }
+while (int len = read_chunk())
+{
+    process_chunk();
+    std::println("{} bytes read", len);
+}
 ```
 
 [Старайтесь минимизировать](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-scope) область видимости переменных: это делает код более надежным и лаконичным. [Используйте инициализаторы](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es6-declare-names-in-for-statement-initializers-and-conditions-to-limit-scope) там, где они вам в этом помогут.

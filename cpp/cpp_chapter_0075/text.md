@@ -8,7 +8,7 @@
 
 ## Класс queue
 
-Класс [std::queue](https://en.cppreference.com/w/cpp/container/queue) реализует [АТД "Очередь"](https://ru.wikipedia.org/wiki/%D0%9E%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D1%8C_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)), в котором элементы добавляются с одного конца, а удаляются с другого.
+Класс [std::queue](https://en.cppreference.com/w/cpp/container/queue) реализует [АТД «Очередь»](https://ru.wikipedia.org/wiki/%D0%9E%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D1%8C_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)), в котором элементы добавляются с одного конца, а удаляются с другого.
 
 ```cpp {.example_for_playground .example_for_playground_023}
 std::queue<int> orders;
@@ -37,13 +37,13 @@ std::queue<int, std::list<int>> orders;
 
 ## Класс priority_queue
 
-Класс [std::priority_queue](https://en.cppreference.com/w/cpp/container/priority_queue) — это [очередь с приоритетами](https://ru.wikipedia.org/wiki/%D0%9E%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D1%8C_%D1%81_%D0%BF%D1%80%D0%B8%D0%BE%D1%80%D0%B8%D1%82%D0%B5%D1%82%D0%BE%D0%BC_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)). Она поддерживает две операции: {#block-priority-queue}
+Класс [std::priority_queue](https://en.cppreference.com/w/cpp/container/priority_queue) — это реализация [АТД «Очередь с приоритетами»](https://ru.wikipedia.org/wiki/%D0%9E%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D1%8C_%D1%81_%D0%BF%D1%80%D0%B8%D0%BE%D1%80%D0%B8%D1%82%D0%B5%D1%82%D0%BE%D0%BC_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)). Этот АТД поддерживает две операции: {#block-priority-queue}
 - Добавить элемент.
 - Извлечь элемент с максимальным приоритетом.
 
 Приоритет элемента определяется оператором `<`, но это можно переопределить.
 
-Очередь с приоритетами реализуется через [кучу (heap)](https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D1%87%D0%B0_(%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0_%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85)) поверх массива.
+Класс `std::priority_queue` реализуется через [кучу (heap)](https://ru.wikipedia.org/wiki/%D0%9A%D1%83%D1%87%D0%B0_(%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0_%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85)) поверх массива.
 
 ```cpp
 std::priority_queue<int> heap;
@@ -110,7 +110,7 @@ int main()
 
 ## Класс stack
 
-Класс [std::stack](https://en.cppreference.com/w/cpp/container/stack) реализует [АТД "Стек".](https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D0%B5%D0%BA) Он организован по принципу LIFO (Last-In, First-Out): элементы добавляются и удаляются только с одного конца. Этот конец называется вершиной стека. Последний добавленный элемент будет первым элементом для взятия с вершины.
+Класс [std::stack](https://en.cppreference.com/w/cpp/container/stack) реализует [АТД «Стек».](https://ru.wikipedia.org/wiki/%D0%A1%D1%82%D0%B5%D0%BA) Этот АТД организован по принципу LIFO (Last-In, First-Out): элементы добавляются и удаляются только с одного конца. Этот конец называется вершиной стека. Последний добавленный элемент будет первым элементом для взятия с вершины.
 
 Основные методы контейнера:
 - `push()` — добавление элемента на вершину стека.

@@ -164,7 +164,7 @@ bool consists_of(std::string message, std::string magazine)
 
 Реализуйте функцию `consists_of()`, которая принимает текст послания `message` и текст журнала `magazine`. Функция возвращает `true`, если текст послания может быть составлен из вырезанных из журнала букв. Оба параметра могут содержать только латинские буквы в нижнем регистре и пробелы. При подсчёте пробелы учитывать не нужно. {.task_text}
 
-Напимер, `consists_of("bab", "abbc")` вернет `true`, а `consists_of("bab", "abc")` — `false`. {.task_text}
+Например, `consists_of("bab", "abbc")` вернет `true`, а `consists_of("bab", "abc")` — `false`. {.task_text}
 
 В своем решении используйте `std::unordered_multiset`. {.task_text}
 
