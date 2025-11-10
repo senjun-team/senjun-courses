@@ -1,0 +1,29 @@
+import std;
+
+#INJECT-b585472fa
+
+struct SimpleTest
+{
+    int a = 0;
+    int b = 0;
+    int plan = 0;
+};
+
+int main()
+{
+    const int min = std::numeric_limits<int>::min();
+    const int max = std::numeric_limits<int>::max();
+
+    std::vector<SimpleTest> cases = {
+        {.a = 2,       .b = 2,  .plan = 4},
+        {.a = min + 2, .b = -3, .plan = min},
+        {.a = max - 1, .b = 2,  .plan = max}
+    };
+
+    for (auto test: cases)
+    {
+        const int fact = checked_sum(test.a, test.b); 
+        std::println("checked_sum({}, {}) returns {}. {}",
+        test.a, test.b, fact, fact == test.plan ? "OK" : "ERROR");
+    }
+}
