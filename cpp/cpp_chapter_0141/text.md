@@ -2,7 +2,7 @@
 
 Тип есть у любого значения, выражения или функции. Если он не задан явно, то выводится компилятором:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_001}
 // Тип литерала 34.2 - double. Тип литерала 8 - int.
 // Так как в делении присутствует double, то по правилам
 // деления результат - тоже double, а не int.
@@ -30,7 +30,7 @@ std::println("{}", 34.2 / 8);
 
 Размер этих типов фиксирован и зависит от реализации компилятора, ОС и целевой платформы. Выяснить размер можно с помощью оператора [sizeof](https://en.cppreference.com/w/cpp/language/sizeof.html), который принимает тип и возвращает отводимое под него количество байт:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_002}
 const std::size_t n = sizeof(int);
 std::println("{}", n);
 ```
@@ -72,7 +72,7 @@ std::println("{}", n);
     - `signed` — знаковый тип.
     - `unsigned` — беззнаковый тип.
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_003}
 // Беззнаковое целое шириной минимум 32 бита
 unsigned long int max_recursive_calls;
 ```
@@ -83,21 +83,21 @@ unsigned long int max_recursive_calls;
 
 ```consoleoutput {.task_source #cpp_chapter_0141_task_0010}
 ```
-. {.task_hint}
+Вам нужно узнать, сколько бит занимает тип `short`. Затем подставьте это знаение в формулу `2^(N - 1)`. Здесь `^` означает возведение в степень. Получившееся значение с отрицательным знаком — нижняя граница диапазона. А с положительным знаком и на единицу меньше — верхняя граница. Напишите их через пробел. {.task_hint}
 ```cpp {.task_answer}
-
+-32768 32767
 ```
 
 Модификаторы из разных категорий можно комбинировать, а из одной и той же — нельзя:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_004}
 signed long int mantissa_with_sign; // ок
 long short int strange;             // ошибка компиляции
 ```
 
 Модификаторы и ключевое слово `int` могут идти в любом порядке:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_005}
 // У sysno и interval один и тот же тип
 signed long int sysno;
 long int signed interval;
@@ -128,7 +128,7 @@ unsigned long long threshold_bytes;
 unsigned mln = 1'000'000;
 ```
 
-Номер [порта](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D1%80%D1%82_(%D0%BA%D0%BE%D0%BC%D0%BF%D1%8C%D1%8E%D1%82%D0%B5%D1%80%D0%BD%D1%8B%D0%B5_%D1%81%D0%B5%D1%82%D0%B8)) — это число в диапазоне от 1 до `2^16 - 1` (65 535). {.task_text}
+Номер [порта](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D1%80%D1%82_(%D0%BA%D0%BE%D0%BC%D0%BF%D1%8C%D1%8E%D1%82%D0%B5%D1%80%D0%BD%D1%8B%D0%B5_%D1%81%D0%B5%D1%82%D0%B8)) — это число в диапазоне от `1` до `2^16 - 1` (65 535). {.task_text}
 
 Какой тип подойдет для его хранения больше всего? {.task_text}
 
@@ -136,7 +136,7 @@ unsigned mln = 1'000'000;
 
 ```consoleoutput {.task_source #cpp_chapter_0141_task_0020}
 ```
-. {.task_hint}
+Диапазон номеров портов — от `1` до `2^16 - 1`. Для хранения числа из этого диапазона будет достаточно 16 бит. Столько занимает `short`. Так как порт не может быть отрицательным, то лучше всего подходит тип `unsigned short`. {.task_hint}
 ```cpp {.task_answer}
 unsigned short
 ```
@@ -149,7 +149,7 @@ unsigned short
 
 Сохраним в переменную `x` максимальное для ее типа значение. Его можно получить вызовом шаблонной функции [std::numeric_limits<T>::max()](https://en.cppreference.com/w/cpp/types/numeric_limits/max.html). Инкрементируем это значение, вызвав тем самым переполнение:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_006}
 unsigned x = std::numeric_limits<unsigned>::max();
 std::println("{}", x);
 
@@ -165,7 +165,7 @@ std::println("{}", x);
 
 А теперь переполним число снизу, а не сверху:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_007}
 unsigned x = -1; // переполнение снизу
 
 std::println("{}", x);
@@ -194,11 +194,19 @@ int checked_sum(int a, int b)
 ```
 Для положительных чисел переполнение возникает, если выполняется условие`a > std::numeric_limits<int>::max() - b`. Для отрицательных переполнение возникает, если выполняется условие`a < std::numeric_limits<int>::min() - b`. Достаточно проверять на знак только число `b`. {.task_hint}
 ```cpp {.task_answer}
+int checked_sum(int a, int b)
+{
+    if (b > 0 && a > std::numeric_limits<int>::max() - b)
+        return std::numeric_limits<int>::max();
+    if (b < 0 && a < std::numeric_limits<int>::min() - b)
+        return std::numeric_limits<int>::min();
+    return a + b;
+}
 ```
 
 В реализации компилятора у нас на площадке переполнение знакового типа обрабатывается так же, как и беззнакового:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_008}
 short val = 1'000'000; // сужающее преобразование
 std::println("{}", val);
 
@@ -230,9 +238,19 @@ short naive_hash(std::string s)
     return h;
 }
 ```
-. {.task_hint}
+Возьмите беззнаковый тип максимальной ширины. {.task_hint}
 ```cpp {.task_answer}
+unsigned long long naive_hash(std::string s)
+{
+    unsigned long long h = 15;
+    
+    for (char c : s)
+    {
+        h += h * 15'983 + c;
+    }
 
+    return h;
+}
 ```
 
 ### Целые числа в разных системах счисления
@@ -242,7 +260,7 @@ short naive_hash(std::string s)
 - `0` — восьмеричная: `073`, `0513`.
 - `0x` или `0X` — шестнадцатеричная: `0x01f`, `0XF3AAB`.
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_009}
 int oct = 011;
 std::println("{}", oct);
 ```
@@ -252,7 +270,7 @@ std::println("{}", oct);
 
 Обратите внимание: начинающиеся с нуля литералы компилятор трактует как числа в восьмеричной системе:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_010}
 int oct = 09;
 std::println("{}", oct);
 ```
@@ -262,7 +280,7 @@ error: invalid digit '9' in octal constant
 
 При форматировании строк или печати в консоль числа выводятся в десятичной системе счисления. Чтобы это переопределить, используются [спецификаторы форматирования.](https://en.cppreference.com/w/cpp/utility/format/spec.html) Это символы, идущие в строке форматирования внутри фигурных скобок после двоеточия:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_011}
 unsigned rgb_pink = 0xf004ed;
 
 // Спецификатор x указывает, что число нужно
@@ -279,7 +297,7 @@ f004ed
 
 Как и следует из названия, основное предназначение символьных типов — хранить код символа. Он может быть представлен в виде целого числа:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_012}
 char symbol = 'Q';
 char ascii_code = 81;
 
@@ -309,7 +327,7 @@ sizeof(char) == 1
 
 Знаковые и беззнаковые символы преобразуются один в другой и обратно с гарантированным получением изначального значения:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_013}
 unsigned char a = 251;
 signed char b   = static_cast<signed char>(a);
 unsigned char c = static_cast<unsigned char>(b);
@@ -322,7 +340,7 @@ true
 
 Это работает также для преобразований `char` <-> `signed char` и `char` <-> `unsigned char`.
 
-Взгляните на код задачи. Что будет, если вызвать метод `is_printable()` от значения `char`, равного 128?  {.task_text}
+Взгляните на код задачи. Что будет, если вызвать метод `is_printable()` от значения типа `char`, равного 128?  {.task_text}
 
 Если вы внимательно прочли этот раздел главы, то уже поняли, что в коде есть проблемы. Откройте задачу в плэйграунде, в `CMakeLists.txt` уберите флаг компилятора `-Werror` и запустите проект. Вместо ожидаемого вывода `false` вы увидите произвольную строку. {.task_text}
 
@@ -333,8 +351,6 @@ true
 Исправьте этот код, поменяв типы на более подходящие. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0141_task_0050}
-import std;
-
 class CharTable
 {
 public:
@@ -352,16 +368,38 @@ private:
     std::array<bool, 256> m_is_printable;
 };
 
-int test_chartable()
+void test_chartable()
 {
     char c = 128;
     CharTable table;
     std::println("{}", table.is_printable(c));
 }
 ```
-. {.task_hint}
+Чтобы в переменную `c` корректно записалось значение 128, ее тип нужно сделать беззнаковым. Чтобы метод `is_printable()` был безопасен для всех входных данных, тип принимаемого параметра также должен быть беззнаковым. {.task_hint}
 ```cpp {.task_answer}
+class CharTable
+{
+public:
+    CharTable()
+    {
+        m_is_printable.fill(false);
+    }
 
+    bool is_printable(unsigned char c)
+    {
+        return m_is_printable[c];
+    }
+
+private:
+    std::array<bool, 256> m_is_printable;
+};
+
+void test_chartable()
+{
+    unsigned char c = 128;
+    CharTable table;
+    std::println("{}", table.is_printable(c));
+}
 ```
 
 Тот факт, что `char` занимает ровно 1 байт, служит отправной точкой для еще нескольких гарантий: 
@@ -388,9 +426,9 @@ int test_chartable()
 
 ```consoleoutput {.task_source #cpp_chapter_0141_task_0060}
 ```
-. {.task_hint}
+Пример получения размера типа в байтах: `sizeof(int)`. {.task_hint}
 ```cpp {.task_answer}
-
+4 8 16
 ```
 
 ### Бесконечность и нечисло
@@ -401,7 +439,7 @@ int test_chartable()
 
 У `INFINITY` и `NAN` тип `float`, но оба значения могут быть присвоены и переменной типа `double`. Для их использования нужно подключить хедер [cmath](https://en.cppreference.com/w/cpp/header/cmath.html), даже если импортирован стандартный модуль. Дело в том, что оба значения — это определенные [директивой](/courses/cpp/chapters/cpp_chapter_0100/#block-macro) `#define` макросы, а не полноценные константы, которые могли бы быть экспортированы из модуля.
 
-```cpp
+```cpp  {.example_for_playground}
 #include <cmath>
 
 import std;
@@ -415,9 +453,9 @@ int main()
 inf nan
 ```
 
-Современный C++ не поощряет использование макросов. Поэтому вместо `INFINITY` и `NAN` лучше применять шаблонные функции [std::numeric_limits<T>::infinity()](https://en.cppreference.com/w/cpp/types/numeric_limits/infinity.html) и [std::numeric_limits<T>::quiet_NaN()](https://en.cppreference.com/w/cpp/types/numeric_limits/quiet_NaN.html):
+Современный C++ не поощряет использование макросов. Вместо `INFINITY` и `NAN` лучше применять шаблонные функции [std::numeric_limits<T>::infinity()](https://en.cppreference.com/w/cpp/types/numeric_limits/infinity.html) и [std::numeric_limits<T>::quiet_NaN()](https://en.cppreference.com/w/cpp/types/numeric_limits/quiet_NaN.html):
 
-```cpp
+```cpp  {.example_for_playground}
 import std;
 
 int main()
@@ -431,9 +469,9 @@ int main()
 inf nan
 ```
 
-Считается, что бесконечность может быть равна бесконечности, но нечисло _никогда_ не равно самому себе:
+В отличие от бесконечности, нечисло _никогда_ не равно самому себе.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_014}
 auto inf = std::numeric_limits<double>::infinity();
 auto nan = std::numeric_limits<double>::quiet_NaN();
 
@@ -443,12 +481,14 @@ std::println("{} {}", inf == inf, nan == nan);
 true false
 ```
 
-Напрямую сравнивать значения с `INFINITY` и `NAN` нельзя. Вместо этого пользуйтесь функциями [std::isinf()](https://en.cppreference.com/w/cpp/numeric/math/isinf.html) и [std::isnan()](https://en.cppreference.com/w/cpp/numeric/math/isnan.html):
+Поэтому напрямую сравнивать значения с `NAN` нельзя: любое сравнение вернет `false`. Вместо этого пользуйтесь функцией [std::isnan()](https://en.cppreference.com/w/cpp/numeric/math/isnan.html).
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_015}
 if (std::isnan(samples_avg))
     std::println("Couldn't calculate average");
 ```
+
+По аналогии с `std::isnan()` существует функция [std::isinf()](https://en.cppreference.com/w/cpp/numeric/math/isinf.html) для более удобного сравнения с бесконечностью.
 
 ### Сравнение вещественных чисел
 
@@ -458,7 +498,7 @@ if (std::isnan(samples_avg))
 
 Во-вторых, из-за специфики представления таких чисел в памяти компьютера их нельзя сравнивать оператором `==` напрямую. В зависимости от целевой платформы, реализации и опций компилятора число `0.5` может храниться в памяти, например, как `0.49999999999999994`:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_016}
 double a = 0.5;
 double b = std::sin(std::numbers::pi / 6.0);
 
@@ -472,7 +512,7 @@ false
 
 Если вам известна погрешность, в рамках которой числа считаются равными, то сравнение можно организовать следующим образом:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_017}
 double eps = 1e-4; // погрешность
 bool eq = std::abs(a - b) <= eps;
 ```
@@ -481,9 +521,9 @@ bool eq = std::abs(a - b) <= eps;
 
 Такой подход к сравнению сгодится, например, для координат на земном шаре. Если две широты и долготы совпадают друг с другом вплоть до 7-го знака, то координаты считаются совпадающими.
 
-Напишите функцию `is_abs()`, которая проверяет числа `a` и `b` на равенство с точностью до `eps` включительно. Функция шаблонная, поэтому у `a` и `b` может быть любой тип, описывающий вещественные числа. {.task_text}
+Напишите функцию `is_abs()`, которая проверяет числа `a` и `b` на равенство с точностью до `eps` включительно. Функция шаблонная, и ее параметры могут иметь любой тип, описывающий вещественные числа. {.task_text}
 
-Любое из чисел может принимать значение бесконечности или нечисла. Не забудьте это корректно обработать. {.task_text}
+Если хотя бы одно из чисел равно бесконечности или нечислу, функция должна вернуть `false`. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0141_task_0070}
 template<class T>
@@ -492,14 +532,21 @@ bool is_eq(T a, T b, T eps)
 
 }
 ```
-. {.task_hint}
+Вызовите `std::isinf()` и `std::isnan()` для сравнения чисел с бесконечностью и нечислом. {.task_hint}
 ```cpp {.task_answer}
-
+template<class T>
+bool is_eq(T a, T b, T eps)
+{
+    if (std::isinf(a) || std::isinf(b) || std::isnan(a) || std::isnan(b))
+        return false;
+    
+    return std::abs(a - b) <= eps;
+}
 ```
 
-Если числа колеблются в широком диапазоне, то погрешность `eps` становится частью данных. Вы должны вычислять ее в зависимости от величин сравниваемых чисел. Взгляните на способ, который хорош для сравнения чисел одинакового знака. В нем используется функция `std::numeric_limits<T>::epsilon()`, которая возвращает _машинный эпсилон_ — разность между `1.0` и следующим за ним числом типа `T`:
+Если значения колеблются в широком диапазоне, то погрешность `eps` становится частью данных. Вы должны вычислять ее в зависимости от величин сравниваемых чисел. Взгляните на способ, который хорош для сравнения чисел одинакового знака. В нем используется функция `std::numeric_limits<T>::epsilon()`, которая возвращает _машинный эпсилон_ — разность между `1.0` и следующим за ним числом типа `T`:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_018}
 double abs_max = std::max(std::abs(a), std::abs(b));
 
 double eps = std::numeric_limits<double>::epsilon() * abs_max;
@@ -528,7 +575,7 @@ typedef source_type alias;
 
 Пример:
 
-```cpp
+```cpp  {.example_for_playground}
 import std;
 
 typedef int RetCode;
@@ -553,7 +600,7 @@ using alias = source_type;
 
 Определим псевдоним `UserId`, а на базе него — псевдоним `UserIdArr`:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_019}
 using UserId = short;
 using UserIdArr = std::vector<UserId>;
 
@@ -616,7 +663,7 @@ std::unordered_map<int, std::list<KeyVal>::iterator> map;
 - `std::int8_t`, `std::int16_t`, `std::int32_t`, `std::int64_t` — знаковые целые размером 8, 16, 32 и 64 бита.
 - `std::uint8_t`, `std::uint16_t`, `std::uint32_t`, `std::uint64_t` — их беззнаковые вариации.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_020}
 std::uint32_t fingerprint32(std::string data)
 {
     // ...
@@ -653,9 +700,9 @@ typedef signed short int int16_t;
 
 Напишите функцию `convert_ip_v4()`, которая принимает ip-адрес в виде строки, разделенной точками на октеты. Функция должна вернуть целочисленное представление адреса. {.task_text}
 
-Вам помогут:  {.task_text}
+Вам помогут: {.task_text}
 - Функция [std::stoi()](https://en.cppreference.com/w/cpp/string/basic_string/stol), которая конвертирует строку в число. 
-- Оператор `<<` для [побитового сдвига.](/courses/cpp/practice/cpp_div_without_div/#block-bitwise)
+- Оперторы `<<` для [побитового сдвига](/courses/cpp/practice/cpp_div_without_div/#block-bitwise) и оператор `|` для [побитового «ИЛИ».](https://en.cppreference.com/w/cpp/language/operator_arithmetic.html)
 
 ```cpp {.task_source #cpp_chapter_0141_task_0080}
 std::uint32_t convert_ip_v4(std::string ip)
@@ -663,14 +710,20 @@ std::uint32_t convert_ip_v4(std::string ip)
 
 }
 ```
-. {.task_hint}
+Воспользуйтесь методом `find()` строки, чтобы определить в ней индексы точек. Точки разделяют октеты адреса. Получите значение каждого из октетов методом строки `substr()`. Переведите их из строки в число функцией `std::stoi()`. Заведите переменную для десятичного представления ip-адреса и проинициализируйте ее нулем. Затем заполните ее четырьмя октетами. Добавление к число октета означает сдвиг этого числа на 8 бит влево и заполнение младших 8-ми бит значением октета. {.task_hint}
 ```cpp {.task_answer}
+// Сдвигает число ip на 8 бит влево и заполняет младшие 8 бит
+// числом octet
 std::uint32_t shift_octet(std::uint32_t ip, std::uint32_t octet)
 {
     return (ip << 8) | octet;
 }
 
-std::uint32_t add_octet(std::uint32_t ip, std::string ip_str, std::size_t i_start, std::size_t i_end)
+// Добавляет к числу ip октет из строки ip_str, ограниченный индексами
+std::uint32_t add_octet(std::uint32_t ip,
+                        std::string ip_str,
+                        std::size_t i_start,
+                        std::size_t i_end)
 {
     const std::string octet_str = ip_str.substr(i_start, i_end - i_start);
     const std::uint32_t octet = std::stoi(octet_str);
@@ -705,14 +758,14 @@ std::uint32_t convert_ip_v4(std::string ip)
 
 У любого литерала в C++ есть тип по умолчанию, например:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_021}
 auto skip_dependencies = false; // bool
 auto raw_estimate_s = 11.4;     // double
 ``` 
 
 Для целочисленных литералов подбирается наименьший из типов, способный вместить значение. Выбор происходит между `int`, `long`, `long long` и их беззнаковыми вариациями.
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_022}
 auto zero = 0;                   // int
 auto bitrate_kbps = 5'800;       // int
 auto seed = 1844674407370999999; // long
@@ -759,7 +812,7 @@ ull
 - Старайтесь не смешивать знаковые и беззнаковые типы в арифметических выражениях. Из-за [неявного приведения типов](/courses/cpp/chapters/cpp_chapter_0131/#block-implicit-conversion) в таком коде легко допустить ошибку.
 - Используйте типы фиксированной ширины, если важен размер переменной. В остальных случаях предпочитайте обычные типы.
 - Подбирайте тип таким образом, чтобы не допустить переполнения.
-- В старом C++ коде вы можете заметить, что тип `int` популярен для хранения счетчика цикла, длины массива или размера объекта. В современном C++ это считается плохой практикой, ведь это может привести к беззнаковому переполнению. Выбирайте специально созданный для подобных задач `std::size_t`.
+- В старом коде вы можете заметить, что тип `int` популярен для хранения счетчика цикла, длины массива или размера объекта. В современном C++ это считается плохой практикой, потому что может привести к беззнаковому переполнению. Выбирайте специально созданный для подобных задач `std::size_t`.
 
 ## Домашнее задание
 
