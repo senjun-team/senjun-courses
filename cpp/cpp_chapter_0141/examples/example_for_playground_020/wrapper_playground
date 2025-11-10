@@ -1,0 +1,17 @@
+import std;
+
+std::uint32_t fingerprint32(std::string data)
+{
+    return std::numeric_limits<std::uint32_t>::max() - 1;
+}
+
+std::uint64_t fingerprint64(std::string data)
+{
+    return std::numeric_limits<std::uint64_t>::max() - 1;
+}
+
+int main()
+{
+    std::println("{}", fingerprint32("data"));
+    std::println("{}", fingerprint64("data"));
+}

@@ -1,0 +1,7 @@
+import std;
+
+int main()
+{
+    double samples_avg = std::numeric_limits<double>::quiet_NaN();
+    #INJECT-b585472fa
+}
