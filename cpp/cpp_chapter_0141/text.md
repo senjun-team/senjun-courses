@@ -793,20 +793,62 @@ for(int i = v.size(); i >= 0; --i)
 
 Просто заменить `int` на `std::size_t` в этом примере не получится, ведь декремент нуля приведет к переполнению снизу. Вслед за нулем счетчик цикла примет максимальное для `std::size_t` значение.
 
-Чтобы проитерироваться в обратном порядке, вместо цикла с `int` вспомните про [обратные итераторы.](/courses/cpp/chapters/cpp_chapter_0060/#block-reverse-iterators) Если помимо значения элемента контейнера нужен еще и индекс, вычисляйте его вызовом [std::distance().](/courses/cpp/chapters/cpp_chapter_0060/#block-distance) Вам нужно получить расстояние между итератором на начало контейнера и итератором, [полученным](/courses/cpp/chapters/cpp_chapter_0060/#block-base) из обратного:
+Чтобы проитерироваться в обратном порядке, вместо счетчика типа `int` вспомните про [обратные итераторы.](/courses/cpp/chapters/cpp_chapter_0060/#block-reverse-iterators) Альтернатива обратным итераторам — библиотека [ranges](https://en.cppreference.com/w/cpp/ranges.html) (диапазоны), появившаяся в C++20. В этом курсе мы ее тоже рассмотрим.
 
-```c++
-std::vector<std::string> v = read_data();
+Перед вами функция `build_inverted_index()`, которая принимает коллекцию отсортированных по возрастанию популярности документов. Функция строит по ним [обратный индекс](https://ru.wikipedia.org/wiki/%D0%98%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B8%D0%BD%D0%B4%D0%B5%D0%BA%D1%81). В данном случае это просто словарь, в котором имени документа соотнесена его позиция в коллекции. Если в коллекции встречаются документы с одинаковым названием, в словарь попадает только самый популярный из них. {.task_text}
 
-for (auto rit = v.rbegin(); rit != v.rend(); ++rit)
+Функция реализована циклом со счетчиком типа `int`. Перепишите ее через обратные итераторы. {.task_text}
+
+Вам помогут: {.task_text}
+- Функция [std::distance().](/courses/cpp/chapters/cpp_chapter_0060/#block-distance)
+- Метод [base()](/courses/cpp/chapters/cpp_chapter_0060/#block-base) обратного итератора.
+
+```cpp {.task_source #cpp_chapter_0141_task_0100}
+using DocName = std::string;
+using DocIdx = int;
+
+struct Doc
 {
-    const std::size_t i = std::distance(v.begin(), rit.base()) - 1;
-    std::println("{} {}", i, *rit);
+    DocName name;
+    std::string text;
+};
+
+std::unordered_map<DocName, DocIdx> build_inverted_index(std::vector<Doc> docs)
+{
+    std::unordered_map<DocName, DocIdx> inverted_index;
+
+    for(int i = docs.size(); i >= 0; --i)
+    {
+        inverted_index.try_emplace(v[i], i);
+    }
+
+    return inverted_index;
 }
 ```
+Будьте внимательны: метод `base()` обратного итератора возвращает обычный итератор. Он на один элемент ближе к концу контейнера, чем обратный. {.task_hint}
+```cpp {.task_answer}
+using DocName = std::string;
+using DocIdx = int;
 
-Альтернатива обратным итераторам — библиотека [ranges](https://en.cppreference.com/w/cpp/ranges.html) (диапазоны), появившаяся в C++20. В этом курсе мы ее рассмотрим.
+struct Doc
+{
+    DocName name;
+    std::string text;
+};
 
+std::unordered_map<DocName, DocIdx> build_inverted_index(std::vector<Doc> docs)
+{
+    std::unordered_map<DocName, DocIdx> inverted_index;
+
+    for (auto rit = v.rbegin(); rit != v.rend(); ++rit)
+    {
+        const std::size_t i = std::distance(v.begin(), rit.base()) - 1;
+        inverted_index.try_emplace(*rit, i);
+    }
+
+    return inverted_index;
+}
+```
 
 ## Суффиксы литералов
 
@@ -864,7 +906,7 @@ ull
 
 Напоследок несколько советов по работе с фундаментальными типами:
 - Старайтесь не смешивать знаковые и беззнаковые типы в арифметических выражениях. Из-за [неявного приведения типов](/courses/cpp/chapters/cpp_chapter_0131/#block-implicit-conversion) в таком коде легко допустить ошибку.
-- Используйте типы фиксированной ширины, если важен размер переменной. В остальных случаях предпочитайте обычные типы.
+- Используйте типы фиксированной ширины, если критичен точный размер переменной. В остальных случаях предпочитайте обычные типы.
 - Подбирайте тип таким образом, чтобы не допустить переполнения.
 
 ## Домашнее задание
