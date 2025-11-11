@@ -315,19 +315,19 @@ std::vector<unsigned char> raw_bytes;
 
 Тип `char` может иметь или не иметь знак в зависимости от целевой платформы, компилятора и его [настроек.](https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-fsigned-char) Поэтому `char` довольно опасен как тип для работы с числами. **Никогда** не полагайтесь на наличие и отсутствие знака у `char`. При сборке под архитектуры x86-64 `char` как правило знаковый, а под ARM — беззнаковый.  
 
-На что вы можете полагаться — так это на то, что размер `char` _всегда_ равен 1 байту:
+На что вы можете полагаться — так это на то, что размер `char` _всегда_ равен 1 байту. Как и размер знакового и беззнакового `char`:
 
 ```cpp
-sizeof(char) == 1
+sizeof(char) == sizeof(unsigned char) == sizeof(signed char) == 1
 ```
 
 Значит, диапазон знакового `char` — от -128 до 127, а беззнакового — от 0 до 255. Конечно, при условии, что в байте 8 бит. А стандарт этого **не обещает.** Чисто гипотетически байт может быть [больше.](https://isocpp.org/wiki/faq/intrinsic-types#bits-per-byte) Например, состоять из 9, 36 или 64 бит. Но помнить об этом стоит только если ваш код запускается на экзотических и архаичных архитектурах.
 
-Знаковые и беззнаковые символы преобразуются один в другой и обратно с гарантированным получением изначального значения:
+Знаковые и беззнаковые символы можно преобразовывать туда-обратно с уверенностью, что исходное значение не исказится:
 
 ```cpp  {.example_for_playground .example_for_playground_013}
 unsigned char a = 251;
-signed char b   = static_cast<signed char>(a);
+signed   char b = static_cast<signed char>(a);
 unsigned char c = static_cast<unsigned char>(b);
 
 std::println("{}", a == c);
@@ -336,7 +336,21 @@ std::println("{}", a == c);
 true
 ```
 
-Это работает также для преобразований `char` <-> `signed char` и `char` <-> `unsigned char`.
+Эта гарантия работает также для преобразований `char` <-> `signed char` и `char` <-> `unsigned char`. Но откуда она взялась, если у знаковых и беззнаковых символов разные диапазоны значений? Все дело в том, что у этих типов совпадает размер и битовое представление в памяти. Просто в зависимости от типа переменной компилятор по-разному интерпретирует записанную в нее последовательность бит:
+
+```c++ {.example_for_playground .example_for_playground_023}
+unsigned char a = 251;
+signed   char b = static_cast<signed char>(a);
+
+std::println("unsigned char. Bits: {}. Value: {}",
+                std::bitset<8>(a).to_string(), a);
+std::println("  signed char. Bits: {}. Value: {}",
+                std::bitset<8>(b).to_string(), b);
+```
+```
+unsigned char. Bits: 11111011. Value: 251
+  signed char. Bits: 11111011. Value: -5
+```
 
 Взгляните на код задачи. Что будет, если вызвать метод `is_printable()` от значения типа `char`, равного 128?  {.task_text}
 
