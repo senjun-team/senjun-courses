@@ -343,9 +343,9 @@ unsigned char a = 251;
 signed   char b = static_cast<signed char>(a);
 
 std::println("unsigned char. Bits: {}. Value: {}",
-                std::bitset<8>(a).to_string(), a);
+                bits_str(a), a);
 std::println("  signed char. Bits: {}. Value: {}",
-                std::bitset<8>(b).to_string(), b);
+                bits_str(bs), b);
 ```
 ```
 unsigned char. Bits: 11111011. Value: 251
