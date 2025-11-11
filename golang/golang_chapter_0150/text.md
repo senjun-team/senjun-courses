@@ -137,3 +137,119 @@ func main() {
 error
 ```
 ## Дженерики-типы 
+
+Когда в структуре есть поля, в которых необходимо писать данные различных типов, бывает удобно использовать дженерики-типы:
+ 
+``` go {.example_for_playground}
+package main
+
+import "fmt"
+
+type recordT[T int | float64] struct {
+	data []T
+	tag  string
+}
+
+func main() {
+	sampleRecord := recordT[int]{[]int{1, 2, 3}, "sample data"}
+	anotherRecord := recordT[float64]{[]float64{3.141592653589,
+		2.718281828}, "consts"}
+
+	fmt.Println(sampleRecord)
+	fmt.Println(anotherRecord)
+}
+```
+```
+{[1 2 3] sample data}
+{[3.141592653589 2.718281828] consts}
+```
+
+В этом случае при создании переменной типа `recordT` необходимо указывать тот конкретный тип, с которым мы работаем.
+
+## Прием с тильдой
+
+Рассмотрим следующий пример:
+
+``` go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func wordCounter() func(word string) map[string]int {
+	res := make(map[string]int)
+
+	return func(word string) map[string]int {
+		res[word]++
+		return res
+	}
+}
+
+func main() {
+	wc := wordCounter()
+
+	wordToFind := "яблоко"
+	anotherWordToFind := "апельсин"
+	s := "в корзине лежали яблоко, апельсин и еще одно яблоко"
+
+	var res map[string]int
+	for _, word := range strings.Split(s, " ") {
+		// проверка вхождения wordToFind в word
+		if strings.Contains(word, wordToFind) {
+			res = wc(wordToFind)
+		}
+		if strings.Contains(word, anotherWordToFind) {
+			res = wc(anotherWordToFind)
+		}
+	}
+
+	fmt.Println(res)
+
+}
+```
+
+``` go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+type lexeme string
+
+func wordCounter[T ~string]() func(word T) map[T]int {
+	res := make(map[T]int)
+
+	return func(word T) map[T]int {
+		res[word]++
+		return res
+	}
+}
+
+func main() {
+	wc := wordCounter[lexeme]()
+
+	var wordToFind lexeme = "яблоко"
+	var anotherWordToFind lexeme = "апельсин"
+	s := "в корзине лежали яблоко, апельсин и еще одно яблоко"
+
+	var res map[lexeme]int
+	for _, word := range strings.Split(s, " ") {
+		if strings.Contains(word, string(wordToFind)) {
+			res = wc(wordToFind)
+		}
+		if strings.Contains(word, string(anotherWordToFind)) {
+			res = wc(anotherWordToFind)
+		}
+	}
+
+	fmt.Println(res)
+
+}
+```
+```
+map[апельсин:1 яблоко:2]
+```
