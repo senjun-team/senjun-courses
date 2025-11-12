@@ -1,0 +1,38 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::vector<Doc> docs = {
+        {.name = "A", .text = "1"},
+        {.name = "B", .text = "2"},
+        {.name = "B", .text = "3"},
+    };
+    const std::size_t inverted_index_len = 2;
+
+    std::print("Building inverted index for 3 docs sorted by popularity: [A, B, B]... ");
+    std::unordered_map<DocName, DocIdx> res = build_inverted_index(docs);
+
+    
+    if (res.size() != inverted_index_len)
+    {
+        std::println("\nError. Inverted index must contain {} elements but contains {}", 
+                     inverted_index_len, res.size());
+        return 1;
+    }
+
+    if (res["A"] != 0)
+    {
+        std::println("\nKey \"A\" in inveted index must have value 0");
+        return 1;
+    }
+
+    if (res["B"] != 2)
+    {
+        std::println("\nKey \"B\" in inveted index must have value 2");
+        return 1;
+    }
+
+    std::println("DONE");
+}

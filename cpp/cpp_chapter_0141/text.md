@@ -819,7 +819,7 @@ std::unordered_map<DocName, DocIdx> build_inverted_index(std::vector<Doc> docs)
 
     for(int i = docs.size(); i >= 0; --i)
     {
-        inverted_index.try_emplace(v[i], i);
+        inverted_index.try_emplace(docs[i], i);
     }
 
     return inverted_index;
@@ -840,10 +840,10 @@ std::unordered_map<DocName, DocIdx> build_inverted_index(std::vector<Doc> docs)
 {
     std::unordered_map<DocName, DocIdx> inverted_index;
 
-    for (auto rit = v.rbegin(); rit != v.rend(); ++rit)
+    for (auto rit = docs.rbegin(); rit != docs.rend(); ++rit)
     {
-        const std::size_t i = std::distance(v.begin(), rit.base()) - 1;
-        inverted_index.try_emplace(*rit, i);
+        const std::size_t i = std::distance(docs.begin(), rit.base()) - 1;
+        inverted_index.try_emplace(rit->name, i);
     }
 
     return inverted_index;
