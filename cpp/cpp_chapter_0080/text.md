@@ -2,5 +2,5 @@
 
 ## Подглавы
 
-- [Глава 8.1. Не модифицирующие алгоритмы](/courses/cpp/chapters/cpp_chapter_0081/)
+- [Глава 8.1. Немодифицирующие алгоритмы](/courses/cpp/chapters/cpp_chapter_0081/)
 - [Глава 8.2. Модифицирующие алгоритмы](/courses/cpp/chapters/cpp_chapter_0082/)

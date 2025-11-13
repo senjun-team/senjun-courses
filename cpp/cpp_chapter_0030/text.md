@@ -306,7 +306,7 @@ int max(int a, int b)
 Конструкция `switch-case` удобна, когда требуется сравнивать выражение с набором константных значений. Это [более читабельная](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-switch-if) замена вложенных `if-else`:
 
 ```cpp
-switch(выражение)
+switch (выражение)
 {
     case значение_1: 
         инструкции_1;
@@ -334,7 +334,7 @@ switch(выражение)
 ```cpp  {.example_for_playground .example_for_playground_006}
 char user_input = 'y';
 
-switch(user_input)
+switch (user_input)
 {
     case '\n': 
         std::println("User pressed enter. Repeating question.");
@@ -368,7 +368,7 @@ Yes
 ```cpp   {.example_for_playground .example_for_playground_007}
 const std::size_t number_system = 10;
 
-switch(number_system)
+switch (number_system)
 {
     case 2: 
         std::println("Binary");
@@ -396,7 +396,7 @@ Other
 ```cpp {.example_for_playground .example_for_playground_008}
 const std::size_t mark = 3;
 
-switch(mark)
+switch (mark)
 {
     case 1:
         std::print("e");
@@ -425,7 +425,7 @@ cba
 ```cpp  {.example_for_playground .example_for_playground_009}
 const std::size_t mark = 1;
 
-switch(mark)
+switch (mark)
 {
     case 1:
     case 2:
@@ -479,7 +479,7 @@ void log_state(int code)
 {
     std::string state = "";
 
-    switch(code)
+    switch (code)
     {
         case 0:
             state = "Operation succeded";

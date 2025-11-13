@@ -17,7 +17,7 @@ else
 {
     double max = temperatures.front();
 
-    for(double t: temperatures)
+    for (double t: temperatures)
     {
         if (max < t)
             max = t;

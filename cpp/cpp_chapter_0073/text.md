@@ -96,7 +96,7 @@ else
 std::println("Key: {}. Value: {}", (*it).first, (*it).second);
 ```
 
-Разберем, что означают записи `(*it).first` и `(*it).second`. Для обращения к полю используется оператор доступа к элементу `.`. Но у операторов `*` и `.` [одинаковый приоритет.](https://en.cppreference.com/w/cpp/language/operator_precedence) Чтобы сначала получить пару, а после этого обратиться к ее полю, разыменование заключается в скобки: `(*it)`. И к полученному объекту пары применяется оператор доступа к элементу: `(*it).first`.
+Разберем, что означают записи `(*it).first` и `(*it).second`. Для обращения к полю используется оператор доступа к элементу `.`. Но у `.` [приоритет выше,](https://en.cppreference.com/w/cpp/language/operator_precedence) чем у унарного оператора `*`. Чтобы сначала получить пару, а после этого обратиться к ее полю, разыменование заключается в скобки: `(*it)`. И к полученному объекту пары применяется оператор доступа к элементу: `(*it).first`.
 
 В C++ есть оператор `->`, позволяющий выразить то же самое, но короче. Эти две записи эквивалентны:
 
@@ -129,6 +129,12 @@ for (std::pair<std::string, std::time_t> record: user_last_login)
 ```cpp  {.example_for_playground .example_for_playground_013}
 for (auto record: user_last_login)
     std::println("Key: {}. Value: {}", record.first, record.second);
+```
+В C++17 появилась возможность распаковывать пары (и другие агрегатные типы) в несколько переменных с помощью синтаксиса, известного как structured binding. Сравните:
+
+```cpp  {.example_for_playground .example_for_playground_013}
+for (auto [login, time]: user_last_login)
+    std::println("Key: {}. Value: {}", login, time);
 ```
 
 Чтобы в цикле _изменять_ значения по ключу, используйте цикл с итераторами. В главе про ссылки вы узнаете, как это делать в цикле `range-for`.
@@ -255,7 +261,7 @@ void print_frequency(std::vector<std::string> words)
 
 ## Класс set
 
-Класс [std::set](https://en.cppreference.com/w/cpp/container/set) нужен, чтобы работать со множеством уникальных ключей. В отличие от `std::map`, значения к ним не привязаны. В целом эти контейнеры схожи за исключением некоторых нюансов. Например, У `std::set` нет метода `try_emplace()`, потому что он не имел бы особого смысла. Вместо него есть метод [emplace()](https://en.cppreference.com/w/cpp/container/set/emplace).
+Класс [std::set](https://en.cppreference.com/w/cpp/container/set) нужен, чтобы работать со множеством уникальных ключей. В отличие от `std::map`, значения к ним не привязаны. В целом эти контейнеры схожи за исключением некоторых нюансов. Например, у `std::set` нет метода `try_emplace()`, потому что он не имел бы особого смысла. Вместо него есть метод [emplace()](https://en.cppreference.com/w/cpp/container/set/emplace).
 
 ```cpp {.example_for_playground .example_for_playground_018}
 std::set<std::string> words = {"a", "the"};
