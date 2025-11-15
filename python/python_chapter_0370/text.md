@@ -353,6 +353,115 @@ print(course.chapters_count)
 
 В данном случае мы обратились к полю `chapters_count`, которое в бд имеет тип `IntegerField`. Но в коде мы работаем с ним как с обычным `int`, хотя значение `chapters_count` извлекается из таблицы. Это возможно благодаря определенному для `models.Model` метаклассу, который позволяет в стиле питона работать с сущностями из бд и избегать сложных запросов.
 
+## Пример использования мета-классов: Система плагинов
+Вот компактный, но реальный пример использования метаклассов для создания системы автоматической регистрации плагинов. Этот паттерн невозможно `удобно` реализовать без метаклассов, ручная регистрация каждого плагина привела бы к дублированию кода и ошибкам, когда разработчик забывает зарегистрировать новый плагин.
+
+```python
+class PluginRegistry(type):
+    plugins = {}
+
+    def __new__(cls, name, bases, attrs):
+        new_cls = super().__new__(cls, name, bases, attrs)
+        if name != "BasePlugin":
+            cls.plugins[name] = new_cls
+        return new_cls
+
+
+class BasePlugin(metaclass=PluginRegistry):
+    """Базовый класс для всех плагинов"""
+    def execute(self):
+        raise NotImplementedError()
+
+
+class EmailPlugin(BasePlugin):
+    def execute(self):
+        print("Отправка email уведомления")
+
+
+class SMSService(BasePlugin):
+    def execute(self):
+        print("Отправка SMS сообщения")
+
+
+def run_plugin(plugin_name):
+    plugin_class = PluginRegistry.plugins.get(plugin_name)
+    if not plugin_class:
+        raise ValueError(f"Плагин '{plugin_name}' не найден")
+    return plugin_class().execute()
+
+if __name__ == "__main__":
+    print("Доступные плагины:", list(PluginRegistry.plugins.keys()))
+    print(run_plugin("EmailPlugin"))
+    print(run_plugin("SMSService"))
+```
+```
+Доступные плагины: ['EmailPlugin', 'SMSService']
+Отправка email уведомления
+Отправка SMS сообщения
+```
+
+### Почему именно метаклассы?
+
+- Автоматизация: Плагины регистрируются при определении класса, без дополнительных вызовов
+- Надежность: Разработчик не может "забыть" зарегистрировать плагин
+- Инкапсуляция: Логика регистрации скрыта от пользователя API
+- Альтернативы работает не на столко хорошо: Декораторы @register можно забыть добавить, ручная регистрация — дублирование кода
+
+## Метаклассы в популярных фреймворках
+
+### Pydantic Models
+В Pydantic v2 метакласс автоматически собирает поля из аннотаций типов и генерирует валидаторы. Получить все зарегистрированные модели можно через `__subclasses__()`:
+
+```python
+from pydantic import BaseModel
+
+class UserPydantic(BaseModel):
+    name: str
+    age: int
+
+class ProductPydantic(BaseModel):
+    id: int
+    title: str
+
+all_models = BaseModel.__subclasses__()
+print("Все Pydantic модели:", [cls.__name__ for cls in all_models])
+```
+```
+Все Pydantic модели: ['UserPydantic', 'ProductPydantic']
+```
+Реализацию можно найти в файлах пайдентика:
+- Реализация [мета-класса](https://github.com/pydantic/pydantic/blob/f42171c760d43b9522fde513ae6e209790f7fefb/pydantic/_internal/_model_construction.py#L82)
+- Реализация [базового класса пайдентика](https://github.com/pydantic/pydantic/blob/f42171c760d43b9522fde513ae6e209790f7fefb/pydantic/v1/main.py#L316)
+
+### SQLAlchemy Declarative
+SQLAlchemy использует метакласс для автоматической регистрации моделей и создания маппинга с таблицами базы данных:
+
+```python
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
+
+class UserSQLAlchemy(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50))
+
+class ProductSQLAlchemy(Base):
+    __tablename__ = 'products'
+    id = Column(Integer, primary_key=True)
+    title = Column(String(100))
+
+print("Все SQLAlchemy таблицы:", list(Base.metadata.tables.keys()))
+```
+```
+Все SQLAlchemy таблицы: ['UserSQLAlchemy', 'ProductSQLAlchemy']
+```
+
+### Реализацию для SQLAlchemy можно посмотреть здесь:
+- Реализация [мета-класса](https://github.com/sqlalchemy/sqlalchemy/blob/8383e3f48c900fa248f026218fed0cea5ad0e6a5/lib/sqlalchemy/orm/decl_api.py#L170)
+- Реализация [конструктора базового класса](https://github.com/sqlalchemy/sqlalchemy/blob/8383e3f48c900fa248f026218fed0cea5ad0e6a5/lib/sqlalchemy/orm/decl_api.py#L1016)
+
 ## Резюмируем
 - Класс — это объект, который создает другие объекты. А метакласс — это объект, который создает классы.
 - Метакласс — это фабрика для создания классов в рантайме.
