@@ -1,0 +1,38 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+int main()
+{
+    "check test_chartable() output"_test = [] {
+        std::string captured_text;
+        auto stdout_receiver = [&captured_text](std::string&& txt)
+        {
+            captured_text = std::move(txt);
+        };
+
+        {
+            hlp::stdout_capture_t capture(stdout_receiver);
+            test_chartable();
+        }
+
+        const std::string plan = hlp::remove_spaces("false\n");
+        expect(hlp::remove_spaces(captured_text) == plan) << std::format("Expected output of test_chartable(): {}\n Actual output: {}", 
+        plan,
+        captured_text) << fatal;
+    };
+
+    "check CharTable class"_test = [] {
+        CharTable table;
+
+        for (unsigned char c = 1; c < 200; ++c)
+        {
+            expect(table.is_printable(c) == false) << std::format("Expected result of is_printable({}) is false", c) << fatal;
+        }
+    };
+}

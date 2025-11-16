@@ -1,0 +1,15 @@
+#include <climits> // в этом хедере есть макрос CHAR_BIT
+
+import std;
+
+template<class T>
+std::string bits_str(T val)
+{
+    // Макрос CHAR_BIT равен количеству бит в байте
+    return std::bitset<sizeof(T) * CHAR_BIT>(val).to_string();
+}
+
+int main()
+{
+    #INJECT-b585472fa
+}
