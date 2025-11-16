@@ -4,8 +4,5 @@ import std;
 
 int main()
 {
-   for (int i = -1; i < 5; ++i)
-   {
-      log_state(i);
-   }
+    std::println("gcd(25, 5)={}", gcd(25, 5));
 }

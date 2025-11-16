@@ -30,7 +30,7 @@ int n{1};
 std::vector<int> v{1, 2, 3};
 ```
 
-## Default-initialization: инициализация по умолчанию
+## Default-initialization: инициализация по умолчанию {#block-default-initialization}
 
 Вы можете завести переменную без присваивания значения:
 
@@ -170,7 +170,7 @@ distance = 5.5;        // Присваивание
 
 У копирующей инициализации есть важное свойство: если тип переменной не совпадает с типом значения, которым она инициализируется, то выполняется неявное приведение типов.
 
-### Неявное приведение типов
+### Неявное приведение типов {#block-implicit-conversion}
 
 [Неявное приведение типов](https://en.cppreference.com/w/cpp/language/implicit_conversion) (implicit conversion) — это автоматическое преобразование одного типа в другой, выполняемое компилятором. 
 
@@ -356,7 +356,7 @@ int main()
 
 Добавление `explicit` к конструктору класса напрашивается в заданиях на практику [«Скользящее среднее»,](/courses/cpp/practice/cpp_moving_average/) [«Интерпретатор Brainfuck»](/courses/cpp/practice/cpp_brainfuck_interpreter/) и [«LRU кеш».](/courses/cpp/practice/cpp_lru_cache/) Пометьте конструкторы классов из практики спецификатором `explicit` и убедитесь, что тесты по-прежнему проходят.
 
-## Direct-initialization: прямая инициализация
+## Direct-initialization: прямая инициализация {#block-direct-initialization}
 
 [Direct-initialization](https://en.cppreference.com/w/cpp/language/direct_initialization) (прямая инициализация) заключается в явном вызове конструктора и передаче в него аргументов. Она существует еще со времен C++98.
 
@@ -481,7 +481,7 @@ int main()
 
 А теперь покажем, как избежать столкновения с the most vexing parse.
  
-## Uniform-initialization: универсальная инициализация
+## Uniform-initialization: универсальная инициализация {#block-uniform-initialization}
 
 Универсальная инициализация (uniform-initialization) появилась в C++11. Она также известна как brace-initialization, потому что значение переменной указывается в фигурных скобках:
 
