@@ -21,7 +21,7 @@ int main()
             test_chartable();
         }
 
-        const std::string plan = hlp::remove_spaces("false\n");
+        const std::string plan = hlp::remove_spaces("character raw val 128\nfalse\n");
         expect(hlp::remove_spaces(captured_text) == plan) << std::format("Expected output of test_chartable(): {}\n Actual output: {}", 
         plan,
         captured_text) << fatal;
