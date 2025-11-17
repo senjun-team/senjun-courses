@@ -1,7 +1,7 @@
 # Глава 15. Дженерики
 ## Дженерики-функции
 
-Начиная с Go 1.18, в языке появились дженерики. Дженерики позволяют работать с различными типами данных, на меняя структуру исходного кода. 
+Начиная с Go 1.18, в языке появились дженерики. Дженерики позволяют работать с различными типами данных, не меняя структуру исходного кода. 
 
 Дженерики легче понять на примере. Допустим, мы реализовали некоторый алгоритм сортировки: 
 
@@ -178,7 +178,7 @@ import (
 	"strings"
 )
 
-func wordCounter() func(word string) map[string]int {
+func lexemeCounter() func(word string) map[string]int {
 	res := make(map[string]int)
 
 	return func(word string) map[string]int {
@@ -188,20 +188,22 @@ func wordCounter() func(word string) map[string]int {
 }
 
 func main() {
-	wc := wordCounter()
+	wc := lexemeCounter()
 
-	wordToFind := "яблоко"
-	anotherWordToFind := "апельсин"
-	s := "в корзине лежали яблоко, апельсин и еще одно яблоко"
+	lexemeToFind := "i"
+	anotherLexemeToFind := "print"
+
+	s := "for i := 0; i < 5; i++" +
+		"{print(\"hello world!\n\"))}"
 
 	var res map[string]int
 	for _, word := range strings.Split(s, " ") {
 		// проверка вхождения wordToFind в word
-		if strings.Contains(word, wordToFind) {
-			res = wc(wordToFind)
+		if strings.Contains(word, lexemeToFind) {
+			res = wc(lexemeToFind)
 		}
-		if strings.Contains(word, anotherWordToFind) {
-			res = wc(anotherWordToFind)
+		if strings.Contains(word, anotherLexemeToFind) {
+			res = wc(anotherLexemeToFind)
 		}
 	}
 
@@ -209,18 +211,52 @@ func main() {
 
 }
 ```
+```
+map[i:3 print:1]
+```
+В данном случае все работает верно. Но что, если мы используем псевдоним `lexeme` для типа `string`?
+``` go {.example_for_playground}
+package main
+
+type lexeme string
+
+func lexemeCounter() func(word string) map[string]int {
+	res := make(map[string]int)
+
+	return func(word string) map[string]int {
+		res[word]++
+		return res
+	}
+}
+
+func main() {
+	wc := lexemeCounter()
+
+	var lexemeToFind lexeme = "i"
+	wc(lexemeToFind)
+}
+```
+```
+./main.go:18:5: cannot use lexemeToFind (variable of string type lexeme) as string value in argument to wc (exit status 1)
+```
+
+Получаем ошибку компиляции. Но ведь по смыслу ничего не изменилось! Пседовним `lexeme` — это все тот же `string`, только с другим названием. Чтобы функция принимала все типы, под которыми находится `string`, удобно применить дженерик с симвлом тильды `~`. Достаточно просто поставить символ тильды перед конкретным типом, в момент создания нового типа:
+```go
+func lexemeCounter[T ~string]() func(word T) map[T]int {
+	...
+}
+```
+
+Вот как будет выглядить полный код:
 
 ``` go {.example_for_playground}
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 type lexeme string
 
-func wordCounter[T ~string]() func(word T) map[T]int {
+func lexemeCounter[T ~string]() func(word T) map[T]int {
 	res := make(map[T]int)
 
 	return func(word T) map[T]int {
@@ -230,26 +266,23 @@ func wordCounter[T ~string]() func(word T) map[T]int {
 }
 
 func main() {
-	wc := wordCounter[lexeme]()
-
-	var wordToFind lexeme = "яблоко"
-	var anotherWordToFind lexeme = "апельсин"
-	s := "в корзине лежали яблоко, апельсин и еще одно яблоко"
-
-	var res map[lexeme]int
-	for _, word := range strings.Split(s, " ") {
-		if strings.Contains(word, string(wordToFind)) {
-			res = wc(wordToFind)
-		}
-		if strings.Contains(word, string(anotherWordToFind)) {
-			res = wc(anotherWordToFind)
-		}
-	}
-
-	fmt.Println(res)
-
+	var lexemeToFind lexeme = "i"
+	wc := lexemeCounter[lexeme]()
+	fmt.Println(wc(lexemeToFind))
 }
 ```
 ```
-map[апельсин:1 яблоко:2]
+map[i:1]
+```
+
+Когда вызываем функцию `lexemeCounter`, также необходимо указывать тип, с которым будем работать. В данном случае этот тип — `lexeme`. В противном случае компилятор не поймет, с каким типом ему нужно работать: 
+```go
+func main() {
+	var lexemeToFind lexeme = "i"
+	wc := lexemeCounter()
+	fmt.Println(wc(lexemeToFind))
+}
+```
+```
+./main.go:18:21: in call to lexemeCounter, cannot infer T (declared at ./main.go:7:20) (exit status 1)
 ```
