@@ -178,7 +178,7 @@ import (
 	"strings"
 )
 
-func lexemeCounter() func(word string) map[string]int {
+func wordCounter() func(word string) map[string]int {
 	res := make(map[string]int)
 
 	return func(word string) map[string]int {
@@ -188,7 +188,7 @@ func lexemeCounter() func(word string) map[string]int {
 }
 
 func main() {
-	wc := lexemeCounter()
+	wc := wordCounter()
 
 	lexemeToFind := "i"
 	anotherLexemeToFind := "print"
@@ -220,7 +220,7 @@ package main
 
 type lexeme string
 
-func lexemeCounter() func(word string) map[string]int {
+func wordCounter() func(word string) map[string]int {
 	res := make(map[string]int)
 
 	return func(word string) map[string]int {
@@ -230,7 +230,7 @@ func lexemeCounter() func(word string) map[string]int {
 }
 
 func main() {
-	wc := lexemeCounter()
+	wc := wordCounter()
 
 	var lexemeToFind lexeme = "i"
 	wc(lexemeToFind)
@@ -242,7 +242,7 @@ func main() {
 
 Получаем ошибку компиляции. Но ведь по смыслу ничего не изменилось! Пседовним `lexeme` — это все тот же `string`, только с другим названием. Чтобы функция принимала все типы, под которыми находится `string`, удобно применить дженерик с симвлом тильды `~`. Достаточно просто поставить символ тильды перед конкретным типом, в момент создания нового типа:
 ```go
-func lexemeCounter[T ~string]() func(word T) map[T]int {
+func wordCounter[T ~string]() func(word T) map[T]int {
 	...
 }
 ```
@@ -256,7 +256,7 @@ import "fmt"
 
 type lexeme string
 
-func lexemeCounter[T ~string]() func(word T) map[T]int {
+func wordCounter[T ~string]() func(word T) map[T]int {
 	res := make(map[T]int)
 
 	return func(word T) map[T]int {
@@ -267,7 +267,7 @@ func lexemeCounter[T ~string]() func(word T) map[T]int {
 
 func main() {
 	var lexemeToFind lexeme = "i"
-	wc := lexemeCounter[lexeme]()
+	wc := wordCounter[lexeme]()
 	fmt.Println(wc(lexemeToFind))
 }
 ```
@@ -275,14 +275,14 @@ func main() {
 map[i:1]
 ```
 
-Когда вызываем функцию `lexemeCounter`, также необходимо указывать тип, с которым будем работать. В данном случае этот тип — `lexeme`. В противном случае компилятор не поймет, с каким типом ему нужно работать: 
+Когда вызываем функцию `wordCounter`, также необходимо указывать тип, с которым будем работать. В данном случае этот тип — `lexeme`. В противном случае компилятор не поймет, с каким типом ему нужно работать: 
 ```go
 func main() {
 	var lexemeToFind lexeme = "i"
-	wc := lexemeCounter()
+	wc := wordCounter()
 	fmt.Println(wc(lexemeToFind))
 }
 ```
 ```
-./main.go:18:21: in call to lexemeCounter, cannot infer T (declared at ./main.go:7:20) (exit status 1)
+./main.go:18:21: in call to wordCounter, cannot infer T (declared at ./main.go:7:20) (exit status 1)
 ```
