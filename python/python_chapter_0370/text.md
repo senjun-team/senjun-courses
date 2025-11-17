@@ -342,23 +342,16 @@ print(hasattr(SimpleClass, "ATTR1"))
 - Тестируйте метаклассы отдельно - ошибки в них сложно отлаживать
 - Документируйте метаклассы подробно, так же как и с декораторами - магия внутри них не всегда очевидна
 
-## Применение метаклассов
-И примеры, и задачи в этой главе выглядят притянутыми за уши. Чтобы добиться аналогичного результата, не стоит прибегать к тяжелой артиллерии в виде метаклассов. Сгодятся и декораторы классов. Метаклассы существуют отнюдь не для тривиального изменения поведения классов. Они оказываются действительно незаменимы для решения более сложных задач. Например, когда речь заходит о разработке API, таких как Django ORM.
 
-Django — это веб-фреймворк. Django ORM (Object Relational Mapping) — это API, который позволяет взаимодействовать с базой данных, используя код на питоне вместо SQL-запросов. Он описывает записи в SQL-таблицах обычными классами:
+### Почему именно метаклассы?
 
-```python
-class Course(models.Model):
-    title = models.CharField(max_length=200, unique=True)
-    chapters_count = models.IntegerField()
+- **Автоматизация:** Плагины регистрируются при определении класса, без дополнительных вызовов
+- **Надежность:** Разработчик не может "забыть" зарегистрировать плагин
+- **Инкапсуляция:** Логика регистрации скрыта от пользователя API
+- **Альтернативы работает не на столко хорошо:** Декораторы @register можно забыть добавить, ручная регистрация — дублирование кода
 
-course = Course(title="python", chapters_count=37)
-print(course.chapters_count)
-```
+## Применение использования мета-классов: Система плагинов
 
-В данном случае мы обратились к полю `chapters_count`, которое в бд имеет тип `IntegerField`. Но в коде мы работаем с ним как с обычным `int`, хотя значение `chapters_count` извлекается из таблицы. Это возможно благодаря определенному для `models.Model` метаклассу, который позволяет в стиле питона работать с сущностями из бд и избегать сложных запросов.
-
-## Пример использования мета-классов: Система плагинов
 Вот компактный, но реальный пример использования метаклассов для создания системы автоматической регистрации плагинов. Этот паттерн невозможно `удобно` реализовать без метаклассов, ручная регистрация каждого плагина привела бы к дублированию кода и ошибкам, когда разработчик забывает зарегистрировать новый плагин.
 
 ```python
@@ -405,62 +398,101 @@ if __name__ == "__main__":
 Отправка SMS сообщения
 ```
 
-### Почему именно метаклассы?
-
-- **Автоматизация:** Плагины регистрируются при определении класса, без дополнительных вызовов
-- **Надежность:** Разработчик не может "забыть" зарегистрировать плагин
-- **Инкапсуляция:** Логика регистрации скрыта от пользователя API
-- **Альтернативы работает не на столко хорошо:** Декораторы @register можно забыть добавить, ручная регистрация — дублирование кода
-
 ## Метаклассы в популярных фреймворках
 
+И примеры, и задачи в этой главе выглядят притянутыми за уши. Чтобы добиться аналогичного результата, не стоит прибегать к тяжелой артиллерии в виде метаклассов. Сгодятся и декораторы классов. Метаклассы существуют отнюдь не для тривиального изменения поведения классов. Они оказываются действительно незаменимы для решения более сложных задач. Например, когда речь заходит о разработке API, таких как Django ORM.
+
+### Django
+Django — это веб-фреймворк. Django ORM (Object Relational Mapping) — это API, который позволяет взаимодействовать с базой данных, используя код на питоне вместо SQL-запросов. Он описывает записи в SQL-таблицах обычными классами:
+
+```python
+class Course(models.Model):
+    title = models.CharField(max_length=200, unique=True)
+    chapters_count = models.IntegerField()
+
+course = Course(title="python", chapters_count=37)
+print(course.chapters_count)
+```
+
+В данном случае мы обратились к полю `chapters_count`, которое в бд имеет тип `IntegerField`. Но в коде мы работаем с ним как с обычным `int`, хотя значение `chapters_count` извлекается из таблицы. Это возможно благодаря определенному для `models.Model` метаклассу, который позволяет в стиле питона работать с сущностями из бд и избегать сложных запросов.
+
 ### Pydantic Models
+Pydantic — библиотека для валидации данных и сериализации, которая автоматически проверяет типы и значения данных при создании объектов на основе аннотаций типов в классах.
 В Pydantic v2 метакласс автоматически собирает поля из аннотаций типов и генерирует валидаторы. Получить все зарегистрированные модели можно через `__subclasses__()`:
 
 ```python
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
-class UserPydantic(BaseModel):
+class UserPydantic(BaseModel): # BaseModel - метакласс
     name: str
     age: int
 
-class ProductPydantic(BaseModel):
+class CursePydantic(BaseModel):
     id: int
     title: str
 
+    @field_validator("title", mode="before")
+    def validate_title(cls, value: str):
+        return value.upper()
+
 all_models = BaseModel.__subclasses__()
 print("Все Pydantic модели:", [cls.__name__ for cls in all_models])
+user = UserPydantic(name="John", age=18)
+curse = CursePydantic(id=1, title="python")
+print(user)
+print(curse)
+
 ```
 ```
-Все Pydantic модели: ['UserPydantic', 'ProductPydantic']
+Все Pydantic модели: ['UserPydantic', 'CursePydantic']
+John
+id=1 title='PYTHON'
 ```
 Реализацию можно найти в файлах пайдентика:
 - Реализация [мета-класса](https://github.com/pydantic/pydantic/blob/f42171c760d43b9522fde513ae6e209790f7fefb/pydantic/_internal/_model_construction.py#L82)
 - Реализация [базового класса](https://github.com/pydantic/pydantic/blob/f42171c760d43b9522fde513ae6e209790f7fefb/pydantic/v1/main.py#L316)
 
 ### SQLAlchemy Declarative
-SQLAlchemy использует метакласс для автоматической регистрации моделей и создания маппинга с таблицами базы данных:
+SQLAlchemy — мощная библиотека Python для работы с реляционными базами данных (ORM), позволяющая описывать таблицы в виде классов Python и выполнять операции с базой данных с помощью этих объектов.
+Она использует метакласс для автоматической регистрации моделей и создания маппинга с таблицами базы данных:
 
 ```python
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import declarative_base
 
-Base = declarative_base()
+Base = declarative_base() # Конструктор метакласса
 
-class UserSQLAlchemy(Base):
-    __tablename__ = 'users'
+# Этот класс нужен для человеко-читаемого представления моделей
+class BaseModel(Base):
+    __abstract__ = True
+    def __repr__(self):
+        attrs = []
+        for column in self.__table__.columns:
+            value = getattr(self, column.name)
+            attrs.append(f"{column.name}={value!r}")
+        return f"<{self.__class__.__name__}({', '.join(attrs)})>"
+
+class UserSQLAlchemy(BaseModel):
+    __tablename__ = 'UserSQLAlchemy'
     id = Column(Integer, primary_key=True)
     name = Column(String(50))
 
-class ProductSQLAlchemy(Base):
-    __tablename__ = 'products'
+
+class CurseSQLAlchemy(BaseModel):
+    __tablename__ = 'CurseSQLAlchemy'
     id = Column(Integer, primary_key=True)
     title = Column(String(100))
 
 print("Все SQLAlchemy таблицы:", list(Base.metadata.tables.keys()))
+user = UserSQLAlchemy(id=1, name="John")
+curse = CurseSQLAlchemy(id=1, title="Python")
+print(user)
+print(curse)
 ```
 ```
-Все SQLAlchemy таблицы: ['UserSQLAlchemy', 'ProductSQLAlchemy']
+Все SQLAlchemy таблицы: ['UserSQLAlchemy', 'CurseSQLAlchemy']
+<UserSQLAlchemy(id=1, name='John')>
+<CurseSQLAlchemy(id=1, title='Python')>
 ```
 
 ### Реализацию для SQLAlchemy можно посмотреть здесь:
@@ -579,7 +611,6 @@ class MyClass(Base):
 print(MyClass.default_value)  # 0
 ```
 
-
 ## Когда использовать __init_subclass__ вместо метаклассов:
 
 ### Используйте __init_subclass__, когда:
@@ -592,7 +623,7 @@ print(MyClass.default_value)  # 0
 - Нужно полностью контролировать процесс создания класса
 - Требуется изменить наследование или пространство имен
 - Нужно перехватить создание самого класса (не только подклассов)
-- Необходима сложная логика регистрации/настройки
+- Необходима сложная логика регистрации/настройки классов
 
 ### Пример: регистрация плагинов через __init_subclass__
 ```python
@@ -647,14 +678,14 @@ print(issubclass(int, object))
 True
 True
 False
-True (т.к.все наследуется от object)
+True # (т.к.все наследуется от object)
 ```
 
 ### Практические рекомендации:
 - **Для регистрации плагинов:** `__init_subclass__` предпочтительнее метаклассов (проще и читаемее)
 - **Для валидации:** Декораторы классов или `__init_subclass__`
 - **Для проверки наследования:** Всегда используйте `issubclass()` и `__subclasses__()`
-- **Для сложных API (как Django ORM):** Метаклассы по-прежнему незаменимы
+- **Для сложных API (как Django/SQLAlchemy ORM):** Метаклассы по-прежнему незаменимы
 
 ## Аналоги MetaClass/issubclass()
 
@@ -674,4 +705,4 @@ True (т.к.все наследуется от object)
 - От `type` можно наследоваться и таким образом определить кастомный метакласс.
 - Для указания, какой метакласс использовать при создании класса, есть ключевое слово `metaclass`.
 - Для простой реализации API достаточно использовать __init_subclass__.
-- Чаще всего метаклассы используются для реализации более сложных API, таких как Django ORM.
+- Чаще всего метаклассы используются для реализации более сложных API, таких как Django/SQLAlchemy ORM.
