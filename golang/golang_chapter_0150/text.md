@@ -240,12 +240,15 @@ func main() {
 ./main.go:18:5: cannot use lexemeToFind (variable of string type lexeme) as string value in argument to wc (exit status 1)
 ```
 
-Получаем ошибку компиляции. Но ведь по смыслу ничего не изменилось! Пседовним `lexeme` — это все тот же `string`, только с другим названием. Чтобы функция принимала все типы, под которыми находится `string`, удобно применить дженерик с симвлом тильды `~`. Достаточно просто поставить символ тильды перед конкретным типом, в момент создания нового типа:
+Получаем ошибку компиляции. Но ведь по смыслу ничего не изменилось! Пседовним `lexeme` — это все тот же `string`, только с другим названием. Чтобы функция принимала все типы, под которыми находится `string`, удобно применить дженерик с симвлом тильды `~`. Достаточно просто поставить символ тильды перед конкретным типом, в момент создания нового типа: 
+
 ```go
 func wordCounter[T ~string]() func(word T) map[T]int {
 	...
 }
 ```
+
+Выражение «тип под типом» означает, что данный тип `T` имеет в качестве базового типа другой тип. Для встроенных типов базовым типом является сам тип. Например, для `float64` — это `float64`. Для составных типом базовый тип определяется по их структуре. Например, для `type Point struct { x int }` базовый тип — `struct{ x int }`. Для псевдонимов базовый тип — это тот тип, из которого объявлен псевдоним. В нашем случае базовый тип `lexeme` — `string`. Выражаясь иначе, под типом `lexeme` лежит тип `string`.
 
 Вот как будет выглядить полный код:
 
@@ -286,3 +289,91 @@ func main() {
 ```
 ./main.go:18:21: in call to wordCounter, cannot infer T (declared at ./main.go:7:20) (exit status 1)
 ```
+
+Функция `Filter` позволяет фильтровать срез по некоторому предикату. В данном случае предикат представляет собой функцию. При подставновке некоторого значения в нее функция возвращает значение типа `bool`. Если это значение истинно, то мы добавляем очередной элемент в новый срез. В противном случае — нет. {.task_text}
+
+Сейчас функция `Filter` принимает значения типа `any`. Но как убедиться в том, что тип элементов среза совпадает с типом аргумента, который принимает предикат? Это должен быть один и тот же тип. {.task_text}
+
+С помощью дженерика отредактируйте функцию `Filter` так, чтобы выполнился код из `main`. {.task_text}
+
+```go {.task_source #golang_chapter_0150_task_0020}
+package main
+
+import (
+	"fmt"
+	"net/mail"
+)
+
+func valid(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
+}
+
+// отредактируйте эту функцию
+func Filter(slice []any, predicate func(any) bool) []any {
+	var result []any
+	for _, v := range slice {
+		if predicate(v) {
+			result = append(result, v)
+		}
+	}
+	return result
+}
+
+func main() {
+	slice := []string{"anton@yandex.ru", "https://go.dev/", "go@best@hackers"}
+	newSlice := Filter(slice, func(p string) bool {
+		return valid(p)
+	})
+	fmt.Println(newSlice)
+	consts := []float64{3.141592653589, 2, 718281828}
+	newConsts := Filter(consts, func(p float64) bool {
+		return p < 3
+	})
+	fmt.Println(newConsts)
+}
+```
+
+Внутри дженерика объявите тип `T`. Конкретный тип, который может принимать `T`, — `any`. {.task_hint}
+
+``` go  {.task_answer}
+package main
+
+import (
+	"fmt"
+	"net/mail"
+)
+
+func valid(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
+}
+
+func Filter[T any](slice []T, predicate func(T) bool) []T {
+	var result []T
+	for _, v := range slice {
+		if predicate(v) {
+			result = append(result, v)
+		}
+	}
+	return result
+}
+func main() {
+	slice := []string{"anton@yandex.ru", "https://go.dev/", "go@best@hackers"}
+	newSlice := Filter(slice, func(p string) bool {
+		return valid(p)
+	})
+	fmt.Println(newSlice)
+	consts := []float64{3.141592653589, 2, 718281828}
+	newConsts := Filter(consts, func(p float64) bool {
+		return p < 3
+	})
+	fmt.Println(newConsts)
+}
+```
+
+## Резюме 
+1. Дженерики бывают удобны, когда необходимо делать одинаковые действия над различными типами.
+2. В Go существуют **basic** и **non-basic** интерфейсы. **Non-basic** интерфейсы могут определяться не только через набор методов, но и через конкртные типы. Они используются только в дженериках. 
+3. Дженерики используют не только с функциями, но и со структурами. 
+4. Тильда рядом с типом означает, что дженерик работает не только с этим типом. Он работает со всеми типами
