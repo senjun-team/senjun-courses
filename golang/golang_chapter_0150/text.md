@@ -103,12 +103,6 @@ func main() {
 ```
 В качестве типа `T` мы использовали некоторый обобщенный тип `cmp.Ordered`. Теперь мы можем сортировать данные всех типов, которые могут быть упорядочены.
 
-Кстати, ничто не мешает использовать в дженерике более одного типа: 
-```go
-func f[T1 string | int, T2 string | int](a T1, b T2) {
-}
-```
-
 Что выведет следующий код? В случае ошибки напишите error. {.task_text}
 
 ```go {.example_for_playground}
@@ -172,6 +166,36 @@ func main() {
 
 В этом случае при создании переменной типа `recordT` необходимо указывать тот конкретный тип, с которым мы работаем.
 
+Кстати, ничто не мешает использовать в дженериках более одного типа: 
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+)
+
+type Pair[T any, U any] struct {
+	First  T
+	Second U
+}
+
+func NewPair[T any, U any](first T, second U) Pair[T, U] {
+	return Pair[T, U]{First: first, Second: second}
+}
+
+func main() {
+	nameAge := NewPair("Alice", 30)
+	fmt.Println("Name and age:", nameAge)
+
+	coordinates := NewPair(10, 20.5)
+	fmt.Println("Coordinates:", coordinates)
+}
+```
+```
+Name and age: {Alice 30}
+Coordinates: {10 20.5}
+```
 ## Прием с тильдой
 
 Рассмотрим следующий пример:
