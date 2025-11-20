@@ -7,7 +7,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(STD_MODULE_FILE /usr/local/lib/std.pcm)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Werror -Wall -Wno-unused-variable -Wno-logical-op-parentheses -O2 -fmodule-file=std=${STD_MODULE_FILE}")
+set(CMAKE_COLOR_DIAGNOSTICS ON) # Disables ninja color-codes suppression
+
+set(CMAKE_CXX_FLAGS
+    "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Werror -Wall \
+    -Wno-unused-variable -Wno-logical-op-parentheses \
+    -O3 -fmodule-file=std=${STD_MODULE_FILE} \
+    -fcolor-diagnostics") # Enables colored output for clang
 
 add_executable(main)
 

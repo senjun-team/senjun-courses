@@ -8,6 +8,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(BENCHMARK_ENABLE_TESTING OFF)
 
+set(CMAKE_COLOR_DIAGNOSTICS ON) # Для цветного вывода ошибок сборки
+
+set(CMAKE_CXX_FLAGS
+    "${CMAKE_CXX_FLAGS} -Werror -Wall \
+    -Wno-unused-variable -Wno-logical-op-parentheses -O3 \
+    -fcolor-diagnostics") # Цветной вывод ошибок clang
+
 find_package(GTest REQUIRED)
 
 include(FetchContent)
