@@ -55,7 +55,7 @@ cache.get(8);      // "", false
 
 — В юнит-тестах используется библиотека GTest (GoogleTest). Она установлена по системным путям в докер-образе, внутри которого компилируется и запускается проект. Найдите ее с помощью команды [find_package](https://cmake.org/cmake/help/latest/module/FindGTest.html) и слинкуйте с тестами `tests`. Цель для линковки - `GTest::gtest`.
 
-— В бенчмарках используется библиотека [benchmark](https://github.com/google/benchmark) от Google. Ее исходники расположены в директории `/third_party/google/benchmark-1.9.4/`. Вам нужно подключить ее к проекту с помощью модуля [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) и слинковать с бенчмарками проекта. Цель для сборки `main` должна быть слинкована с файлом библиотеки `benchmark`. Библиотека хранится локально, а не в git-репозитории. Поэтому в команду [FetchContent_Declare](/courses/cpp/chapters/cpp_chapter_0120/#block-fetchcontent-example) вместо параметра `GIT_REPOSITORY` передайте параметр `SOURCE_DIR` с указанием полного пути.
+— В бенчмарках используется библиотека [benchmark](https://github.com/google/benchmark) от Google. Ее исходники расположены в директории `/third_party/google/benchmark/`. Вам нужно подключить ее к проекту с помощью модуля [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) и слинковать с бенчмарками проекта. Цель для сборки `main` должна быть слинкована с файлом библиотеки `benchmark`. Библиотека хранится локально, а не в git-репозитории. Поэтому в команду [FetchContent_Declare](/courses/cpp/chapters/cpp_chapter_0120/#block-fetchcontent-example) вместо параметра `GIT_REPOSITORY` передайте параметр `SOURCE_DIR` с указанием полного пути.
 
 ## Теория
 

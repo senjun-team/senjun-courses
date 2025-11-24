@@ -44,7 +44,7 @@ target_link_libraries(tests PRIVATE lru_cache GTest::gtest)
 
 ### Подключение Google benchmarks
 
-По условию задания исходный код библиотеки Google benchmarks скачан в локальную директорию `/third_party/google/benchmark-1.9.4/`. Значит, ее нужно подключить в проект с помощью модуля `cmake` [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html):
+По условию задания исходный код библиотеки Google benchmarks скачан в локальную директорию `/third_party/google/benchmark/`. Значит, ее нужно подключить в проект с помощью модуля `cmake` [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html):
 
 ```
 # Подключаем модуль FetchContent
@@ -54,7 +54,7 @@ include(FetchContent)
 # локально в указанной директории
 FetchContent_Declare(
     google_benchmark
-    SOURCE_DIR "/third_party/google/benchmark-1.9.4/"
+    SOURCE_DIR "/third_party/google/benchmark/"
 )
 
 # Подключение зависимости
