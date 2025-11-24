@@ -1,141 +1,151 @@
 # Глава 15. Дженерики
+
 ## Дженерики-функции
 
-Начиная с Go 1.18, в языке появились дженерики. Дженерики позволяют работать с различными типами данных, не меняя структуру исходного кода. 
+Начиная с Go 1.18, в языке появились дженерики (**generic functions** и **generic types**). Дженерики позволяют писать обобщенный код, способный обрабатывать разные типы данных. Это позволяет единожды реализовать алгоритм и применять его к разным типам. 
 
-Дженерики легче понять на примере. Допустим, мы реализовали некоторый алгоритм сортировки: 
-
-``` go {.example_for_playground}
-package main
-
-import "fmt"
-
-func bubbleSort(s []int) {
-	for i := 0; i < len(s)-1; i++ {
-		for j := 0; j < len(s)-i-1; j++ {
-			if s[j] > s[j+1] {
-				s[j], s[j+1] = s[j+1], s[j]
-			}
-		}
-	}
-}
-
-func main() {
-	input := []int{40, 10, 30, 100, 80}
-	bubbleSort(input)
-	fmt.Println(input)
-}
-```
-```
-[10 30 40 80 100]
-```
-
-Что делать, если мы хотим сортировать не только `int`, но и, например, `float64`? На помощь приходят дженерики: 
+Дженерики легче понять на примере. Допустим, мы реализовали функцию `unique`, которая возвращает из среза целых чисел единственное вхождение каждого из элементов:
 
 ``` go {.example_for_playground}
 package main
 
 import "fmt"
 
-func bubbleSort[T int | float64](s []T) {
-	for i := 0; i < len(s)-1; i++ {
-		for j := 0; j < len(s)-i-1; j++ {
-			if s[j] > s[j+1] {
-				s[j], s[j+1] = s[j+1], s[j]
-			}
+func unique(slice []int) []int {
+	seen := make(map[int]struct{})
+	result := []int{}
+
+	for _, item := range slice {
+		if _, ok := seen[item]; !ok {
+			seen[item] = struct{}{}
+			result = append(result, item)
 		}
 	}
+	return result
 }
-
 func main() {
-	input := []int{40, 10, 30, 100, 80}
-	bubbleSort(input)
-	fmt.Println(input)
-	anotherInput := []float64{50.4, 10, 30.99, 30.8}
-	bubbleSort(anotherInput)
-	fmt.Println(anotherInput)
+	input := []int{1, 2, 3, 3, 4, 5}
+	output := unique(input)
+	fmt.Println(output)
 }
 ```
+
 ```
-[10 30 40 80 100]
-[10 30.8 30.99 50.4]
+[1 2 3 4 5]
 ```
+
+Что делать, если мы хотим работать не только `int`, но и, например, `float64`? Нам пришлось бы повторить эту функцию для `float64`. А если нужны и `float32`? Придется каждый раз писать одинаковый код для разных типов. Мы могли бы сделать также кодогенерацию, но это сложно. На помощь приходят дженерики: 
+
+``` go {.example_for_playground}
+package main
+
+import "fmt"
+
+func unique[T int | float64](slice []T) []T {
+	seen := make(map[T]struct{})
+	result := []T{}
+
+	for _, item := range slice {
+		if _, ok := seen[item]; !ok {
+			seen[item] = struct{}{}
+			result = append(result, item)
+		}
+	}
+	return result
+}
+func main() {
+	input := []int{1, 2, 3, 3, 4, 5}
+	output := unique(input)
+	fmt.Println(output)
+	anotherInput := []float64{1.4, 1.3, 1.4, 1.5, 2.7}
+	anotherOutput := unique(anotherInput)
+	fmt.Println(anotherOutput)
+}
+```
+
+```
+[1 2 3 4 5]
+[1.4 1.3 1.5 2.7]
+```
+
 В квадратных скобках после имени функции описывается новый тип, с которым мы будем работать. В нашем случае `T` — имя этого типа. Его вы даете сами, но на практике чаще всего используют букву `T`. Типы, которые может принимать `T`, перечисляются через вертикальную черту `|`. После того, как мы описали новый тип, он становится доступен всюду внутри функции.
 
-Что делать, если мы хотим сортировать не только `int` и `float64`, но и другие типы, которые могут быть упорядочены? Например, `float32` или даже `string`. Мы могли бы воспользоваться интерфейсом `any`, чтобы передать любой тип в функцию. Но как понять, что элементы этого типа можно упорядочить? Мы могли бы перечислить все типы, с которыми мы можем работать явно, но это утомительно и громоздко. За нас это уже сделали в интерфейсе `cmp.Ordered`.
+Что делать, если мы хотим работать не только с `int` и `float64`, но и с другими сравнимыми типами? Например, `float32` или даже `string`. Мы могли бы воспользоваться интерфейсом `any`, чтобы передать любой тип в функцию. Но как понять, что элементы этого типа можно сравнивать? Мы могли бы перечислить все типы, с которыми мы можем работать явно, но это утомительно и громоздко. За нас это уже сделали в интерфейсе `comparable`.
 
-Интерфейсы в Go являются либо **базовыми** (**basic**), либо нет (**non-basic**). До сих пор мы имели дело с базовыми интерфейсами. Это такие интерфейсы, которые определены через список методов. Non-basic интерфейсы могут включать себя не только набор методов, но и типы. Интерфейс `cmp.Ordered` определяется через все типы, которые могут быть упорядочены. Он является non-basic. Non-basic интерфейсы не могут быть использованы как обычные типы. Их применяют совместно с дженериками. Для нашего примера как раз подойдет такой интерфейс: 
+Интерфейсы в Go являются либо **базовыми** (**basic**), либо нет (**general interfaces**). До сих пор мы имели дело с базовыми интерфейсами. Это такие интерфейсы, которые определены через список методов. General interfaces могут включать себя не только набор методов, но и типы. Интерфейс `comparable` определяется через все сравнимые типы. Он является general interface. General interfaces не могут быть использованы как обычные типы. Их применяют совместно с дженериками. Для нашего примера как раз подойдет такой интерфейс: 
 
 ``` go {.example_for_playground}
 package main
 
-import (
-	"cmp"
-	"fmt"
-)
+import "fmt"
 
-func bubbleSort[T cmp.Ordered](s []T) {
-	for i := 0; i < len(s)-1; i++ {
-		for j := 0; j < len(s)-i-1; j++ {
-			if s[j] > s[j+1] {
-				s[j], s[j+1] = s[j+1], s[j]
-			}
+func unique[T comparable](slice []T) []T {
+	seen := make(map[T]struct{})
+	result := []T{}
+
+	for _, item := range slice {
+		if _, ok := seen[item]; !ok {
+			seen[item] = struct{}{}
+			result = append(result, item)
 		}
 	}
+	return result
 }
-
 func main() {
-	input := []int{40, 10, 30, 100, 80}
-	bubbleSort(input)
-	fmt.Println(input)
-	anotherInput := []float64{50.4, 10, 30.99, 30.8}
-	bubbleSort(anotherInput)
-	fmt.Println(anotherInput)
-	amazingInput := []string{"bubble", "orange", "apple"}
-	bubbleSort(amazingInput)
-	fmt.Println(amazingInput)
+	input := []int{1, 2, 3, 3, 4, 5}
+	output := unique(input)
+	fmt.Println(output)
+	anotherInput := []float64{1.4, 1.3, 1.4, 1.5, 2.7}
+	anotherOutput := unique(anotherInput)
+	fmt.Println(anotherOutput)
+	thirdInput := []string{"juice", "orange", "juice", "apple"}
+	thirdOutput := unique(thirdInput)
+	fmt.Println(thirdOutput)
 }
 ```
+
 ```
-[10 30 40 80 100]
-[10 30.8 30.99 50.4]
-[apple bubble orange]
+[1 2 3 4 5]
+[1.4 1.3 1.5 2.7]
+[juice orange apple]
 ```
-В качестве типа `T` мы использовали некоторый обобщенный тип `cmp.Ordered`. Теперь мы можем сортировать данные всех типов, которые могут быть упорядочены.
+
+В качестве типа `T` мы использовали некоторый обобщенный тип `comparable`. Теперь мы можем работать со всеми сравнимыми типами.
 
 Что выведет следующий код? В случае ошибки напишите error. {.task_text}
 
 ```go {.example_for_playground}
 package main
 
-import (
-	"cmp"
-	"fmt"
-)
+import "fmt"
 
-func bubbleSort[T cmp.Ordered](s []T) {
-	for i := 0; i < len(s)-1; i++ {
-		for j := 0; j < len(s)-i-1; j++ {
-			if s[j] > s[j+1] {
-				s[j], s[j+1] = s[j+1], s[j]
-			}
+func unique[T comparable](slice []T) []T {
+	seen := make(map[T]struct{})
+	result := []T{}
+
+	for _, item := range slice {
+		if _, ok := seen[item]; !ok {
+			seen[item] = struct{}{}
+			result = append(result, item)
 		}
 	}
+	return result
 }
-
 func main() {
-	input := []any{1, "bla", 2}
-	bubbleSort(input)
-	fmt.Println(input)
+	input := [][]int{{1, 2, 3}, {1, 2, 3}, {1, 4, 6}}
+	output := unique(input)
+	fmt.Println(output)
 }
 ```
 
 ```consoleoutput {.task_source #golang_chapter_0150_task_0010}
 ```
-Тип соответствует `cmp.Ordered`, если он может быть упорядочен. {.task_hint}
+Типу `comparable` соответствуют только сравнимые типы. {.task_hint}
+
 ```{.task_answer}
 error
 ```
+
 ## Дженерики-типы 
 
 Когда в структуре есть поля, в которых необходимо писать данные различных типов, бывает удобно использовать дженерики-типы:
@@ -159,6 +169,7 @@ func main() {
 	fmt.Println(anotherRecord)
 }
 ```
+
 ```
 {[1 2 3] sample data}
 {[3.141592653589 2.718281828] consts}
@@ -171,9 +182,7 @@ func main() {
 ```go {.example_for_playground}
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type Pair[T any, U any] struct {
 	First  T
@@ -192,10 +201,12 @@ func main() {
 	fmt.Println("Coordinates:", coordinates)
 }
 ```
+
 ```
 Name and age: {Alice 30}
 Coordinates: {10 20.5}
 ```
+
 ## Прием с тильдой
 
 Рассмотрим следующий пример:
@@ -241,10 +252,13 @@ func main() {
 
 }
 ```
+
 ```
 map[i:3 print:1]
 ```
+
 В данном случае все работает верно. Но что, если мы используем псевдоним `lexeme` для типа `string`?
+
 ``` go {.example_for_playground}
 package main
 
@@ -266,6 +280,7 @@ func main() {
 	wc(lexemeToFind)
 }
 ```
+
 ```
 ./main.go:18:5: cannot use lexemeToFind (variable of string type lexeme) as string value in argument to wc (exit status 1)
 ```
@@ -304,11 +319,13 @@ func main() {
 	fmt.Println(wc(lexemeToFind))
 }
 ```
+
 ```
 map[i:1]
 ```
 
-Когда вызываем функцию `wordCounter`, также необходимо указывать тип, с которым будем работать. В данном случае этот тип — `lexeme`. В противном случае возникнет ошибка компиляции: 
+Когда вызываем функцию `wordCounter`, также необходимо указывать тип, с которым будем работать. В данном случае этот тип — `lexeme`. В противном случае возникнет ошибка компиляции:
+
 ```go
 func main() {
 	var lexemeToFind lexeme = "i"
@@ -316,11 +333,13 @@ func main() {
 	fmt.Println(wc(lexemeToFind))
 }
 ```
+
 ```
 ./main.go:18:21: in call to wordCounter, cannot infer T (declared at ./main.go:7:20) (exit status 1)
 ```
 
 Таким образом, правильный вариант: 
+
 ``` go
 func main() {
 	var lexemeToFind lexeme = "i"
@@ -328,6 +347,7 @@ func main() {
 	fmt.Println(wc(lexemeToFind))
 }
 ```
+
 ```
 map[i:1]
 ```
@@ -415,7 +435,8 @@ func main() {
 ```
 
 ## Резюме 
+
 1. Дженерики бывают удобны, когда необходимо выполнять одинаковые действия над различными типами.
-2. В Go существуют **basic** и **non-basic** интерфейсы. **Non-basic** интерфейсы могут определяться не только через набор методов, но и через конкретные типы. Они используются только в дженериках. 
+2. В Go существуют **basic** и **general interfaces**. **General interfaces** интерфейсы могут определяться не только через набор методов, но и через конкретные типы. Они используются только в дженериках. 
 3. Дженерики используют не только с функциями, но и со структурами. 
 4. Тильда рядом с типом означает, что дженерик работает не только с этим типом. Он работает со всеми типами, под которыми лежит данный тип.
