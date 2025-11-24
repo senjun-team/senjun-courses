@@ -1,7 +1,6 @@
-import boost.ut;
-#include <cmath>
-
 #INJECT-b585472fa
+
+import boost.ut;
 
 using namespace boost::ut;
 

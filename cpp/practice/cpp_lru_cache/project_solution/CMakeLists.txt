@@ -21,7 +21,7 @@ include(FetchContent)
 
 FetchContent_Declare(
     google_benchmark
-    SOURCE_DIR "/third_party/google/benchmark-1.9.4/"
+    SOURCE_DIR "/third_party/google/benchmark/"
 )
 
 FetchContent_MakeAvailable(google_benchmark)

@@ -18,7 +18,7 @@ set(CMAKE_CXX_FLAGS
 
 # Поиск системно установленного GTest
 
-# Подключение google_benchmark из /third_party/google/benchmark-1.9.4/
+# Подключение google_benchmark из /third_party/google/benchmark/
 
 # Добавление путей для поиска хедера lru_cache.h
 

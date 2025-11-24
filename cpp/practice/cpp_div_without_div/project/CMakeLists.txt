@@ -6,14 +6,14 @@ set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(STD_MODULE_FILE /usr/local/lib/std.pcm)
-set(CMAKE_COLOR_DIAGNOSTICS ON) # Disables ninja color-codes suppression
+set(CMAKE_COLOR_DIAGNOSTICS ON) # Для цветного вывода ошибок сборки
 
 set(CMAKE_CXX_FLAGS
     "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Werror -Wall \
-    -Wno-unused-variable -Wno-logical-op-parentheses \
-    -O3 -fmodule-file=std=${STD_MODULE_FILE} \
-    -fcolor-diagnostics") # Enables colored output for clang
+    -Wno-unused-variable -Wno-logical-op-parentheses -O3 \
+    -fcolor-diagnostics") # Для цветного вывода ошибок сборки
+
+include(precompiled_modules.cmake) # Подключение модулей
 
 add_executable(main)
 
@@ -24,6 +24,7 @@ target_sources(main
     FILE_SET senjun_modules TYPE CXX_MODULES FILES
     div.cppm
 )
+target_link_libraries(main PUBLIC std_module)
 
 add_executable(tests)
 
@@ -32,9 +33,10 @@ target_sources(tests
     tests.cpp
     PUBLIC
     FILE_SET senjun_modules TYPE CXX_MODULES FILES
-    ut.cppm
     div.cppm
 )
+
+target_link_libraries(tests PUBLIC test_modules)
 
 # Docker-образ, внутри которого компилируется и запускается проект:
 # https://github.com/senjun-team/senjun-images/blob/main/cpp/Dockerfile
@@ -44,5 +46,5 @@ target_sources(tests
 # В нем же можно посмотреть, какие версии clang, cmake и ninja точно подходят.
 
 # Затем выполните шаги:
-# cmake -Wno-dev -Bbuild -GNinja
+# cmake -Wno-dev -B build -G Ninja
 # cmake --build build/ -- -j4
