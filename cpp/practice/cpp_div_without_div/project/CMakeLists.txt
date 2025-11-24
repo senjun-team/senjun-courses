@@ -12,8 +12,11 @@ set(CMAKE_COLOR_DIAGNOSTICS ON) # Disables ninja color-codes suppression
 set(CMAKE_CXX_FLAGS
     "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Werror -Wall \
     -Wno-unused-variable -Wno-logical-op-parentheses \
-    -O3 -fmodule-file=std=${STD_MODULE_FILE} \
+    -O3 \
     -fcolor-diagnostics") # Enables colored output for clang
+
+# Подключение модулей
+include(precompiled_modules.cmake)
 
 add_executable(main)
 
@@ -24,6 +27,7 @@ target_sources(main
     FILE_SET senjun_modules TYPE CXX_MODULES FILES
     div.cppm
 )
+target_link_libraries(main PUBLIC std_module)
 
 add_executable(tests)
 
@@ -32,9 +36,10 @@ target_sources(tests
     tests.cpp
     PUBLIC
     FILE_SET senjun_modules TYPE CXX_MODULES FILES
-    ut.cppm
     div.cppm
 )
+
+target_link_libraries(tests PUBLIC test_modules)
 
 # Docker-образ, внутри которого компилируется и запускается проект:
 # https://github.com/senjun-team/senjun-images/blob/main/cpp/Dockerfile
