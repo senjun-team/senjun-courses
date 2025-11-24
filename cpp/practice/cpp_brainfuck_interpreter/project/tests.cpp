@@ -1,5 +1,5 @@
 import boost.ut;
-import test_helpers;
+import TestHelpers;
 
 import brainfuck;
 
@@ -48,7 +48,7 @@ std::vector<int> to_nums(const std::string & s)
 
 void check_testcase(const testcase & tc)
 {
-    const std::string path = std::format("examples/{}", tc.filename);
+    const std::string path = std::format("project/examples/{}", tc.filename);
     const std::string output = hlp::exec(std::format("./build/main {}", path));
     expect(output == tc.output) << std::format("Invalid program output. Program path: {}\nPlan output: {}\nPlan output in ASCII-codes: {}\nFact output: {}\nFact output in ASCII-codes: {}\n", path, tc.output, to_nums(tc.output), output, to_nums(output)) << fatal;
 }
@@ -115,7 +115,7 @@ int main()
     };
 
     "Code sample with user input"_test = [] {
-        const std::string program = "cat examples/input_reverse_number.txt | ./build/main examples/reverse_number.b";
+        const std::string program = "cat project/examples/input_reverse_number.txt | ./build/main project/examples/reverse_number.b";
         const std::string output = hlp::exec(program);
         const std::string plan = "738";
         expect(output == plan) << std::format("Invalid program output. Program: {}\nPlan output: {}\nPlan output in ASCII-codes: {}\nFact output: {}\nFact output in ASCII-codes: {}\n", program, plan, to_nums(plan), output, to_nums(output)) << fatal;
