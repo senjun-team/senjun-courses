@@ -405,7 +405,8 @@ class Course(models.Model):
     chapters_count = models.IntegerField()
 
 course = Course(title="python", chapters_count=37)
-print(course.chapters_count)
+course = Course.objects.get(title="python")
+print(course)
 ```
 
 В данном случае мы обратились к полю `chapters_count`, которое в базе данных имеет тип `IntegerField`. Но в коде мы работаем с ним как с обычным `int`, хотя значение `chapters_count` извлекается из таблицы. Это возможно благодаря определенному для `models.Model` метаклассу, который позволяет в стиле питона работать с сущностями из базы данных и избегать сложных запросов.
