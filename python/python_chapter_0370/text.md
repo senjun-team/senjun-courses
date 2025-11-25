@@ -445,10 +445,10 @@ print(f"Тип данных после сериализации: {type(course_di
 ```
 ```
 Все Pydantic модели: ['UserPydantic', 'CoursePydantic']
-Модель pydantic: name='John' age=18
+Модель user: name='John' age=18
 Получения поля модели user: 18
-Модель pydantic: id=1 title='PYTHON'
-Тип модели pydantic: <class '__main__.CoursePydantic'>
+Модель course: id=1 title='PYTHON'
+Тип модели course: <class '__main__.CoursePydantic'>
 Данные после сериализации: {'id': 1, 'title': 'PYTHON'}
 Тип данных после сериализации: <class 'dict'>
 ```
