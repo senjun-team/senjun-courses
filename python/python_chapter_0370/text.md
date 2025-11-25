@@ -438,7 +438,7 @@ print(f"Получения поля модели user: {user.age}")
 
 course = {"id": 1, "title": "python"}
 course_model = CoursePydantic(**course) # Парсинг словаря в валидированную модель
-print(f"Модель pydantic: {course_model}")
+print(f"Модель course: {course_model}")
 print(f"Тип модели pydantic: {type(course_model)}")
 course_dict = course_model.model_dump() # Сериализация модели в словарь
 print(f"Данные после сериализации: {course_dict}")
@@ -446,10 +446,10 @@ print(f"Тип данных после сериализации: {type(course_di
 ```
 ```
 Все Pydantic модели: ['UserPydantic', 'CoursePydantic']
-Модель pydantic: name='John' age=18
+Модель user: name='John' age=18
 Получения поля модели user: 18
-Модель pydantic: id=1 title='PYTHON'
-Тип модели pydantic: <class '__main__.CoursePydantic'>
+Модель course: id=1 title='PYTHON'
+Тип модели course: <class '__main__.CoursePydantic'>
 Данные после сериализации: {'id': 1, 'title': 'PYTHON'}
 Тип данных после сериализации: <class 'dict'>
 ```
