@@ -1,0 +1,15 @@
+from pydantic import BaseModel, field_validator
+
+class UserPydantic(BaseModel): # BaseModel - метакласс
+    name: str
+    age: int
+
+class CoursePydantic(BaseModel):
+    id: int
+    title: str
+
+    @field_validator("title", mode="before")
+    def validate_title(cls, value: str):
+        return value.upper()
+
+#INJECT-b585472fa
