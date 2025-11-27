@@ -7,12 +7,20 @@ from search_engine import SearchEngine
 
 
 def assert_size_not_changed(obj):
+    """Декоратор для проверки, что SearchEngine после создания
+    (то есть при вызове метода search()) не начинает потреблять
+    дополнительную память.
+    """
     def outer(test_method):
         def inner(test_case):
+            err_msg = """Method search() must not change the state of SearchEngine.
+                      SearchEngine must consume equal amount of memory before and 
+                      after calling search()."""
+
             initial_size = objsize.get_deep_size(obj)
             test_method(test_case, obj)
             final_size = objsize.get_deep_size(obj)
-            test_case.assertEqual(initial_size, final_size)
+            test_case.assertEqual(initial_size, final_size, err_msg)
 
         return inner
 
