@@ -761,13 +761,6 @@ std::uint32_t convert_ip_v4(std::string ip)
 ```
 Воспользуйтесь методом `find()` строки, чтобы определить в ней индексы точек. Точки разделяют октеты адреса. Получите значение каждого из октетов методом строки `substr()`. Переведите их из строки в число функцией `std::stoi()`. Заведите переменную для десятичного представления ip-адреса и проинициализируйте ее нулем. Затем заполните ее четырьмя октетами. Добавление к число октета означает сдвиг этого числа на 8 бит влево и заполнение младших 8-ми бит значением октета. {.task_hint}
 ```cpp {.task_answer}
-// Сдвигает число ip на 8 бит влево и заполняет младшие 8 бит
-// числом octet
-std::uint32_t shift_octet(std::uint32_t ip, std::uint32_t octet)
-{
-    return (ip << 8) | octet;
-}
-
 // Добавляет к числу ip октет из строки ip_str, ограниченный индексами
 std::uint32_t add_octet(std::uint32_t ip,
                         std::string ip_str,
@@ -776,7 +769,10 @@ std::uint32_t add_octet(std::uint32_t ip,
 {
     const std::string octet_str = ip_str.substr(i_start, i_end - i_start);
     const std::uint32_t octet = std::stoi(octet_str);
-    return shift_octet(ip, octet);
+
+    // Сдвигает число ip на 8 бит влево и заполняет младшие 8 бит
+    // числом octet
+    return (ip << 8) | octet;
 }
 
 std::uint32_t convert_ip_v4(std::string ip)

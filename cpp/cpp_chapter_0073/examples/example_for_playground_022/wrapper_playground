@@ -1,0 +1,13 @@
+import std;
+
+int main()
+{
+    // Ключ - имя пользователя.
+    // Значение - Unix timestamp последнего логина
+    std::map<std::string, std::time_t> user_last_login = {
+        {"Alice", 1153044881},
+        {"Bob", 1743461707},
+    };
+
+    #INJECT-b585472fa
+}
