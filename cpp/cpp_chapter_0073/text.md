@@ -130,9 +130,10 @@ for (std::pair<std::string, std::time_t> record: user_last_login)
 for (auto record: user_last_login)
     std::println("Key: {}. Value: {}", record.first, record.second);
 ```
+
 В C++17 появилась возможность распаковывать пары (и другие агрегатные типы) в несколько переменных с помощью синтаксиса, известного как structured binding. Сравните:
 
-```cpp  {.example_for_playground .example_for_playground_013}
+```cpp  {.example_for_playground .example_for_playground_022}
 for (auto [login, time]: user_last_login)
     std::println("Key: {}. Value: {}", login, time);
 ```
