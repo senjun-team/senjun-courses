@@ -1,6 +1,6 @@
 {
     "title": "Golang",
-    "version": "Go 1.22.5",
+    "version": "Go 1.25.0",
     "url": "https://go.dev/",
     "chapters": "30 глав", 
     "projects": [
