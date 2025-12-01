@@ -1,0 +1,111 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: senjun
+      POSTGRES_PASSWORD: some_password
+      POSTGRES_DB: senjun
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U senjun"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - senjun-network
+
+  watchman_cpp:
+    build:
+      context: ./infra/watchman_cpp
+      dockerfile: Dockerfile
+    image: sj/watchman
+    container_name: watchman
+    ports:
+      - "8000:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      #- watchman_config:/app
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    networks:
+      - senjun-network
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/check", "-X", "POST", "-H", "Content-Type: application/json", "-d", "{}", "-o", "/dev/null", "-s"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  handyman:
+    build:
+      context: ./infra/handyman
+      dockerfile: Dockerfile
+    image: sj/handyman
+    container_name: handyman
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app/courses:ro
+    environment:
+      - WATCHMAN_ADDR=http://watchman_cpp:8000
+      - POSTGRES_CONN_STR=postgresql://senjun:some_password@postgres:5432/senjun?sslmode=disable
+    networks:
+      - senjun-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      watchman_cpp:
+        condition: service_healthy
+    restart: unless-stopped
+
+  init_handyman_db:
+    profiles: [init]
+    build:
+      context: ./infra/handyman/etc/
+      dockerfile_inline: |
+        FROM python:latest
+        COPY scripts/requirements.txt /requirements.txt
+        RUN pip install -r requirements.txt
+        
+    image: sj/init_handyman_db
+    # that service we try to 
+    pull_policy: never
+    container_name: init_handyman_db
+    environment:
+      POSTGRES_USER: senjun
+      PGPASSWORD: some_password
+      POSTGRES_DB: senjun
+    restart: no
+    depends_on:
+      - postgres
+    networks:
+      - senjun-network
+    volumes:
+      - ./infra/handyman/etc:/init_tools
+      - ./:/courses
+    entrypoint:
+      - python
+      - /init_tools/scripts/init_db.py
+      - --postgres_conn 
+      - postgresql://senjun:some_password@postgres:5432/senjun?sslmode=disable 
+      - --courses_dir
+      - /courses 
+      - /init_tools/postgres_migrations/0001_create_tables.sql 
+      - /init_tools/postgres_migrations/0002_create_metrics_table.sql
+      
+
+volumes:
+  postgres_data:
+  watchman_config:
+
+networks:
+  senjun-network:
+    driver: bridge
+
