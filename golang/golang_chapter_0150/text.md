@@ -525,6 +525,149 @@ func main() {
 }
 ```
 
+Кэш `Cache` позволяет хранить данные в хеш-таблице с ключами типа `string` и значениями типа `cacheItem`. {.task_text}
+
+```go {.task_source #golang_chapter_0150_task_0030}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type Cache struct {
+	data map[string]cacheItem
+	ttl  time.Duration
+}
+
+type cacheItem struct {
+	value     int
+	expiresAt time.Time
+}
+
+func NewCache(ttl time.Duration) *Cache {
+	return &Cache{
+		data: make(map[string]cacheItem),
+		ttl:  ttl,
+	}
+}
+
+func (c *Cache) Set(key string, value int) {
+	c.data[key] = cacheItem{
+		value:     value,
+		expiresAt: time.Now().Add(c.ttl),
+	}
+}
+
+func (c *Cache) Get(key string) (int, bool) {
+	item, exists := c.data[key]
+	if !exists || time.Now().After(item.expiresAt) {
+		return 0, false
+	}
+	return item.value, true
+}
+
+func (c *Cache) Delete(key string) {
+	delete(c.data, key)
+}
+
+func main() {
+	// Кэш для числовых значений
+	intCache := NewCache[string, int](10 * time.Minute)
+	intCache.Set("request_count", 42)
+	intCache.Set("active_users", 150)
+
+	if count, ok := intCache.Get("request_count"); ok {
+		fmt.Printf("Requests: %d\n", count)
+	}
+
+	// Кэш для структур
+	type User struct {
+		Name  string
+		Email string
+	}
+
+	userCache := NewCache[int, User](time.Hour)
+	userCache.Set(1, User{Name: "Bob", Email: "bob@example.com"})
+	userCache.Set(2, User{Name: "Charlie", Email: "charlie@test.com"})
+
+	if user, ok := userCache.Get(1); ok {
+		fmt.Printf("User: %+v\n", user)
+	}
+}
+```
+
+```go {.task_answer}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type Cache[K comparable, V any] struct {
+	data map[K]cacheItem[V]
+	ttl  time.Duration
+}
+
+type cacheItem[V any] struct {
+	value     V
+	expiresAt time.Time
+}
+
+func NewCache[K comparable, V any](ttl time.Duration) *Cache[K, V] {
+	return &Cache[K, V]{
+		data: make(map[K]cacheItem[V]),
+		ttl:  ttl,
+	}
+}
+
+func (c *Cache[K, V]) Set(key K, value V) {
+	c.data[key] = cacheItem[V]{
+		value:     value,
+		expiresAt: time.Now().Add(c.ttl),
+	}
+}
+
+func (c *Cache[K, V]) Get(key K) (V, bool) {
+	item, exists := c.data[key]
+	if !exists || time.Now().After(item.expiresAt) {
+		var zero V
+		return zero, false
+	}
+
+	return item.value, true
+}
+
+func (c *Cache[K, V]) Delete(key K) {
+	delete(c.data, key)
+}
+
+func main() {
+	// Кэш для числовых значений
+	intCache := NewCache[string, int](10 * time.Minute)
+	intCache.Set("request_count", 42)
+	intCache.Set("active_users", 150)
+
+	if count, ok := intCache.Get("request_count"); ok {
+		fmt.Printf("Requests: %d\n", count)
+	}
+
+	// Кэш для структур
+	type User struct {
+		Name  string
+		Email string
+	}
+
+	userCache := NewCache[int, User](time.Hour)
+	userCache.Set(1, User{Name: "Bob", Email: "bob@example.com"})
+	userCache.Set(2, User{Name: "Charlie", Email: "charlie@test.com"})
+
+	if user, ok := userCache.Get(1); ok {
+		fmt.Printf("User: %+v\n", user)
+	}
+}
+```
 ## Резюме 
 
 1. Дженерики бывают удобны, когда необходимо выполнять одинаковые действия над различными типами.
