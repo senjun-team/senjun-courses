@@ -81,10 +81,41 @@ int main()
 w
 ```
 
-Символьный тип `char` является целочисленным, поэтому может выступать в качестве базового для перечисления. В этом примере мы вызвали появившуюся в C++23 функцию [std::to_underlying()](https://en.cppreference.com/w/cpp/utility/to_underlying.html). Она приводит значение перечисления к базовому типу. До C++23 с той же целью приходилось выполнять явное приведение типов через `static_cast`:
+Символьный тип `char` является целочисленным, поэтому может выступать в качестве базового для перечисления. В этом примере мы вызвали появившуюся в C++23 функцию [std::to_underlying()](https://en.cppreference.com/w/cpp/utility/to_underlying.html). Она приводит значение перечисления к базовому типу. До C++23 с той же целью приходилось выполнять приведение типов через `static_cast`:
 
 ```cpp
 std::println("{}", static_cast<char>(AccessType::Write));
+```
+
+Функция `std::to_underlying()` более удобна, чем `static_cast`, потому что не требует явного указания базового типа. А значит, она:
+- Не приводит к опасному сужающему преобразованию, если базовый тип был изменен на более широкий.
+- Может быть использована при написании обобщенного кода в шаблонах.
+
+Так выглядит использование `std::to_underlying()` в шаблонной функции:
+
+```cpp
+import std;
+
+enum ServerState { down, starting, ready, stopping };
+enum HttpPort : std::uint16_t { def = 80, tls = 443 };
+
+template <class T> 
+void print_enum_value(std::string name, T value)
+{
+    std::println("{}: {}", name, std::to_underlying(value));
+}
+
+int main()
+{
+    print_enum_value("down", ServerState::down);
+    print_enum_value("ready", ServerState::ready);
+    print_enum_value("tls", HttpPort::tls);
+}
+```
+```
+down: 0
+ready: 2
+tls: 443
 ```
 
 Что выведет этот код? {.task_text}
@@ -94,19 +125,21 @@ std::println("{}", static_cast<char>(AccessType::Write));
 ```cpp {.example_for_playground}
 import std;
 
-enum class LogLevel : char
-{
-    Trace,
-    Debug,
-    Info,
-    Warn,
-    Error
-};
+using TaskId = int;
+using TaskPool = std::vector<TaskId>;
 
+enum Priority {low, high};
 int main()
 {
-    const char level = std::to_underlying(LogLevel::Info);
-    std::println("{}", sizeof(level));
+    std::array<TaskPool, 2> tasks = {
+        TaskPool{46, 32},
+        TaskPool{15}
+    };
+
+    std::size_t tasks_to_exec = tasks[std::to_underlying(Priority::low)].size() +
+                                tasks[std::to_underlying(Priority::high)].size();
+
+    std::println("{}", tasks_to_exec);
 }
 ```
 
@@ -114,7 +147,7 @@ int main()
 ```
 . {.task_hint}
 ```cpp {.task_answer}
-1
+3
 ```
 
 ## Функции
@@ -230,7 +263,13 @@ int main()
 true
 ```
 
-Реализуйте функцию `sum_if()`, которая принимает два параметра. Перый — это словарь `std::map` с ключами - строками и значениями типа `std::size_t`. Второй параметр - функция-предикат, принимающая строку и возвращающая `bool`. Функция `sum_if()` должна вернуть сумму значений элементов словаря, для ключей которых предикат возвращает `true`. {.task_text}
+Реализуйте функцию `sum_if()`, которая принимает два параметра: `data` и `pred`. 
+
+Параметр `data` — это словарь `std::map` с ключами - строками и значениями типа `std::size_t`.
+
+Параметр `pred` - функция-предикат, принимающая строку и возвращающая `bool`.  {.task_text}
+
+Функция `sum_if()` должна вернуть сумму значений элементов словаря `data`, для ключей которых предикат `pred` возвращает `true`. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0142_task_0040}
 
