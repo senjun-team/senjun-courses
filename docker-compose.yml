@@ -25,7 +25,7 @@ services:
     image: sj/watchman
     container_name: watchman
     ports:
-      - "8000:8000"
+      - "9000:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       #- watchman_config:/app
@@ -50,7 +50,7 @@ services:
     image: sj/handyman
     container_name: handyman
     ports:
-      - "8080:8080"
+      - "9080:8080"
     volumes:
       - .:/app/courses:ro
     environment:
@@ -97,8 +97,7 @@ services:
       - postgresql://senjun:some_password@postgres:5432/senjun?sslmode=disable 
       - --courses_dir
       - /courses 
-      - /init_tools/postgres_migrations/0001_create_tables.sql 
-      - /init_tools/postgres_migrations/0002_create_metrics_table.sql
+      - /init_tools/postgres_migrations/
       
 
 volumes:
