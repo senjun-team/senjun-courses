@@ -244,205 +244,6 @@ func main() {
 error
 ```
 
-## Дженерики-типы 
-
-Когда в структуре есть поля, в которых необходимо писать данные различных типов, бывает удобно использовать дженерики-типы — **generic types**:
- 
-``` go {.example_for_playground}
-package main
-
-import "fmt"
-
-type recordT[T int | float64] struct {
-	data []T
-	tag  string
-}
-
-func main() {
-	sampleRecord := recordT[int]{[]int{1, 2, 3}, "sample data"}
-	anotherRecord := recordT[float64]{[]float64{3.141592653589,
-		2.718281828}, "consts"}
-
-	fmt.Println(sampleRecord)
-	fmt.Println(anotherRecord)
-}
-```
-```
-{[1 2 3] sample data}
-{[3.141592653589 2.718281828] consts}
-```
-
-В этом случае при создании переменной типа `recordT` необходимо указывать тот конкретный тип, с которым мы работаем.
-
-Как уже было сказано, ничто не мешает использовать в дженериках более одного типа: 
-
-```go {.example_for_playground}
-package main
-
-import "fmt"
-
-type Pair[T any, U any] struct {
-	First  T
-	Second U
-}
-
-func NewPair[T any, U any](first T, second U) Pair[T, U] {
-	return Pair[T, U]{First: first, Second: second}
-}
-
-func main() {
-	nameAge := NewPair("Alice", 30)
-	fmt.Println("Name and age:", nameAge)
-
-	coordinates := NewPair(10, 20.5)
-	fmt.Println("Coordinates:", coordinates)
-}
-```
-```
-Name and age: {Alice 30}
-Coordinates: {10 20.5}
-```
-
-## Конструкция с тильдой
-
-Следующий пример подсчитывает количество заранее заданных лексем. Обратите внимание, что лексемы представлены строками. Функция `wordCounter` также работает со строками.
-
-``` go {.example_for_playground}
-package main
-
-import (
-	"fmt"
-	"strings"
-)
-
-func wordCounter() func(word string) map[string]int {
-	res := make(map[string]int)
-
-	return func(word string) map[string]int {
-		res[word]++
-		return res
-	}
-}
-
-func main() {
-	wc := wordCounter()
-
-	lexemeToFind := "i"
-	anotherLexemeToFind := "print"
-
-	s := "for i := 0; i < 5; i++" +
-		"{print(\"hello world!\n\"))}"
-
-	var res map[string]int
-	for _, word := range strings.Split(s, " ") {
-		// проверка вхождения lexemeToFind в word
-		if strings.Contains(word, lexemeToFind) {
-			res = wc(lexemeToFind)
-		}
-		if strings.Contains(word, anotherLexemeToFind) {
-			res = wc(anotherLexemeToFind)
-		}
-	}
-
-	fmt.Println(res)
-
-}
-```
-```
-map[i:3 print:1]
-```
-
-Что, если мы используем псевдоним `lexeme` для типа `string`? Функция `wordCounter` перестанет работать, потому что мы умеем обрабатывать только строки.
-
-``` go {.example_for_playground}
-package main
-
-type lexeme string
-
-func wordCounter() func(word string) map[string]int {
-	res := make(map[string]int)
-
-	return func(word string) map[string]int {
-		res[word]++
-		return res
-	}
-}
-
-func main() {
-	wc := wordCounter()
-
-	var lexemeToFind lexeme = "i"
-	wc(lexemeToFind)
-}
-```
-```
-./main.go:18:5: cannot use lexemeToFind (variable of string type lexeme) as string value in argument to wc (exit status 1)
-```
-
-Получаем ошибку компиляции. Но ведь по смыслу ничего не изменилось! Псевдоним `lexeme` — это все тот же `string`, только с другим названием. Чтобы функция принимала не только базовый тип, но и его псевдонимы, удобно применить дженерик с символом тильды `~`. Достаточно просто поставить символ тильды перед базовым типом, в момент создания нового типа: 
-
-```go
-func wordCounter[T ~string]() func(word T) map[T]int {
-	...
-}
-```
-
-Для встроенных типов базовым типом является сам тип. Например, для `float64` — это `float64`. Для составных типов базовый тип определяется по их структуре. Например, для `type Point struct { x int }` базовый тип — `struct{ x int }`. Для псевдонимов базовый тип — это тот тип, для которого объявлен псевдоним. В нашем случае базовый тип `lexeme` — `string`.
-
-Вот как будет выглядеть полный код:
-
-``` go {.example_for_playground}
-package main
-
-import "fmt"
-
-type lexeme string
-
-func wordCounter[T ~string]() func(word T) map[T]int {
-	res := make(map[T]int)
-
-	return func(word T) map[T]int {
-		res[word]++
-		return res
-	}
-}
-
-func main() {
-	var lexemeToFind lexeme = "i"
-	wc := wordCounter[lexeme]()
-	fmt.Println(wc(lexemeToFind))
-}
-```
-```
-map[i:1]
-```
-
-Когда вызываем функцию `wordCounter`, также необходимо указывать тип, с которым будем работать. В данном случае этот тип — `lexeme`. В противном случае возникнет ошибка компиляции:
-
-```go
-func main() {
-	var lexemeToFind lexeme = "i"
-	wc := wordCounter()
-	fmt.Println(wc(lexemeToFind))
-}
-```
-```
-./main.go:18:21: in call to wordCounter, cannot infer T (declared at ./main.go:7:20) (exit status 1)
-```
-
-Таким образом, правильный вариант: 
-
-``` go
-func main() {
-	var lexemeToFind lexeme = "i"
-	wc := wordCounter[lexeme]()
-	fmt.Println(wc(lexemeToFind))
-}
-```
-```
-map[i:1]
-```
-
 Функция `Filter` позволяет фильтровать срез по некоторому предикату. В данном случае предикат представляет собой функцию. При передаче некоторого аргумента в нее функция возвращает значение типа `bool`. Если это значение истинно, то мы добавляем очередной элемент в новый срез. В противном случае — нет. {.task_text}
 
 Сейчас функция `Filter` принимает значения типа `any`. Но как убедиться в том, что тип элементов среза совпадает с типом аргумента, который принимает предикат? Это должен быть один и тот же тип. {.task_text}
@@ -523,6 +324,65 @@ func main() {
 	})
 	fmt.Println(newConsts)
 }
+```
+
+## Дженерики-типы 
+
+Когда в структуре есть поля, в которых необходимо писать данные различных типов, бывает удобно использовать дженерики-типы — **generic types**:
+ 
+``` go {.example_for_playground}
+package main
+
+import "fmt"
+
+type recordT[T int | float64] struct {
+	data []T
+	tag  string
+}
+
+func main() {
+	sampleRecord := recordT[int]{[]int{1, 2, 3}, "sample data"}
+	anotherRecord := recordT[float64]{[]float64{3.141592653589,
+		2.718281828}, "consts"}
+
+	fmt.Println(sampleRecord)
+	fmt.Println(anotherRecord)
+}
+```
+```
+{[1 2 3] sample data}
+{[3.141592653589 2.718281828] consts}
+```
+
+В этом случае при создании переменной типа `recordT` необходимо указывать тот конкретный тип, с которым мы работаем.
+
+Как уже было сказано, ничто не мешает использовать в дженериках более одного типа: 
+
+```go {.example_for_playground}
+package main
+
+import "fmt"
+
+type Pair[T any, U any] struct {
+	First  T
+	Second U
+}
+
+func NewPair[T any, U any](first T, second U) Pair[T, U] {
+	return Pair[T, U]{First: first, Second: second}
+}
+
+func main() {
+	nameAge := NewPair("Alice", 30)
+	fmt.Println("Name and age:", nameAge)
+
+	coordinates := NewPair(10, 20.5)
+	fmt.Println("Coordinates:", coordinates)
+}
+```
+```
+Name and age: {Alice 30}
+Coordinates: {10 20.5}
 ```
 
 Кеш `Cache` позволяет хранить данные в хеш-таблице с ключами типа `string` и значениями типа `cacheItem`. Поле `ttl` струтуры `Cache` расшифровывается как *time to live* — время жизни. Его тип — `time.Duration`, псевдоним для `int64`. Оно хранит количество наносекунд, в течение которого кеш актуален. Поле `value` из `cacheItem` хранит сам значение типа `int`, а `expiresAt` — время, после которого значение перестает быть актуальным. Тип `expiresAt` — `time.Time` — структура, которая хранит конкретное время. Функция `NewCache` возвращает указатель на вновь созданный кеш. Функция `Set` позволяет установить значение кеша по его ключу. Функция `Get` возвращает значение кеша по его ключу и признак того, что актуальное значение присутствует в нем. Функция `Delete` удаляет значение кеша по его ключу. {.task_text}
@@ -684,6 +544,191 @@ func main() {
 
 	userCache.Delete(1)
 	userCache.Delete(2)
+}
+```
+
+## Конструкция с тильдой
+
+Следующий пример подсчитывает количество заранее заданных лексем. Обратите внимание, что лексемы представлены строками. Функция `wordCounter` также работает со строками.
+
+``` go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func wordCounter() func(word string) map[string]int {
+	res := make(map[string]int)
+
+	return func(word string) map[string]int {
+		res[word]++
+		return res
+	}
+}
+
+func main() {
+	wc := wordCounter()
+
+	lexemeToFind := "i"
+	anotherLexemeToFind := "print"
+
+	s := "for i := 0; i < 5; i++" +
+		"{print(\"hello world!\n\"))}"
+
+	var res map[string]int
+	for _, word := range strings.Split(s, " ") {
+		// проверка вхождения lexemeToFind в word
+		if strings.Contains(word, lexemeToFind) {
+			res = wc(lexemeToFind)
+		}
+		if strings.Contains(word, anotherLexemeToFind) {
+			res = wc(anotherLexemeToFind)
+		}
+	}
+
+	fmt.Println(res)
+
+}
+```
+```
+map[i:3 print:1]
+```
+
+Что, если мы используем псевдоним `lexeme` для типа `string`? Функция `wordCounter` перестанет работать, потому что мы умеем обрабатывать только строки.
+
+``` go {.example_for_playground}
+package main
+
+type lexeme string
+
+func wordCounter() func(word string) map[string]int {
+	res := make(map[string]int)
+
+	return func(word string) map[string]int {
+		res[word]++
+		return res
+	}
+}
+
+func main() {
+	wc := wordCounter()
+
+	var lexemeToFind lexeme = "i"
+	wc(lexemeToFind)
+}
+```
+```
+./main.go:18:5: cannot use lexemeToFind (variable of string type lexeme) as string value in argument to wc (exit status 1)
+```
+
+Получаем ошибку компиляции. Но ведь по смыслу ничего не изменилось! Псевдоним `lexeme` — это все тот же `string`, только с другим названием. Чтобы функция принимала не только базовый тип, но и его псевдонимы, удобно применить дженерик с символом тильды `~`. Достаточно просто поставить символ тильды перед базовым типом, в момент создания нового типа: 
+
+```go
+func wordCounter[T ~string]() func(word T) map[T]int {
+	...
+}
+```
+
+Для встроенных типов базовым типом является сам тип. Например, для `float64` — это `float64`. Для составных типов базовый тип определяется по их структуре. Например, для `type Point struct { x int }` базовый тип — `struct{ x int }`. Для псевдонимов базовый тип — это тот тип, для которого объявлен псевдоним. В нашем случае базовый тип `lexeme` — `string`.
+
+Вот как будет выглядеть полный код:
+
+``` go {.example_for_playground}
+package main
+
+import "fmt"
+
+type lexeme string
+
+func wordCounter[T ~string]() func(word T) map[T]int {
+	res := make(map[T]int)
+
+	return func(word T) map[T]int {
+		res[word]++
+		return res
+	}
+}
+
+func main() {
+	var lexemeToFind lexeme = "i"
+	wc := wordCounter[lexeme]()
+	fmt.Println(wc(lexemeToFind))
+}
+```
+```
+map[i:1]
+```
+
+Когда вызываем функцию `wordCounter`, также необходимо указывать тип, с которым будем работать. В данном случае этот тип — `lexeme`. В противном случае возникнет ошибка компиляции:
+
+```go
+func main() {
+	var lexemeToFind lexeme = "i"
+	wc := wordCounter()
+	fmt.Println(wc(lexemeToFind))
+}
+```
+```
+./main.go:18:21: in call to wordCounter, cannot infer T (declared at ./main.go:7:20) (exit status 1)
+```
+
+Таким образом, правильный вариант: 
+
+``` go
+func main() {
+	var lexemeToFind lexeme = "i"
+	wc := wordCounter[lexeme]()
+	fmt.Println(wc(lexemeToFind))
+}
+```
+```
+map[i:1]
+```
+
+Реализуйте функцию-обертку `HasPrefix` над встроенной `strings.HasPrefix`. Первый ее аргумент — текст, второй — префикс. Она  должна проверить, содержит ли текст соответсвующий префикс. Функция возвращет `true`, если содержит и `false`, в противном случае. В качестве типов певого и второго аргумента функция должна принимать все псевонимы типа `string`. Эти псевдонимы необязательно должны быть одинаковыми.  {.task_text}
+
+```go {.task_source #golang_chapter_0150_task_0040}
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+// ваш код здесь 
+
+func main() {
+	type Username string
+	var user1 Username = "angel336"
+	type Prefix string
+	var p Prefix = "angel"
+	fmt.Println(HasPrefix(user1, p))
+}
+```
+
+Используйте конструкции с тильдой. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func HasPrefix[T ~string,
+	T2 ~string](s T, prefix T2) bool {
+	return strings.HasPrefix(string(s), string(prefix))
+}
+
+func main() {
+	type Username string
+	var user1 Username = "angel336"
+	type Prefix string
+	var p Prefix = "angel"
+	fmt.Println(HasPrefix(user1, p))
 }
 ```
 ## Резюме 
