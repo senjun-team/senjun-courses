@@ -1,0 +1,7 @@
+package main
+
+import "fmt"
+
+func main() {
+    #INJECT-b585472fa
+}
