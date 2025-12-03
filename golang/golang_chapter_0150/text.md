@@ -525,7 +525,11 @@ func main() {
 }
 ```
 
-Кэш `Cache` позволяет хранить данные в хеш-таблице с ключами типа `string` и значениями типа `cacheItem`. {.task_text}
+Кеш `Cache` позволяет хранить данные в хеш-таблице с ключами типа `string` и значениями типа `cacheItem`. Поле `ttl` струтуры `Cache` расшифровывается как *time to live* — время жизни. Его тип — `time.Duration`, псевдоним для `int64`. Оно хранит количество наносекунд, в течение которого кеш актуален. Поле `value` из `cacheItem` хранит сам значение типа `int`, а `expiresAt` — время, после которого значение перестает быть актуальным. Тип `expiresAt` — `time.Time` — структура, которая хранит конкретное время. Функция `NewCache` возвращает указатель на вновь созданный кеш. Функция `Set` позволяет установить значение кеша по его ключу. Функция `Get` возвращает значение кеша по его ключу и признак того, что актуальное значение присутствует в нем. Функция `Delete` удаляет значение кеша по его ключу. {.task_text}
+
+Модфицируйте код над функцией `main` таким образом, чтобы в качестве ключей кеша можно было использовать любой сравнимый тип. В качестве значений кеша тажке должны выступать данные любого типа, необязательного сравнимого. {.task_text}
+
+В результате ваших модификаций код из `main` должен выполнится без ошибок. {.task_text}
 
 ```go {.task_source #golang_chapter_0150_task_0030}
 package main
@@ -581,6 +585,9 @@ func main() {
 		fmt.Printf("Requests: %d\n", count)
 	}
 
+	intCache.Delete("request_count")
+	intCache.Delete("active_users")
+
 	// Кэш для структур
 	type User struct {
 		Name  string
@@ -594,8 +601,13 @@ func main() {
 	if user, ok := userCache.Get(1); ok {
 		fmt.Printf("User: %+v\n", user)
 	}
+
+	userCache.Delete(1)
+	userCache.Delete(2)
 }
 ```
+
+Используйте дженерики-типы и дженерики-функции. В качестве типа ключей будет выступать `comparable`, а в качестве типа значений — `any`. {.task_hint}
 
 ```go {.task_answer}
 package main
@@ -653,6 +665,9 @@ func main() {
 		fmt.Printf("Requests: %d\n", count)
 	}
 
+	intCache.Delete("request_count")
+	intCache.Delete("active_users")
+
 	// Кэш для структур
 	type User struct {
 		Name  string
@@ -666,6 +681,9 @@ func main() {
 	if user, ok := userCache.Get(1); ok {
 		fmt.Printf("User: %+v\n", user)
 	}
+
+	userCache.Delete(1)
+	userCache.Delete(2)
 }
 ```
 ## Резюме 
