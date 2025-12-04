@@ -98,7 +98,20 @@ services:
       - --courses_dir
       - /courses 
       - /init_tools/postgres_migrations/
-      
+
+  pgadmin:
+    profiles: [devtools]
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@senjun.ru
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - ./infra/handyman/etc/servers.json:/pgadmin4/servers.json
+    ports:
+      - 10000:80
+    networks:
+      - senjun-network
+
 
 volumes:
   postgres_data:
