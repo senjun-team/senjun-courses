@@ -1,6 +1,6 @@
 all: start_services init_db
 
-start_services:
+start_services: build
 	docker compose up -d --remove-orphans
 
 init_db:
@@ -12,4 +12,7 @@ clean:
 	docker compose volumes --format '{{.Name}}' | xargs -r docker volume rm
 
 
-retry: clean all
+retry: clean start_services init_db
+
+build:
+	docker compose build 

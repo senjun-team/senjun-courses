@@ -1,6 +1,6 @@
-[submodule "infra/watchman"]
-	path = infra/watchman
-	url = git@github.com:senjun-team/watchman_cpp.git
 [submodule "infra/handyman"]
 	path = infra/handyman
 	url = git@github.com:senjun-team/handyman.git
+[submodule "infra/watchman_cpp"]
+	path = infra/watchman_cpp
+	url = git@github.com:senjun-team/watchman_cpp.git
