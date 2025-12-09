@@ -285,7 +285,7 @@ func main() {
 		return valid(p)
 	})
 	fmt.Println(newSlice)
-	consts := []float64{3.141592653589, 2, 718281828}
+	consts := []float64{3.141592653589, 2.718281828}
 	newConsts := Filter(consts, func(p float64) bool {
 		return p < 3
 	})
@@ -325,7 +325,7 @@ func main() {
 		return valid(p)
 	})
 	fmt.Println(newSlice)
-	consts := []float64{3.141592653589, 2, 718281828}
+	consts := []float64{3.141592653589, 2.718281828}
 	newConsts := Filter(consts, func(p float64) bool {
 		return p < 3
 	})
