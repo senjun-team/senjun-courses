@@ -281,9 +281,7 @@ func Filter(slice []any,
 func main() {
 	slice := []string{"anton@yandex.ru",
 		"https://go.dev/", "go@best@hackers"}
-	newSlice := Filter(slice, func(p string) bool {
-		return valid(p)
-	})
+	newSlice := Filter(slice, valid)
 	fmt.Println(newSlice)
 	consts := []float64{3.141592653589, 2.718281828}
 	newConsts := Filter(consts, func(p float64) bool {
@@ -321,9 +319,7 @@ func Filter[T any](slice []T,
 func main() {
 	slice := []string{"anton@yandex.ru",
 		"https://go.dev/", "go@best@hackers"}
-	newSlice := Filter(slice, func(p string) bool {
-		return valid(p)
-	})
+	newSlice := Filter(slice, valid)
 	fmt.Println(newSlice)
 	consts := []float64{3.141592653589, 2.718281828}
 	newConsts := Filter(consts, func(p float64) bool {
