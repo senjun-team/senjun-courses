@@ -148,7 +148,7 @@ Oberon
 Pascal
 ```
 
-В случае с range, если вторая переменная не нужна, то ее можно вообще не указывать:
+В случае с `range`, если вторая переменная не нужна, то ее можно вообще не указывать:
 
 ```go {.example_for_playground .example_for_playground_006}
 rooms := [5]string{"Ivan", "Nikolay", "Anna", "Viacheslav", "Petr"}
@@ -159,6 +159,52 @@ for key := range rooms {
 		fmt.Println(rooms[key])
 	}
 }
+```
+```
+Pepople with even room ids:
+Ivan
+Anna
+Petr
+```
+
+Начиная с Go 1.22, появилась возможность также итерироваться с `range` по целым числам:
+
+```go {.example_for_playground .example_for_playground_008}
+fmt.Println("Loading...")
+for i := range 3 {
+	fmt.Println(3 - i)
+}
+fmt.Println("Success!")
+```
+```
+Loading...
+3
+2
+1
+Success!
+```
+
+В результате вызова `p := range N` переменная `p` пробегает все значения из интервала `[0; N)`. Правая граница не включается. В нашем случае переменная `i` пробегает значения `0,1,2`.
+
+Если переменная `i` не нужна, то ее вообще не указывают. Для этого даже не нужно ставить пустой идентификатор:
+
+```go {.example_for_playground .example_for_playground_009}
+package main
+
+import "fmt"
+
+func main() {
+	for range 3 {
+		fmt.Println("Loading...")
+	}
+	fmt.Println("Success!")
+}
+```
+```
+Loading...
+Loading...
+Loading...
+Success!
 ```
 
 ## Многомерные массивы
