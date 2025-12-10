@@ -189,16 +189,10 @@ Success!
 Если переменная `i` не нужна, то ее вообще не указывают. Для этого даже не нужно ставить пустой идентификатор:
 
 ```go {.example_for_playground .example_for_playground_009}
-package main
-
-import "fmt"
-
-func main() {
-	for range 3 {
-		fmt.Println("Loading...")
-	}
-	fmt.Println("Success!")
+for range 3 {
+	fmt.Println("Loading...")
 }
+fmt.Println("Success!")
 ```
 ```
 Loading...
