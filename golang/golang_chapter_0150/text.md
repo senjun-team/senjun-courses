@@ -694,7 +694,7 @@ func main() {
 map[i:1]
 ```
 
-Реализуйте функцию-обертку `HasPrefix` над встроенной `strings.HasPrefix`. Первый ее аргумент — текст, второй — префикс. Она  должна проверить, содержит ли текст соответствующий префикс. Функция возвращает `true`, если содержит, и `false` — в противном случае. В качестве типов первого и второго аргумента функция должна принимать все псевдонимы типа `string`. Эти псевдонимы необязательно должны быть одинаковыми.  {.task_text}
+Реализуйте функцию-обертку `hasPrefix` над встроенной `strings.HasPrefix`. Первый ее аргумент — текст, второй — префикс. Она  должна проверить, содержит ли текст соответствующий префикс. Функция возвращает `true`, если содержит, и `false` — в противном случае. В качестве типов первого и второго аргумента функция должна принимать все псевдонимы типа `string`. Эти псевдонимы необязательно должны быть одинаковыми.  {.task_text}
 
 ```go {.task_source #golang_chapter_0150_task_0040}
 package main
@@ -711,7 +711,7 @@ func main() {
 	var user1 Username = "angel336"
 	type Prefix string
 	var p Prefix = "angel"
-	fmt.Println(HasPrefix(user1, p))
+	fmt.Println(hasPrefix(user1, p))
 }
 ```
 
@@ -725,9 +725,9 @@ import (
 	"strings"
 )
 
-func HasPrefix[T ~string,
+func hasPrefix[T ~string,
 	T2 ~string](s T, prefix T2) bool {
-	return strings.HasPrefix(string(s), string(prefix))
+	return strings.hasPrefix(string(s), string(prefix))
 }
 
 func main() {
@@ -735,7 +735,7 @@ func main() {
 	var user1 Username = "angel336"
 	type Prefix string
 	var p Prefix = "angel"
-	fmt.Println(HasPrefix(user1, p))
+	fmt.Println(hasPrefix(user1, p))
 }
 ```
 ## Резюме 
