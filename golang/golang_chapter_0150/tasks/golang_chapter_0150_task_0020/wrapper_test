@@ -1,0 +1,45 @@
+package main
+
+import (
+	"slices"
+	"testing"
+)
+
+func TestFilter(t *testing.T) {
+	type caseT[T any] struct {
+		in1  []T
+		in2  func(T) bool
+		want []T
+	}
+
+	mailCase := caseT[string]{
+		in1: []string{"anton@yandex.ru",
+			"https://go.dev/", "go@best@hackers",
+			"gopher@gmail.com"},
+		in2:  valid,
+		want: []string{"anton@yandex.ru", "gopher@gmail.com"},
+	}
+
+	constsCase := caseT[float64]{
+		in1: []float64{3.141592653589, 2.718281828},
+		in2: func(p float64) bool {
+			return p < 3
+		},
+		want: []float64{2.718281828},
+	}
+
+	mailGot := Filter(mailCase.in1, mailCase.in2)
+
+	if !slices.Equal(mailGot, mailCase.want) {
+		t.Errorf("for mails:\n%v\n\nand valid func\n\ngot:\n %v\n\nwant:\n%v",
+			mailCase.in1,
+			mailGot, mailCase.want)
+	}
+
+	constsGot := Filter(constsCase.in1, constsCase.in2)
+
+	if !slices.Equal(constsGot, constsCase.want) {
+		t.Errorf("for consts:\n%v\n\nand\nfunc(p float64) bool {return p < 3}\n\ngot:\n %v\n\nwant:\n%v",
+			constsCase.in1, constsGot, constsCase.want)
+	}
+}

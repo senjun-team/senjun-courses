@@ -1,0 +1,24 @@
+package main
+
+import "fmt"
+
+func unique[T comparable](slice []T) []T {
+	seen := make(map[T]struct{})
+	result := []T{}
+
+	for _, item := range slice {
+		if _, ok := seen[item]; !ok {
+			seen[item] = struct{}{}
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
+func main() {
+    fmt.Println(unique([]int{1, 2, 3, 3, 4, 5}))
+
+    fmt.Println(unique([]float64{1.4, 1.3, 1.4, 1.5, 2.7}))
+
+    fmt.Println(unique([]string{"juice", "orange", "juice", "apple"}))
+}
