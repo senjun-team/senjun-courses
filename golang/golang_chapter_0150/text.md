@@ -140,13 +140,11 @@ func unique[T int | float64](slice []T) []T {
 	}
 	return result
 }
+
 func main() {
-	input := []int{1, 2, 3, 3, 4, 5}
-	output := unique(input)
-	fmt.Println(output)
-	anotherInput := []float64{1.4, 1.3, 1.4, 1.5, 2.7}
-	anotherOutput := unique(anotherInput)
-	fmt.Println(anotherOutput)
+	fmt.Println(unique([]int{1, 2, 3, 3, 4, 5}))
+
+	fmt.Println(unique([]float64{1.4, 1.3, 1.4, 1.5, 2.7}))
 }
 ```
 ```
@@ -174,35 +172,20 @@ func имяФункции[тип1,тип2,...типN](параметры)(воз
 
 Интерфейс `comparable` определяется через все сравнимые типы. Он является общим. Общие интерфейсы не могут быть использованы как обычные типы. Их применяют совместно с дженериками. Для нашего примера как раз подойдет такой интерфейс: 
 
-``` go {.example_for_playground}
-package main
-
-import "fmt"
-
+``` go {.example_for_playground  .example_for_playground_001}
 func unique[T comparable](slice []T) []T {
-	seen := make(map[T]struct{})
-	result := []T{}
-
-	for _, item := range slice {
-		if _, ok := seen[item]; !ok {
-			seen[item] = struct{}{}
-			result = append(result, item)
-		}
-	}
-	return result
+	// ...
 }
+```
 
-func main() {
-	input := []int{1, 2, 3, 3, 4, 5}
-	output := unique(input)
-	fmt.Println(output)
-	anotherInput := []float64{1.4, 1.3, 1.4, 1.5, 2.7}
-	anotherOutput := unique(anotherInput)
-	fmt.Println(anotherOutput)
-	thirdInput := []string{"juice", "orange", "juice", "apple"}
-	thirdOutput := unique(thirdInput)
-	fmt.Println(thirdOutput)
-}
+В качестве типа `T` мы использовали некоторый обобщенный тип `comparable`. Теперь мы можем работать со всеми сравнимыми типами:
+
+``` go {.example_for_playground  .example_for_playground_002}
+fmt.Println(unique([]int{1, 2, 3, 3, 4, 5}))
+
+fmt.Println(unique([]float64{1.4, 1.3, 1.4, 1.5, 2.7}))
+
+fmt.Println(unique([]string{"juice", "orange", "juice", "apple"}))
 ```
 ```
 [1 2 3 4 5]
@@ -210,9 +193,7 @@ func main() {
 [juice orange apple]
 ```
 
-В качестве типа `T` мы использовали некоторый обобщенный тип `comparable`. Теперь мы можем работать со всеми сравнимыми типами.
-
-Что выведет следующий код? В случае ошибки напишите error. {.task_text}
+Что выведет следующий код? В случае ошибки напишите `error`. {.task_text}
 
 ```go {.example_for_playground}
 package main
@@ -316,6 +297,7 @@ func Filter[T any](slice []T,
 	}
 	return result
 }
+
 func main() {
 	slice := []string{"anton@yandex.ru",
 		"https://go.dev/", "go@best@hackers"}
@@ -694,7 +676,9 @@ func main() {
 map[i:1]
 ```
 
-Реализуйте функцию-обертку `hasPrefix` над встроенной `strings.HasPrefix`. Первый ее аргумент — текст, второй — префикс. Она  должна проверить, содержит ли текст соответствующий префикс. Функция возвращает `true`, если содержит, и `false` — в противном случае. В качестве типов первого и второго аргумента функция должна принимать все псевдонимы типа `string`. Эти псевдонимы необязательно должны быть одинаковыми.  {.task_text}
+Реализуйте функцию-обертку `hasPrefix` над встроенной `strings.HasPrefix`. Первый ее аргумент — текст, второй — префикс. Она  должна проверить, содержит ли текст соответствующий префикс. Функция возвращает `true`, если содержит, и `false` — в противном случае.   {.task_text}
+
+В качестве типов первого и второго аргумента функция должна принимать все псевдонимы типа `string`. Эти псевдонимы необязательно должны быть одинаковыми.  {.task_text}
 
 ```go {.task_source #golang_chapter_0150_task_0040}
 package main
@@ -727,7 +711,7 @@ import (
 
 func hasPrefix[T ~string,
 	T2 ~string](s T, prefix T2) bool {
-	return strings.hasPrefix(string(s), string(prefix))
+	return strings.HasPrefix(string(s), string(prefix))
 }
 
 func main() {
