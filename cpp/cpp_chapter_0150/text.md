@@ -20,7 +20,7 @@ A
 
 Амперсанд после типа означает, что перед вами не обычный тип, а ссылочный. В данном примере у переменной `c_ref` тип `char &`: это ссылка на `char`.
 
-![Ссылки](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-142/illustrations/cpp/references.jpg) {.illustration}
+![Ссылки](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-15/illustrations/cpp/references.jpg) {.illustration}
 
 Читать и изменять значение можно как через исходную переменную, так и через ссылку:
 
