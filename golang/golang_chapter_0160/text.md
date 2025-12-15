@@ -59,6 +59,76 @@ Done
 
 Важной особенностью горутин является то, что  они не имеют идентификатора, который может быть получен как обычное значение. Он недоступен программисту. Это было сделано разработчиками Go сознательно. В противном случае могли бы возникнуть зависимости функции не только от ее аргументов. Она могла бы зависеть и от идентификатора потока, в котором функция выполняется. Разработчики Go уверяют, что это не нужно и поощряют простоту в написании программ.
 
+## Небуферизованные каналы 
+
+Каналы позволяют горутинам «общаться» между собой. Каналы позволяют одной горутине передать какое-либо значение другой горутине. Канал передает данные определенного типа — **типа элементов канала.** Каналы бывают буферизованные и небуферизованные. Пока что мы будем говорить только про небуферизованные каналы. Чтобы создать такой канал, нужно воспользоваться встроенной функцией `make`. Например, для значений типа `bool`:
+
+```go
+ch := make(chan bool)
+```
+
+Следующие три инструкции демонстрируют, как писать в канал и читать из него: 
+
+```go
+ch <- true  // Записать true в канал
+val := <-ch // Прочесть значение из канала в val
+<-ch        // Результат чтения не используется
+```
+
+Закрывается канал через встроенную функцию `close`:
+
+```go
+close(ch)
+```
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type deviceConfig struct {
+	id   int
+	name string
+	job  func()
+}
+
+func main() {
+	okStatus := make(chan bool)
+	done := make(chan struct{})
+	allDone := make(chan struct{})
+
+	server := deviceConfig{1, "server", func() {
+		fmt.Println("making server calculations...")
+		time.Sleep(1 * time.Second)
+		okStatus <- false
+		time.Sleep(1 * time.Second)
+		fmt.Println("server done")
+		done <- struct{}{}
+	}}
+	externalProg := deviceConfig{2, "externalProg", func() {
+		ok := <-okStatus
+		if !ok {
+			fmt.Println("oops something is wrong...")
+			allDone <- struct{}{}
+			return
+		}
+		<-done
+		fmt.Println("making external calculations...")
+		time.Sleep(1 * time.Second)
+		fmt.Println("external calculations done")
+		allDone <- struct{}{}
+
+	}}
+	go server.job()
+	go externalProg.job()
+	<-allDone
+}
+
+```
+
 ```go {.example_for_playground}
 package main
 
