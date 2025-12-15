@@ -641,7 +641,7 @@ Accelerometer measurement #1
 Дан двумерный массив `arr` и два числа: `m` и `k`. Поменяйте в массиве местами столбцы с индексами `m` и `k`. Реализуйте это функцией `swap_columns()`, которая возвращает новый массив. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0142_task_0070}
-int[5][3] swap_columns(int arr[5][3], std::size_t m, std::size_t k)
+int[5][8] swap_columns(int arr[5][8], std::size_t m, std::size_t k)
 {
 
 }
