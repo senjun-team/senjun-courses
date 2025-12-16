@@ -343,7 +343,7 @@ func main() {
 
 В случае с методами, для получателей типа таких структур, также используют дженерики:
 
-```go
+```go {.example_for_playground}
 package main
 
 import (
