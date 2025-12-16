@@ -103,6 +103,87 @@ val, ok := <-ch
 ```
 Если `ok` равен `true`, то значение прочитано. В противном случае — нет.
 
+Некоторая задача `task` выолняется на сервере `server`. Сервер не запущен все время. Он запускается по мере необходимости. На старт сервера затрачивается некоторое время. Для выполнения задачи нужно подготовить данные. Эта операция также выполняется не сразу. {.task_text}
+
+Код ниже выполняется последовательно. Модифицируйте код таким образом, чтобы он выполнялся параллельно. Данные должны готовиться во время того, как уже стартует сервер. В отладочных сообщениях вы должны увидеть следующий текст: {.task_text}
+
+```
+starting server...
+task data prepared
+calculating...
+stopping srever...
+```
+
+```go {.task_source #golang_chapter_0160_task_0010}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type deviceConfig struct {
+	id   int
+	name string
+	job  func()
+}
+
+func main() {
+	server := deviceConfig{1, "server", func() {
+		fmt.Println("starting server...")
+		time.Sleep(1 * time.Second)
+		fmt.Println("calculating...")
+		time.Sleep(1 * time.Second)
+		fmt.Println("stopping srever...")
+	}}
+	task := deviceConfig{2, "task", func() {
+		time.Sleep(2 * time.Second)
+		fmt.Println("task data prepared")
+	}}
+	task.job()
+	server.job()
+}
+```
+
+```go {.task_answer}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type deviceConfig struct {
+	id   int
+	name string
+	job  func()
+}
+
+func main() {
+	dataReady := make(chan struct{})
+	done := make(chan struct{})
+
+	server := deviceConfig{1, "server", func() {
+		fmt.Println("starting server...")
+		time.Sleep(1 * time.Second)
+		<-dataReady
+		fmt.Println("calculating...")
+		time.Sleep(1 * time.Second)
+		fmt.Println("stopping srever...")
+		done <- struct{}{}
+	}}
+	task := deviceConfig{2, "task", func() {
+		time.Sleep(2 * time.Second)
+		fmt.Println("task data prepared")
+		dataReady <- struct{}{}
+	}}
+
+	go server.job()
+	go task.job()
+	<-done
+}
+```
+
 ```go {.example_for_playground}
 package main
 
