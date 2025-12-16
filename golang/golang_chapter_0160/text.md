@@ -111,7 +111,7 @@ val, ok := <-ch
 starting server...
 task data prepared
 calculating...
-stopping srever...
+stopping server...
 ```
 
 ```go {.task_source #golang_chapter_0160_task_0010}
@@ -145,6 +145,8 @@ func main() {
 }
 ```
 
+Использйуйте каналы типа `struct{}`. Передача значения в такой канал будет сигнализировать о том, что работа выполнена. Не забудьте, что `main` — это тоже горутина. Она не будет ждать выполнения всех других горутин, если не организовать такое поведение явно. {.task_hint}
+
 ```go {.task_answer}
 package main
 
@@ -169,7 +171,7 @@ func main() {
 		<-dataReady
 		fmt.Println("calculating...")
 		time.Sleep(1 * time.Second)
-		fmt.Println("stopping srever...")
+		fmt.Println("stopping server...")
 		done <- struct{}{}
 	}}
 	task := deviceConfig{2, "task", func() {
@@ -184,53 +186,6 @@ func main() {
 }
 ```
 
-```go {.example_for_playground}
-package main
-
-import (
-	"fmt"
-	"time"
-)
-
-type deviceConfig struct {
-	id   int
-	name string
-	job  func()
-}
-
-func main() {
-	okStatus := make(chan bool)
-	done := make(chan struct{})
-	allDone := make(chan struct{})
-
-	server := deviceConfig{1, "server", func() {
-		fmt.Println("making server calculations...")
-		time.Sleep(1 * time.Second)
-		okStatus <- false
-		time.Sleep(1 * time.Second)
-		fmt.Println("server done")
-		done <- struct{}{}
-	}}
-	externalProg := deviceConfig{2, "externalProg", func() {
-		ok := <-okStatus
-		if !ok {
-			fmt.Println("oops something is wrong...")
-			allDone <- struct{}{}
-			return
-		}
-		<-done
-		fmt.Println("making external calculations...")
-		time.Sleep(1 * time.Second)
-		fmt.Println("external calculations done")
-		allDone <- struct{}{}
-
-	}}
-	go server.job()
-	go externalProg.job()
-	<-allDone
-}
-
-```
 
 ```go {.example_for_playground}
 package main
