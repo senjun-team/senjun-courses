@@ -344,6 +344,18 @@ func main() {
 В случае с методами, для получателей типа таких структур, также используют дженерики:
 
 ```go
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+type recordT[T int | float64] struct {
+	data []T
+	tag  string
+}
+
 func (r *recordT[T]) refreshTag(tag string) error {
 	const maxLen = 25
 	if len(tag) <= maxLen {
@@ -352,6 +364,16 @@ func (r *recordT[T]) refreshTag(tag string) error {
 	}
 	return errors.New("tag is too long")
 }
+
+func main() {
+	r := recordT[int]{[]int{1, 2, 3}, "sample data"}
+	r.refreshTag("serial numbers")
+	fmt.Println(r)
+}
+```
+
+```
+{[1 2 3] serial numbers}
 ```
 
 Как уже было сказано, ничто не мешает использовать в дженериках более одного типа: 
