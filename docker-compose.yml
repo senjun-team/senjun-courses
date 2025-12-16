@@ -99,6 +99,36 @@ services:
       - /courses 
       - /init_tools/postgres_migrations/
 
+  scene:
+    build:
+      context: ./infra/scene
+      dockerfile: Dockerfile
+    image: sj/scene
+    pull_policy: never
+    container_name: scene
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./infra/scene/scene/conf.json:/app/scene/conf.json:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - senjun-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      handyman:
+        condition: service_started
+      watchman_cpp:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/", "-o", "/dev/null", "-s"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   pgadmin:
     profiles: [devtools]
     image: dpage/pgadmin4:latest
