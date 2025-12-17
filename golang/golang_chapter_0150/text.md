@@ -371,7 +371,6 @@ func main() {
 	fmt.Println(r)
 }
 ```
-
 ```
 {[1 2 3] serial numbers}
 ```
