@@ -293,4 +293,136 @@ func processOrder(in <-chan Order, out chan<- Order) {
 }
 ```
 
+## Утечка горутин 
+
+Важно помнить, что сборщик мусора не занимается тем, чтобы останавливать «зависшие» горутины. Вы должы сами позаботиться о том, чтобы каждая горутина успешно завершилась. В противном случае возникнет утечка памяти. 
+
+Следующий пример демонстрирует утечку горутин. Мы запускаем 10 горутин для асинхронной обработки сообщений. Результат обработки сообщений отправляется в канал уведомлений, откуда их читает другая горутина. Проблема в том, что обработчики сообщений никогда не завершаются. Возникает утечка памяти. {.task_text}  
+
+Иисправьте ошибку в коде. Обработчики сообщений должны завершиться. Количество горутин вначале и в конце должно быть одинаковым. {.task_text}  
+
+```go {.task_source #golang_chapter_0160_task_0020}
+package main
+
+import (
+	"fmt"
+	"runtime"
+	"time"
+)
+
+func main() {
+	// Запускаем воркер для обработки уведомлений
+	const chanSize = 5
+	var notificationChan = make(chan string, chanSize)
+	go notificationWorker(notificationChan)
+
+	fmt.Printf("Begin! Goroutines number: %d\n", runtime.NumGoroutine())
+
+	// Запускаем обработку 10 сообщений
+	const messageNumber = 10
+	for i := 0; i < messageNumber; i++ {
+		go processTaskAsync("data", notificationChan)
+	}
+	fmt.Printf("All goroutines started! Goroutines number: %d\n", runtime.NumGoroutine())
+
+	// Показываем утечку
+	time.Sleep(5 * time.Second)
+	fmt.Printf("End! Goroutined number after 5 seconds: %d\n", runtime.NumGoroutine())
+}
+
+func processTaskAsync(data string, notificationChan chan<- string) {
+	for {
+		// Имитируем долгую обработку
+		result := expensiveProcessing(data)
+
+		// Отправляем уведомление
+		select {
+		case notificationChan <- result:
+			// Успешно отправили
+		case <-time.After(1 * time.Second):
+			// Таймаут
+			fmt.Println("Timeout message!")
+
+		}
+	}
+}
+
+func expensiveProcessing(data string) string {
+	time.Sleep(100 * time.Millisecond) // Имитация работы
+	return "processed: " + data
+}
+
+// Воркер для уведомлений
+func notificationWorker(notificationChan <-chan string) {
+	for msg := range notificationChan {
+		// Имитация отправки уведомления
+		time.Sleep(50 * time.Millisecond)
+		fmt.Printf("Message sent: %s\n", msg)
+	}
+}
+```
+
+Уберите вечный цикл внутри `processTaskAsync`. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"fmt"
+	"runtime"
+	"time"
+)
+
+func main() {
+	// Запускаем воркер для обработки уведомлений
+	const chanSize = 5
+	var notificationChan = make(chan string, chanSize)
+	go notificationWorker(notificationChan)
+
+	fmt.Printf("Begin! Goroutines number: %d\n", runtime.NumGoroutine())
+
+	// Запускаем обработку 10 сообщений
+	const messageNumber = 10
+	for i := 0; i < messageNumber; i++ {
+		go processTaskAsync("data", notificationChan)
+	}
+	fmt.Printf("All goroutines started! Goroutines number: %d\n", runtime.NumGoroutine())
+
+	// Показываем утечку
+	time.Sleep(5 * time.Second)
+	fmt.Printf("End! Goroutined number after 5 seconds: %d\n", runtime.NumGoroutine())
+}
+
+// ПРОБЛЕМА была ЗДЕСЬ: эта функция использовала вечный цикл
+// горутины никогда не завершались
+func processTaskAsync(data string, notificationChan chan<- string) {
+	// Имитируем долгую обработку
+	result := expensiveProcessing(data)
+
+	// Отправляем уведомление
+	select {
+	case notificationChan <- result:
+		// Успешно отправили
+	case <-time.After(1 * time.Second):
+		// Таймаут
+		fmt.Println("Timeout message!")
+
+	}
+}
+
+func expensiveProcessing(data string) string {
+	time.Sleep(100 * time.Millisecond) // Имитация работы
+	return "processed: " + data
+}
+
+// Воркер для уведомлений
+func notificationWorker(notificationChan <-chan string) {
+	for msg := range notificationChan {
+		// Имитация отправки уведомления
+		time.Sleep(50 * time.Millisecond)
+		fmt.Printf("Message sent: %s\n", msg)
+	}
+}
+```
+
 ## Резюме
