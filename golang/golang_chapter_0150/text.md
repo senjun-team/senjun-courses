@@ -339,7 +339,41 @@ func main() {
 {[3.141592653589 2.718281828] consts}
 ```
 
-В этом случае при создании переменной типа `recordT` необходимо указывать тот конкретный тип, с которым мы работаем.
+При создании переменной типа `recordT` необходимо указывать тот конкретный тип, с которым мы работаем.
+
+В случае с методами, для получателей типа таких структур, также используют дженерики:
+
+```go {.example_for_playground}
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+type recordT[T int | float64] struct {
+	data []T
+	tag  string
+}
+
+func (r *recordT[T]) refreshTag(tag string) error {
+	const maxLen = 25
+	if len(tag) <= maxLen {
+		r.tag = tag
+		return nil
+	}
+	return errors.New("tag is too long")
+}
+
+func main() {
+	r := recordT[int]{[]int{1, 2, 3}, "sample data"}
+	r.refreshTag("serial numbers")
+	fmt.Println(r)
+}
+```
+```
+{[1 2 3] serial numbers}
+```
 
 Как уже было сказано, ничто не мешает использовать в дженериках более одного типа: 
 
