@@ -416,3 +416,4 @@ func main() {
 	fmt.Printf("time: %d ms\n", resTime)
 }
 ```
+## Резюме
