@@ -7,32 +7,103 @@ import std;
 
 using namespace boost::ut;
 
+File::File(std::vector<Section> sections) : m_sections(sections)
+{
+
+}
+
+std::size_t File::sections_count()
+{
+    return m_sections.size();
+}
+
+
+bool section_name_rodata(Section s, std::size_t i)
+{
+    return s.name == "rodata";
+}
+
+
+struct TestCase
+{
+    File file;
+    std::function<bool(Section, std::size_t)>  pred;
+    std::pair<Section, std::size_t> plan;
+    std::string descr;
+};
+
+bool operator==(const Section & lhs, const Section & rhs) {
+    return std::tie(lhs.header, lhs.name, lhs.contents) == std::tie(rhs.header, rhs.name, rhs.contents);
+}
+
+void check(TestCase & c)
+{
+    const auto & [s, i] = c.file.find_section(c.pred);
+
+    expect(i == c.plan.second) << std::format("Wrong result for test: {}. Expected index: {}. Got index: {}.", 
+        c.descr,
+        c.plan.second,
+        i) << fatal;
+
+    expect(s == c.plan.first) << std::format("Wrong result for test: {}. Expected section with name: {}. Got section with name: {}.", 
+        c.descr,
+        c.plan.first.name,
+        s.name) << fatal;
+}
+
 int main()
 {
-    "check test_chartable() output"_test = [] {
-        std::string captured_text;
-        auto stdout_receiver = [&captured_text](std::string&& txt)
-        {
-            captured_text = std::move(txt);
+    "non-existent section in empty file"_test = [] {
+        TestCase c = {
+            .file = File{ {} },
+            .pred = section_name_rodata,
+            .plan = {
+                {},
+                std::numeric_limits<std::size_t>::max()
+            },
+            .descr = "searching for non-existent section"
         };
 
-        {
-            hlp::stdout_capture_t capture(stdout_receiver);
-            test_chartable();
-        }
-
-        const std::string plan = hlp::remove_spaces("character raw val 128\nfalse\n");
-        expect(hlp::remove_spaces(captured_text) == plan) << std::format("Expected output of test_chartable(): {}\n Actual output: {}", 
-        plan,
-        captured_text) << fatal;
+        check(c);
     };
 
-    "check CharTable class"_test = [] {
-        CharTable table;
+    "non-existent section"_test = [] {
+        TestCase c = {
+            .file = File{
+                std::vector<Section>{
+                    {.header = "header", .name = "name", .contents = "contents"},
+                    {},
+                }
+            },
+            .pred = section_name_rodata,
+            .plan = {
+                {},
+                std::numeric_limits<std::size_t>::max()
+            },
+            .descr = "searching for non-existent section in empty file"
+        };
 
-        for (unsigned char c = 1; c < 200; ++c)
-        {
-            expect(table.is_printable(c) == false) << std::format("Expected result of is_printable({}) is false", c) << fatal;
-        }
+        check(c);
     };
+
+    "non-existent section"_test = [] {
+        TestCase c = {
+            .file = File{
+                std::vector<Section>{
+                    {.header = "header", .name = "name", .contents = "contents"},
+                    {.header = "header", .name = "rodata", .contents = "contents"},
+                    {.header = "2", .name = "rodata", .contents = "2"},
+                }
+            },
+            .pred = section_name_rodata,
+            .plan = {
+                {.header = "header", .name = "rodata", .contents = "contents"},
+                1
+            },
+            .descr = "searching for section by name. Must return the first occurance"
+        };
+
+        check(c);
+    };
+
 }

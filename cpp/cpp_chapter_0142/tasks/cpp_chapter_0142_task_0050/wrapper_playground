@@ -2,7 +2,31 @@ import std;
 
 #INJECT-b585472fa
 
+File::File(std::vector<Section> sections) : m_sections(sections)
+{
+
+}
+
+std::size_t File::sections_count()
+{
+    return m_sections.size();
+}
+
+bool is_first_section(Section s, std::size_t i)
+{
+    return i == 0;
+}
+
 int main()
 {
-    test_chartable();
+    std::vector<Section> sections {
+        {.header="h", .name="n", .contents="c"}
+    };
+
+    File file{sections};
+
+    std::println("Created File with single Section. Calling find_section() with preciate which returns true if section index is 0");
+
+    const auto [s, i] = file.find_section(is_first_section);
+    std::println("{}", (i == 0) ? "OK" : "ERROR");
 }

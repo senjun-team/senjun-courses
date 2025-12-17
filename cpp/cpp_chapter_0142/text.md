@@ -399,18 +399,18 @@ class File
 public:
     explicit File(std::vector<Section> sections);
     std::size_t sections_count();
-    std::pair<Section, std::size_t> findSection(std::function<bool(Section, std::size_t)> pred);
+    std::pair<Section, std::size_t> find_section(std::function<bool(Section, std::size_t)> pred);
        
 private:
     std::vector<Section> m_sections;
 };
 
 std::pair<Section, std::size_t> 
-Section::findSection(std::function<bool(Section, std::size_t)> pred)
+File::find_section(std::function<bool(Section, std::size_t)> pred)
 {
     for(std::size_t i = 0; i < m_sections.size(); ++i)
     {
-        if (pred(m_sections[i]))
+        if (pred(m_sections[i], i))
             return {m_sections[i], i};
     }
 
@@ -491,7 +491,7 @@ int main()
 
 ```consoleoutput {.task_source #cpp_chapter_0142_task_0060}
 ```
-. {.task_hint}
+Если длина списка инициализации меньше длины массива, оставшиеся элементы заполняются нулями. 0 не является корректным значением для `WindingOrder`, но это не UB. Такой код скомпилируется. {.task_hint}
 ```cpp {.task_answer}
 0
 ```
@@ -554,6 +554,8 @@ std::println("{}", len);
 ```
 4
 ```
+
+Для получения размера массива `offsets` в байтах мы применили к нему оператор [sizeof](https://en.cppreference.com/w/cpp/language/sizeof.html). В предыдущей главе мы [использовали](/courses/cpp/chapters/cpp_chapter_0141/#block-sizeof) `sizeof` для того, чтобы узнать, сколько байт выделяется под тип. Но `sizeof` можно применять не только для типов, но и для переменных.
 
 Деление размера массива на размер его элемента — это способ определения длины, который работает во всех версиях C++, но не отличается удобством. В C++17 появилась функция [std::size()](https://en.cppreference.com/w/cpp/iterator/size.html), упрощающая задачу:
 
