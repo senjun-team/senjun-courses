@@ -25,7 +25,7 @@ enum class QuotaType : short
 
 В каких случаях имеет смысл явно прописывать базовый тип? Например, если перечисление нужно сериализовывать или хочется сэкономить память:
 
-```cpp
+```cpp  {.example_for_playground}
 import std;
 
 enum class IpVersion // Базовый тип по умолчанию
@@ -64,7 +64,9 @@ std::uint16_t
 
 Базовый тип в комбинации с присваиванием конкретных значений константам дает интересные результаты:
 
-```cpp
+```cpp  {.example_for_playground}
+import std;
+
 enum class AccessType : char
 {
     Read = 'r',
@@ -93,7 +95,7 @@ std::println("{}", static_cast<char>(AccessType::Write));
 
 Так выглядит использование `std::to_underlying()` в шаблонной функции:
 
-```cpp
+```cpp  {.example_for_playground}
 import std;
 
 enum ServerState { down, starting, ready, stopping };
@@ -161,10 +163,10 @@ bool exists(std::string path);
 
 Имена параметров в объявлении опциональны:
 
-```cpp
+```cpp  {.example_for_playground}
 import std;
 
-bool exists(std::string);                            // Объявление
+bool exists(std::string);  // Объявление
 
 int main()
 {
@@ -175,7 +177,7 @@ int main()
     }
 }
 
-bool exists(std::string path)                        // Определение
+bool exists(std::string path)  // Определение
 {
     return std::filesystem::exists(path);
 }
@@ -217,13 +219,13 @@ int main()
 
 Помимо сигнатуры у каждой функции есть тип. Он состоит из типа возвращаемого значения и типов параметров. Обычно он записывается в формате:
 
-```
+```cpp
 return_type(type_param_1, type_param_2, ..., type_param_n)
 ```
 
 Так выглядит тип функции `void run_service(std::string config, bool hot_reload)`:
 
-```
+```cpp
 void(std::string, bool)
 ```
 
@@ -246,7 +248,7 @@ void()
 
 При оборачивании функции в шаблонный класс [std::function](https://en.cppreference.com/w/cpp/utility/functional/function.html) ее тип становится аргументом шаблона. А объект класса присваивается переменной, которую можно абсолютно законно возвращать из другой функции или передавать в нее аргументом:
 
-```cpp
+```cpp   {.example_for_playground}
 import std;
 
 bool is_valid(double val)
@@ -296,7 +298,7 @@ std::size_t sum_if(std::map<std::string, std::size_t> data,
 
 С помощью `std::function` удобно организуется логика, основанная на коллбэках. Коллбэк — это функция, которая передается другой функции, чтобы ее запустили в ответ на определенное событие:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_001}
 import std;
 
 // Для удобства определяем псевдоним типа функции
@@ -435,7 +437,7 @@ T name[n];
 
 Откройте этот код в плэйграунде, уберите у переменной `len` константность и убедитесь, что создать массив неконстантной длины невозможно.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_002}
 const std::size_t len = 3;
 float samples[len];
 
@@ -460,8 +462,8 @@ float samples[3] = {4.5, 2.0, -1.1};
 
 Если длина списка инициализации меньше длины массива, оставшиеся элементы заполняются нулями (даже если 0 не является корректным значением для типа).
 
-```cpp
-int samples[3] = {4.5};
+```cpp  {.example_for_playground .example_for_playground_003}
+float samples[3] = {4.5};
 std::println("{}", samples);
 ```
 ```
@@ -498,7 +500,7 @@ int main()
 
 Чтобы инициализировать массив значениями по умолчанию, скобки оставляют пустыми:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_004}
 std::string labels[4] = {};
 
 std::println("{}", labels);
@@ -544,7 +546,7 @@ bool is_sorted(int arr[], std::size_t n, std::function<bool(int, int)> comp)
 
 Давайте получим длину массива, разделив его размер на размер типа элемента:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_005}
 int offsets[] = {-1, 0, -1, 2};
 
 std::size_t len = sizeof(offsets) / sizeof(int);
@@ -559,7 +561,7 @@ std::println("{}", len);
 
 Деление размера массива на размер его элемента — это способ определения длины, который работает во всех версиях C++, но не отличается удобством. В C++17 появилась функция [std::size()](https://en.cppreference.com/w/cpp/iterator/size.html), упрощающая задачу:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_006}
 int offsets[] = {-1, 0, -1, 2};
 
 std::size_t len = std::size(offsets);
@@ -572,7 +574,7 @@ std::println("{}", len);
 
 Оба способа получения длины **не работают** внутри функций, в которые массив передается. Виной тому низведение массива (array to pointer decay) — неявное приведение сишного массива к указателю на его первый элемент. Указатель — это переменная, которая хранит адрес другой переменной. Низведение массива происходит при передаче его в функцию:
 
-```cpp
+```cpp   {.example_for_playground}
 import std;
 
 void print_size(int data[])
@@ -602,7 +604,7 @@ main.cpp:5:29: error: sizeof on array function parameter will return size of 'in
 
 Так выглядит создание и инициализация двумерного массива `measurements`:
 
-```cpp
+```cpp    {.example_for_playground .example_for_playground_007}
 double measurements[2][3] = {
     // accelerometer axis
     // x    y      z 
@@ -615,7 +617,7 @@ double measurements[2][3] = {
 
 Выведем значения массива `measurements` в консоль: 
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_008}
 const std::size_t n = 2;
 const std::size_t m = 3;
 
@@ -671,7 +673,7 @@ Accelerometer measurement #1
 
 Шаблонный класс `std::span<T>` — это «окно» на любую последовательность элементов типа `T`, будь то сырой массив или контейнер. 
 
-```cpp
+```cpp   {.example_for_playground}
 import std;
 
 int main()
@@ -689,7 +691,7 @@ int main()
 
 Срезы позволяют переиспользовать одни и те же функции для обработки сишных массивов и контейнеров:
 
-```cpp
+```cpp   {.example_for_playground}
 import std;
 
 int count_zeroes(std::span<int> data)
