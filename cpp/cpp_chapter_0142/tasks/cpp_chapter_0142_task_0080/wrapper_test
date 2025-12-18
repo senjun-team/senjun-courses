@@ -9,52 +9,36 @@ using namespace boost::ut;
 
 struct SimpleTest
 {
-    std::string raw_ip;
-    std::uint32_t plan = 0;
+    std::vector<int> prices;
+    int plan = 0;
 };
 
-void check_case(const SimpleTest & t)
+void check_case(SimpleTest t)
 {
-    const std::uint32_t fact = convert_ip_v4(t.raw_ip);
-    expect(t.plan == fact) << std::format("convert_ip_v4(\"{}\") returns {}. But expected result is {}",
-                                           t.raw_ip, fact, t.plan) << fatal;
+    const std::uint32_t fact = max_profit(t.prices);
+    expect(t.plan == fact) << std::format("max_profit({}) returns {}. But expected result is {}",
+                                           t.prices, fact, t.plan) << fatal;
 }
 
 int main()
 {
     "Corner cases"_test = [] {
         std::vector<SimpleTest> cases = {
-            {.raw_ip = "0.0.0.0", .plan = 0}, // Placeholder or a default address
-            {.raw_ip = "255.255.255.255", .plan = 4294967295}, // Broadcast
+            {.prices = {1}, .plan = 0},
+            {.prices = {2, 1}, .plan = 0},
+            {.prices = {2, 2}, .plan = 0},
         };
 
         for (const auto & c: cases)
             check_case(c);
     };
 
-    "IP address classes"_test = [] {
+    "Simple cases"_test = [] {
         std::vector<SimpleTest> cases = {
-            // "0.0.0.0 (Class A) is checked in previous test
-            {.raw_ip = "128.0.0.0", .plan = 2147483648}, // Class B
-            {.raw_ip = "192.0.0.0", .plan = 3221225472}, // Class C
-            {.raw_ip = "224.0.0.0", .plan = 3758096384}, // Class D (multicast)
-            {.raw_ip = "240.0.0.0", .plan = 4026531840}, // Class E (reserved)
-        };
-
-        for (const auto & c: cases)
-            check_case(c);
-    };
-
-    "Examples for IP address classes"_test = [] {
-        std::vector<SimpleTest> cases = {
-            {.raw_ip = "172.16.254.1", .plan = 2886794753},
-            {.raw_ip = "127.0.0.1", .plan = 2130706433}, // Loopback
-            {.raw_ip = "192.168.1.1", .plan = 3232235777},
-            {.raw_ip = "192.0.2.1", .plan = 3221225985},
-            {.raw_ip = "122.140.201.66", .plan = 2056046914},
-            {.raw_ip = "2.134.213.2", .plan = 42390786},
-            {.raw_ip = "135.58.24.17", .plan = 2268731409},
-            {.raw_ip = "227.21.6.173", .plan = 3809805997}
+            {.prices = {10, 20}, .plan = 10},
+            {.prices = {8, 7, 3, 3, 1, 1}, .plan = 0},
+            {.prices = {1, 2, 3, 5, 8}, .plan = 7},
+            {.prices = {1, 2, 3, 5, 8, 9, 8, 4, 2}, .plan = 8},
         };
 
         for (const auto & c: cases)

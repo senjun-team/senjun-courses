@@ -4,10 +4,8 @@ import std;
 
 int main()
 {
-    const std::string raw_ip = "172.16.254.1";
-    const std::uint32_t ip_plan = 2886794753;
-    const std::uint32_t ip_fact = convert_ip_v4(raw_ip);
-
-    std::println("convert_ip_v4(\"{}\") returns {}. {}",
-    raw_ip, ip_fact, ip_fact == ip_plan ? "OK" : "ERROR");
+    std::vector<int> stock_prices{8, 1, 3, 2, 4, 1};
+    const int fact = max_profit(stock_prices);
+    const int plan = 3;
+    std::println("max_profit({}) returns {}. {}", stock_prices, fact, fact == plan ? "OK" : "ERROR");
 }
