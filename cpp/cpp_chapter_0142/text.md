@@ -513,7 +513,7 @@ std::println("{}", labels);
 int offsets[] = {-1, 0, -1, 2}; // автоматический вывод длины
 ```
 
-Реализуйте функцию `is_sorted()`, которая принимает сишный массив, его длину и [компаратор.](/courses/cpp/chapters/cpp_chapter_0082/#block-comparator) Функция должна вернуть `true`, если массив отсортирован в соответствии с компаратором. Пустой массив считается отсортированным. {.task_text}
+Реализуйте функцию `is_sorted()`, которая принимает сишный массив, его длину и [компаратор.](/courses/cpp/chapters/cpp_chapter_0082/#block-comparator) Функция должна вернуть `true`, если массив отсортирован в соответствии с компаратором. Массив не может быть пустым. {.task_text}
 
 Пример вызова функции от массива из 4-х элементов и предиката `std::less()`: `is_sorted(arr, 4, std::less())`. {.task_text}
 
@@ -523,9 +523,9 @@ bool is_sorted(int arr[], std::size_t n, std::function<bool(int, int)> comp)
 
 }
 ```
-. {.task_hint}
+Функция должна возвращать `false`, если `comp()` вернул `false` для двух последовательных элементов. {.task_hint}
 ```cpp {.task_answer}
-bool is_sorted(int arr[], std::size_t n, F comp)
+bool is_sorted(int arr[], std::size_t n, std::function<bool(int, int)> comp)
 {
     if (n == 0)
         return true;

@@ -7,72 +7,44 @@ import std;
 
 using namespace boost::ut;
 
-template<class T>
-struct SimpleTest
+void check(int arr[], std::size_t n, std::function<bool(int, int)> comp,
+            const std::string & arr_descr,
+            const std::string & comp_descr, bool plan)
 {
-    T a = 0.0;
-    T b = 0.0;
-    T eps = 0.0;
-    bool plan = false;
-};
-
-template<class T>
-void check(T x, T y, T eps, bool plan)
-{
-    const bool fact = is_eq(x, y, eps); 
-    expect(plan == fact) << std::format("is_eq({}, {}, {}) returns {}. But expected result is {}",
-                                           x, y, eps, fact, plan) << fatal;
-}
-
-template<class T>
-void check_case(const SimpleTest<T> & t)
-{
-    check(t.a, t.b, t.eps, t.plan);
-    check(t.b, t.a, t.eps, t.plan);
-}
-
-template<class T>
-void run_cases()
-{
-    const T min = std::numeric_limits<T>::min();
-    const T max = std::numeric_limits<T>::max();
-    const T inf = std::numeric_limits<T>::infinity();
-    const T nan = std::numeric_limits<double>::quiet_NaN();
-
-    std::vector<SimpleTest<T>> cases = {
-        {.a = 5.001,  .b = 5.002,  .eps = 0.01, .plan = true},
-        {.a = -3.001,  .b = -3.002, .eps = 0.001, .plan = true},
-        {.a = nan, .b = 0.0,  .eps = 1e-4, .plan = false},
-        {.a = -0.02, .b = inf,  .eps = 1e-6, .plan = false},
-        {.a = min, .b = min + 1.0,  .eps = 1.0, .plan = true},
-        {.a = max - 3.5, .b = max,  .eps = 3.5, .plan = true},
-        {.a = 1000.5, .b = 1000.59,  .eps = 0.01, .plan = false},
-        };
-
-    for (const auto & c: cases)
-        check_case(c);
-
+    const bool fact = is_sorted(arr, n, comp);
+    expect(plan == fact) << std::format("is_sorted({}, {}, {}) returns {}. Expected result: {}",
+                arr_descr, n, comp_descr, fact, plan) << fatal;
 }
 
 int main()
 {
-    "test double"_test = [] {
-        run_cases<double>(); 
+    "test array containing single element"_test = [] {
+        int arr[] = {1};
+        check(arr, 1, std::less(), std::format("{}", arr), "std::less()", true);
+        check(arr, 1, std::greater(), std::format("{}", arr), "std::greater()", true);
     };
 
-    "test long double"_test = [] {
-        run_cases<long double>(); 
+    "test array containing 2 elements"_test = [] {
+        int arr[] = {1, 2};
+        check(arr, 2, std::less(), std::format("{}", arr), "std::less()", true);
+        check(arr, 2, std::greater(), std::format("{}", arr), "std::greater()", false);
     };
 
-    "test float"_test = [] {
-        std::vector<SimpleTest<float>> cases = {
-            {.a = 14.001,  .b = 14.002,  .eps = 0.01, .plan = true},
-            {.a = 14.001,  .b = 14.002,  .eps = 0.0001, .plan = false},
-            {.a = -8.001,  .b = -8.002, .eps = 0.01, .plan = true},
-            {.a = -8.1,  .b = -9.2, .eps = 1.01, .plan = false},
-        };
+    "test array containing 3 elements"_test = [] {
+        int arr[] = {1, 2, 1};
+        check(arr, 3, std::less(), std::format("{}", arr), "std::less()", false);
+        check(arr, 3, std::greater(), std::format("{}", arr), "std::greater()", false);
+    };
 
-        for (const auto & c: cases)
-            check_case(c);
+    "test array sorded asc"_test = [] {
+        int arr[] = {1, 2, 5};
+        check(arr, 3, std::less(), std::format("{}", arr), "std::less()", true);
+        check(arr, 3, std::greater(), std::format("{}", arr), "std::greater()", false);
+    };
+
+    "test array sorded desc"_test = [] {
+        int arr[] = {9, 5, 4, 3, 2, 1};
+        check(arr, 6, std::less(), std::format("{}", arr), "std::less()", false);
+        check(arr, 6, std::greater(), std::format("{}", arr), "std::greater()", true);
     };
 }

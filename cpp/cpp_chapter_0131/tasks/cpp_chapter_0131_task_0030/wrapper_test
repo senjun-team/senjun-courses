@@ -1,5 +1,5 @@
 import TestHelpers;
-import sts;
+import std;
 
 int main()
 {
