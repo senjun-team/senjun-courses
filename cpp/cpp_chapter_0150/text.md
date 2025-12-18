@@ -8,7 +8,7 @@
 
 Чтобы объявить ссылку, между типом и именем переменной ставится символ амперсанда `&`. Он означает, что перед вами не обычный тип, а ссылочный. В данном примере у переменной `c_ref` тип `char &`: это ссылка на `char`:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_001}
 char c = 'A';
 char & c_ref = c;  // Ссылка
 
@@ -26,7 +26,7 @@ A
 
 Читать и изменять значение можно как через исходную переменную, так и через ссылку:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_002}
 std::size_t count = 1;
 std::size_t & n = count;
 std::println("count={} n={}", count, n);
@@ -45,7 +45,7 @@ count=4 n=4
 
 Что выведется в консоль? {.task_text}
 
-```cpp {.example_for_playground .example_for_playground_008}
+```cpp {.example_for_playground .example_for_playground_003}
 unsigned char x = 255;
 unsigned char & ref1 = x;
 unsigned char & ref2 = x;
@@ -75,7 +75,7 @@ T &name;
 
 Тип ссылки должен совпадать с типом переменной, на которую она указывает. При нарушении этого правила ваш код не скомпилируется:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_004}
 bool has_access = false;
     
 std::string & ref = has_access;
@@ -88,7 +88,7 @@ main.cpp:7:19: error: non-const lvalue reference to type 'std::string' (aka 'bas
 
 В момент создания ссылки ее необходимо инициализировать. Не инициализированная ссылка приведет к ошибке компиляции:
 
-```cpp
+```cpp {.example_for_playground}
 import std;
 
 int main()
@@ -106,7 +106,7 @@ main.cpp:5:19: error: declaration of reference variable 's' requires an initiali
 
 Что выведется в консоль? {.task_text}
 
-```cpp {.example_for_playground}
+```cpp  {.example_for_playground .example_for_playground_005}
 int a = 1;
 int b = 5;
 
@@ -126,7 +126,7 @@ std::println("{} {} {}", a, ref, b);
 
 Как вы считаете, можно ли завести ссылку на `void`? `y/n` {.task_text}
 
-```consoleoutput {.task_source #cpp_chapter_0150_task_0100}
+```consoleoutput {.task_source #cpp_chapter_0150_task_0030}
 ```
 У типа `void` пустой набор значений, а ссылка должна указывать на полноценный объект. Поэтому стандарт [запрещает](https://timsong-cpp.github.io/cppwp/n4868/dcl.ref#1) ссылки на `void`. {.task_hint}
 ```cpp {.task_answer}
@@ -137,7 +137,7 @@ n
 
 По умолчанию функции принимают параметры по значению (by value): при вызове функции в нее вместо исходных переменных попадают _копии._ Убедимся в этом:
 
-```cpp
+```cpp  {.example_for_playground}
 import std;
 
 void sort(std::vector<int> v)
@@ -171,7 +171,7 @@ void sort(std::vector<int> & v);
 
 Когда функция принимает аргумент по ссылке, компилятор связывает существующую переменную с новым именем — параметром функции. То есть заводит для нее псевдоним. И функция получает доступ к исходному объекту вместо копии:
 
-```cpp
+```cpp  {.example_for_playground}
 import std;
 
 void sort(std::vector<int> & v) // передаем v по ссылке
@@ -215,7 +215,7 @@ After calling sort(): [-1, 0, 2, 5]
 ]
 ```
 
-```cpp {.task_source #cpp_chapter_0142_task_0030}
+```cpp {.task_source #cpp_chapter_0150_task_0040}
 // Ваша реализация rotate_clockwise()
 
 ```
@@ -227,15 +227,19 @@ After calling sort(): [-1, 0, 2, 5]
 В стандартной библиотеке есть функция [std::swap()](https://en.cppreference.com/w/cpp/algorithm/swap.html), которая принимает два параметра и меняет местами их значения. Разумеется, для этого она принимает оба параметра по ссылке. Так выглядит ее объявление:
 
 ```cpp
-template<class T>
-void swap(T & a, T & b);
+namespace std {
+    template<class T>
+    void swap(T & a, T & b);
+
+    // ...
+}
 ```
 
-Реализуйте свою функцию `swap()`. Она принимает два параметра типа `int` и меняет их местами. {.task_text}
+Реализуйте собственную функцию `swap()`. Она принимает два параметра типа `int` и меняет их местами. {.task_text}
 
-Например, есть две переменные `x = 1` и `y = 5`. После вызова `swap(x, y)` в `x` должно лежать число `5`, а в `y` — `1`. {.task_text}
+Например, есть две переменные `x = 1` и `y = 5`. После вызова `swap(x, y)` в `x` должно лежать число `5`, а в `y` —  число `1`. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0142_task_0040}
+```cpp {.task_source #cpp_chapter_0150_task_0050}
 
 ```
 Функция должна принимать два параметра по ссылке. Чтобы поменять их местами, внутри функции вы можете завести дополнительную переменную. {.task_hint}
@@ -256,7 +260,7 @@ for (item : range-initializer)
 
 В таком цикле удобно перебирать элементы контейнеров:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_006}
 std::vector<std::string> available_bluetooth_devices = {
     "TV 4562",
     "Sonny's headset",
@@ -274,14 +278,14 @@ jbl headphones
 
 Здесь на каждой итерации цикла в переменную `device` попадает _копия_ элемента контейнера `available_bluetooth_devices`. Как неэффективно! Чтобы избежать лишнего копирования, нужно всего лишь поменять тип переменной, через которую перебирается контейнер:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_007}
 for(std::string & device: available_bluetooth_devices)
     std::println("{}", device);
 ```
 
 Теперь `device` — это ссылка на строку. Мы избавились от копирования при итерировании по контейнеру. Кроме того, теперь мы можем по этой ссылке модифицировать сами элементы, а не их копии:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_008}
 for(std::string & device: available_bluetooth_devices)
     device = "*****";
 
@@ -293,7 +297,7 @@ std::println("{}", available_bluetooth_devices);
 
 Чтобы достичь схожего результата, до сих пор вам приходилось организовывать циклы с итераторами или циклы по индексам. Кстати, при обращении по индексу или по ключу используется [оператор](https://en.cppreference.com/w/cpp/container/vector/operator_at.html) `[]`. Он возвращает _ссылку_ на элемент контейнера. Именно за счет этого синтаксис квадратных скобок позволяет работать с элементами контейнера, а не их копиями. 
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_009}
 available_bluetooth_devices[1] = "-"; // Присваиваем значение "-"
 
 std::println("{}", available_bluetooth_devices);
@@ -310,7 +314,7 @@ std::println("{}", available_bluetooth_devices);
 - Алгоритм [std::transform()](https://en.cppreference.com/w/cpp/algorithm/transform) для применения `std::tolower()` к каждому символу строки.
 - Цикл `range-for` по ссылкам на элементы вектора.
 
-```cpp {.task_source #cpp_chapter_0150_task_0050}
+```cpp {.task_source #cpp_chapter_0150_task_0060}
 void lower(std::vector<std::string> & words)
 {
 
@@ -394,7 +398,7 @@ bool is_localhost(const IpAddr & ip)
 
 Например, для `text="a bb a bb"` и `stop_words={"a", "c"}` функция должна вернуть строку `"bb"`. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0150_task_0060}
+```cpp {.task_source #cpp_chapter_0150_task_0070}
 // Ваша реализация most_common_word()
 ```
 . {.task_hint}
@@ -483,7 +487,7 @@ int main() {
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0150_task_0220}
+```consoleoutput {.task_source #cpp_chapter_0150_task_0080}
 ```
 . {.task_hint}
 ```cpp {.task_answer}
@@ -543,7 +547,7 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0150_task_0070}
+```consoleoutput {.task_source #cpp_chapter_0150_task_0090}
 ```
 . {.task_hint}
 ```cpp {.task_answer}
@@ -571,7 +575,7 @@ enum class EndOfLine
 };
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0150_task_0080}
+```consoleoutput {.task_source #cpp_chapter_0150_task_0100}
 ```
 . {.task_hint}
 ```cpp {.task_answer}
@@ -589,7 +593,7 @@ struct Point
 };
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0150_task_0090}
+```consoleoutput {.task_source #cpp_chapter_0150_task_0110}
 ```
 . {.task_hint}
 ```cpp {.task_answer}
@@ -669,7 +673,7 @@ int main()
 }
 ```
 
-Есть способ продлить время жизни временного объекта: присвоить его константной ссылке.
+Есть способ продлить время жизни временного объекта: присвоить его _константной_ ссылке.
 
 Иными словами, константную ссылку можно инициализировать неименованным объектом. Тогда его время жизни будет совпадать во временем жизни ссылки. Это называется продлением времени жизни (lifetime extension) или [материализацией временного объекта.](https://en.cppreference.com/w/cpp/language/implicit_conversion.html#Temporary_materialization) (temporary materialization).
 
@@ -684,6 +688,22 @@ int main()
 }
 ```
 
+Обратите внимание, что для продления жизни временного объекта нужна именно константная ссылка. Обычная ссылка не сработает:
+
+```cpp
+int main()
+{
+    auto & url = std::string("github.com"); 
+
+    // ...
+}
+```
+```
+main.cpp:5:12: error: non-const lvalue reference to type 'basic_string<...>' cannot bind to a temporary of type 'basic_string<...>'
+    5 |     auto & url = std::string("github.com"); 
+      |            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~
+```
+
 ## Домашнее задание
 
 Этот курс знакомит вас с концепцией ссылок уже после того, как вы научились решать на C++ довольно сложные задачи. Мы считаем, что лучше вначале набить руку на использовании контейнеров, итераторов и стандартных алгоритмов, а уже потом постигать тонкости предотвращения лишнего копирования. Поэтому в предыдущих главах _полно_ задач и примеров кода, где ссылки были бы как нельзя кстати.
@@ -694,11 +714,11 @@ int main()
 
 ## Резюме
 
-- Про ссылку (reference) удобно думать как про псевдоним для уже существующей переменной.
+- Про ссылку (reference) удобно думать как про псевдоним существующей переменной.
 - При создании ссылку нужно инициализировать.
 - Ссылку нельзя переназначить.
 - Константная ссылка — это ссылка, по которой можно только читать значение, но не изменять его.
 - Если функция принимает параметр _по значению,_ то при ее вызове происходит копирование соответствующего аргумента.
 - Если функция принимает параметр _по ссылке,_ то она работает с исходным объектом. Копирования не происходит.
 - Время жизни ссылки не должно превышать время жизни объекта, на который она указывает. Иначе вы получите висячую ссылку, обращение по которой приведет к UB.
-- Передавайте по ссылке объекты, размер которых превышает пару машинных слов. Это позволит избежать лишнего копирования.
+- Передавайте по константной ссылке объекты, размер которых превышает пару машинных слов. Это позволит избежать лишнего копирования.
