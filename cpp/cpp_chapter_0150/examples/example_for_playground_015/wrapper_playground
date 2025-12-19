@@ -1,0 +1,32 @@
+import std;
+
+class Storage
+{
+public:
+    Storage()
+    {
+        std::println("Creating storage...");
+    }
+
+    void add(int key, const std::string & val)
+    {
+        m_data[key] = val;
+    }
+    
+    std::string & get(int key) // Возвращаем ссылку на значение
+    {
+        return m_data[key];
+    }
+
+private:
+    std::map<int, std::string> m_data;
+};
+
+int main()
+{
+    Storage storage;
+    storage.add(9, "default");
+    storage.get(9) = "8f95e06";
+
+    std::println("Value: {}", storage.get(9));
+}

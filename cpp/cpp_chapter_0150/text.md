@@ -327,7 +327,7 @@ void lower(std::vector<std::string> & words)
 
 Цикл `range-for` также позволяет итерироваться по контейнерам, хранящим пары ключ-значение. Это особенно удобно в связке с конструкцией [structured binding](/courses/cpp/chapters/cpp_chapter_0073/#block-structured-binding):
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_010}
 std::map<std::string, std::string> headers = {
     {"Accept", "text/html"},
     {"Accept-Charset", "utf-8"},
@@ -345,7 +345,7 @@ Header: Cache-Control. Value: no-cache
 
 Здесь на каждой итерации цикла в переменную `k` сохраняется копия ключа, а в `v` — копия его значения. Заменим копирование на работу со ссылками на ключи и значения:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_011}
 for (auto & [k, v]: headers)
     std::println("Header: {}. Value: {}", k, v);
 ```
@@ -369,7 +369,7 @@ T const &
 
 В этом примере мы создаем константную ссылку, но пытаемся обратиться к ней на запись. Это приводит к ошибке компиляции:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_012}
 int val = 16;
 const int & ref = val;
 ++val; // ок
@@ -426,9 +426,9 @@ const T & func_name(params)
 }
 ```
 
-Главное — помнить, что ссылка должна указывать на живой, еще не уничтоженный объект. Иначе вы получите **висячую ссылку** (dangling reference), которая смотрит на несуществующий объект. Обращение по такой ссылке приведет к UB. Например:
+Главное — помнить, что ссылка должна указывать на живой, еще не уничтоженный объект. Иначе вы получите **висячую ссылку** (dangling reference), которая смотрит на несуществующий объект. Обращение по такой ссылке приведет к UB. А в простых случаях, если компилятор понимает, что ссылка указывает на некорректный адрес, код не компилируется:
 
-```cpp
+```cpp   {.example_for_playground}
 import std;
 
 double & pyramid_volume(double base_area, double height)
@@ -440,8 +440,12 @@ double & pyramid_volume(double base_area, double height)
 int main()
 {
     double & v = pyramid_volume(14.3, 6.2); // висячая ссылка
-    std::println("{}", v);                  // UB
+    std::println("{}", v);
 }
+```
+```
+main.cpp:6:12: error: non-const lvalue reference to type 'double' cannot bind to a temporary of type 'double'
+    6 |     return res;
 ```
 
 Здесь мы возвращаем ссылку на `res`. Но эта переменная разрушается при выходе из `pyramid_volume()`, ведь ее [время жизни](/courses/cpp/chapters/cpp_chapter_0090/#block-lifetime) ограничено телом функции. Переменная `res` локальная, и у нее [автоматическое время жизни.](/courses/cpp/chapters/cpp_chapter_0090/#block-automatic-lifetime) Компилятор разрушает такие переменные, когда они покидают свою область видимости. Поэтому после вызова `pyramid_volume()` ссылка `v` указывает на несуществующий объект.
@@ -496,7 +500,7 @@ int main() {
 
 Допустим, у нас есть класс для хранения ключей и значений. Чтобы при обращении по ключу не создавать копию значения, метод `get()` возвращает ссылку на значение:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_013}
 class Storage
 {
 public:
@@ -513,7 +517,7 @@ public:
 
 При вызове `get()` никакого копирования не происходит. А так как `get()` возвращает неконстантную ссылку, оригинальное значение можно изменять:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_014}
 Storage storage;
 
 std::string & val = storage.get(9);
@@ -522,7 +526,7 @@ val = "8f95e06";
 
 Это выглядит необычно, но вызов метода, возвращающего ссылку, может стоять по левую сторону от оператора `=`:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_015}
 storage.get(9) = "8f95e06";
 ```
 
@@ -613,7 +617,7 @@ std::string read_text(const std::string & filename, int & err_code)
 
 Вызов функции выглядит примерно так:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_016}
 int err = kOk;
 std::string contents = read_text("/home/Al/robo_spec.txt", err);
 
@@ -636,7 +640,7 @@ std::println("Successfully read {} bytes from file", contents.size());
 
 У вас [не получится](https://timsong-cpp.github.io/cppwp/n4868/dcl.ref#5) завести ссылку на ссылку. Если вы попытаетесь, то произойдет [склеивание](https://en.cppreference.com/w/cpp/language/reference.html#Reference_collapsing) или схлопывание ссылок (reference collapsing):
 
-```cpp
+```cpp  {.example_for_playground}
 import std;
 
 using IntRef = int &;
@@ -658,7 +662,7 @@ int main()
 
 В этом примере функция `http_get()` принимает по константной ссылке параметр `url`. Если вместо именованной переменной передать в функцию литерал, то для его хранения будет создан временный объект. И ссылка `url` будет указывать на него. При выходе из функции временный объект разрушится:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_017}
 import std;
 
 std::string http_get(const std::string & url)
@@ -670,7 +674,11 @@ int main()
 {
     // Временный объект "github.com" живет до конца вызова http_get()
     std::string body = http_get("github.com");
+    std::println("{}", body);
 }
+```
+```
+<HTML> ... </HTML>
 ```
 
 Есть способ продлить время жизни временного объекта: присвоить его _константной_ ссылке.
@@ -679,23 +687,23 @@ int main()
 
 В этом примере временный объект `"github.com"` будет разрушен не в конце инструкции, а тогда же, когда и ссылка на него, то есть при выходе из `main()`:
 
-```cpp
-int main()
-{
-    const auto & url = std::string("github.com"); 
+```cpp  {.example_for_playground .example_for_playground_018}
+const auto & url = std::string("github.com"); 
 
-    // ...
-}
+std::println("{}", url);
+```
+```
+github.com
 ```
 
 Обратите внимание, что для продления жизни временного объекта нужна именно константная ссылка. Обычная ссылка не сработает:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_019}
 int main()
 {
     auto & url = std::string("github.com"); 
 
-    // ...
+    std::println("{}", url);
 }
 ```
 ```
