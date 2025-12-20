@@ -1,0 +1,18 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const std::size_t len = 5;
+    int arr[len] = {1, 2, 3, 4, 5};
+
+    std::println("Array: {}", arr);
+    const bool sorted_less = is_sorted(arr, len, std::less());
+    std::println("is_sorted({}, {}, std::less()) returns {}. {}",
+                 arr, len, sorted_less, sorted_less == true ? "OK" : "ERROR");
+
+    const bool sorted_greater = is_sorted(arr, len, std::greater());
+    std::println("is_sorted({}, {}, std::greater()) returns {}. {}",
+                arr, len, sorted_greater, sorted_greater == false ? "OK" : "ERROR");
+}
