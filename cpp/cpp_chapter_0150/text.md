@@ -58,7 +58,7 @@ std::println("{} {} {}", x, ref1, ref2);
 
 ```consoleoutput {.task_source #cpp_chapter_0150_task_0010}
 ```
-. {.task_hint}
+Тип `unsigned char` занимает 1 байт. Значит, 255 — это максимальное для него значение, и при его увеличении произойдет беззнаковое переполнение. {.task_hint}
 ```cpp {.task_answer}
 1 1 1
 ```
@@ -119,7 +119,7 @@ std::println("{} {} {}", a, ref, b);
 
 ```consoleoutput {.task_source #cpp_chapter_0150_task_0020}
 ```
-. {.task_hint}
+В выражении `ref = b` значение `b` присваивается переменной, на которую указывает ссылка `ref`. {.task_hint}
 ```cpp {.task_answer}
 5 5 8
 ```
@@ -685,15 +685,15 @@ int main()
 
 Иными словами, константную ссылку можно инициализировать неименованным объектом. Тогда его время жизни будет совпадать во временем жизни ссылки. Это называется продлением времени жизни (lifetime extension) или [материализацией временного объекта.](https://en.cppreference.com/w/cpp/language/implicit_conversion.html#Temporary_materialization) (temporary materialization).
 
-В этом примере временный объект `"github.com"` будет разрушен не в конце инструкции, а тогда же, когда и ссылка на него, то есть при выходе из `main()`:
+В этом примере временный объект `"https://cppreference.com/"` будет разрушен не в конце инструкции, а тогда же, когда и ссылка на него, то есть при выходе из `main()`:
 
 ```cpp  {.example_for_playground .example_for_playground_018}
-const auto & url = std::string("github.com"); 
+const auto & url = std::string("https://cppreference.com/"); 
 
 std::println("{}", url);
 ```
 ```
-github.com
+https://cppreference.com/
 ```
 
 Обратите внимание, что для продления жизни временного объекта нужна именно константная ссылка. Обычная ссылка не сработает:
@@ -701,15 +701,15 @@ github.com
 ```cpp  {.example_for_playground .example_for_playground_019}
 int main()
 {
-    auto & url = std::string("github.com"); 
+    auto & url = std::string("https://cppreference.com/"); 
 
     std::println("{}", url);
 }
 ```
 ```
 main.cpp:5:12: error: non-const lvalue reference to type 'basic_string<...>' cannot bind to a temporary of type 'basic_string<...>'
-    5 |     auto & url = std::string("github.com"); 
-      |            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~
+    5 |     auto & url = std::string("https://cppreference.com/"); 
+      |            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ```
 
 ## Домашнее задание
