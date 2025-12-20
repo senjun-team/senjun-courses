@@ -229,7 +229,7 @@ return_type(type_param_1, type_param_2, ..., type_param_n)
 void(std::string, bool)
 ```
 
-Напишите тип функции, которая ничего не возвращает и не принимает параметров {.task_text}
+Напишите тип функции, которая ничего не возвращает и не принимает параметров. {.task_text}
 
 ```consoleoutput {.task_source #cpp_chapter_0142_task_0030}
 ```
@@ -364,7 +364,7 @@ Searching for package astroterm...
 
 Перед вами класс `File`, хранящий секции файла некоего формата. {.task_text}
 
-Под объявлением класса добавьте определение метода `findSection()`. Он возвращает пару: первую секцию файла, для которой предикат `pred` вернул `true`, и ее индекс. Если такой секции нет, функция возвращает пустую секцию и индекс, равный `std::numeric_limits<std::size_t>::max()`. {.task_text}
+Под объявлением класса добавьте определение метода `find_section()`. Он возвращает пару: первую секцию файла, для которой предикат `pred` вернул `true`, и ее индекс. Если такой секции нет, функция возвращает пустую секцию и индекс, равный `std::numeric_limits<std::size_t>::max()`. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0142_task_0050}
 struct Section
@@ -379,7 +379,7 @@ class File
 public:
     explicit File(std::vector<Section> sections);
     std::size_t sections_count();
-    std::pair<Section, std::size_t> findSection(std::function<bool(Section, std::size_t)> pred);
+    std::pair<Section, std::size_t> find_section(std::function<bool(Section, std::size_t)> pred);
        
 private:
     std::vector<Section> m_sections;
@@ -388,7 +388,7 @@ private:
 // Добавьте определение метода
 
 ```
-При определении метода класса не забудьте указать имя класса: `std::pair<Section, std::size_t> Section::findSection(std::function<bool(Section, std::size_t)> pred) { /* ... */ }`. {.task_hint}
+При определении метода класса не забудьте указать имя класса: `std::pair<Section, std::size_t> Section::find_section(std::function<bool(Section, std::size_t)> pred) { /* ... */ }`. {.task_hint}
 ```cpp {.task_answer}
 struct Section
 {
@@ -741,7 +741,7 @@ int max_profit(std::span<int> prices)
 
 }
 ```
-. {.task_hint}
+Заведите две переменные типа `int`: `profit`, изначально равную нулю, и `buy_price`, изначально равную цене акций в первый день (нулевой элемент среза). Затем в цикле с первого по последний элемент среза сопоставляйте эти значения с теми, которые могут быть в `i`-ый день торгов. {.task_hint}
 ```cpp {.task_answer}
 int max_profit(std::span<int> prices)
 {
