@@ -1,0 +1,46 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+namespace our_impl {
+unsigned long long naive_hash(std::string s)
+{
+    unsigned long long h = 15;
+    
+    for (char c : s)
+    {
+        h += h * 15'983 + c;
+    }
+
+    return h;
+}
+}
+
+void check(const std::string & s)
+{
+    const auto fact = naive_hash(s); 
+    const auto plan = our_impl::naive_hash(s);
+
+    expect(plan == fact) << std::format("naive_hash(\"{}\") returns {}. But expected result is {}",
+                                           s, fact, plan) << fatal;
+}
+
+int main()
+{
+    "test cases"_test = [] {
+        std::vector<std::string> cases = {
+            "",
+            "*",
+            "short string",
+            std::string(1'000, 'x')
+        };
+
+        for (const auto & s: cases)
+            check(s);
+    };
+}

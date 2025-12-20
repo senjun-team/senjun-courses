@@ -1,0 +1,100 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+template <>
+struct std::formatter<Doc>
+{
+    template <typename ParseContext>
+    constexpr auto parse(ParseContext& ctx)
+    {
+        return ctx.begin(); 
+    }
+
+    template <typename FormatContext>
+    auto format(const Doc & d, FormatContext & ctx) const
+    {
+        return std::format_to(ctx.out(), "{}", d.name);
+    }
+};
+
+using namespace boost::ut;
+
+struct SimpleTest
+{
+    std::vector<Doc> docs;
+    std::unordered_map<DocName, DocIdx> ii;
+};
+
+void check_case(const SimpleTest & t)
+{
+    auto fact = build_inverted_index(t.docs);
+    expect(t.ii == fact) << std::format("build_inverted_index(\"{}\") returns {}. But expected result is {}",
+                                           t.docs, fact, t.ii) << fatal;
+}
+
+template<class T1, class T2>
+bool is_almost_same_v = std::is_same_v<const T1&,const T2&>;
+
+int main()
+{
+    "Check type of DocIdx"_test = [] {
+        const bool same_max = std::numeric_limits<std::size_t>::max() == std::numeric_limits<DocIdx>::max();
+        const bool same_min = std::numeric_limits<std::size_t>::min() == std::numeric_limits<DocIdx>::min();
+        expect(same_min && same_max && std::is_unsigned_v<DocIdx>) << "DocIdx must be an alias for std::size_t" << fatal;
+    };
+
+    "Check type of value in unordered_map"_test = [] {
+        std::vector<Doc> docs = {
+            {.name = "A", .text = "1"},
+        };
+
+        auto res = build_inverted_index(docs);
+        const auto i = res["A"];
+
+        expect(is_almost_same_v<DocIdx, decltype(i)>) << "Type of value in unordered map returned by build_inverted_index() must be DocIdx" << fatal;
+    };
+
+    "Simple check for reverse iterators"_test = [] {
+        const std::string code = R"(#INJECT-b585472fa)";
+        std::vector<std::pair<std::string, std::string>> triggers = {
+            {".rbegin()", "Use rbegin() method of vector to obtain reverse iterator to the last element"},
+            {".rend()", "Use rend() method of vector to obtain reverse iterator to the first element"},
+            {".base()", "Use base() method of reverse iterator to obtain forward iterator"}
+            };
+        for (const auto & trigger: triggers)
+        {
+            expect(code.find(trigger.first) != std::string::npos) << trigger.second << fatal;
+        }
+    };
+
+    "Check build_inverted_index() logic"_test = [] {
+        SimpleTest t;
+        t.docs = {
+            {.name = "A"},  // 0
+            {.name = "B"},  // 1
+            {.name = "B"},  // 2
+            {.name = "C"},  // 3
+            {.name = "A"},  // 4
+            {.name = "D"},  // 5
+            {.name = "E"},  // 6
+            {.name = "F"},  // 7
+            {.name = "F"},  // 8
+        };
+
+        t.ii = {
+            {"A", 4},
+            {"B", 2},
+            {"C", 3},
+            {"D", 5},
+            {"E", 6},
+            {"F", 8}
+        };
+
+        check_case(t);
+    };
+
+}
