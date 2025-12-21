@@ -30,7 +30,7 @@ set(CMAKE_BUILD_TYPE Release)
 
 ### Подключение GTest
 
-По условию задания библиотека для юнит-тестов GoogleTest _установлена системно._ Значит, вначале нужно ее найти командой [find_package](https://cmake.org/cmake/help/latest/module/FindGTest.html):
+По условию задания библиотека для юнит-тестов GoogleTest _установлена системно._ Значит, вначале нужно её найти командой [find_package](https://cmake.org/cmake/help/latest/module/FindGTest.html):
 
 ```
 find_package(GTest REQUIRED)
@@ -44,7 +44,7 @@ target_link_libraries(tests PRIVATE lru_cache GTest::gtest)
 
 ### Подключение Google benchmarks
 
-По условию задания исходный код библиотеки Google benchmarks скачан в локальную директорию `/third_party/google/benchmark/`. Значит, ее нужно подключить в проект с помощью модуля `cmake` [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html):
+По условию задания исходный код библиотеки Google benchmarks скачан в локальную директорию `/third_party/google/benchmark/`. Значит, её нужно подключить в проект с помощью модуля `cmake` [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html):
 
 ```
 # Подключаем модуль FetchContent
@@ -81,13 +81,13 @@ add_library(lru_cache SHARED lru_cache.cpp)
 add_subdirectory(lru_cache)
 ```
 
-Так как хедер библиотеки `lru_cache.h` подключен в бенчмарки и юнит-тесты, компилятору нужно указать путь к нему:
+Так как хедер библиотеки `lru_cache.h` подключён в бенчмарки и юнит-тесты, компилятору нужно указать путь к нему:
 
 ```
 include_directories(lru_cache)
 ```
 
-И, наконец, с библиотекой нужно слинковать все цели сборки, которые ее используют.
+И, наконец, с библиотекой нужно слинковать все цели сборки, которые её используют.
 
 ```
 target_link_libraries(цель_сборки PRIVATE lru_cache)
