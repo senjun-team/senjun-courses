@@ -229,7 +229,7 @@ return_type(type_param_1, type_param_2, ..., type_param_n)
 void(std::string, bool)
 ```
 
-Напишите тип функции, которая ничего не возвращает и не принимает параметров {.task_text}
+Напишите тип функции, которая ничего не возвращает и не принимает параметров. {.task_text}
 
 ```consoleoutput {.task_source #cpp_chapter_0142_task_0030}
 ```
@@ -238,13 +238,13 @@ void(std::string, bool)
 void()
 ```
 
-Если сигнатура в первую очередь нужна компилятору, то для чего полезен тип? В C++ функция не является [объектом первого класса.](https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%8A%D0%B5%D0%BA%D1%82_%D0%BF%D0%B5%D1%80%D0%B2%D0%BE%D0%B3%D0%BE_%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%B0) Ее нельзя _напрямую_ присвоить переменной, передать аргументом или вернуть как значение. Но есть способы, позволяющие добиться _практически_ этого:
-- Обернуть функцию в класс [std::function](https://en.cppreference.com/w/cpp/utility/functional/function.html) и работать с объектом этого класса.
-- Работать с переменной — ссылкой на функцию.
-- Работать с переменной — указателем на функцию.
-- Вместо обычной функции использовать лямбда-функцию.
+Если сигнатура в первую очередь нужна компилятору, то для чего полезен тип? В C++ функция не является [объектом первого класса.](https://ru.wikipedia.org/wiki/%D0%9E%D0%B1%D1%8A%D0%B5%D0%BA%D1%82_%D0%BF%D0%B5%D1%80%D0%B2%D0%BE%D0%B3%D0%BE_%D0%BA%D0%BB%D0%B0%D1%81%D1%81%D0%B0) Ее нельзя _напрямую_ присвоить переменной, передать аргументом или вернуть как значение. Но есть способы, позволяющие косвенно придать функции такие возможности:
+- Класс [std::function](https://en.cppreference.com/w/cpp/utility/functional/function.html), в который «оборачивается» функция.
+- Переменная — ссылка на функцию.
+- Переменная — указатель на функцию.
+- Лямбда-функция вместо обычной функции.
 
-Каждый из этих способов явно или неявно задействует тип функции. Остановимся на варианте с `std::function`, а остальные рассмотрим позже.
+Каждый из этих вариантов явно или неявно задействует тип функции. Остановимся на `std::function`, а остальные рассмотрим позже.
 
 При оборачивании функции в шаблонный класс [std::function](https://en.cppreference.com/w/cpp/utility/functional/function.html) её тип становится аргументом шаблона. А объект класса присваивается переменной, которую можно абсолютно законно возвращать из другой функции или передавать в неё аргументом:
 
@@ -364,7 +364,7 @@ Searching for package astroterm...
 
 Перед вами класс `File`, хранящий секции файла некоего формата. {.task_text}
 
-Под объявлением класса добавьте определение метода `findSection()`. Он возвращает пару: первую секцию файла, для которой предикат `pred` вернул `true`, и её индекс. Если такой секции нет, функция возвращает пустую секцию и индекс, равный `std::numeric_limits<std::size_t>::max()`. {.task_text}
+Под объявлением класса добавьте определение метода `find_section()`. Он возвращает пару: первую секцию файла, для которой предикат `pred` вернул `true`, и её индекс. Если такой секции нет, функция возвращает пустую секцию и индекс, равный `std::numeric_limits<std::size_t>::max()`. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0142_task_0050}
 struct Section
@@ -379,7 +379,7 @@ class File
 public:
     explicit File(std::vector<Section> sections);
     std::size_t sections_count();
-    std::pair<Section, std::size_t> findSection(std::function<bool(Section, std::size_t)> pred);
+    std::pair<Section, std::size_t> find_section(std::function<bool(Section, std::size_t)> pred);
        
 private:
     std::vector<Section> m_sections;
@@ -388,7 +388,7 @@ private:
 // Добавьте определение метода
 
 ```
-При определении метода класса не забудьте указать имя класса: `std::pair<Section, std::size_t> Section::findSection(std::function<bool(Section, std::size_t)> pred) { /* ... */ }`. {.task_hint}
+При определении метода класса не забудьте указать имя класса: `std::pair<Section, std::size_t> Section::find_section(std::function<bool(Section, std::size_t)> pred) { /* ... */ }`. {.task_hint}
 ```cpp {.task_answer}
 struct Section
 {
@@ -741,7 +741,7 @@ int max_profit(std::span<int> prices)
 
 }
 ```
-. {.task_hint}
+Заведите две переменные типа `int`: `profit`, изначально равную нулю, и `buy_price`, изначально равную цене акций в первый день (нулевой элемент среза). Затем в цикле с первого по последний элемент среза сопоставляйте эти значения с теми, которые могут быть в `i`-ый день торгов. {.task_hint}
 ```cpp {.task_answer}
 int max_profit(std::span<int> prices)
 {
