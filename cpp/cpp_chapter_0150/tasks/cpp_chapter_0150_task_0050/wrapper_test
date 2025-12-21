@@ -9,30 +9,16 @@ using namespace boost::ut;
 
 int main()
 {
-    "check test_chartable() output"_test = [] {
-        std::string captured_text;
-        auto stdout_receiver = [&captured_text](std::string&& txt)
-        {
-            captured_text = std::move(txt);
-        };
+    "check swap"_test = [] {
+        int a = 300;
+        int b = 400;
 
-        {
-            hlp::stdout_capture_t capture(stdout_receiver);
-            test_chartable();
-        }
-
-        const std::string plan = hlp::remove_spaces("character raw val 128\nfalse\n");
-        expect(hlp::remove_spaces(captured_text) == plan) << std::format("Expected output of test_chartable(): {}\n Actual output: {}", 
-        plan,
-        captured_text) << fatal;
+        swap(a, b);
+        
+        expect(a == 400) << std::format("called swap(a, b) where a=300 and b=400. After the call a={}",
+                                           a) << fatal;
+        expect(b == 300) << std::format("called swap(a, b) where a=300 and b=400. After the call b={}",
+                                           b) << fatal;
     };
 
-    "check CharTable class"_test = [] {
-        CharTable table;
-
-        for (unsigned char c = 1; c < 200; ++c)
-        {
-            expect(table.is_printable(c) == false) << std::format("Expected result of is_printable({}) is false", c) << fatal;
-        }
-    };
 }

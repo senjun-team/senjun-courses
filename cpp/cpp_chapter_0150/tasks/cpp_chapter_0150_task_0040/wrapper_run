@@ -4,9 +4,11 @@ import std;
 
 int main()
 {
-    const std::string s = "*";
+    std::vector<std::vector<short>> matrix = {{1, 2}, {3, 4}};
 
-    auto const hash = naive_hash(s);
+    std::println("Matrix before rotation:\n{}", matrix);
 
-    std::println("naive_hash(\"{}\") returns {}", s, hash);
+    rotate_clockwise(matrix);
+
+    std::println("Matrix after rotation:\n{}", matrix);
 }

@@ -219,9 +219,22 @@ After calling sort(): [-1, 0, 2, 5]
 // Ваша реализация rotate_clockwise()
 
 ```
-Сначала поменяйте местами все элементы `m[i][j]` и `m[j][i]`. Это транспонирует матрицу, то есть превратит строки в столбцы, а столбцы — в строки. Затем инвертируйте порядок элементов в каждом ряду. {.task_hint}
+Сначала [поменяйте местами](https://en.cppreference.com/w/cpp/algorithm/swap.html) все элементы `m[i][j]` и `m[j][i]`. Это транспонирует матрицу, то есть превратит строки в столбцы, а столбцы — в строки. Затем [инвертируйте](https://cppreference.com/w/cpp/algorithm/reverse.html) порядок элементов в каждом ряду. {.task_hint}
 ```cpp {.task_answer}
+void rotate_clockwise(std::vector<std::vector<short>> & m)
+{
+    for (std::size_t i = 0; i < m.size(); ++i)
+    {
+        for (std::size_t j = i + 1; j < m.size(); ++j)
+        {
+            std::swap(m[i][j], m[j][i]);
+        }
+    }
 
+    for (std::size_t i = 0; i < m.size(); ++i)
+        std::reverse(m[i].begin(), m[i].end());
+    
+}
 ```
 
 В стандартной библиотеке есть функция [std::swap()](https://en.cppreference.com/w/cpp/algorithm/swap.html), которая принимает два параметра и меняет местами их значения. Разумеется, для этого она принимает оба параметра по ссылке. Так выглядит ее объявление:
@@ -240,11 +253,17 @@ namespace std {
 Например, есть две переменные `x = 1` и `y = 5`. После вызова `swap(x, y)` в `x` должно лежать число `5`, а в `y` —  число `1`. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0150_task_0050}
+// Ваша реализация swap()
 
 ```
 Функция должна принимать два параметра по ссылке. Чтобы поменять их местами, внутри функции вы можете завести дополнительную переменную. {.task_hint}
 ```cpp {.task_answer}
-
+void swap(int & a, int & b)
+{
+    int tmp = a;
+    a = b;
+    b = tmp;
+}
 ```
 
 ## Использование ссылок в цикле range-for
