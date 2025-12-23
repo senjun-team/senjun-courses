@@ -36,10 +36,10 @@ struct Operator
 };
 
 const std::map<std::string, Operator> kOperators = {
-    {"*", Operator{.priority=2, .func=std::multiplies<double>()}},
-    {"/", Operator{.priority=2, .func=std::divides<double>()}},
-    {"+", Operator{.priority=1, .func=std::plus<double>()}},
-    {"-", Operator{.priority=1, .func=std::minus<double>()}},
+    {"*", Operator{2, std::multiplies<double>()}},
+    {"/", Operator{2, std::divides<double>()}},
+    {"+", Operator{1, std::plus<double>()}},
+    {"-", Operator{1, std::minus<double>()}},
 };
 
 struct Token
