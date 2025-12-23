@@ -6,7 +6,7 @@
 
 [Ссылка](https://www.en.cppreference.com/w/cpp/language/reference.html) (reference) — это псевдоним для существующей переменной.
 
-Чтобы объявить ссылку, между типом и именем переменной ставится символ амперсанда `&`. Он означает, что перед вами не обычный тип, а ссылочный. В данном примере у переменной `c_ref` тип `char &`: это ссылка на `char`:
+Чтобы объявить ссылку, между типом и именем переменной ставится символ амперсанда `&`. Он означает, что перед вами не обычный тип, а ссылочный. В данном примере у переменной `c_ref` тип `char &`: это ссылка на `char`.
 
 ```cpp {.example_for_playground .example_for_playground_001}
 char c = 'A';
@@ -18,7 +18,7 @@ std::println("{}", c_ref);
 A
 ```
 
-Разработчику удобно думать про ссылки как про псевдонимы переменных. Но как выглядят ссылки с точки зрения компилятора? Это целиком и полностью зависит от реализации. Стандарт даже [не определяет,](https://timsong-cpp.github.io/cppwp/n4868/dcl.ref#4) выделяется ли под ссылку память. Как правило — нет, [не выделяется.](https://isocpp.org/wiki/faq/references#overview-refs) Каждая переменная живет в своей области памяти: она связывается с конкретным адресом. И компилятор работает со ссылкой как с адресом исходной переменной:
+Разработчику удобно думать про ссылки как про псевдонимы переменных. Но как выглядят ссылки с точки зрения компилятора? Это целиком и полностью зависит от реализации. Стандарт даже [не определяет,](https://timsong-cpp.github.io/cppwp/n4868/dcl.ref#4) выделяется ли под ссылку память. Как правило — нет, [не выделяется.](https://isocpp.org/wiki/faq/references#overview-refs) Каждая переменная живет в своей области памяти: она связывается с конкретным адресом. И компилятор работает со ссылкой как с адресом исходной переменной.
 
 ![Ссылки](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-15/illustrations/cpp/references.jpg) {.illustration}
 
@@ -460,7 +460,8 @@ std::string most_common_word(const std::string & text,
         pos = text.find(delim, pos_prev);
     }
 
-    std::string word = text.substr(pos_prev, std::min(pos, text.size()) - pos_prev + 1);
+    std::string word = text.substr(pos_prev, 
+                                   std::min(pos, text.size()) - pos_prev + 1);
     if (!stop_words.contains(word))
         freq[word] +=1;
 
