@@ -4,9 +4,6 @@ import std;
 int main()
 {
     std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
-    std::sort(user_input.begin(), user_input.end());
-
-    std::string plan = hlp::normalize("ull");
-    std::sort(plan.begin(), plan.end());
+    std::string plan = hlp::normalize("2");
     return user_input == plan ? 0 : 1;
 }

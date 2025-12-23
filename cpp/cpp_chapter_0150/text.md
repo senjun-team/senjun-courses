@@ -339,9 +339,18 @@ void lower(std::vector<std::string> & words)
 
 }
 ```
-. {.task_hint}
+Заведите вспомогательную функцию, которая приводит символ `char` к нижнему регистру: `char make_lower(char c)`. Внутри нее вызовите `std::tolower()` от символа, приведенного к `unsigned char`. Результатом вызова `std::tolower()` будет `unsigned char`. Поэтому его нужно привести обратно к `char`. {.task_hint}
 ```cpp {.task_answer}
+char make_lower(char c)
+{
+    return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+}
 
+void lower(std::vector<std::string> & words)
+{
+    for (auto & w: words)
+        std::transform(w.cbegin(), w.cend(), w.begin(), make_lower);
+}
 ```
 
 Цикл `range-for` также позволяет итерироваться по контейнерам, хранящим пары ключ-значение. Это особенно удобно в связке с конструкцией [structured binding](/courses/cpp/chapters/cpp_chapter_0073/#block-structured-binding):
@@ -413,16 +422,51 @@ bool is_localhost(const IpAddr & ip)
 
 Реализуйте функцию `most_common_word()`, которая принимает два параметра: строку `text` и неупорядоченное множество из строк `stop_words`. Оба параметра передаются по константной ссылке. {.task_text}
 
-Функция должна вернуть слово, встречающееся в `text` чаще всего и не входящее в `stop_words`. Строка `text` состоит из слов, разделенных пробелами. {.task_text}
+Функция должна вернуть слово, встречающееся в `text` чаще всего и не входящее в `stop_words`. Строка `text` состоит из слов, разделенных пробелами. Если она пустая, функция должна вернуть пустую строку. {.task_text}
 
 Например, для `text="a bb a bb"` и `stop_words={"a", "c"}` функция должна вернуть строку `"bb"`. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0150_task_0070}
 // Ваша реализация most_common_word()
 ```
-. {.task_hint}
+Для разбиения текста по пробелам вам помогут методы строки [find()](https://en.cppreference.com/w/cpp/string/basic_string/find.html) и [substr()](https://en.cppreference.com/w/cpp/string/basic_string/substr.html). Для построения частотного словаря слов пригодится `std::unordered_map` с ключами - строками и значениями - количеством их вхождений в `text`. Чтобы найти в этом словаре слово с максимальной частотой, поможет алгоритм [std::max_element()](https://en.cppreference.com/w/cpp/algorithm/max_element.html). {.task_hint}
 ```cpp {.task_answer}
+using KV = std::pair<std::string, std::size_t>;
 
+bool less(const KV & a, const KV & b)
+{  
+    return a.second < b.second;
+}
+
+std::string most_common_word(const std::string & text,
+                             const std::unordered_set<std::string> & stop_words)
+{
+    if (text.empty())
+        return {};
+        
+    std::unordered_map<std::string, std::size_t> freq;
+
+    const char delim = ' ';
+    std::size_t pos = text.find(delim);
+    std::size_t pos_prev = 0;
+
+    while(pos != std::string::npos)
+    {
+        std::string word = text.substr(pos_prev, pos - pos_prev);
+        if (!stop_words.contains(word))
+            freq[word] += 1;
+        
+        pos_prev = pos + 1;
+        pos = text.find(delim, pos_prev);
+    }
+
+    std::string word = text.substr(pos_prev, std::min(pos, text.size()) - pos_prev + 1);
+    if (!stop_words.contains(word))
+        freq[word] +=1;
+
+    auto it = std::max_element(freq.begin(), freq.end(), less);
+    return it->first;
+}
 ```
 
 ## Возврат значения по ссылке
@@ -512,7 +556,7 @@ int main() {
 
 ```consoleoutput {.task_source #cpp_chapter_0150_task_0080}
 ```
-. {.task_hint}
+Память под переменную со статическим временем жизни `s` выделится сразу, но инициализируется переменная только при вызове `get_singleton()`. Поэтому вначале запустится `main()`. После этого при вызове `get_singleton()` выполнится конструктор `Singleton`. Затем вызовется метод `say()`. Произойдет выход из `main()`, а после этого — деструктор `Singleton`. {.task_hint}
 ```cpp {.task_answer}
 1cm2d
 ```
@@ -572,7 +616,7 @@ int main()
 
 ```consoleoutput {.task_source #cpp_chapter_0150_task_0090}
 ```
-. {.task_hint}
+При вызове `next()` инициализируется статическая переменная `x`. Она будет разрушена после выхода из `main()`. Поэтому ссылка на `x` не будет висячей. {.task_hint}
 ```cpp {.task_answer}
 2
 ```
@@ -600,7 +644,7 @@ enum class EndOfLine
 
 ```consoleoutput {.task_source #cpp_chapter_0150_task_0100}
 ```
-. {.task_hint}
+Базовый тип перечисления — это целое число. {.task_hint}
 ```cpp {.task_answer}
 val
 ```
@@ -618,7 +662,7 @@ struct Point
 
 ```consoleoutput {.task_source #cpp_chapter_0150_task_0110}
 ```
-. {.task_hint}
+Размер структуры из 3-х `double` точно превышает пару машинных слов. {.task_hint}
 ```cpp {.task_answer}
 const ref
 ```
