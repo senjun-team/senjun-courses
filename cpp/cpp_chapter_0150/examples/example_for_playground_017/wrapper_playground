@@ -7,7 +7,7 @@ std::string http_get(const std::string & url)
 
 int main()
 {
-    // Временный объект "github.com" живет до конца вызова http_get()
+    // Временный объект "github.com" живёт до конца вызова http_get()
     std::string body = http_get("github.com");
     std::println("{}", body);
 }
