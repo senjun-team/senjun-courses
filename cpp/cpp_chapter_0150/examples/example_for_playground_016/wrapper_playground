@@ -1,0 +1,24 @@
+import std;
+
+std::string read_text(const std::string & filename, int & err_code)
+{
+  // ...
+  err_code = 0;
+  return "text";
+}
+
+const int kOk = 0;
+const int kErr = 1;
+
+int main()
+{
+    int err = kOk;
+    std::string contents = read_text("/home/Al/robo_spec.txt", err);
+
+    if (err != kOk)
+    {
+        std::println("Error reading file. Error code: {}", err);
+    }
+
+    std::println("Successfully read {} bytes from file", contents.size());
+}

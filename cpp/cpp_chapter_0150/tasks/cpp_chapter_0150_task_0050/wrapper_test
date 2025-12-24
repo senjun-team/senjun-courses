@@ -1,0 +1,24 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+int main()
+{
+    "check swap"_test = [] {
+        int a = 300;
+        int b = 400;
+
+        swap(a, b);
+        
+        expect(a == 400) << std::format("called swap(a, b) where a=300 and b=400. After the call a={}",
+                                           a) << fatal;
+        expect(b == 300) << std::format("called swap(a, b) where a=300 and b=400. After the call b={}",
+                                           b) << fatal;
+    };
+
+}
