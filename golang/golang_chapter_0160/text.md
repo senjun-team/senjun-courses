@@ -272,7 +272,172 @@ ch <- 7
 fmt.Println(len(ch)) // 2
 ```
 
-Не используйте буферизованные каналы, в пределах одной горутины, просто как очередь. В противном случае есть риск вовсе заблокировать программу. Для этого достаточно, например, читать из канала, в которой никто не пишет. Каналы прежде всего связаны с горутинами. Это средство для пареллелизма. Когда вам нужна только очередь, используйте срез.  
+Не используйте буферизованные каналы, в пределах одной горутины, просто как очередь. В противном случае есть риск вовсе заблокировать программу. Для этого достаточно, например, читать из канала, в которой никто не пишет. Каналы прежде всего связаны с горутинами. Это средство для пареллелизма. Когда вам нужна только очередь, используйте срез. 
+
+## Небуферизованный канал и канал с буфером на один элемент 
+
+Мьютекс — это переменная, которую горутины могут захватывать и освобождать. Захватывая мьютекс, горутина блокирует доступ к переменным для других горутин. Это бывает нужно, когда одновременный доступ к переменным нескольких горутин приводит к ошибкам.  {.task_text} 
+
+В Go для мьютекса есть специальный тип данных — `sync.Mutex`. Однако некоторые программисты предпочитают вместо `sync.Mutex` использовать канал с буфером на один элемент. Лучше все-таки использовать мьютекс, поскольку это явно подчеркивает намерение. Тем не менее, знать о таком способе применения каналов тоже нужно. Такое встречается в чужом коде. Попробуйте реализовать эту идею в данной задаче. Подробнее о мьютексах мы поговорим в следующих главах. {.task_text}
+
+Следующий код реализует кеш. Функция `newCache` возвращает указатель на новый кеш. Метод `set` позволяет установить значение кеша по его ключу. Метод `get` возвращает значение кеша по его ключу, а также флаг. Этот флаг равен `true`, если значение есть в кеше. В противном случае — `false`. Метод `modify` модифицирует символ с индексом `i` значения по его ключу. {.task_text}
+
+При запуске метода `modify` в единственной горутине все работает правильно. Однако при запуске несколько горутин возникает конфликт. Результат работы `modify` непредсказуемый. Модифицируйте программу. Используйте для этого канал с буфером на один элемент. В результате работы функции `main` должна быть напечатана следующая строка: {.task_text}
+
+```
+res: 9876543210
+```
+
+```go {.task_source #golang_chapter_0160_task_0010}
+package main
+
+import (
+	"errors"
+	"fmt"
+	"time"
+)
+
+type cache struct {
+	store map[string]string
+}
+
+func newCache() *cache {
+	c := make(map[string]string)
+	return &cache{c}
+}
+
+func (c *cache) set(key string, value string) {
+	c.store[key] = value
+}
+
+func (c *cache) modify(key string, i int, value string) error {
+	s, ok := c.get(key)
+	if !ok {
+		return errors.New("no value")
+	}
+	if i < 0 || i >= len(s) {
+		return errors.New("index is out of value")
+	}
+	c.store[key] = s[:i] + value + s[i+1:]
+	return nil
+}
+
+func (c *cache) get(key string) (string, bool) {
+	value, ok := c.store[key]
+	// имитация долгой обработки
+	time.Sleep(1 * time.Millisecond)
+	return value, ok
+}
+
+func main() {
+	const codeLength = 10
+	cache := newCache()
+	cache.set("code", "0123456789")
+
+	done := make(chan struct{}, codeLength)
+	for i := range codeLength {
+		go func(i int) {
+			err := cache.modify("code", i, fmt.Sprintf("%d", 9-i))
+			if err != nil {
+				fmt.Printf("error: %s\n", err.Error())
+			}
+			done <- struct{}{}
+		}(i)
+	}
+
+	// ждем все горутины
+	for i := 0; i < codeLength; i++ {
+		<-done
+	}
+	res, ok := cache.get("code")
+	if !ok {
+		fmt.Println("error: no value in the cache")
+	} else {
+		fmt.Printf("res: %s\n", res)
+	}
+}
+```
+
+Добавте внутри структуры `cache` поле `lock` типа `chan struct{}`. Внутри функции `newCache` запишите в этот канал значение. Это признак того, что «мьютекс» разблокирован. Внутри метода `modify` захватите «мьютекс», прочитав значение. Освободите «мьютекс» после того, как метод отработает. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"errors"
+	"fmt"
+	"time"
+)
+
+type cache struct {
+	store map[string]string
+	// "мьютекс"
+	lock  chan struct{}
+}
+
+func newCache() *cache {
+	c := make(map[string]string)
+	lock := make(chan struct{}, 1)
+	// разблокированный "мьютекс"
+	lock <- struct{}{}
+	return &cache{c, lock}
+}
+
+func (c *cache) set(key string, value string) {
+	c.store[key] = value
+}
+
+func (c *cache) modify(key string, i int, value string) error {
+	// заблокировать "мьютекс"
+	<-c.lock
+	// разблокировать "мьютекс"
+	defer func() { c.lock <- struct{}{} }()
+	s, ok := c.get(key)
+	if !ok {
+		return errors.New("no value")
+	}
+	if i < 0 || i >= len(s) {
+		return errors.New("index is out of value")
+	}
+	c.store[key] = s[:i] + value + s[i+1:]
+	return nil
+}
+
+func (c *cache) get(key string) (string, bool) {
+	value, ok := c.store[key]
+	// имитация долгой обработки
+	time.Sleep(1 * time.Millisecond)
+	return value, ok
+}
+
+func main() {
+	const codeLength = 10
+	cache := newCache()
+	cache.set("code", "0123456789")
+
+	done := make(chan struct{}, codeLength)
+	for i := range codeLength {
+		go func(i int) {
+			err := cache.modify("code", i, fmt.Sprintf("%d", 9-i))
+			if err != nil {
+				fmt.Printf("error: %s\n", err.Error())
+			}
+			done <- struct{}{}
+		}(i)
+	}
+
+	// ждем все горутины
+	for i := 0; i < codeLength; i++ {
+		<-done
+	}
+	res, ok := cache.get("code")
+	if !ok {
+		fmt.Println("error: no value in the cache")
+	} else {
+		fmt.Printf("res: %s\n", res)
+	}
+}
+```
 
 ## Каналы и ключевое слово range
 
