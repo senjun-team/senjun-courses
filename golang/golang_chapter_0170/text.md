@@ -125,3 +125,5 @@ func main() {
 	fmt.Printf("time: %d ms\n", resTime)
 }
 ```
+
+## Захват глобальных переменных горутиной
