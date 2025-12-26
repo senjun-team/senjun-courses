@@ -1,5 +1,6 @@
 # Глава 17. Управление параллельным исполнением
 
+## Ключевое слово select 
 ## sync.WaitGroup
 
 ```go {.example_for_playground}
