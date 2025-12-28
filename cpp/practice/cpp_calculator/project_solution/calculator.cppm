@@ -26,7 +26,6 @@ enum class State : std::uint8_t
     NewToken = 0,
     NumberIntegerPart,
     NumberFractionalPart,
-    Error
 };
 
 struct Operator
@@ -48,120 +47,6 @@ struct Token
     std::string value;
 };
 
-void save_token(Token & token, std::vector<Token> & tokens)
-{
-    if (token.value.empty())
-        return;
-
-    tokens.push_back(token);
-    token = Token{};
-}
-
-void start_accumulating_number(char symbol, Token & token, std::vector<Token> & tokens)
-{
-    save_token(token, tokens);
-    token.tok_type = TokenType::Number;
-    token.value = std::string{symbol};
-}
-
-void accumulate_number(char symbol, Token & token, std::vector<Token> & tokens)
-{
-    token.value += symbol;
-}
-
-void accumulate_operator(char symbol, Token & token, std::vector<Token> & tokens)
-{
-    save_token(token, tokens);
-    token.tok_type = TokenType::Operator;
-    token.value = std::string{symbol};
-}
-
-void accumulate_parenthesis(char symbol, Token & token, std::vector<Token> & tokens)
-{
-    save_token(token, tokens);
-    token.tok_type = TokenType::Parenthesis;
-    token.value = std::string{symbol};
-}
-
-struct Transition
-{
-    State new_state;
-    std::function<void(char, Token &, std::vector<Token> &)> action;
-};
-
-using Row = std::map<State, Transition>;
-
-// Конечный автомат (finite-state machine) для парсинга строки
-// с алгебраическим выражением
-const std::map<SymbolType, Row> kFSM = {
-    // Символ
-    { SymbolType::Digit,
-        {
-            { State::NewToken, // Текущее состояние
-            // Новое состояние                       Действие
-            { .new_state = State::NumberIntegerPart, .action = start_accumulating_number} },
-
-            { State::NumberIntegerPart,
-            { .new_state = State::NumberIntegerPart, .action = accumulate_number} },
-
-            { State::NumberFractionalPart,
-            { .new_state = State::NumberFractionalPart, .action = accumulate_number} },
-        }
-    },
-
-    { SymbolType::Point,
-        {
-            { State::NewToken,
-            { .new_state = State::NumberFractionalPart, .action = start_accumulating_number} },
-
-            { State::NumberIntegerPart,
-            { .new_state = State::NumberFractionalPart, .action = accumulate_number} },
-
-            { State::NumberFractionalPart,
-            { .new_state = State::Error, .action = {} } },
-        }
-    },
-
-    { SymbolType::Operator,
-        {
-            { State::NewToken,
-            { .new_state = State::NewToken, .action = accumulate_operator} },
-
-            { State::NumberIntegerPart,
-            { .new_state = State::NewToken, .action = accumulate_operator} },
-
-            { State::NumberFractionalPart,
-            { .new_state = State::NewToken, .action = accumulate_operator } },
-        }
-    },
-
-    { SymbolType::Parenthesis,
-        {
-            { State::NewToken,
-            { .new_state = State::NewToken, .action = accumulate_parenthesis} },
-
-            { State::NumberIntegerPart,
-            { .new_state = State::NewToken, .action = accumulate_parenthesis} },
-
-            { State::NumberFractionalPart,
-            { .new_state = State::NewToken, .action = accumulate_parenthesis } },
-        }
-    },
-
-    { SymbolType::Other,
-        {
-            { State::NewToken,
-            { .new_state = State::Error, .action = {} } },
-
-            { State::NumberIntegerPart,
-            { .new_state = State::Error, .action = {} } },
-
-            { State::NumberFractionalPart,
-            { .new_state = State::Error, .action = {}  } },
-        }
-    },
-};
-
 SymbolType get_symbol_type(char c)
 {
     if (std::isdigit(c))
@@ -175,33 +60,139 @@ SymbolType get_symbol_type(char c)
     return SymbolType::Other;
 }
 
-std::vector<Token> tokenize(const std::string & raw_expression)
+class Tokenizer
 {
+public:
+    explicit Tokenizer(const std::string & raw_expression);
+    std::vector<Token> get_tokens();
+
+private:
+    void save_token();
+    void start_accumulating_number();
+    void accumulate_number();
+    void accumulate_operator();
+    void accumulate_parenthesis();
+
+    void switch_state();
+
+    char symbol = 0;
+    Token token;
     std::vector<Token> tokens;
+    State state = State::NewToken;
+};
+
+Tokenizer::Tokenizer(const std::string & raw_expression)
+{
     tokens.reserve(raw_expression.size());
 
-    Token token;
-    State state = State::NewToken;
-
-    for(char sybmol: raw_expression)
+    for(char c: raw_expression)
     {
-        const SymbolType symbol_type = get_symbol_type(sybmol);
-
-        if (symbol_type == SymbolType::Other)
-            throw std::invalid_argument("Invalid token in expression");
-
-        const Transition transition = kFSM.at(symbol_type).at(state);
-
-        if (transition.new_state == State::Error)
-            throw std::invalid_argument("Couldn't split expression to tokens");
-
-        state = transition.new_state;
-        transition.action(sybmol, token, tokens);
+        symbol = c;
+        switch_state();
     }
 
-    save_token(token, tokens);
+    save_token();
+}
+
+std::vector<Token> Tokenizer::get_tokens()
+{
     return tokens;
 }
+
+void Tokenizer::save_token()
+{
+    if (token.value.empty())
+        return;
+
+    tokens.push_back(token);
+    token = Token{};
+}
+
+void Tokenizer::start_accumulating_number()
+{
+    save_token();
+    token.tok_type = TokenType::Number;
+    token.value = std::string{symbol};
+}
+
+void Tokenizer::accumulate_number()
+{
+    token.value += symbol;
+}
+
+void Tokenizer::accumulate_operator()
+{
+    save_token();
+    token.tok_type = TokenType::Operator;
+    token.value = std::string{symbol};
+}
+
+void Tokenizer::accumulate_parenthesis()
+{
+    save_token();
+    token.tok_type = TokenType::Parenthesis;
+    token.value = std::string{symbol};
+}
+
+void Tokenizer::switch_state()
+{
+    const SymbolType symbol_type = get_symbol_type(symbol); 
+    switch(symbol_type)
+    {
+        case SymbolType::Digit:
+        {
+            switch(state)
+            {
+                case State::NewToken:
+                    state = State::NumberIntegerPart;
+                    start_accumulating_number();
+                    break;
+                case State::NumberIntegerPart:
+                    state = State::NumberIntegerPart;
+                    accumulate_number();
+                    break;
+                case State::NumberFractionalPart:
+                    state = State::NumberFractionalPart;
+                    accumulate_number();
+                    break;
+
+            }
+            break;
+        }
+        
+        case SymbolType::Point:
+        {
+            switch(state)
+            {
+                case State::NewToken:
+                    state = State::NumberFractionalPart;
+                    start_accumulating_number();
+                    break;
+                case State::NumberIntegerPart:
+                    state = State::NumberFractionalPart;
+                    accumulate_number();
+                    break;
+                case State::NumberFractionalPart:
+                    throw std::invalid_argument("Floating-point number with multiple points");
+            }
+            break;
+        }
+        
+        case SymbolType::Operator:
+            state = State::NewToken;
+            accumulate_operator();
+            break;
+        
+        case SymbolType::Parenthesis:
+            state = State::NewToken;
+            accumulate_parenthesis();
+            break; 
+
+        default:
+            throw std::invalid_argument("Couldn't split expression to tokens");
+    }
+}
+
 
 bool has_lower_priority(const std::string & op_left, const std::string &  op_right)
 {
@@ -321,5 +312,6 @@ double calculate_expression(const std::vector<Token> & tokens_postfix)
 
 double calc(const std::string & expr)
 {
-    return calculate_expression(convert_to_postfix_notation(tokenize(expr)));
+    Tokenizer tokenizer{expr};
+    return calculate_expression(convert_to_postfix_notation(tokenizer.get_tokens()));
 }
