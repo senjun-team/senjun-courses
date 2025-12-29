@@ -17,15 +17,14 @@ enum class SymbolType : std::uint8_t
     Digit = 0,
     Point,
     Operator,
-    Parenthesis,
-    Other
+    Parenthesis
 };
 
 enum class State : std::uint8_t
 {
     NewToken = 0,
     NumberIntegerPart,
-    NumberFractionalPart,
+    NumberFractionalPart
 };
 
 struct Operator
@@ -57,7 +56,8 @@ SymbolType get_symbol_type(char c)
         return SymbolType::Operator;
     if (c == '(' || c == ')')
         return SymbolType::Parenthesis;
-    return SymbolType::Other;
+    
+    throw std::invalid_argument("Invalid symbol in expression");
 }
 
 class Tokenizer
@@ -73,7 +73,7 @@ private:
     void accumulate_operator();
     void accumulate_parenthesis();
 
-    void switch_state();
+    void update_state();
 
     char symbol = 0;
     Token token;
@@ -88,7 +88,7 @@ Tokenizer::Tokenizer(const std::string & raw_expression)
     for(char c: raw_expression)
     {
         symbol = c;
-        switch_state();
+        update_state();
     }
 
     save_token();
@@ -134,9 +134,10 @@ void Tokenizer::accumulate_parenthesis()
     token.value = std::string{symbol};
 }
 
-void Tokenizer::switch_state()
+void Tokenizer::update_state()
 {
-    const SymbolType symbol_type = get_symbol_type(symbol); 
+    const SymbolType symbol_type = get_symbol_type(symbol);
+
     switch(symbol_type)
     {
         case SymbolType::Digit:
@@ -186,13 +187,9 @@ void Tokenizer::switch_state()
         case SymbolType::Parenthesis:
             state = State::NewToken;
             accumulate_parenthesis();
-            break; 
-
-        default:
-            throw std::invalid_argument("Couldn't split expression to tokens");
+            break;
     }
 }
-
 
 bool has_lower_priority(const std::string & op_left, const std::string &  op_right)
 {
