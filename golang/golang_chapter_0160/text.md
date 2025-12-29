@@ -920,16 +920,8 @@ func processTaskAsync(data string, notificationChan chan<- string) {
 	for {
 		// Имитируем долгую обработку
 		result := expensiveProcessing(data)
-
 		// Отправляем уведомление
-		select {
-		case notificationChan <- result:
-			// Успешно отправили
-		case <-time.After(1 * time.Second):
-			// Таймаут
-			fmt.Println("Timeout message!")
-
-		}
+		notificationChan <- result
 	}
 }
 
@@ -984,16 +976,8 @@ func main() {
 func processTaskAsync(data string, notificationChan chan<- string) {
 	// Имитируем долгую обработку
 	result := expensiveProcessing(data)
-
 	// Отправляем уведомление
-	select {
-	case notificationChan <- result:
-		// Успешно отправили
-	case <-time.After(1 * time.Second):
-		// Таймаут
-		fmt.Println("Timeout message!")
-
-	}
+	notificationChan <- result
 }
 
 func expensiveProcessing(data string) string {
