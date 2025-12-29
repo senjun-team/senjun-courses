@@ -1,7 +1,40 @@
 # Глава 17. Управление параллельным исполнением
 
-## Ключевое слово select 
-## sync.WaitGroup
+Мы познакомились с горутинами и каналами. Нам пришлось поработать с программами, которые выполняются параллельно. Однако для простоты были опущены некоторые важные вопросы и приемы. Они рассматриваются в данной главе.   
+
+## Счетчик sync.WaitGroup
+
+Когда запущено несколько горутин, бывает удобно использовать счетчик горутин. Каждая горутина должна при старте увеличить счетчик на единицу и уменьшить его после завершения. Когда счетчик вновь окажется равным нулю, то это значит, что все запущенные горутины завершили свою работу. Такой счетчик в Go называется `sync.WaitGroup`. Для работы с ним сначала нужно импортировать пакет `sync`, а потом объявить переменную данного типа:
+
+```go
+var wg sync.WaitGroup
+```
+
+Затем с помощью метода `Add` счетчику сообщают о том, на какое значение его нужно увеличить. Необязательно передавать методу `Add` единицу перед запуском каждой горутины. Бывает удобно сразу передать в `Add` общее количество горутин, которые будут запущены. Например, для пяти горутин:
+
+```go
+wg.Add(5)
+```
+
+После того, как горутина выполнится, она должна вызвать метод `wg.Done`. Обычно это делают с помощью `defer`, чтобы гарантировать вызов `wg.Done`, даже в случае ошибки: 
+
+```go
+defer wg.Done()
+```
+
+Метод `wg.Wait` ожидает выполнения всех горутин: 
+
+```go
+wg.Wait()
+```
+
+Метод `Add` должен быть вызван перед запуском горутин, а не внутри них! В противном случае мы не можем быть уверены, что вызвали его до метода `Wait`.
+
+Следующий пример демонстрирует использование `sync.WaitGroup`. Программма должна обработать матрицу оборудования размером 1 млн. элементов. Каждый элемент представляет собой структуру из имени оборудования и признака того, что оно валидно. Допустимым именем оборудования является любая строка, в которой отсутствуют символы `"!@#$%^&*()"`. В противном случае имя является недопустимым. Необходимо проставить признак допустимости имени для каждого элемента. 
+
+Программа выполняется в двух режимах: последовательном и параллельном. В случае параллельного режима мы сначала запрашиваем число процессеров через функцию `runtime.NumCPU()`. Число горутин определяется количеством процессоров. Поделив матрицу на части, мы запускаем по горутине на каждую часть. Переменная `wg` типа `sync.WaitGroup` используется в качестве счетчика горутин. 
+
+Обратите внимание на время выполнения последовательной и параллельной версий. 
 
 ```go {.example_for_playground}
 package main
@@ -30,7 +63,8 @@ type equipmentT struct {
 	isValid int
 }
 
-func randSeq(r *rand.Rand, n int) string {
+// генерирует случайное имя оборудования
+func randName(r *rand.Rand, n int) string {
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	var invalidSymbols = []rune("!@#$%^&*()")
 	allSymbols := append(letters, invalidSymbols...)
@@ -41,12 +75,14 @@ func randSeq(r *rand.Rand, n int) string {
 	return string(b)
 }
 
+// воркер, проверяющий свою часть матрицы
 func worker(input *[elementsNumber]equipmentT, min int, max int) {
 	for i := min; i < max; i++ {
 		input[i].isValid = check(input[i].name)
 	}
 }
 
+// функция проверки имени оборудования
 func check(name string) int {
 	var invalidSymbols = []rune("!@#$%^&*()")
 	for _, r := range name {
@@ -59,7 +95,13 @@ func check(name string) int {
 	return valid
 }
 
-func printlnResult(result *[elementsNumber]equipmentT) {
+/*
+напечатать статистику по матрице:
+validNumber - число валидных имен
+invalidNumber - число невалидных имен
+unknownNumber - число непроверенных имен
+*/
+func statisticPrintln(result *[elementsNumber]equipmentT) {
 	validNumber := 0
 	invalidNumber := 0
 	for _, equipment := range result {
@@ -74,17 +116,20 @@ func printlnResult(result *[elementsNumber]equipmentT) {
 		validNumber, invalidNumber, elementsNumber-validNumber-invalidNumber)
 }
 func main() {
+	// подготовка данных
+	// матрица для последовательных вычислений
 	equipmentMatrix := [elementsNumber]equipmentT{}
+	// матрица для параллельных вычислений
 	workerEquipmentMatrix := [elementsNumber]equipmentT{}
 	seed := int64(42)
 	source := rand.NewSource(seed)
 	r := rand.New(source)
 	for i := range elementsNumber {
-		equipmentMatrix[i] = equipmentT{name: randSeq(r, 10),
+		equipmentMatrix[i] = equipmentT{name: randName(r, 10),
 			isValid: unknown}
 		workerEquipmentMatrix[i] = equipmentMatrix[i]
 	}
-
+	// последовательная часть программы
 	t1 := time.Now()
 	for i := range len(equipmentMatrix) {
 		equipmentMatrix[i].isValid = check(equipmentMatrix[i].name)
@@ -92,12 +137,14 @@ func main() {
 	t2 := time.Now()
 	resTime := t2.Sub(t1).Milliseconds()
 	fmt.Println("equipmentMatrix:")
-	printlnResult(&equipmentMatrix)
-	fmt.Printf("time: %d ms\n", resTime)
+	statisticPrintln(&equipmentMatrix)
+	fmt.Printf("time: %d milliseconds\n", resTime)
 	fmt.Println()
+	// параллельная часть программы
 	workersNumber := runtime.NumCPU()
 	// math.Ceil округляет значение в большую сторону
 	chunk := int(math.Ceil(float64(elementsNumber) / float64(workersNumber)))
+	// ЗДЕСЬ работаем с sync.waitGroup
 	var wg sync.WaitGroup
 	wg.Add(workersNumber)
 	min := 0
@@ -121,10 +168,20 @@ func main() {
 	t2 = time.Now()
 	resTime = t2.Sub(t1).Milliseconds()
 	fmt.Println("workerEquipmentMatrix:")
-	printlnResult(&workerEquipmentMatrix)
-	fmt.Printf("time: %d ms\n", resTime)
+	statisticPrintln(&workerEquipmentMatrix)
+	fmt.Printf("time: %d milliseconds\n", resTime)
 }
 ```
+```
+equipmentMatrix:
+validNumber=171790, invalidNumber=828210, unknownNumber=0
+time: 145 milliseconds
 
-## Мьютекс
+workerEquipmentMatrix:
+validNumber=171790, invalidNumber=828210, unknownNumber=0
+time: 19 milliseconds
+```
+
+## Ключевое слово select 
 ## Захват глобальных переменных горутиной
+## Мьютекс
