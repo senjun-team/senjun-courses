@@ -25,15 +25,11 @@ func printLoad(seconds time.Duration) {
 	}
 }
 
-func heavyWorker() {
-	// объемная работа
-	time.Sleep(3 * time.Second)
-	fmt.Println("\nDone")
-}
-
 func main() {
 	go printLoad(5)
-	heavyWorker()
+	// тяжелая задача
+	time.Sleep(3 * time.Second)
+	fmt.Println("\nDone")
 }
 ```
 ```
