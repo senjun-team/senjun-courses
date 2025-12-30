@@ -37,6 +37,154 @@ Loading.....
 Done
 ```
 
+Если `main` закончится раньше горутины, которая была из нее вызвана, то эта горутина не успеет завершиться:
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func printLoad(seconds time.Duration) {
+	const pointsNumber = 10
+	millisconds := seconds * 1000
+	msPerPoint := (millisconds / pointsNumber)
+	fmt.Print("Loading")
+	for range pointsNumber {
+		time.Sleep(msPerPoint * time.Millisecond)
+		fmt.Print(".")
+	}
+}
+
+func main() {
+	// тяжелая задача
+	go func() {
+		time.Sleep(5 * time.Second)
+		fmt.Println("\nDone")
+	}()
+	printLoad(3)
+}
+```
+```
+Loading..........
+```
+
+Если в горутине возникнет паника, то горутина немедленно завершится вместе с программой:
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func printLoad(seconds time.Duration) {
+	const pointsNumber = 10
+	millisconds := seconds * 1000
+	msPerPoint := (millisconds / pointsNumber)
+	fmt.Print("Loading")
+	for range pointsNumber {
+		time.Sleep(msPerPoint * time.Millisecond)
+		fmt.Print(".")
+		panic("failed to load next symbol")
+	}
+}
+
+func main() {
+	go printLoad(5)
+	// тяжелая задача
+	time.Sleep(3 * time.Second)
+	fmt.Println("\nDone")
+}
+```
+```
+Loading.
+panic: failed to load next symbol
+```
+
+Не поможет даже восстановление из вызывающей горутины: 
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func printLoad(seconds time.Duration) {
+	const pointsNumber = 10
+	millisconds := seconds * 1000
+	msPerPoint := (millisconds / pointsNumber)
+	fmt.Print("Loading")
+	for range pointsNumber {
+		time.Sleep(msPerPoint * time.Millisecond)
+		fmt.Print(".")
+		panic("failed to load next symbol")
+	}
+}
+
+func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("\nRecovered: %v\n", r)
+		}
+	}()
+	go printLoad(5)
+	// тяжелая задача
+	time.Sleep(3 * time.Second)
+	fmt.Println("\nDone")
+}
+```
+```
+Loading.
+panic: failed to load next symbol
+```
+
+Восстановление работает только в самой горутине, которая вызывает панику: 
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func printLoad(seconds time.Duration) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("\nRecovered: %v\n", r)
+		}
+	}()
+	const pointsNumber = 10
+	millisconds := seconds * 1000
+	msPerPoint := (millisconds / pointsNumber)
+	fmt.Print("Loading")
+	for range pointsNumber {
+		time.Sleep(msPerPoint * time.Millisecond)
+		fmt.Print(".")
+		panic("failed to load next symbol")
+	}
+}
+
+func main() {
+	go printLoad(5)
+	// тяжелая задача
+	time.Sleep(3 * time.Second)
+	fmt.Println("\nDone")
+}
+```
+```
+Loading.
+Recovered: failed to load next symbol
+
+Done
+```
+
 ## Горутины изнутри
 
 Как уже было сказано, горутина — легковесный поток, но все же горутина — это не то же самое, что поток операционной системы.
