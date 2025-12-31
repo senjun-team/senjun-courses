@@ -63,7 +63,7 @@ int main()
 int main() { }
 ```
 
-Функция `main()` возвращает [целое число](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rf-main) типа `int` вызвавшему программу окружению. Это статус завершения:
+Функция `main()` возвращает [целое число](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#rf-main) типа `int` вызвавшему программу окружению. Это статус завершения:
 - 0 в случае успеха,
 - другое значение в случае ошибки.
 
@@ -145,7 +145,7 @@ int request_count = 0;
 int left = -100, right = 100;
 ```
 
-Однако делать так [не рекомендуется:](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-name-one) такой код сложно читать. Лучше заводите по одной переменной на одну строку:
+Однако делать так [не рекомендуется:](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#res-name-one) такой код сложно читать. Лучше заводите по одной переменной на одну строку:
 
 ```cpp
 int left = -100;
@@ -188,7 +188,7 @@ b = c;
 
 ## Константы
 
-Делать константами все переменные, которые не требуется изменять — это [отличная практика.](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rconst-immutable) Она предотвращает случайную перезапись переменной.
+Делать константами все переменные, которые не требуется изменять — это [отличная практика.](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#rconst-immutable) Она предотвращает случайную перезапись переменной.
 
 Константы помечаются квалификатором типа [const](https://en.cppreference.com/w/cpp/language/cv). Попытка перезаписи константы приведёт к ошибке компиляции. Квалификатор `const` может стоять как слева от типа, так и справа:
 
@@ -546,7 +546,7 @@ width < 0 || volume / length <= max_val
 n
 ```
 
-Как быть, если вы сомневаетесь, нужны ли в выражении скобки? [Если без скобок код трудно читать, то ставьте их!](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-parens) Например, выражение из задачи выше со скобками выглядит проще: `(width < 0) || (volume / length <= max_val)`.
+Как быть, если вы сомневаетесь, нужны ли в выражении скобки? [Если без скобок код трудно читать, то ставьте их!](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#res-parens) Например, выражение из задачи выше со скобками выглядит проще: `(width < 0) || (volume / length <= max_val)`.
 
 Какое значение у переменной `x`? {.task_text}
 

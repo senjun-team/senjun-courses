@@ -299,11 +299,11 @@ int max(int a, int b)
 }
 ```
 
-Кстати, в стандартной библиотеке C++ есть функции [std::max()](https://en.cppreference.com/w/cpp/algorithm/max) и [std::min()](https://en.cppreference.com/w/cpp/algorithm/min). При работе над реальными проектами руководствуйтесь правилом: [используй готовое.](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-lib) То есть прежде чем писать функцию самостоятельно, проверьте — вдруг она уже реализована в стандартной библиотеке? {#block-min-max}
+Кстати, в стандартной библиотеке C++ есть функции [std::max()](https://en.cppreference.com/w/cpp/algorithm/max) и [std::min()](https://en.cppreference.com/w/cpp/algorithm/min). При работе над реальными проектами руководствуйтесь правилом: [используй готовое.](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#res-lib) То есть прежде чем писать функцию самостоятельно, проверьте — вдруг она уже реализована в стандартной библиотеке? {#block-min-max}
 
 ## Конструкция switch-case {#switch-case}
 
-Конструкция `switch-case` удобна, когда требуется сравнивать выражение с набором константных значений. Это [более читабельная](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-switch-if) замена вложенных `if-else`:
+Конструкция `switch-case` удобна, когда требуется сравнивать выражение с набором константных значений. Это [более читабельная](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#res-switch-if) замена вложенных `if-else`:
 
 ```cpp
 switch (выражение)

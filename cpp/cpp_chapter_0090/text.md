@@ -245,7 +245,7 @@ int main()
 8080
 ```
 
-[Избегайте](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Ri-global) в своём коде глобальных переменных. Изменение глобальной переменной внутри функции — это нежелательный [побочный эффект,](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%B1%D0%BE%D1%87%D0%BD%D1%8B%D0%B9_%D1%8D%D1%84%D1%84%D0%B5%D0%BA%D1%82_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)) который затрудняет её правильное использование и тестирование. Глобальные переменные создают лишние зависимости между разными частями проекта и повышают риск возникновения ошибок.
+[Избегайте](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#ri-global) в своём коде глобальных переменных. Изменение глобальной переменной внутри функции — это нежелательный [побочный эффект,](https://ru.wikipedia.org/wiki/%D0%9F%D0%BE%D0%B1%D0%BE%D1%87%D0%BD%D1%8B%D0%B9_%D1%8D%D1%84%D1%84%D0%B5%D0%BA%D1%82_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)) который затрудняет её правильное использование и тестирование. Глобальные переменные создают лишние зависимости между разными частями проекта и повышают риск возникновения ошибок.
 
 ## Статические переменные {#block-static}
 
@@ -570,7 +570,7 @@ while (int len = read_chunk())
 }
 ```
 
-[Старайтесь минимизировать](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Res-scope) область видимости переменных: это делает код более надёжным и лаконичным. [Используйте инициализаторы](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es6-declare-names-in-for-statement-initializers-and-conditions-to-limit-scope) там, где они вам в этом помогут.
+[Старайтесь минимизировать](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#res-scope) область видимости переменных: это делает код более надёжным и лаконичным. [Используйте инициализаторы](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#es6-declare-names-in-for-statement-initializers-and-conditions-to-limit-scope) там, где они вам в этом помогут.
 
 Разумеется, инициализаторы опциональны: до этого момента вы использовали `if` и `switch` без них.
 
