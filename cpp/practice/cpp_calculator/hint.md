@@ -9,10 +9,10 @@
 ```cpp
 enum class TokenType : std::uint8_t
 {
-    Number = 0,
+    Unknown,
+    Number,
     Operator,
-    Parenthesis,
-    Invalid
+    Parenthesis
 };
 
 struct Token
@@ -63,18 +63,17 @@ struct Token
 
 ## Представление конечного автомата
 
-КА для парсинга выражения на токены можно представить в виде словаря словарей.
+КА для парсинга выражения на токены можно представить в виде функции или метода класса, внутри которого по `switch-case` обрабатывается каждый символ и обновляется состояние КА.
 
-Ключи словаря верхнего уровня — обозначения для классов (категорий) символов:
+Альтернативный вариант представления КА — словарь словарей. Ключи словаря верхнего уровня — обозначения для классов (категорий) символов:
 
 ```cpp
 enum class SymbolType : std::uint8_t
 {
-    Digit = 0,
+    Digit,
     Point,
     Operator,
-    Parenthesis,
-    Other
+    Parenthesis
 };
 ```
 
@@ -105,11 +104,11 @@ struct Transition
 Вот как может выглядеть объявление КА в виде словаря словарей:
 
 ```cpp
-using Row = std::map<State, Transition>;
+using TransitionMap = std::map<State, Transition>;
 
 // Конечный автомат (finite-state machine) для парсинга строки
 // с алгебраическим выражением
-const std::map<SymbolType, Row> kFSM = {
+const std::map<SymbolType, TransitionMap> kFSM = {
     // ...
 };
 ```
@@ -117,7 +116,7 @@ const std::map<SymbolType, Row> kFSM = {
 А вот пример объявления КА и инициализации его значениями:
 
 ```cpp
-const std::map<SymbolType, Row> kFSM = {
+const std::map<SymbolType, TransitionMap> kFSM = {
     // Символ
     { SymbolType::Digit,
         {
@@ -165,4 +164,3 @@ transition.action(sybmol, token, tokens);
 
 Здесь `symbol_type` — категория обрабатываемого символа. Для ее получения можно завести отдельную функцию, которая по символу возвращает значение перечисления `SymbolType`.
 
-Если описание КА через словарь словарей кажется вам слишком сложным, вы можете воспользоваться альтернативным подходом. Заведите функцию, внутри которой по `switch-case` обрабатывайте каждый символ и меняйте состояние КА.

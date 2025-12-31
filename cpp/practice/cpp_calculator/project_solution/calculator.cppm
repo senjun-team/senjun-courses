@@ -6,15 +6,15 @@ export double calc(const std::string & expr);
 
 enum class TokenType : std::uint8_t
 {
-    Number = 0,
+    Unknown,
+    Number,
     Operator,
-    Parenthesis,
-    Invalid
+    Parenthesis
 };
 
 enum class SymbolType : std::uint8_t
 {
-    Digit = 0,
+    Digit,
     Point,
     Operator,
     Parenthesis
@@ -22,7 +22,7 @@ enum class SymbolType : std::uint8_t
 
 enum class State : std::uint8_t
 {
-    NewToken = 0,
+    NewToken,
     NumberIntegerPart,
     NumberFractionalPart
 };
@@ -42,7 +42,7 @@ const std::map<std::string, Operator> kOperators = {
 
 struct Token
 {
-    TokenType tok_type = TokenType::Invalid;
+    TokenType tok_type = TokenType::Unknown;
     std::string value;
 };
 
@@ -156,7 +156,6 @@ void Tokenizer::update_state()
                     state = State::NumberFractionalPart;
                     accumulate_number();
                     break;
-
             }
             break;
         }
