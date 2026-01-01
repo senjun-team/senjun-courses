@@ -2,5 +2,8 @@ import std;
 
 int main()
 {
+    // Чтобы этот код скомпилировался, в CMakeLists.txt уберите флаг
+    // компилятора -Werror
+    
     #INJECT-b585472fa
 }
