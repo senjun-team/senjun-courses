@@ -56,4 +56,9 @@ int main()
             check(testcase.v, testcase.avg);
     };
 
+    "Check std::accumulate"_test = [] {
+        const std::string user_input = R"(#INJECT-b585472fa)";
+        expect(user_input.find("std::accumulate") != std::string::npos) << "Please use std::accumulate() in your solution" << fatal;
+    };
+
 }
