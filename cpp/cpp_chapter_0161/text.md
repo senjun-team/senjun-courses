@@ -307,6 +307,26 @@ if (!ptr)
 
 Такие варианты проверок работают благодаря неявному приведению `nullptr` к `false` и остальных значений указателя — к `true`.
 
+Что выведет этот код? Введите `err` в случае ошибки компиляции или `ub`, если поведение не определено. {.task_text}
+
+```cpp {.example_for_playground}
+import std;
+
+int main()
+{
+    void * self = &self;
+    std::println("{}", static_cast<bool>(self));
+}
+```
+
+```consoleoutput {.task_source #cpp_chapter_0161_task_0050}
+```
+В момент инициализации `self` своим же адресом эта переменная [уже существует,](https://timsong-cpp.github.io/cppwp/std23/basic.scope.pdecl#1) поэтому ошибки компиляции нет. В `self` сохраняется ее же адрес, и он точно не равен `nullptr`. А приведение любого не нулевого числа к `bool` — это `true`. {.task_hint}
+```cpp {.task_answer}
+true
+```
+
+
 ## Оператор доступа к полям и методам класса
 
 Допуcтим, у нас есть указатель на объект класса `std::pair`:
