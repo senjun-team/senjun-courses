@@ -391,7 +391,93 @@ func main() {
 
 Важно помнить, что сборщик мусора не занимается тем, чтобы останавливать «зависшие» горутины. Вы должны сами позаботиться о том, чтобы каждая горутина успешно завершилась. В противном случае возникнет утечка памяти. 
 
-Следующий пример демонстрирует утечку горутин. 
+Следующий пример демонстрирует утечку горутин. Найдите и исправье ошибку в программе. Горутины не должны «зависать». {.task_text}
+
+```go {.task_source #golang_chapter_0160_task_0020}
+package main
+
+import (
+	"fmt"
+	"runtime"
+	"time"
+)
+
+func sendMessage(ch chan string,
+	message string) {
+	go func() {
+		message = <-ch
+	}()
+}
+
+func getMessage(ch chan string) {
+	go func() {
+		<-ch
+	}()
+}
+
+func main() {
+
+	// Число горутин вначале
+	startingGs := runtime.NumGoroutine()
+	ch := make(chan string)
+	sendMessage(ch, "hello, senior!")
+	getMessage(ch)
+	// Ждем некоторое время, чтоб увидеть утечку
+	time.Sleep(time.Second)
+	// Число горутин в конце.
+	endingGs := runtime.NumGoroutine()
+	// Пишем результаты
+	fmt.Printf("Begin! Goroutines number: %d\n", startingGs)
+	fmt.Printf("All goroutines started! Goroutines number: %d\n", endingGs)
+	fmt.Println("Number of goroutines leaked:", endingGs-startingGs)
+}
+```
+
+Функция `sendMessage` не отправляет сообщение в канал, а читает из него. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"fmt"
+	"runtime"
+	"time"
+)
+
+func sendMessage(ch chan string,
+	message string) {
+	go func() {
+		// ПРОБЛЕМА была здесь
+		// функция должна отправить сообщение
+		// в канал, а не читать из него
+		ch <- message
+	}()
+}
+
+func getMessage(ch chan string) {
+	go func() {
+		<-ch
+	}()
+}
+
+func main() {
+
+	// Число горутин вначале
+	startingGs := runtime.NumGoroutine()
+	ch := make(chan string)
+	sendMessage(ch, "hello, senior!")
+	getMessage(ch)
+	// Ждем некоторое время, чтоб увидеть утечку
+	time.Sleep(time.Second)
+	// Число горутин в конце.
+	endingGs := runtime.NumGoroutine()
+	// Пишем результаты
+	fmt.Printf("Begin! Goroutines number: %d\n", startingGs)
+	fmt.Printf("All goroutines started! Goroutines number: %d\n", endingGs)
+	fmt.Println("Number of goroutines leaked:", endingGs-startingGs)
+}
+```
+
 
 ## Резюме
 
