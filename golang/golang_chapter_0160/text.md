@@ -268,6 +268,7 @@ panic: send on closed channel
 ```go
 val, ok := <-ch
 ```
+
 Если `ok` равен `true`, то значение прочитано. В противном случае — нет.
 
 Каналы являются ссылочным типом. Они представляют собой ссылку на некоторую структуру данных. Их можно сравнивать. Если два канала ссылаются на одну и ту же структуру данных, то результат сравнения — `true`. В противном случае — `false`:
@@ -416,7 +417,6 @@ func getMessage(ch chan string) {
 }
 
 func main() {
-
 	// Число горутин вначале
 	startingGs := runtime.NumGoroutine()
 	ch := make(chan string)
@@ -461,7 +461,6 @@ func getMessage(ch chan string) {
 }
 
 func main() {
-
 	// Число горутин вначале
 	startingGs := runtime.NumGoroutine()
 	ch := make(chan string)
@@ -477,7 +476,6 @@ func main() {
 	fmt.Println("Number of goroutines leaked:", endingGs-startingGs)
 }
 ```
-
 
 ## Резюме
 
