@@ -3,7 +3,7 @@
 В этой главе вы научитесь компилировать программы на C++. Вместо задач в online IDE вам потребуется выполнять консольные команды в собственном окружении. Подготовьте для этого терминал Linux или контейнер Docker, в котором есть:
 - Компилятор C++ одной из последних версий. В этом курсе мы используем Clang, и все примеры команд завязаны на него.
 - Текстовый редактор — [vim](https://www.vim.org/), [neovim](https://neovim.io/), [emacs](https://www.gnu.org/software/emacs/), [nano](https://www.nano-editor.org/) или любой другой.
-- Утилиты [xxd](https://www.opennet.ru/man.shtml?topic=xxd&category=1), [strace](https://man7.org/linux/man-pages/man1/strace.1.html).
+- Утилиты [xxd](https://www.opennet.ru/man.shtml?topic=xxd&category=1), [ldd](https://man7.org/linux/man-pages/man1/ldd.1.html).
 
 Рекомендуем воспользоваться нашим [Docker-образом,](https://hub.docker.com/repository/docker/microvenator/senjun_cpp/general) в котором _все это уже установлено._ Вам останется только скачать его с Docker Hub: {#block-docker-image}
 
@@ -550,23 +550,23 @@ Function in unnamed namespace
 
 Реализация рантайма зависит от компилятора, его версии, от целевой системы и архитектуры процессора. Допустим, программа собрана компилятором GCC с опциями по умолчанию. Можно ли её запустить на такой же платформе, но с рантаймом от Clang? Нет, У рантайма GCC и Clang нет полной совместимости по ABI.
 
-Посмотрите, какие библиотеки подгружает бинарник `main`. Запустите его из-под [strace](https://man7.org/linux/man-pages/man1/strace.1.html) — команды, отслеживающей, какие системные вызовы делает программа. Опция `-e trace=openat` означает, что интересуют только вызовы [openat](https://linux.die.net/man/2/openat) для открытия файловых дескрипторов.
+Посмотрите, какие библиотеки подгружает бинарник `main`. Для этого примените к нему утилиту `ldd` (list dynamic dependencies):
 
 ```shell
-strace -e trace=openat ./main
+ldd main
 ```
 ```
-openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc++.so.1", O_RDONLY|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc++abi.so.1", O_RDONLY|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libunwind.so.1", O_RDONLY|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
-openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libm.so.6", O_RDONLY|O_CLOEXEC) = 3
-...
+linux-vdso.so.1 (0x00007fcb4735d000)
+libc++.so.1 => /lib/x86_64-linux-gnu/libc++.so.1 (0x00007fcb47210000)
+libc++abi.so.1 => /lib/x86_64-linux-gnu/libc++abi.so.1 (0x00007fcb471d2000)
+libunwind.so.1 => /lib/x86_64-linux-gnu/libunwind.so.1 (0x00007fcb471c4000)
+libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fcb46fe3000)
+libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fcb46f03000)
+/lib64/ld-linux-x86-64.so.2 (0x00007fcb4735f000)
 ```
 
-Простой бинарник, выводящий в консоль "Hello compiler", зависит от нескольких динамических библиотек! Причем их количество, названия и пути к ним будут отличаться на разных системах. В данном случае нас больше всего интересуют библиотеки:
-- [ld.so](https://www.opennet.ru/man.shtml?topic=ld.so&category=8&russian=0) — часть рантайма C. Ищет и подгружает используемые в программе динамические библиотеки, подготавливает программу к запуску. Также здесь содержится код, инициализирующий глобальные переменные и вызывающий функцию `main()` — точку входа в программу.
+Простой бинарник, выводящий в консоль "Hello compiler", зависит от нескольких динамических библиотек! Причем их количество, названия и пути к ним _будут отличаться_ на разных системах. В данном случае нас больше всего интересуют библиотеки, названия которых похожи на следующие:
+- [ld.so](https://www.opennet.ru/man.shtml?topic=ld.so&category=8&russian=0). Это часть рантайма C. Ищет и подгружает используемые в программе динамические библиотеки, подготавливает программу к запуску. Также здесь содержится код, инициализирующий глобальные переменные и вызывающий функцию `main()` — точку входа в программу.
 - [libm.so](https://packages.debian.org/search?searchon=contents&keywords=libm.so&mode=path&suite=stable&arch=any) — ещё одна часть рантайма C, которая отвечает за реализацию математических функций из хедера `math.h`. Она была вынесена в отдельный файл по историческим причинам.
 - [libc.so](https://www.man7.org/linux/man-pages/man7/libc.7.html) — реализация стандартной библиотеки C.
 - [libc++](https://packages.debian.org/ru/sid/libstdc++6) — Реализация рантайма и стандартной библиотеки C++ в Clang.
