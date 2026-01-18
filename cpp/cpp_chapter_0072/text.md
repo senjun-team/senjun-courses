@@ -295,15 +295,17 @@ int get_equator(std::forward_list<int> lst)
 int get_equator(std::forward_list<int> list)        
 {                                                   
     int sum = 0;
-    for (int val: list)
-     sum += val;
+
+    for(int val: list)
+        sum += val;
     
     int sum_left = 0;
     int equator = list.front();
-    for (int val: list)
+
+    for(int val: list)
     {
-        auto sum_right = sum - sum_left - val;
-        if (sum_left < sum_right)
+        const int sum_right = sum - sum_left - val;
+        if(sum_left < sum_right)
             equator = val;
         sum_left += val;
     }
