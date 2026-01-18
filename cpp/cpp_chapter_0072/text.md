@@ -290,30 +290,22 @@ int get_equator(std::forward_list<int> lst)
 
 }
 ```
-Заведите вектор и заполните его в процессе итерирования по списку `lst`. Сохраняйте в вектор сумму элементов, включая данный. Длина вектора будет совпадать с длиной списка. Например, для списка `5 -> 2 -> 4 -> 8 -> 1` вы получите вектор `5, 7, 11, 19, 20`. В этом же проходе по списку сохраните в переменную сумму всех элементов. Затем проитеритуйтесь по вектору. Зная общую сумму элементов списка и частичную сумму, хранящуюся в элементе вектора, легко вычислить сумму элементов до данного и после данного. {.task_hint}
+Посчитайте сумму `sum` всех элементов списка. Примите за значение экватора первый элемент списка: `equator = list.front()`. Затем пройдитесь по списку и для каждого элемента вычислите сумму элементов _до_ `sum_left` и сумму элементов _после_ `sum_right`. СЗначение `sum_left` вначале равно нулю и накапливается. Значение `sum_right` вычисляется как `sum - sum_left - val`, где `val` — текущий элемент. Если `sum_left` меньше `sum_right`, то экватор приравнивается текущему элементу. {.task_hint}
 ```cpp {.task_answer}
-int get_equator(std::forward_list<int> lst)
-{
-    std::vector<int> sums;
+int get_equator(std::forward_list<int> list)        
+{                                                   
     int sum = 0;
-
-    for (auto it = lst.cbegin(); it != lst.cend(); ++it)
-    {
-        sum += *it;
-        sums.push_back(sum);
-    }
-
-    int sum_left = 0;
-    int equator = 0;
+    for (int val: list)
+     sum += val;
     
-    for (std::size_t i = 0; i < sums.size(); ++i)
+    int sum_left = 0;
+    int equator = list.front();
+    for (int val: list)
     {
-        const int sum_right = sum - sums[i];
-        
+        auto sum_right = sum - sum_left - val;
         if (sum_left < sum_right)
-            equator = sum - sum_right - sum_left;
-        
-        sum_left = sums[i];
+            equator = val;
+        sum_left += val;
     }
 
     return equator;
