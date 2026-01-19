@@ -593,16 +593,22 @@ bool has_cycle(ListNode * head)
 Так выглядит передача сишного массива в функцию:
 
 ```cpp
-double get_median(double arr[], std::size_t len);
+double get_median(double data[], std::size_t len);
 ```
 
 А это — эквивалентный вариант записи:
 
 ```cpp
-double get_median(double * arr, std::size_t len);
+double get_median(double * data, std::size_t len);
 ```
 
 В этих двух вариантах передача массива в функцию и работа с ним внутри функции совершенно не отличаются.
+
+При этом оба варианта нежелательно использовать в новом коде. Запись `double * data` запутывает: перед нами массив или указатель на единственное значение? Запись `double data[]` понятнее, но лучший совет по работе с сишными массивами — [избегать их.](/courses/cpp/chapters/cpp_chapter_0142/#block-advice) Поэтому самый безопасный и современный [вариант](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#rr-ap) передачи массива в функцию — это `std::span`:
+
+```cpp
+double get_median(std::span<double> data);
+```
 
 ## Указатели и константность
 
