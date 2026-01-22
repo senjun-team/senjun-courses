@@ -19,7 +19,7 @@ inner()
 
 В данном примере вызов `f()` завершится успешно, а вызов `inner()` строчкой ниже приведет к исключению:
 
-```console
+```
 This is inner function
 NameError: name 'inner' is not defined
 ```
@@ -40,7 +40,7 @@ f(1)
 f(5)
 ```
 
-```console
+```
 11
 15
 ```
@@ -61,7 +61,7 @@ add_one(4)
 add_five(11)
 ```
 
-```console
+```
 5
 16
 ```
@@ -91,7 +91,7 @@ has_permissions_logs = has_permissions("/var/logs")
 print(has_permissions_logs("root"))
 ```
 
-```console
+```
 Permission to /tmp declined for sandbox_user
 Permission to /var/logs granted for root
 ```
@@ -119,7 +119,7 @@ f(2)
 f(3)
 ```
 
-```console
+```
 Items: [1, 2]
 Items: [1, 2, 3]
 ```
@@ -206,7 +206,7 @@ mult_str = lambda s, n:  s * n
 print(mult_str("*", 5))
 ```
 
-```console
+```
 *****
 ```
 
@@ -225,7 +225,7 @@ x = lambda: 5
 print(x())
 ```
 
-```console
+```
 5
 ```
 
@@ -237,7 +237,7 @@ print(x())
 
 Код выглядит странно, но выводит в консоль ожидаемый результат:
 
-```console
+```
 III
 ```
 
