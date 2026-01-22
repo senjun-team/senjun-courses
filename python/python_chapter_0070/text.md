@@ -52,7 +52,7 @@ def f(a):
     def inner(b):
         print(a + b)
     
-    return inner()
+    return inner
 
 add_one = f(1)
 add_five = f(5)
