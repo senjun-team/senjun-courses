@@ -38,11 +38,11 @@ std::vector * p;
 - Компилятор выделяет память под указатель `p`, но не под объект типа `std::vector`, на который указывает `p`. Вектор может уже существовать или создаваться дальше по коду.
 - Компилятор не инициализирует выделенную память, ведь мы не присвоили указателю никакого значения. Как и при [инициализации по умолчанию](/courses/cpp/chapters/cpp_chapter_0131/#block-default-initialization) других типов, не имеющих конструктора, объект `p` может содержать любой мусор. Чтобы указатель ссылался на адрес переменной, нужно этот адрес получить.
 
-Напишите, как выглядит объявление указателя `node` на объект класса `Node`. {.task_text}
+Напишите, как выглядит объявление указателя `node` на объект класса `Node` без инициализации. {.task_text}
 
-```consoleoutput {.task_source #cpp_chapter_0161_task_0060}
+```consoleoutput {.task_source #cpp_chapter_0161_task_0010}
 ```
-. {.task_hint}
+Нужно создать указатель типа `Node *` с именем `node`. Не забудьте `;` в конце. {.task_hint}
 ```cpp {.task_answer}
 Node * node;
 ```
@@ -123,10 +123,10 @@ ptr=0X7FFDA8185ED4
 
 Для форматирования строки вам понадобится функция [std::format()](https://en.cppreference.com/w/cpp/utility/format/format.html).
 
-```cpp {.task_source #cpp_chapter_0161_task_0070}
+```cpp {.task_source #cpp_chapter_0161_task_0020}
 // Ваша реализация check_eq()
 ```
-. {.task_hint}
+Чтобы выяснить, являются ли аргументы одним и тем же объектом в памяти, нужно проверить, совпадают ли их адреса. Для возврата форматированной строки из функции вызовите `std::format()`. Например, `std::format("{:p}", static_cast<void *>(&a))`. {.task_hint}
 ```cpp {.task_answer}
 std::string check_eq(double & a, double & b)
 {
@@ -178,9 +178,9 @@ std::uint16_t * p = &code;
 std::println("{}", *p);
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0161_task_0010}
+```consoleoutput {.task_source #cpp_chapter_0161_task_0030}
 ```
-. {.task_hint}
+Мы завели переменную `code` со значением `100` и указатель `p`, хранящий ее адрес. Затем мы разыменовали указатель, чтобы работать с оригитальной переменной. Выражение `*p * 3` означает, что значение переменой, на которую указывает `p`, мы умножаем на 3. Запись `*p += ...` означает, что полученный результат мы прибавляем к оригинальной переменной. Строку `*p += *p * 3;` можно переписать так: `code += code * 3;`. {.task_hint}
 ```cpp {.task_answer}
 400
 ```
@@ -189,7 +189,7 @@ std::println("{}", *p);
 
 Для вас уже заведены два указателя. Пользуйтесь ими и временной переменной. Обращаться к параметрам `a` и `b` нельзя. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0161_task_0080}
+```cpp {.task_source #cpp_chapter_0161_task_0040}
 void swap_via_pointers(double & a, double & b)
 {
     double * x = &a;
@@ -198,7 +198,7 @@ void swap_via_pointers(double & a, double & b)
    // Ваш код. К параметрам a и b обращаться нельзя.
 }
 ```
-. {.task_hint}
+Заведите временную переменную типа `double`. Сохраните в нее значение переменной, на которую указывает `x`. Затем разыменуйте `x`, чтобы сохранить значение разыменованного указателя `y`. И, наконец, разыменуйте `y`, чтобы сохранить в него значение временной переменной. {.task_hint}
 ```cpp {.task_answer}
 void swap_via_pointers(double & a, double & b)
 {
@@ -230,9 +230,9 @@ int b = *&a; // То же самое, что *(&a)
 std::println("{}", b == 4);
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0161_task_0090}
+```consoleoutput {.task_source #cpp_chapter_0161_task_0050}
 ```
-. {.task_hint}
+Чтобы было проще читать конструкцию `int b = *&a;`, можно расставить скобки: `int b = *(&a);`. Мы берем адрес переменной `a` и к получившемуся значению применяем разыменование, то есть обращаемся к переменной по адресу. При последовательном применении к переменной операторов `&` и `*` мы получаем исходную переменную. {.task_hint}
 ```cpp {.task_answer}
 true
 ```
@@ -243,11 +243,11 @@ true
 
 Размер указателя **не зависит** от типа, на который он указывает.
 
-Сколько байт занимает указатель в нашем [плэйграунде?](https://senjun.ru/playground/cpp/) {.task_text}
+Сколько байт занимает указатель в нашем [плэйграунде?](https://senjun.ru/playground/cpp/) Чтобы узнать, откройте плэйграунд и примените оператор `sizeof` у указателю. {.task_text}
 
-```consoleoutput {.task_source #cpp_chapter_0161_task_0020}
+```consoleoutput {.task_source #cpp_chapter_0161_task_0060}
 ```
-Откройте плэйграунд и примените оператор `sizeof` у указателю. {.task_hint}
+Пример: `std::println("{}", sizeof(int *))`. {.task_hint}
 ```cpp {.task_answer}
 8
 ```
@@ -261,7 +261,7 @@ bool * p_bool;
 std::println("{}", sizeof(p_vec) == sizeof(b_bool));
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0161_task_0030}
+```consoleoutput {.task_source #cpp_chapter_0161_task_0070}
 ```
 Размер указателя не зависит от типа, на который он указывает. {.task_hint}
 ```cpp {.task_answer}
@@ -343,7 +343,7 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0161_task_0050}
+```consoleoutput {.task_source #cpp_chapter_0161_task_0080}
 ```
 В момент инициализации `self` своим же адресом эта переменная [уже существует,](https://timsong-cpp.github.io/cppwp/std23/basic.scope.pdecl#1) поэтому ошибки компиляции нет. В `self` сохраняется ее же адрес, и он точно не равен `nullptr`. А приведение любого не нулевого числа к `bool` — это `true`. {.task_hint}
 ```cpp {.task_answer}
@@ -445,12 +445,15 @@ std::size_t len = p->size(); // вызываем метод строки
 struct ListNode
 {
     // Конструкторы
-    ListNode(int value) : val(value) {}
-    ListNode(int value, ListNode * next_node) : val(value), next(next_node) {}
+    ListNode() {}
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
     
     // Значение элемента списка
     int val = 0;
-    
+
     // Указатель на следующий элемент списка
     ListNode * next = nullptr;
 };
@@ -474,14 +477,37 @@ Node value: 3
 Node value: 5
 ```
 
-Заведите структуру `BinTreeNode`, представляющую собой узел бинарного дерева. Она должна хранить значение `val` типа `std::size_t`, указатели на левое и правое поддерево `left` и `right`. {.task_text}
+Заведите структуру `BinTreeNode`, представляющую собой узел [бинарного дерева.](https://ru.wikipedia.org/wiki/%D0%94%D0%B2%D0%BE%D0%B8%D1%87%D0%BD%D0%BE%D0%B5_%D0%B4%D0%B5%D1%80%D0%B5%D0%B2%D0%BE) Она должна хранить значение `val` типа `std::size_t`, указатели на левое и правое поддерево `left` и `right`. По умолчанию поля должны принимать значения 0 и `nullptr` соответственно. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0161_task_0100}
+У структуры должно быть два параметризованных конструктора со [спецификатором](/courses/cpp/chapters/cpp_chapter_0131/#block-explicit) `explicit`: {.task_text}
+- для инициализации переданным значением `val`,
+- для инициализации `val`, `left` и `right`. Именно в таком порядке.
+
+```cpp {.task_source #cpp_chapter_0161_task_0090}
 // Ваша реализация BinTreeNode
 ```
-. {.task_hint}
+Для инициализации полей воспользуйтесь [DMI](/courses/cpp/chapters/cpp_chapter_0132/#block-dmi) (default member initialization, прямая инициализация полей). Это инициализация поля по месту его объявления. Затем заведите два конструктора: для инициализации `val` и для инициализации всех полей. В этих конструкторах используйте [список инициализации полей.](/courses/cpp/chapters/cpp_chapter_0132/#block-member-initializer-list) {.task_hint}
 ```cpp {.task_answer}
+struct BinTreeNode
+{
+    // Конструкторы
+    BinTreeNode()
+    { }
 
+    explicit BinTreeNode(std::size_t x) : val(x)
+    { }
+
+    explicit BinTreeNode(std::size_t x, BinTreeNode * l, BinTreeNode * r)
+    : val(x), left(l), right(r)
+    { }
+    
+    // Значение узла
+    std::size_t val = 0;
+    
+    // Указатели на левое и правое поддерево
+    BinTreeNode * left = nullptr;
+    BinTreeNode * right = nullptr;
+};
 ```
 
 ## Передача параметров по указателю
@@ -533,7 +559,7 @@ false
 
 Список содержит цикл, если есть такой узел, до которого можно _повторно_ добраться, непрерывно перебирая указатели `next`. {.task_text}
 
-Решите эту задачу, используя `O(1)` дополнительной памяти. У вашего решения должна быть линейная сложность `O(N)`. Чтобы посмотреть алгоритм, воспользуйтесь подсказкой. {.task_text}
+Решите эту задачу, используя `O(1)` дополнительной памяти. У вашего решения должна быть линейная сложность `O(N)`. Если вы хотите узнать простой алгоритм решения, то можете воспользоваться подсказкой. {.task_text}
 
 Пример списка с циклом: {.task_text}
 
@@ -541,11 +567,14 @@ false
 ![Пример списка с циклом](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16/illustrations/cpp/linked_list_with_cycle.jpg) {.illustration}
 
 
-```cpp {.task_source #cpp_chapter_0161_task_0120}
+```cpp {.task_source #cpp_chapter_0161_task_0100}
 struct ListNode
 {
-    ListNode(int value) : val(value) {}
-    ListNode(int value, ListNode * next_node) : val(value), next(next_node) {}
+    ListNode() {}
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
     
     int val = 0;
     ListNode * next = nullptr;
@@ -560,8 +589,11 @@ bool has_cycle(ListNode * head)
 ```cpp {.task_answer}
 struct ListNode
 {
-    ListNode(int value) : val(value) {}
-    ListNode(int value, ListNode * next_node) : val(value), next(next_node) {}
+    ListNode() {}
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
     
     int val = 0;
     ListNode * next = nullptr;
@@ -664,9 +696,9 @@ v->clear();                        // 3
 v = nullptr;                       // 4
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0161_task_0040}
+```consoleoutput {.task_source #cpp_chapter_0161_task_0110}
 ```
-Указатель `ptr` является константным. {.task_hint}
+Указатель `ptr` является константным. По нему можно изменять объект. Но сам указатель изменять нельзя. {.task_hint}
 ```cpp {.task_answer}
 4
 ```
@@ -707,17 +739,20 @@ std::println("{:p}", static_cast<const void *>(ptr));
 ![Пример пересечения списков](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16/illustrations/cpp/lists_intersection.jpg) {.illustration}
 
 
-```cpp {.task_source #cpp_chapter_0161_task_0130}
+```cpp {.task_source #cpp_chapter_0161_task_0120}
 struct ListNode
 {
-    ListNode(int value) : val(value) {}
-    ListNode(int value, ListNode * next_node) : val(value), next(next_node) {}
+    ListNode() {}
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
     
     int val = 0;
     ListNode * next = nullptr;
 };
 
-ListNode * get_intersection(const ListNode * head_a, const ListNode * head_b)
+const ListNode * get_intersection(const ListNode * head_a, const ListNode * head_b)
 {
 
 }
@@ -726,17 +761,20 @@ ListNode * get_intersection(const ListNode * head_a, const ListNode * head_b)
 ```cpp {.task_answer}
 struct ListNode
 {
-    ListNode(int value) : val(value) {}
-    ListNode(int value, ListNode * next_node) : val(value), next(next_node) {}
+    ListNode() {}
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
     
     int val = 0;
     ListNode * next = nullptr;
 };
 
-ListNode * get_intersection(const ListNode * head_a, const ListNode * head_b)
+const ListNode * get_intersection(const ListNode * head_a, const ListNode * head_b)
 {
-    ListNode * ptr_a = head_a;
-    ListNode * ptr_b = head_b;
+    const ListNode * ptr_a = head_a;
+    const ListNode * ptr_b = head_b;
 
     while(ptr_a != ptr_b)
     {

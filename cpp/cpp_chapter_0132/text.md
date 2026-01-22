@@ -25,7 +25,7 @@ int main()
 
 Никогда не оставляйте поля не инициализированными. Поэтому вместо инициализации по умолчанию используйте другие способы.
 
-## Default member initialization: прямая инициализация полей
+## Default member initialization: прямая инициализация полей {#block-dmi}
 
 Предпочтительный способ инициализации полей вам уже [известен.](/courses/cpp/chapters/cpp_chapter_0050/#block-class-init-field-example) Вы его применяли, хотя и не знали, что он называется [default member initialization](https://en.cppreference.com/w/cpp/language/data_members#Member_initialization) (DMI) или прямая инициализация полей.
 
@@ -67,7 +67,7 @@ struct Context
 
 Мы подходим к следующему способу инициализации полей — через конструктор.
 
-## Member initializer list: список инициализации конструктора
+## Member initializer list: список инициализации конструктора {#block-member-initializer-list}
 
 Конструктор класса или структуры нужен для корректной инициализации объекта. В первую очередь для установки полей в требуемые значения. До сих пор мы [инициализировали поля](/courses/cpp/chapters/cpp_chapter_0050/#block-task-7) прямо в теле конструктора:
 

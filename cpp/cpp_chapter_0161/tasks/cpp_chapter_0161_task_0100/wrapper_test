@@ -1,0 +1,89 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+int main()
+{
+    "Passing nullptr to function"_test = [] {
+        expect(has_cycle(nullptr) == false) << "List: nullptr.\nhas_cycle(nullptr) must return false" << fatal;
+    };
+
+    "List with single element"_test = [] {
+        ListNode node{5};
+        expect(has_cycle(&node) == false) << "List: [5] -> nullptr.\nhas_cycle() must return false" << fatal;
+    };
+
+    "List with single element which points to itself"_test = [] {
+        ListNode node{6};
+        node.next = &node;
+        expect(has_cycle(&node) == true) << "List: [6] -> points to itself.\n"
+        "has_cycle() must return true" << fatal;
+    };
+
+    "Lists without loops"_test = [] {
+        ListNode n0{1};
+        ListNode n1{1};
+        n0.next = &n1;
+
+        expect(has_cycle(&n0) == false) << "List: [1] -> [1] -> nullptr\n"
+        "has_cycle() must return false" << fatal;
+
+        ListNode n2{3};
+        n1.next = &n2;
+        expect(has_cycle(&n0) == false) << "List: [1] -> [1] -> [2] -> nullptr\n"
+        "has_cycle() must return false" << fatal;
+
+        ListNode n3{1};
+        n2.next = &n3;
+
+        expect(has_cycle(&n0) == false) << "List: [1] -> [1] -> [2] -> [1] -> nullptr\n"
+        "has_cycle() must return false" << fatal;
+    };
+
+    "List with loop from illustration"_test = [] {
+        //  [7] -> [-1] -> [8] -> [3] -> [1] -
+        //                  ^                 |
+        //                  |_________________|
+
+        ListNode n0{7};
+        ListNode n1{-1};
+        ListNode n2{8};
+        ListNode n3{3};
+        ListNode n4{1};
+
+        n0.next = &n1;
+        n1.next = &n2;
+        n2.next = &n3;
+        n3.next = &n4;
+        n4.next = &n2; // Появляется цикл
+        expect(has_cycle(&n0) == true) << 
+        "List:\n"
+        "[7] -> [-1] -> [8] -> [3] -> [1] - \n"
+        "                ^                 |\n"
+        "                |_________________|\n"
+        "has_cycle() must return true" << fatal;
+    };
+
+    "List with two nodes & loop"_test = [] {
+        //  [1] -> [2] -
+        //   ^          |
+        //   |__________|
+
+        ListNode n0{1};
+        ListNode n1{2};
+
+        n0.next = &n1;
+        n1.next = &n0; // Появляется цикл
+        expect(has_cycle(&n0) == true) << 
+        "List:\n"
+        "[1] -> [2] - \n"
+        " ^          |\n"
+        " |__________|\n"
+        "has_cycle() must return true" << fatal;
+    };
+}
