@@ -1,0 +1,33 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    // Пересечение списков с иллюстрации к задаче:
+    
+    //  [3] -> [1] -> [-1] -> [8] -> [1] -> nullptr
+    //                         ^
+    //  [5] -> [4] ------------|
+
+    ListNode a0{3};
+    ListNode a1{1};
+    ListNode a2{-1};
+    ListNode a3{8};
+    ListNode a4{1};
+
+    a0.next = &a1;
+    a1.next = &a2;
+    a2.next = &a3;
+    a3.next = &a4;
+
+    ListNode b0{5};
+    ListNode b1{4};
+
+    b0.next = &b1;
+    b1.next = &a3; // Пересечение списков
+
+    const ListNode * res = get_intersection(&a0, &b0);
+    std::println("Calling get_intersection() for lists from illustration. Result element: {}",
+                 res == nullptr ? "nullptr" : std::to_string(res->val));
+}

@@ -1,0 +1,14 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+   double x = 8.0;
+   double y = 8.0;
+
+   std::println("Calling check_eq() for references to different objects.\nResult: \"{}\"\n",
+                check_eq(x, y));
+   std::println("Calling check_eq() for references to the same object.\nResult: \"{}\"\n",
+                check_eq(x, x));
+}

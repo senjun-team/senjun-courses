@@ -1,0 +1,125 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+int main()
+{
+    "Passing null pointers to function"_test = [] {
+        expect(get_intersection(nullptr, nullptr) == nullptr) << 
+        "List 1: nullptr.\n"
+        "List 2: nullptr.\n"
+        "get_intersection() must return nullptr" << fatal;
+    };
+
+    "Passing the same list with single element"_test = [] {
+        const ListNode node{5};
+        expect(get_intersection(&node, &node) == &node) << 
+        "List 1: [5] -> nullptr.\n"
+        "List 2: the same list.\n"
+        "get_intersection() must return pointer to [5]" << fatal;
+    };
+
+    "Passing lists with intersection from illustration"_test = [] {
+        // Пересечение списков с иллюстрации к задаче:
+        //  [3] -> [1] -> [-1] -> [8] -> [1] -> nullptr
+        //                         ^
+        //  [5] -> [4] ------------|
+
+        ListNode a0{3};
+        ListNode a1{1};
+        ListNode a2{-1};
+        ListNode a3{8};
+        ListNode a4{1};
+
+        a0.next = &a1;
+        a1.next = &a2;
+        a2.next = &a3;
+        a3.next = &a4;
+
+        ListNode b0{5};
+        ListNode b1{4};
+
+        b0.next = &b1;
+        b1.next = &a3; // Пересечение списков
+
+        expect(get_intersection(&a0, &b0) == &a3 && get_intersection(&b0, &a0) == &a3) << 
+        "List 1: [3] -> [1] -> [-1] -> [8] -> [1] -> nullptr\n"
+        "List 2: [5] -> [4] -> [8 in list 1]\n"
+        "get_intersection() must return pointer to [8]" << fatal;
+    };
+
+    "Passing lists without intersection"_test = [] {
+        ListNode a0{1};
+
+        expect(get_intersection(&a0, nullptr) == nullptr) << 
+        "List 1: [1] -> nullptr\n"
+        "List 2: nullptr\n"
+        "get_intersection() must return nullptr" << fatal;
+
+        expect(get_intersection(nullptr, &a0) == nullptr) << 
+        "List 1: nullptr\n"
+        "List 2: [1] -> nullptr\n"
+        "get_intersection() must return nullptr" << fatal;
+
+        ListNode b0{1};
+
+        expect(get_intersection(&a0, &b0) == nullptr) << 
+        "List 1: [1] -> nullptr\n"
+        "List 2: [1] -> nullptr\n"
+        "get_intersection() must return nullptr" << fatal;
+
+        ListNode a1{1};
+        a0.next = &a1;
+        expect(get_intersection(&a0, &b0) == nullptr && get_intersection(&b0, &a0) == nullptr) << 
+        "List 1: [1] -> [1] -> nullptr\n"
+        "List 2: [1] -> nullptr\n"
+        "get_intersection() must return nullptr" << fatal;
+
+        ListNode a2{10};
+        a1.next = &a2;
+
+        expect(get_intersection(&a0, &b0) == nullptr && get_intersection(&b0, &a0) == nullptr) << 
+        "List 1: [1] -> [1] -> [10] -> nullptr\n"
+        "List 2: [1] -> nullptr\n"
+        "get_intersection() must return nullptr" << fatal;
+    };
+
+    "Passing lists with intersection"_test = [] {
+        ListNode a0{1};
+        ListNode a1{5};
+        ListNode a2{10};
+
+        a0.next = &a1;
+        a1.next = &a2;
+
+        ListNode b0{2};
+        b0.next = &a0;
+
+        expect(get_intersection(&a0, &b0) == &a0 && get_intersection(&b0, &a0) == &a0) << 
+        "List 1: [1] -> [5] -> [10] -> nullptr\n"
+        "List 2: [2] -> [1 in list 1]\n"
+        "get_intersection() must return pointer to [1]" << fatal;
+
+        ListNode b1{3};
+        b1.next = &a0;
+        b0.next = &b1;
+
+        expect(get_intersection(&a0, &b0) == &a0 && get_intersection(&b0, &a0) == &a0) << 
+        "List 1: [1] -> [5] -> [10] -> nullptr\n"
+        "List 2: [2] -> [3] -> [1 in list 1]\n"
+        "get_intersection() must return pointer to [1]" << fatal;
+
+        b1.next = &a1;
+        expect(get_intersection(&a0, &b0) == &a1 && get_intersection(&b0, &a0) == &a1) << 
+        "List 1: [1] -> [5] -> [10] -> nullptr\n"
+        "List 2: [2] -> [3] -> [5 in list 1]\n"
+        "get_intersection() must return pointer to [5]" << fatal;
+    };
+
+
+}

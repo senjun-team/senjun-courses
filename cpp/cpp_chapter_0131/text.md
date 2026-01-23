@@ -296,7 +296,7 @@ Handling error: 2 Retries left: 2
 
 Здесь в функцию `handle_error()` первым аргументом вместо объекта `err` случайно передано целое число `retries`. Тем не менее, этот код успешно скомпилировался и запустился. Дело в том, что компилятор выполнил неявное преобразование `int` к классу `Error`, вызвав конструктор `Error`, принимающий `int`.
 
-Чтобы запретить неявные преобразования аргументов конструктора, пометьте его спецификатором [explicit](https://en.cppreference.com/w/cpp/language/explicit):
+Чтобы запретить неявные преобразования аргументов конструктора, пометьте его спецификатором [explicit](https://en.cppreference.com/w/cpp/language/explicit): {#block-explicit}
 
 ```cpp    {.example_for_playground .example_for_playground_003}
 import std;

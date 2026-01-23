@@ -1,0 +1,47 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+void check_nullptr(BinTreeNode & node) {
+        expect(node.left == nullptr && node.right == nullptr) << "Default value for pointers must be nullptr" << fatal;
+}
+
+int main()
+{
+    "Calling default constructor"_test = [] {
+        BinTreeNode node{};
+
+        expect(node.val == 0) << std::format("Default value for must be 0. Actual value is {}",
+                                           node.val) << fatal;
+        check_nullptr(node);
+    };
+
+    "Calling constructor BinTreeNode(std::size_t)"_test = [] {
+        const std::size_t n = 7;
+        BinTreeNode node{n};
+
+        expect(node.val == 7) << std::format("Called constructor for initializing .val with argument {}. node.val is {}",
+                                           n, node.val) << fatal;
+        check_nullptr(node);
+    };
+
+    "Calling constructor BinTreeNode(std::size_t, BinTreeNode *, BinTreeNode *)"_test = [] {
+        BinTreeNode l{2, nullptr, nullptr};
+        BinTreeNode r{9};
+
+        BinTreeNode root{6, &l, &r};
+
+        check_nullptr(*root.left);
+        check_nullptr(*root.right);
+
+        expect(root.left == &l && root.right == &r) << "After calling BinTreeNode(std::size_t, BinTreeNode *, BinTreeNode *) "
+        ".left and .right must point to corresponding objects" << fatal;
+
+        expect(root.val == 6) << "After calling BinTreeNode(std::size_t, BinTreeNode *, BinTreeNode *) .val must be equal to 1st argument" << fatal;
+    };
+}

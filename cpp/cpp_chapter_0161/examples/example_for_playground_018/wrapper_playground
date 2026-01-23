@@ -1,0 +1,22 @@
+import std;
+
+struct ListNode
+{
+    // Конструкторы
+    ListNode() {}
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
+    
+    // Значение элемента списка
+    int val = 0;
+
+    // Указатель на следующий элемент списка
+    ListNode * next = nullptr;
+};
+
+int main()
+{
+    #INJECT-b585472fa
+}
