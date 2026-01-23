@@ -51,7 +51,7 @@ Node * node;
 
 [Оператор взятия адреса](https://en.cppreference.com/w/cpp/language/operator_member_access.html#Built-in_address-of_operator) (address-of operator) `&` — это унарный оператор, который ставится перед своим операндом и возвращает его адрес:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_001}
 bool b = true;
 
 // Инициализируем указатель b_ptr адресом переменной b
@@ -64,7 +64,7 @@ bool * b_ptr = &b;
 
 В данном контексте символ `&` не имеет ничего общего с объявлением ссылки или логическим «И». При объявлении ссылки символ `&` относится к типу. А при взятии адреса он ставится перед уже существующей переменной. Сравните:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_002}
 int x = 5;
 
 int & ref = x;  // Это - объявление ссылки на x
@@ -85,7 +85,7 @@ std::println("{}", static_cast<void *>(&x));
 
 Тип `void *` означает, что указатель [может ссылаться](https://timsong-cpp.github.io/cppwp/n4868/basic.compound#5) на адрес объекта любого типа. Явное приведение типа неудобно, зато подчеркивает намерение получить адрес:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_003}
 int val = 256;
 int * ptr = &val;
 
@@ -140,7 +140,7 @@ std::string check_eq(double & a, double & b)
 
 Чтобы обратиться к переменной, на которую ссылается указатель, перед ним ставится [оператор разыменования](https://en.cppreference.com/w/cpp/language/operator_member_access.html#Built-in_indirection_operator) (dereference operator) `*`. Он также известен как оператор косвенного доступа (indirection operator).
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_004}
 int x = 504;
 int * x_ptr = &x;
 
@@ -157,7 +157,7 @@ std::println("{}", *x_ptr);
 
 Разыменование необходимо и для чтения, и для _записи_ данных, адрес которых хранит указатель:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_005}
 // Изменяем значение переменной, на которую указывает x_ptr
 *x_ptr = 200;
 std::println("{}", x);
@@ -168,7 +168,7 @@ std::println("{}", x);
 
 Что выведет этот код? {.task_text}
 
-```cpp {.example_for_playground}
+```cpp {.example_for_playground .example_for_playground_006}
 std::uint16_t code = 100;
 
 std::uint16_t * p = &code;
@@ -213,7 +213,10 @@ void swap_via_pointers(double & a, double & b)
 
 Приоритет оператора взятия адреса `&` и оператора разыменования `*` одинаковый. Он [такой же,](https://en.cppreference.com/w/cpp/language/operator_precedence.html) как у пре-инкремента, и ниже, чем у пост-инкремента. Поэтому не забывайте правильно расставлять скобки.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_007}
+int x = 200;
+int * x_ptr = &x;
+
 // Делаем инкремент значения, на которое указывает x_ptr
 (*x_ptr)++;
 std::println("{}", x);
@@ -224,7 +227,7 @@ std::println("{}", x);
 
 Что выведет этот код? Введите `err` в случае ошибки компиляции. {.task_text}
 
-```cpp {.example_for_playground}
+```cpp {.example_for_playground .example_for_playground_008}
 int a = 4;
 int b = *&a; // То же самое, что *(&a)
 std::println("{}", b == 4);
@@ -254,11 +257,11 @@ true
 
 Что выведет этот код? {.task_text}
 
-```cpp
-std::vector * p_vec;
+```cpp {.example_for_playground .example_for_playground_009}
+std::vector<int> * p_vec;
 bool * p_bool;
 
-std::println("{}", sizeof(p_vec) == sizeof(b_bool));
+std::println("{}", sizeof(p_vec) == sizeof(p_bool));
 ```
 
 ```consoleoutput {.task_source #cpp_chapter_0161_task_0070}
@@ -272,7 +275,7 @@ true
 
 В отличие от ссылок, указатель не требуется инициализировать конкретным адресом. Его можно присвоить и после создания.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_010}
 std::size_t a = 16;
 std::size_t b = 32;
 
@@ -314,7 +317,7 @@ int * ptr = NULL;
 
 У `nullptr` тип [std::nullptr_t](https://en.cppreference.com/w/cpp/types/nullptr_t.html), а `NULL` может быть целым числом `int`. В любом случае они совместимы между собой благодаря [неявному приведению типов.](/courses/cpp/chapters/cpp_chapter_0010/#block-implicit-cast) 
 
-```cpp
+```cpp {.example_for_playground}
 import std;
 
 #include <cstddef> // Хедер содержит объявление макроса NULL
@@ -333,7 +336,7 @@ true
 
 Что выведет этот код? Введите `err` в случае ошибки компиляции или `ub`, если поведение не определено. {.task_text}
 
-```cpp {.example_for_playground}
+```cpp  {.example_for_playground}
 import std;
 
 int main()
@@ -360,7 +363,7 @@ std::println("{}", *ptr); // Так делать нельзя
 
 Если по логике программы указатель _может_ оказаться нулевым, перед его разыменованием добавляйте проверку на `nullptr`.
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_011}
 int * ptr = nullptr;
 
 // ...
@@ -375,14 +378,14 @@ else
 
 Иногда проверку вида `ptr != nullptr` записывают более лаконично:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_012}
 if (ptr)
 {
-    // ptr == nullptr
+    std::println("Valid pointer");
 }
 else
 {
-    // ptr != nullptr
+    std::println("Null pointer");
 }
 ```
 
@@ -401,7 +404,7 @@ std::pair<std::string, bool> * res_ptr = &res;
 
 Обращение к полям объекта осуществляется через оператор `.`. Его приоритет выше, чем у оператора разыменования `*`. Но чтобы обратиться к полю объекта, нужно сначала получить к нему косвенный доступ, разыменовав указатель. Чтобы поменять порядок применения операторов, используем скобки:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_013}
 (*res_ptr).first = "/etc/search.yaml"; // обращаемся к полю
 
 std::println("{} {}", (*res_ptr).first, (*res_ptr).second);
@@ -410,9 +413,9 @@ std::println("{} {}", (*res_ptr).first, (*res_ptr).second);
 /etc/search.yaml true
 ```
 
-Аналогичным образом выглядит вызов метода объекта:
+Аналогично выглядит вызов метода объекта:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_014}
 std::string uuid = "a674b109-b08d-433a-aed4-7e03861345d0";
 
 std::string * p = &uuid;
@@ -427,11 +430,17 @@ std::println("{}", len);
 
 Синтаксис вида `(*p).field` слишком громоздкий. Удобнее использовать оператор `->` для косвенного доступа к полю или методу класса через указатель. Считайте `p->field` синтаксическим сахаром, по сути не отличающимся от `(*p).field`.
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_015}
+std::pair<std::string, bool> res = {"/", true};
+std::pair<std::string, bool> * res_ptr = &res;
+
 res_ptr->first = "/etc/search.yaml"; // обращаемся к полю
 ```
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_016}
+std::string uuid = "a674b109-b08d-433a-aed4-7e03861345d0";
+std::string * p = &uuid;
+
 std::size_t len = p->size(); // вызываем метод строки
 ```
 
@@ -439,9 +448,9 @@ std::size_t len = p->size(); // вызываем метод строки
 
 Итак, через указатели мы можем работать с объектами классов и структур. А они в свою очередь могут иметь поля с типом «указатель». Если тип такого поля совпадает с типом исходного класса, то перед вами рекурсивная структура данных.
 
-Например, так выглядит структура, реализующая элемент односвязного списка, хранящего целые числа:
+Например, так выглядит структура, реализующая элемент [односвязного списка](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA) целых чисел:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_017}
 struct ListNode
 {
     // Конструкторы
@@ -461,7 +470,7 @@ struct ListNode
 
 Нам даже не обязательно заводить класс `List`. Структуры `ListNode` достаточно, чтобы собрать список и работать с ним:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_018}
 // Составляем список из 3-х элементов
 ListNode tail{5, nullptr};
 ListNode middle{3, &tail};
@@ -521,7 +530,7 @@ struct BinTreeNode
 
 Как и передача по ссылке, передача по указателю нужна, чтобы избежать копирования: функция получает указатель и через него косвенно обращается к исходному объекту. Но передача по указателю означает, что он может быть равен `nullptr`. Поэтому если четко не установлено, что такого быть не может, обязательно проверяйте, является ли указатель нулевым.
 
-```cpp
+```cpp {.example_for_playground}
 import std;
 
 struct ConfValue
@@ -648,29 +657,39 @@ double get_median(std::span<double> data);
 
 **Константный указатель** нельзя «перевесить» на другой объект, зато сам объект изменять через него можно:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_019}
 bool is_authorized = true;
 bool * const p = &is_authorized; // Константный указатель
 
 *p = false;                      // Ок
 p = nullptr;                     // ошибка
 ```
+```
+main.cpp:9:7: error: cannot assign to variable 'p' with const-qualified type 'bool *const'
+    9 |     p = nullptr;
+      |     ~ ^
+```
 
 **Указатель на константный объект** можно переназначить, но объект через него модифицировать не получится:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_020}
 bool enable_encoding = true;
 const bool * p = &enable_encoding; // Указатель на константу
 
 *p = false;                        // Ошибка
 p = nullptr;                       // Ок
 ```
+```
+main.cpp:8:8: error: read-only variable is not assignable
+    8 |     *p = false;
+      |     ~~ ^
+```
 
 Из этого примера видно, что указатель на константный объект можно использовать для доступа к неконстантной переменной. Просто у вас не получится изменить эту переменную через такой указатель. А получить неконстантый указатель на константный объект нельзя.
 
 И, наконец, **константный указатель на константный объект** не разрешает ни переприсваивать указатель, ни изменять объект:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_021}
 bool has_focus = true;
 const bool * const p = &has_focus; // Константный указатель на константу
 
@@ -688,12 +707,12 @@ p = nullptr;                       // Ошибка
 
 На какой строке кода допущена ошибка? Введите `0`, если ошибок нет и код скомпилируется. {.task_text}
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_022}
 std::vector<int> v = {1, 5, 10};   // 1
 std::vector<int> * const ptr = &v; // 2
 
-v->clear();                        // 3
-v = nullptr;                       // 4
+ptr->clear();                      // 3
+ptr = nullptr;                     // 4
 ```
 
 ```consoleoutput {.task_source #cpp_chapter_0161_task_0110}
@@ -707,7 +726,8 @@ v = nullptr;                       // 4
 
 Попробуем вывести в консоль указатель, у которого есть константность.
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_023}
+int val = 101;
 const int * ptr = &val;
 
 std::println("{}", static_cast<void *>(ptr));
@@ -721,8 +741,6 @@ main.cpp:8:25: error: static_cast from 'const int *' to 'void *' is not allowed
 Ошибка компиляции говорит о том, что нельзя привести тип `const T *` к `void *`, то есть убрать константность. Поэтому нужно правильно расставить `const` в результирующем типе `void *`:
 
 ```cpp
-const int * ptr = &val;
-
 std::println("{:p}", static_cast<const void *>(ptr));
 ```
 ```
