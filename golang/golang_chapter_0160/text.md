@@ -24,7 +24,7 @@ func printLoad() {
 
 func main() {
 	go printLoad()
-	// тяжелая задача
+	// Тяжелая задача
 	time.Sleep(3 * time.Second)
 	fmt.Println("\nDone")
 }
@@ -48,10 +48,10 @@ func printLoad() {
 }
 
 func main() {
-	// тяжелая задача теперь в горутине 
+	// Тяжелая задача теперь в горутине 
 	go func() {
-		// увеличиваем время ожидания, 
-		// чтобы main завершилась раньше горутины
+		// Увеличиваем время ожидания, 
+		// Чтобы main завершилась раньше горутины
 		time.Sleep(10 * time.Second)
 		fmt.Println("\nDone")
 	}()
@@ -70,14 +70,14 @@ func printLoad(seconds time.Duration) {
 	for range 10{
 		time.Sleep(500 * time.Millisecond)
 		fmt.Print(".")
-		// искусственно создаем панику 
+		// Искусственно создаем панику 
 		panic("failed to load next symbol")
 	}
 }
 
 func main() {
 	go printLoad(5)
-	// тяжелая задача
+	// Тяжелая задача
 	time.Sleep(3 * time.Second)
 	fmt.Println("\nDone")
 }
@@ -101,7 +101,7 @@ func printLoad(seconds time.Duration) {
 
 func main() {
 	/*
-	попытка восстановить ход выполнения программы 
+	Попытка восстановить ход выполнения программы 
 	после того, как возникнет паника внутри горутины
 	*/
 	defer func() {
@@ -125,7 +125,7 @@ panic: failed to load next symbol
 ```go {.example_for_playground}
 func printLoad(seconds time.Duration) {
 	/*
-	восстановление после паники 
+	Восстановление после паники 
 	внутри горутины
 	*/
 	defer func() {
@@ -143,7 +143,7 @@ func printLoad(seconds time.Duration) {
 
 func main() {
 	go printLoad(5)
-	// тяжелая задача
+	// Тяжелая задача
 	time.Sleep(3 * time.Second)
 	fmt.Println("\nDone")
 }
@@ -394,7 +394,7 @@ func main() {
 	getMessage(ch)
 	// Ждем некоторое время, чтоб увидеть утечку
 	time.Sleep(time.Second)
-	// Число горутин в конце.
+	// Число горутин в конце
 	endingGs := runtime.NumGoroutine()
 	// Пишем результаты
 	fmt.Printf("Begin! Goroutines number: %d\n", startingGs)
