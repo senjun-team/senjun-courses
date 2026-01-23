@@ -14,19 +14,16 @@ import (
 	"time"
 )
 
-func printLoad(seconds time.Duration) {
-	const pointsNumber = 10
-	millisconds := seconds * 1000
-	msPerPoint := (millisconds / pointsNumber)
+func printLoad() {
 	fmt.Print("Loading")
-	for range pointsNumber {
-		time.Sleep(msPerPoint * time.Millisecond)
+	for range 10 {
+		time.Sleep(500 * time.Millisecond)
 		fmt.Print(".")
 	}
 }
 
 func main() {
-	go printLoad(5)
+	go printLoad()
 	// тяжелая задача
 	time.Sleep(3 * time.Second)
 	fmt.Println("\nDone")
@@ -37,34 +34,28 @@ Loading.....
 Done
 ```
 
+Обратите внимание, что консольный вывод не всегда будет таким. Количество точек в надписи `Loading.....` может варьироваться. Функция `time.Sleep` приостанавливает выполнение горутины **как минимум** на время, переданной ей в качестве аргумента. В действительности это время может быть не совсем таким. Невозможно гарантировать, что горутина будет ждать строго определенное время. Это связано с особенностями работы вычислительных машин. Таким образом, полагаться на одинаковое поведение программы при использовании `time.Sleep` не всегда правильно. 
+
 Если `main` закончится раньше горутины, которая была из нее вызвана, то эта горутина не успеет завершиться:
 
 ```go {.example_for_playground}
-package main
-
-import (
-	"fmt"
-	"time"
-)
-
-func printLoad(seconds time.Duration) {
-	const pointsNumber = 10
-	millisconds := seconds * 1000
-	msPerPoint := (millisconds / pointsNumber)
+func printLoad() {
 	fmt.Print("Loading")
-	for range pointsNumber {
-		time.Sleep(msPerPoint * time.Millisecond)
+	for range 10 {
+		time.Sleep(500 * time.Millisecond)
 		fmt.Print(".")
 	}
 }
 
 func main() {
-	// тяжелая задача
+	// тяжелая задача теперь в горутине 
 	go func() {
-		time.Sleep(5 * time.Second)
+		// увеличиваем время ожидания, 
+		// чтобы main завершилась раньше горутины
+		time.Sleep(10 * time.Second)
 		fmt.Println("\nDone")
 	}()
-	printLoad(3)
+	printLoad()
 }
 ```
 ```
@@ -74,21 +65,12 @@ Loading..........
 Если в горутине возникнет паника, то горутина немедленно завершится вместе с программой:
 
 ```go {.example_for_playground}
-package main
-
-import (
-	"fmt"
-	"time"
-)
-
 func printLoad(seconds time.Duration) {
-	const pointsNumber = 10
-	millisconds := seconds * 1000
-	msPerPoint := (millisconds / pointsNumber)
 	fmt.Print("Loading")
-	for range pointsNumber {
-		time.Sleep(msPerPoint * time.Millisecond)
+	for range 10{
+		time.Sleep(500 * time.Millisecond)
 		fmt.Print(".")
+		// искусственно создаем панику 
 		panic("failed to load next symbol")
 	}
 }
@@ -108,26 +90,20 @@ panic: failed to load next symbol
 Не поможет даже восстановление из вызывающей горутины: 
 
 ```go {.example_for_playground}
-package main
-
-import (
-	"fmt"
-	"time"
-)
-
 func printLoad(seconds time.Duration) {
-	const pointsNumber = 10
-	millisconds := seconds * 1000
-	msPerPoint := (millisconds / pointsNumber)
 	fmt.Print("Loading")
-	for range pointsNumber {
-		time.Sleep(msPerPoint * time.Millisecond)
+	for range 10{
+		time.Sleep(500 * time.Millisecond)
 		fmt.Print(".")
 		panic("failed to load next symbol")
 	}
 }
 
 func main() {
+	/*
+	попытка восстановить ход выполнения программы 
+	после того, как возникнет паника внутри горутины
+	*/
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("\nRecovered: %v\n", r)
@@ -147,25 +123,19 @@ panic: failed to load next symbol
 Восстановление работает только в самой горутине, которая вызывает панику: 
 
 ```go {.example_for_playground}
-package main
-
-import (
-	"fmt"
-	"time"
-)
-
 func printLoad(seconds time.Duration) {
+	/*
+	восстановление после паники 
+	внутри горутины
+	*/
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("\nRecovered: %v\n", r)
 		}
 	}()
-	const pointsNumber = 10
-	millisconds := seconds * 1000
-	msPerPoint := (millisconds / pointsNumber)
 	fmt.Print("Loading")
-	for range pointsNumber {
-		time.Sleep(msPerPoint * time.Millisecond)
+	for range 10 {
+		time.Sleep(500 * time.Millisecond)
 		fmt.Print(".")
 		panic("failed to load next symbol")
 	}
