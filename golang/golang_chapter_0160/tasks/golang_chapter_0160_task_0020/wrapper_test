@@ -1,0 +1,29 @@
+package main
+
+import (
+	"runtime"
+	"testing"
+	"time"
+)
+
+func TestMessages(t *testing.T) {
+	const messagesNumber = 10
+	// Number of goroutines in the begining
+	startingGs := runtime.NumGoroutine()
+	ch := make(chan string)
+	for range messagesNumber {
+		sendMessage(ch, "hello, senior!")
+		getMessage(ch)
+	}
+	// Wait some time for leaks
+	time.Sleep(time.Second)
+	// Number of goroutines in the end
+	endingGs := runtime.NumGoroutine()
+	// Check leaks number
+	leakedNumber := endingGs - startingGs
+	if leakedNumber != 0 {
+		t.Errorf("Number of messages: %d. Number of goroutines leaked: %d",
+			messagesNumber,
+			leakedNumber)
+	}
+}
