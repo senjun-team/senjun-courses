@@ -4,7 +4,7 @@
 
 ## Буферизованные каналы
 
-Буферизованный канал обладает некоторым буфером. Элементы буфера выстраиваются в очередь, максимальный размер которой определяется при создании канала. Максимальный размер передается вторым параметром в функцию `make`:
+Буферизованный канал обладает некоторым буфером. Элементы буфера выстраиваются в очередь, максимальный размер которой определяется при создании канала. Этот размер передается вторым параметром в функцию `make`:
 
 ```go
 ch := make(chan int, 5)
@@ -30,6 +30,102 @@ fmt.Println(len(ch)) // 2
 
 Не используйте буферизованные каналы, в пределах одной горутины, просто как очередь. В противном случае есть риск вовсе заблокировать программу. Для этого достаточно, например, читать из канала, в которой никто не пишет. Каналы прежде всего связаны с горутинами. Это средство для пареллелизма. Когда вам нужна только очередь, используйте срез. 
 
+Пул соединений (connection pool) — это кеш открытых подключений к базе данных. Соединения из пула могут использоваться многократно. Благодаря нему нет необходимости устанавливать соединение с базой данных каждый раз. Такой прием повышает производительность приложения. {.task_text} 
+
+В следующем примере для пяти задач используется пул из трех соединений. Реализуйте создание нового пула размера `size` через функцию `newPool`. Внутри функции `newPool` необходимо создать буферизованный канал из соединений размером `size`. Инициализируйте соединения инентификаторами `1..size`. {.task_text} 
+
+Код из `main` должен выполниться без ошибок. {.task_text} 
+
+```go {.task_source #golang_chapter_0170_task_0010}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type Connection struct {
+	ID int
+}
+
+func newPool(size int) chan *Connection {
+	// ваш код здесь
+}
+
+func main() {
+	const poolSize = 3
+	const taskSize = 5
+	pool := newPool(poolSize)
+	// Используем соединения
+	done := make(chan struct{}, taskSize)
+	for i := 1; i <= taskSize; i++ {
+		go func(taskID int) {
+			// Берем соединение из пула
+			conn := <-pool
+			fmt.Printf("Task %d using connection %d\n", taskID, conn.ID)
+			time.Sleep(time.Second)
+			// Возвращаем в пул
+			pool <- conn
+			fmt.Printf("Task %d returned connection %d\n", taskID, conn.ID)
+			done <- struct{}{}
+		}(i)
+	}
+	// ожидаем завершения всех горутин
+	for range taskSize {
+		<-done
+	}
+}
+```
+
+Для создания пула используйте встроенную функцию `make`. Для его инициализации организуйте цикл от 1 до `size` включительно. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+type Connection struct {
+	ID int
+}
+
+func newPool(size int) chan *Connection {
+	// Пул из size соединений
+	pool := make(chan *Connection, size)
+
+	// Инициализируем пул
+	for i := 1; i <= size; i++ {
+		pool <- &Connection{ID: i}
+	}
+	return pool
+}
+
+func main() {
+	const poolSize = 3
+	const taskSize = 5
+	pool := newPool(poolSize)
+	// Используем соединения
+	done := make(chan struct{}, taskSize)
+	for i := 1; i <= taskSize; i++ {
+		go func(taskID int) {
+			// Берем соединение из пула
+			conn := <-pool
+			fmt.Printf("Task %d using connection %d\n", taskID, conn.ID)
+			time.Sleep(time.Second)
+			// Возвращаем в пул
+			pool <- conn
+			fmt.Printf("Task %d returned connection %d\n", taskID, conn.ID)
+			done <- struct{}{}
+		}(i)
+	}
+	// ожидаем завершения всех горутин
+	for range taskSize {
+		<-done
+	}
+}
+```
 ## Небуферизованный канал и канал с буфером на один элемент 
 
 Небуферизованный канал и канал с буфером на один элемент — это не одно и то же. 
