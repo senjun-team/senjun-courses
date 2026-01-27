@@ -113,7 +113,7 @@ std::println("{} {}", *p, p[1]);
 9621534751069176051 2054564862222048242
 ```
 
-## Сишные строки
+## Нуль-терминированные строки
 
 Вы уже знакомы с классом строки `std::string` из стандартной библиотеки. У него [около двадцати](https://en.cppreference.com/w/cpp/string/basic_string/basic_string.html) перегрузок конструктора. В частности, есть перегрузка для инициализации литералом в двойных кавычках:
 
@@ -123,7 +123,7 @@ std::string protocol = "UART";
 
 Но [какой тип](https://en.cppreference.com/w/cpp/language/string_literal.html) у самого литерала? Перед вами [нуль-терминированная строка.](https://ru.wikipedia.org/wiki/%D0%9D%D1%83%D0%BB%D1%8C-%D1%82%D0%B5%D1%80%D0%BC%D0%B8%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B0) По сути это статический массив символов с типом `const char[n]`, где `n` — длина литерала + 1.
 
-Например, у литерала `"UART"` тип `const char[5]`. Дополнительный элемент массива отводится под [завершающий ноль](https://en.wikipedia.org/wiki/Null_character) (terminating null character) — маркер конца строки с кодом `0`. В C++ этот символ обозначается как `\0`:
+Например, у литерала `"UART"` тип `const char[5]`. Дополнительный элемент массива отводится под [завершающий ноль](https://en.wikipedia.org/wiki/Null_character) (terminating null character) — маркер конца строки с кодом `0`. В C++ это управляющий символ `\0`:
 
 ```cpp
 char null_char = '\0';
@@ -133,7 +133,12 @@ char null_char = '\0';
 
 ```cpp
 const char * c_str = "C-like string";
-const char c_arr[] = {'C', '-', 'l', 'i', 'k', 'e', ' ', 's', 't', 'r', 'i', 'n', 'g', '\0'};
+const char c_arr[] = {'C',
+                      '-',
+                      'l', 'i', 'k', 'e',
+                      ' ', 
+                      's', 't', 'r', 'i', 'n', 'g', 
+                      '\0'};
 
 std::println("{}", c_str);
 std::println("{}", c_arr);
