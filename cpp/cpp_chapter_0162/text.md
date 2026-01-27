@@ -36,31 +36,46 @@ bool * p = &retry;
 
 ## Указатели на элементы массива
 
-Элементы сишных массивов расположены друг за другом [в непрерывной области памяти.](/courses/cpp/chapters/cpp_chapter_0142/#block-c-array-under-the-hood) Убедимся в этом: переберем в цикле все элементы массива и выведем их адреса.
+Элементы контейнера `std::array` и сишных массивов расположены друг за другом [в непрерывной области памяти.](/courses/cpp/chapters/cpp_chapter_0142/#block-c-array-under-the-hood) Убедимся в этом: переберем в цикле все элементы массива и выведем их адреса. Для консольного вывода в виде таблицы используем [спецификаторы форматирования.](https://en.cppreference.com/w/cpp/utility/format/spec.html)
 
 ```cpp
-std::println("Size of int: {} bytes", sizeof(int));
+import std;
 
-const std::size_t n = 5;
-int pow_series[n] = {16, 32, 64, 128, 256};
-
-std::println("\nArray of ints:");
-
-for (std::size_t i = 0; i < n; ++i)
+int main()
 {
-    std::println("Address: {}. pow_series[{}]={}",
-                 static_cast<void *>(&pow_series[i]), i, pow_series[i]);
+    std::println("Size of int: {} bytes", sizeof(int));
+    std::array<int, 5> pow_series = {16, 32, 64, 128, 256};
+
+    std::println("\nArray of ints:");
+    std::string line(30, '-');
+    std::println("{}", line);
+    std::println("{:>2} {:>16} {:>9}", 'i', "address", "value");
+    std::println("{}", line);
+
+    for (std::size_t i = 0; i < pow_series.size(); ++i)
+    {
+        std::println("{:>2} {:>16} {:>9}",
+                     i,
+                     static_cast<void *>(&pow_series[i]),
+                     pow_series[i]);
+    }
+
+    std::println("{}", line);
 }
 ```
 ```
 Size of int: 4 bytes
 
 Array of ints:
-Address: 0x7ffd9239f430. pow_series[0]=16
-Address: 0x7ffd9239f434. pow_series[1]=32
-Address: 0x7ffd9239f438. pow_series[2]=64
-Address: 0x7ffd9239f43c. pow_series[3]=128
-Address: 0x7ffd9239f440. pow_series[4]=256
+------------------------------
+ i          address     value
+------------------------------
+ 0   0x7ffe9438f630        16
+ 1   0x7ffe9438f634        32
+ 2   0x7ffe9438f638        64
+ 3   0x7ffe9438f63c       128
+ 4   0x7ffe9438f640       256
+------------------------------
 ```
 
 Как видите, разность между адресами соседних элементов совпадает с размером типа элемента массива.
@@ -68,16 +83,20 @@ Address: 0x7ffd9239f440. pow_series[4]=256
 Чтобы присвоить указателю адрес элемента массива, к этому элементу применяется оператор взятия адреса `&`:
 
 ```cpp
+std::array<int, 3> arr = {-1, 0, 1};
+
 int * p = &arr[0];
 ```
 
-Для нулевого элемента вместо этой записи можно использовать более лаконичную:
+Если перед вами сишный массив, и вам нужно получить указатель на нулевой элемент, то можно использовать более лаконичную запись:
 
 ```cpp
+int arr[] = {-1, 0, 1};
+
 int * p = arr;
 ```
 
-Здесь срабатывает неявное приведение типов: тип сишного массива `int[5]` приводится к типу указателя `int *` на нулевой элемент.
+Здесь срабатывает неявное приведение типов: тип сишного массива `int[3]` приводится к типу указателя `int *` на нулевой элемент.
 
 Синтаксис языка позволяет применять к указателю оператор `[]`, чтобы через него обращаться к элементам массива:
 
