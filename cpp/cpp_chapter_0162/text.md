@@ -113,6 +113,22 @@ std::println("{} {}", *p, p[1]);
 9621534751069176051 2054564862222048242
 ```
 
+Что выведет этот код? Напишите `err` в случае ошибки или `ub` в случае неопределенного поведения. {.task_text}
+
+Вспомните [способы](/courses/cpp/chapters/cpp_chapter_0142/#block-array-length) определения длины массива. {.task_text}
+
+```cpp
+int arr[] = {1, 2};
+std::println("{}", sizeof(arr) / sizeof(*arr));
+```
+
+```consoleoutput {.task_source #cpp_chapter_0162_task_0010}
+```
+. {.task_hint}
+```cpp {.task_answer}
+2
+```
+
 ## Нуль-терминированные строки
 
 Вы уже знакомы с классом строки `std::string` из стандартной библиотеки. У него [около двадцати](https://en.cppreference.com/w/cpp/string/basic_string/basic_string.html) перегрузок конструктора. В частности, есть перегрузка для инициализации литералом в двойных кавычках:
@@ -152,7 +168,7 @@ C-like string
 
 При передаче в функцию сишная строка приводится к указателю (array-to-pointer decay). Но в отличие от массива, она не требует передачи дополнительного параметра — длины. Не обязательно знать длину строки, чтобы избежать выхода за ее границы: достаточно помнить про завершающий `\0`.
 
-В стандартной библиотеке C++ есть [функции](https://en.cppreference.com/w/cpp/header/cstring.html) для работы с сишными строками. Например, [std::strcmp()](https://en.cppreference.com/w/cpp/string/byte/strcmp.html) для сравнения строк. Ведь строки, как и массивы, [нельзя сравнивать напрямую.](/courses/cpp/chapters/cpp_chapter_0142/#block-compare) 
+В стандартной библиотеке C++ есть [функции](https://en.cppreference.com/w/cpp/header/cstring.html) для работы с сишными строками. Например, [std::strcmp()](https://en.cppreference.com/w/cpp/string/byte/strcmp.html) для сравнения строк. Ведь строки, как и массивы, [нельзя сравнивать напрямую.](/courses/cpp/chapters/cpp_chapter_0142/#block-compare)
 
 ```cpp
 // Возвращает 0, если строки равны.
