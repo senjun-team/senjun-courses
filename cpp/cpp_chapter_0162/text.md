@@ -122,7 +122,7 @@ int arr[] = {1, 2};
 std::println("{}", sizeof(arr) / sizeof(*arr));
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0162_task_0010}
+```consoleoutput {.task_source #cpp_chapter_0162_task_0080}
 ```
 . {.task_hint}
 ```cpp {.task_answer}
