@@ -449,11 +449,6 @@ std::size_t size_ptr(int * buf)
     return sizeof(buf);
 }
 
-std::size_t size_arr(int buf[])
-{
-    return sizeof(buf);
-}
-
 int main()
 {
     int raw_data[5] = {};
@@ -463,8 +458,7 @@ int main()
     std::println("{} {} {} {}",
                  a,
                  b,
-                 b == size_ptr(raw_data),
-                 b == size_arr(raw_data));
+                 b == size_ptr(raw_data));
 }
 ```
 
@@ -472,7 +466,7 @@ int main()
 ```
 . {.task_hint}
 ```cpp {.task_answer}
-4 20 false false
+4 20 false
 ```
 
 В стандартной библиотеке есть функция `std::strlen()`, которая принимает сишную строку и возвращает ее длину без учета завершающего нулевого символа. {.task_text}
