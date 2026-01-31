@@ -14,6 +14,7 @@ bool retry = false;
 bool * p = &retry;
 ```
 
+
 ![Переменные в адресном пространстве](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16-2/illustrations/cpp/pointers_and_addresses.jpg) {.illustration}
 
 
@@ -216,7 +217,9 @@ std::println("{}", *p);  // UB
 ??? UB
 ```
 
+
 ![Перемещение по массиву с помощью указателя](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16/illustrations/cpp/pointer_to_array_element.jpg) {.illustration}
+
 
 Важно следить, чтобы указатель не вышел за границы массива. Обращение по нему приведет к UB.
 
@@ -353,14 +356,9 @@ int main()
 Вычитание целых чисел из указателей работает по той же схеме, что и сложение: из адреса отнимается значение, умноженное на размер типа.
 
 ```cpp
-std::uint64_t random_numbers[] = {
-        0x0c8ff307dabc0c4cULL,
-        0xf4bce78bf3821c1bULL,
-        0x4eb628a1e189c21aULL,
-        0x85ae000d253e0dbcULL
-    };
+int random_numbers[] = {-67, 9, 22, 18};
     
-std::uint64_t * p = &random_numbers[3];
+int * p = &random_numbers[3];
 std::println("Address: {}. Value: {:0x}", 
              static_cast<void *>(p), *p);
 
@@ -377,11 +375,15 @@ std::println("Address: {}. Value: {:0x}",
              static_cast<void *>(p), *p);  // UB
 ```
 ```
-Address: 0x7fffa1731128. Value: 85ae000d253e0dbc
-Address: 0x7fffa1731120. Value: 4eb628a1e189c21a
-Address: 0x7fffa1731110. Value: c8ff307dabc0c4c
+Address: 0x7ffe027539dc. Value: 12
+Address: 0x7ffe027539d8. Value: 16
+Address: 0x7ffe027539d0. Value: -43
 ??? UB
 ```
+
+
+![Перемещение по массиву с помощью указателя](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16-2/illustrations/cpp/pointer_to_array_substraction.jpg) {.illustration}
+
 
 Напишите функцию `reverse()`, которая принимает указатель на сишную строку. Она должна перевернуть строку, то есть расположить ее символы в обратном порядке. Считаем, что в функцию не может быть передан `nullptr`. {.task_text}
 
