@@ -441,6 +441,10 @@ std::println("{}", dist);
 5
 ```
 
+
+![Вычитание указателей](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16-2/illustrations/cpp/pointer_substraction.jpg) {.illustration}
+
+
 Что выведет этот код, если размер `int` равен 4 байта? Напишите `err` в случае ошибки компиляции или `ub` в случае неопределенного поведения. {.task_text}
 
 ```cpp
