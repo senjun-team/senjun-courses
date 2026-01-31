@@ -1,0 +1,36 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+int main()
+{
+    "check swap"_test = [] {
+        double a = 300.0;
+        double b = 400.0;
+
+        swap(a, b);
+        
+        expect(a == 400.0) << std::format("called swap(a, b) where a=300 and b=400. After the call a={}",
+                                           a) << fatal;
+        expect(b == 300.0) << std::format("called swap(a, b) where a=300 and b=400. After the call b={}",
+                                           b) << fatal;
+    };
+
+    "check swap is NOT implemented via addition and subtraction"_test = [] {
+        double a = 0.001234;
+        double b = 3458817242.9;
+
+        swap(a, b);
+        
+        expect(a == 3458817242.9) << std::format("called swap(a, b) where a=0.001234 and b=3458817242.9. After the call a={}",
+                                           a) << fatal;
+        expect(b == 0.001234) << std::format("called swap(a, b) where a=0.001234 and b=3458817242.9. After the call b={}",
+                                           b) << fatal;
+    };
+
+}
