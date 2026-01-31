@@ -63,7 +63,7 @@ int main() {
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0150_task_0080}
+```consoleoutput {.task_source #cpp_chapter_0152_task_0080}
 ```
 Память под переменную со статическим временем жизни `s` выделится сразу, но инициализируется переменная только при вызове `get_singleton()`. Поэтому вначале запустится `main()`. После этого при вызове `get_singleton()` выполнится конструктор `Singleton`. Затем вызовется метод `say()`. Произойдет выход из `main()`, а после этого — деструктор `Singleton`. {.task_hint}
 ```cpp {.task_answer}
@@ -166,7 +166,7 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0150_task_0090}
+```consoleoutput {.task_source #cpp_chapter_0152_task_0090}
 ```
 При вызове `next()` инициализируется статическая переменная `x`. Она будет разрушена после выхода из `main()`. Поэтому ссылка на `x` не будет висячей. {.task_hint}
 ```cpp {.task_answer}
@@ -290,7 +290,7 @@ enum class EndOfLine
 };
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0150_task_0100}
+```consoleoutput {.task_source #cpp_chapter_0152_task_0100}
 ```
 Базовый тип перечисления — это целое число. {.task_hint}
 ```cpp {.task_answer}
@@ -308,7 +308,7 @@ struct Point
 };
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0150_task_0110}
+```consoleoutput {.task_source #cpp_chapter_0152_task_0110}
 ```
 Размер структуры из 3-х `double` точно превышает пару машинных слов. {.task_hint}
 ```cpp {.task_answer}
