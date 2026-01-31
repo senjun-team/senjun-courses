@@ -4,8 +4,8 @@ import std;
 
 int main()
 {
-    int prev = 503;
-    int cur = 200;
+    double prev = 503.0;
+    double cur = 200.0;
 
     std::println("calling swap(prev, cur) where prev={} and cur={}...", prev, cur);
     swap(prev, cur);
