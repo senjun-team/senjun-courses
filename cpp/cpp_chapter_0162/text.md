@@ -433,7 +433,9 @@ int * p1 = http_non_retriable_errors;
 
 int * p2 = &http_non_retriable_errors[5];
 
-std::println("{}", p2 - p1);
+std::size_t dist = p2 - p1;
+
+std::println("{}", dist);
 ```
 ```
 5
