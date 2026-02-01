@@ -315,7 +315,7 @@ int * ptr = NULL;
 #define NULL nullptr
 ```
 
-У `nullptr` тип [std::nullptr_t](https://en.cppreference.com/w/cpp/types/nullptr_t.html), а `NULL` может быть целым числом `int`. В любом случае они совместимы между собой благодаря [неявному приведению типов.](/courses/cpp/chapters/cpp_chapter_0010/#block-implicit-cast) 
+У `nullptr` тип [std::nullptr_t](https://en.cppreference.com/w/cpp/types/nullptr_t.html), а `NULL` может быть целым числом `int`. В любом случае они совместимы между собой благодаря [неявному приведению типов.](/courses/cpp/chapters/cpp_chapter_0011/#block-implicit-cast) 
 
 ```cpp {.example_for_playground}
 import std;
