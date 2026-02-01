@@ -79,7 +79,7 @@ unsigned long int max_recursive_calls;
 
 [Диапазон знакового целого числа](https://timsong-cpp.github.io/cppwp/n4868/basic.fundamental) — от `−2^(N - 1)` до `2^(N - 1) − 1` включительно, где `N` — ширина типа в битах. {.task_text}
 
-Напишите через пробел два целых числа, описывающих диапазон значений типа `short` в нашем [песочнице.](https://senjun.ru/playground/cpp/) Для этого примените оператор `sizeof`. {.task_text}
+Напишите через пробел два целых числа, описывающих диапазон значений типа `short` в [песочнице.](https://senjun.ru/playground/cpp/) Для этого примените оператор `sizeof`. {.task_text}
 
 ```consoleoutput {.task_source #cpp_chapter_0141_task_0010}
 ```
