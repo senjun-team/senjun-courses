@@ -1,0 +1,8 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::println("{}", to_fahrenheit(100.0));
+}
