@@ -49,7 +49,7 @@ std::println("{}", n);
 ![Фундаментальные типы](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-14/illustrations/cpp/types_fundamental.jpg) {.illustration}
 
 
-С `void` и несколькими арифметическими типами вы уже [знакомы.](/courses/cpp/chapters/cpp_chapter_0020/#block-fundamental-types) Пора узнать про остальные.
+С `void` и несколькими арифметическими типами вы уже [знакомы.](/courses/cpp/chapters/cpp_chapter_0021/#block-fundamental-types) Пора узнать про остальные.
 
 **Арифметические типы** описывают:
 - Целые числа ([integral types](https://timsong-cpp.github.io/cppwp/n4868/basic.fundamental#11) или integer types).
@@ -795,7 +795,7 @@ std::uint32_t convert_ip_v4(std::string ip)
 
 ### Тип size_t
 
-С типом `std::size_t` вы уже [знакомы.](/courses/cpp/chapters/cpp_chapter_0020/#block-size_t) Это беззнаковое целое, которое может хранить индекс элемента контейнера, его длину, счётчик цикла, размер переменной.
+С типом `std::size_t` вы уже [знакомы.](/courses/cpp/chapters/cpp_chapter_0021/#block-size_t) Это беззнаковое целое, которое может хранить индекс элемента контейнера, его длину, счётчик цикла, размер переменной.
 
 Пора узнать, что на самом деле `std::size_t` — всего лишь псевдоним над одним из беззнаковых целых. Оно выбирается таким образом, чтобы вместить размер любого объекта в байтах. Ведь оператор [sizeof](https://en.cppreference.com/w/cpp/language/sizeof.html) возвращает именно тип `std::size_t`.
 

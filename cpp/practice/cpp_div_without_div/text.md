@@ -101,7 +101,7 @@ x << 1 == x * 2
 
 Приоритет операторов побитового сдвига ниже, чем у сложения `+` и вычитания `-`. Но выше, чем у операторов сравнения `<`, `>`. Таблицу с приоритетом всех операторов вы можете [посмотреть на cppreference.](https://en.cppreference.com/w/cpp/language/operator_precedence)
 
-Для побитовых сдвигов существуют операторы [составного присваивания](/courses/cpp/chapters/cpp_chapter_0020#block-compound-assignment) `<<=` и `>>=`:
+Для побитовых сдвигов существуют операторы [составного присваивания](/courses/cpp/chapters/cpp_chapter_0022#block-compound-assignment) `<<=` и `>>=`:
 
 ```cpp
 x <<= n; // эквивалентно x = x << n;

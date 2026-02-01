@@ -1,6 +1,6 @@
 # Глава 14.2. Составные типы
 
-Если тип не относится к фундаментальным, то он считается составным. Вы уже имеете представление про некоторые из составных типов: [перечисления,](/courses/cpp/chapters/cpp_chapter_0050/#block-enum) [структуры,](/courses/cpp/chapters/cpp_chapter_0050/#block-struct) [классы](/courses/cpp/chapters/cpp_chapter_0050/#block-class) и [функции.](/courses/cpp/chapters/cpp_chapter_0020/#block-functions)
+Если тип не относится к фундаментальным, то он считается составным. Вы уже имеете представление про некоторые из составных типов: [перечисления,](/courses/cpp/chapters/cpp_chapter_0050/#block-enum) [структуры,](/courses/cpp/chapters/cpp_chapter_0050/#block-struct) [классы](/courses/cpp/chapters/cpp_chapter_0050/#block-class) и [функции.](/courses/cpp/chapters/cpp_chapter_0021/#block-functions)
 
 
 ![Составные типы](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-14/illustrations/cpp/types_compound.jpg) {.illustration}
