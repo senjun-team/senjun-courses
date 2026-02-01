@@ -1,9 +1,0 @@
-import TestHelpers;
-import std;
-
-int main()
-{
-    std::string user_input = hlp::remove_spaces(R"(#INJECT-b585472fa)");
-    std::ranges::sort(user_input);
-    return user_input == "346" ? 0 : 1;
-}

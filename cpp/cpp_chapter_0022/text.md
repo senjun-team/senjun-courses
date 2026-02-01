@@ -1,6 +1,6 @@
 # Глава 2.2. Операторы
 
-Вы уже познакомились с [оператором присваивания](https://en.cppreference.com/w/cpp/language/operator_assignment) `=`, оператором взятия элемента по индексу `[]` и оператором `.` для доступа к члену класса. Рассмотрим ещё несколько категорий операторов, которые пригодятся в первую очередь.
+Вы уже читали примеры кода, в которых используется [оператор присваивания](https://en.cppreference.com/w/cpp/language/operator_assignment) `=`, оператор взятия элемента по индексу `[]` и оператор `.` для доступа к члену класса. Рассмотрим ещё несколько категорий операторов, которые пригодятся в первую очередь.
 
 Чтобы поменять порядок выполнения операторов, они группируются скобками:
 
@@ -36,7 +36,7 @@ std::string text = "Operator";
 bool b = text[text.size() - 1] == text[3];
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0020_task_0090}
+```consoleoutput {.task_source #cpp_chapter_0022_task_0090}
 ```
 `text.size()` вернёт 8. Символ по индексу 7 равен `r`. Символ по индексу 3 тоже равен `r`. {.task_hint}
 ```cpp {.task_answer}
@@ -62,7 +62,7 @@ XOR — это булева функция, также известная как
 
 Напишите свою реализацию `hello_xor()`. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0020_task_0050}
+```cpp {.task_source #cpp_chapter_0022_task_0050}
 
 ```
 Функция возвращает `true` тогда и только тогда, когда один из аргументов равен `true`, а другой — `false`. {.task_hint}
@@ -182,7 +182,7 @@ error: expression is not assignable
 width < 0 || volume / length <= max_val
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0020_task_0060}
+```consoleoutput {.task_source #cpp_chapter_0022_task_0060}
 ```
 Приоритет деления `/` выше, чем сравнения `<=`. А приоритет `||` меньше, чем сравнения. {.task_hint}
 ```cpp {.task_answer}
@@ -202,7 +202,7 @@ int a = 1, b = 2, c = 3;
 int x = a-- - b++ - c--;
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0020_task_0070}
+```consoleoutput {.task_source #cpp_chapter_0022_task_0070}
 ```
 Приоритет постфиксных операторов выше, чем у оператора вычитания `-`. Постфиксный оператор сначала возвращает значение переменной, а потом изменяет его. Поэтому `x` равен `1 - 2 - 3`. {.task_hint}
 ```cpp {.task_answer}
@@ -219,7 +219,7 @@ int C = 5;
 std::print("{}", c++ * ++C);
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0020_task_0080}
+```consoleoutput {.task_source #cpp_chapter_0022_task_0080}
 ```
 В этом выражении у постфиксного оператора максимальный приоритет. Следующим по приоритету выполнится префиксный оператор. И лишь затем — оператор умножения. Мы получим `2 * 6`. {.task_hint}
 ```cpp {.task_answer}

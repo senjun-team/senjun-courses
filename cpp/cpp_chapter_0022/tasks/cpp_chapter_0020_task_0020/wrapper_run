@@ -1,9 +1,0 @@
-import std;
-
-#INJECT-b585472fa
-
-int main()
-{
-    std::println("to_fahrenheit(100.0) = {}", to_fahrenheit(100.0));
-    std::println("to_fahrenheit(-50.0) = {}", to_fahrenheit(-50.0));
-}

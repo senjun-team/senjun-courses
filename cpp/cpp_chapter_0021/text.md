@@ -25,7 +25,7 @@ C++ — регистрозависимый язык. Поэтому `count`, `Co
 6 hex_val
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0020_task_0010}
+```consoleoutput {.task_source #cpp_chapter_0021_task_0010}
 ```
 Имя `$total_volume` содержит недопустимый символ `$`. Имя `codek.meta` содержит недопустимую в названии точку. Имя `%TOKEN%` содержит недопустимый символ `%`. {.task_hint}
 ```cpp {.task_answer}
@@ -121,7 +121,7 @@ int main()
 - Принимает вещественное число типа `double` — температуру в градусах по Цельсию.
 - Возвращает градусы по шкале Фаренгейта (`double`). Формула: `°F = °C × 9.0/5.0 + 32.0`. Чтобы её реализовать, воспользуйтесь операторами для сложения `+`, умножения `*` и деления `/`. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0020_task_0020}
+```cpp {.task_source #cpp_chapter_0021_task_0020}
 ```
 Возвращаемое функцией значение, если параметр называется `celsius`: `celsius * 9.0 / 5.0 + 32.0`. {.task_hint}
 ```cpp {.task_answer}
@@ -179,7 +179,7 @@ a = b;
 b = c;
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0020_task_0030}
+```consoleoutput {.task_source #cpp_chapter_0021_task_0030}
 ```
 В этом коде значения переменных `a` и `b` меняются местами с использованием переменной `c`.  {.task_hint}
 ```cpp {.task_answer}
@@ -231,7 +231,7 @@ double b = -7e-2; // -7x10^-2 =  -0.07
 
 Если вы раньше не работали с экспоненциальной записью, самое время [разобраться в ней.](https://urvanov.ru/2021/12/08/%D0%BD%D0%B0%D1%83%D1%87%D0%BD%D0%B0%D1%8F-%D0%B7%D0%B0%D0%BF%D0%B8%D1%81%D1%8C-%D1%87%D0%B8%D1%81%D0%BB%D0%B0/) {.task_text}
 
-```consoleoutput {.task_source #cpp_chapter_0020_task_0040}
+```consoleoutput {.task_source #cpp_chapter_0021_task_0040}
 ```
 Представим число 0.00002 в виде мантиссы и порядка. Мантисса: 2. Порядок: -5. {.task_hint}
 ```cpp {.task_answer}
