@@ -1,0 +1,12 @@
+import boost.ut;
+import TestHelpers;
+
+int main()
+{
+    using namespace boost::ut;
+
+    "check user solution console output"_test = [] {
+        std::string user_code_output = hlp::normalize(hlp::exec_user_solution());
+        expect(user_code_output.starts_with("helloworld")) << "\nExpected output:\nHello Hello World\n";
+    };
+}

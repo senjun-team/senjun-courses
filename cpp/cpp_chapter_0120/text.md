@@ -391,7 +391,7 @@ find_package(<PackageName> [version] [EXACT] [REQUIRED|QUIET] [COMPONENTS <compo
 - Флаг `REQUIRED` прекращает сборку с ошибкой, если зависимость не обнаружена в системе. Флаг `QUIET` наоборот продолжает сборку, даже если пакет не найден.
 - `COMPONENTS` — список требуемых компонентов пакета.
 
-Так выглядит поиск компонентов `program_options` и `filesystem` пакета [Boost](/courses/cpp/chapters/cpp_chapter_0010/#block-boost):
+Так выглядит поиск компонентов `program_options` и `filesystem` пакета [Boost](/courses/cpp/chapters/cpp_chapter_0012/#block-boost):
 
 ```
 find_package(Boost 1.89 REQUIRED COMPONENTS program_options filesystem)
