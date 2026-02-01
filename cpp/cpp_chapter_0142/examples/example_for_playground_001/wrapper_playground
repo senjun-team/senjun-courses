@@ -9,7 +9,7 @@ void ask_confirmation(std::string prompt, std::function<ActionCallback> callback
     if (!prompt.empty())
         std::println("{}", prompt);
     
-    // В плэйграунде нет возможности получить ввод от пользователя,
+    // В песочнице нет возможности получить ввод от пользователя,
     // поэтому хардкодим:
     std::string user_input = "Y";
     
