@@ -155,7 +155,7 @@ int main()
 
 ## Функции
 
-У функции может быть как [определение, так и объявление.](/courses/cpp/chapters/cpp_chapter_0100/#block-declaration-definition) Объявление состоит из типа возвращаемого значения, имени функции и типов параметров:
+У функции может быть как [определение, так и объявление.](/courses/cpp/chapters/cpp_chapter_0101/#block-declaration-definition) Объявление состоит из типа возвращаемого значения, имени функции и типов параметров:
 
 ```cpp
 bool exists(std::string path);
