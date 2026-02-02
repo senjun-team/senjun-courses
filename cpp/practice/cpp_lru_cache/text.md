@@ -51,7 +51,7 @@ cache.get(8);      // "", false
 
 — Сборка должна быть релизной. Для этого задайте правильное значение переменной `CMAKE_BUILD_TYPE`.
 
-— Соберите единицу трансляции `lru_cache.cpp` в [динамическую библиотеку](/courses/cpp/chapters/cpp_chapter_0110/#block-dynamic-libs) и слинкуйте её с бинарниками `main` и `tests`.
+— Соберите единицу трансляции `lru_cache.cpp` в [динамическую библиотеку](/courses/cpp/chapters/cpp_chapter_0112/#block-dynamic-libs) и слинкуйте её с бинарниками `main` и `tests`.
 
 — В юнит-тестах используется библиотека GTest (GoogleTest). Она установлена по системным путям в докер-образе, внутри которого компилируется и запускается проект. Найдите её с помощью команды [find_package](https://cmake.org/cmake/help/latest/module/FindGTest.html) и слинкуйте с тестами `tests`. Цель для линковки - `GTest::gtest`.
 

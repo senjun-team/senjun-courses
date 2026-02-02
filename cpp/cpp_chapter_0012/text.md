@@ -16,7 +16,7 @@
 ![Лого компиляторов](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/cpp_compilers.png) {.illustration}
 
 
-Вместе с дебаггером и сопутствующими инструментами эти компиляторы входят в состав тулчейнов сборки. О них мы поговорим в [главе про сборку проекта.](/courses/cpp/chapters/cpp_chapter_0110/)
+Вместе с дебаггером и сопутствующими инструментами эти компиляторы входят в состав тулчейнов сборки. О них мы поговорим в [главе про сборку проекта.](//courses/cpp/chapters/cpp_chapter_0111)
 
 ### IDE и редакторы
 
