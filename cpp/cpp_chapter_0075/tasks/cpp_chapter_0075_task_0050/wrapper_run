@@ -1,0 +1,24 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const std::vector<std::pair<std::string, bool>> tests = {
+        {"()", true},
+        {"[]()", true},
+        {"<{}>", true},
+        {"", true},
+        {")(", false},
+        {"<>>", false},
+        {"((()", false},
+        {"{)", false}
+    };
+    
+    for(const auto & [s, plan]: tests)
+    {
+        const bool fact = is_balanced(s);
+        std::println("is_balanced(\"{}\") == {}. {}",
+        s, fact, plan == fact ? "OK" : "ERR");
+    }
+}
