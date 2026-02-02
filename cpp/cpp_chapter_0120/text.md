@@ -115,7 +115,7 @@ cmake --build build/
 
 ### Сборка простого проекта с хедерами
 
-Создайте директорию `hello_compiler` для одноимённого проекта, сохраните в ней [один хедер и два cpp-файла.](/courses/cpp/chapters/cpp_chapter_0100/#block-hello-compiler) Добавьте CMakeLists.txt:
+Создайте директорию `hello_compiler` для одноимённого проекта, сохраните в ней [один хедер и два cpp-файла.](/courses/cpp/chapters/cpp_chapter_0101/#block-hello-compiler) Добавьте CMakeLists.txt:
 
 ```
 hello_compiler
@@ -144,7 +144,7 @@ add_executable(main main.cpp hello_compiler.cpp)
 
 Переменная `CMAKE_CXX_FLAGS` нужна для задания конкретных опций компилятора. Мы присвоили ей строковое значение `"${CMAKE_CXX_FLAGS} ..."`, чтобы добавить к _уже установленным_ опциям несколько дополнительных. Внутри строки переменная `CMAKE_CXX_FLAGS` обернута в конструкцию `${}`. Это необходимо для подстановки значения переменной, а не её имени. 
 
-Опция `-stdlib=libc++` равносильна `-lc++`, с которой вы [уже знакомы.](/courses/cpp/chapters/cpp_chapter_0100/#block-opts) [-Werror](https://clang.llvm.org/docs/UsersManual.html#cmdoption-Werror) позволяет трактовать любые предупреждения компиляции как ошибки и завершать сборку. Самостоятельно разберитесь, для чего нужны опции `-Wall`, `-Wno-unused-variable` и `-Wno-logical-op-parentheses`. {#block-flags}
+Опция `-stdlib=libc++` равносильна `-lc++`, с которой вы [уже знакомы.](/courses/cpp/chapters/cpp_chapter_0101/#block-opts) [-Werror](https://clang.llvm.org/docs/UsersManual.html#cmdoption-Werror) позволяет трактовать любые предупреждения компиляции как ошибки и завершать сборку. Самостоятельно разберитесь, для чего нужны опции `-Wall`, `-Wno-unused-variable` и `-Wno-logical-op-parentheses`. {#block-flags}
 
 Теперь соберите проект:
 
@@ -161,7 +161,7 @@ cmake --build build/
 
 ### Сборка простого проекта с модулями
 
-Теперь соберём [вариант проекта](/courses/cpp/chapters/cpp_chapter_0100/#block-project-modules) `hello_compiler`, содержащий пользовательский модуль и импортирующий `std`. Добавьте в проект CMakeLists.txt:
+Теперь соберём [вариант проекта](/courses/cpp/chapters/cpp_chapter_0102/#block-project-modules) `hello_compiler`, содержащий пользовательский модуль и импортирующий `std`. Добавьте в проект CMakeLists.txt:
 
 ```
 hello_compiler
