@@ -1,0 +1,13 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const double r = 2.0;
+    std::println("area({}) == {}", r, area(r));
+
+    const double a = 1.5;
+    const double h = 2.8;
+    std::println("area({}, {}) == {}", a, h, area(a, h));
+}
