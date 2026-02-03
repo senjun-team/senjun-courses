@@ -4,11 +4,10 @@ import std;
 
 int main()
 {
-    std::vector<std::vector<short>> matrix = {{1, 2}, {3, 4}};
+    double prev = -1.2;
+    double cur = 4.5;
 
-    std::println("Matrix before rotation:\n{}", matrix);
-
-    rotate_clockwise(matrix);
-
-    std::println("Matrix after rotation:\n{}", matrix);
+    std::println("calling swap_via_pointers(prev, cur) where prev={} and cur={}...", prev, cur);
+    swap_via_pointers(prev, cur);
+    std::println("After the call: prev={} and cur={}", prev, cur);
 }

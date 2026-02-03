@@ -1,8 +1,0 @@
-import std;
-
-int main()
-{
-    int * ptr = nullptr;
-    
-    #INJECT-b585472fa
-}

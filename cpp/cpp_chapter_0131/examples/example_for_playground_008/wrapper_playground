@@ -1,0 +1,8 @@
+import std;
+
+int main()
+{
+    // Чтобы этот код скомпилировался, уберите флаг -Werror
+    // в CMakeLists.txt
+    #INJECT-b585472fa
+}

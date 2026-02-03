@@ -4,6 +4,20 @@ import std;
 int main()
 {
     std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
-    std::string plan = hlp::normalize("1 1 1");
+    std::string plan = hlp::normalize("Node * node;");
+
+    if (user_input.find(";") == std::string::npos)
+    {
+        std::println(std::cerr, "Не забудьте поставить ; в конце объявления");
+        return 1;   
+    }
+
+    if (user_input.find("=") != std::string::npos || 
+       user_input.find("{") != std::string::npos ||
+       user_input.find("(") != std::string::npos)
+    {
+        std::println(std::cerr, "Инициализировать переменную не надо");
+        return 1;   
+    }
     return user_input == plan ? 0 : 1;
 }
