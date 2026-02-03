@@ -826,15 +826,15 @@ for(int i = v.size(); i >= 0; --i)
 
 Просто заменить `int` на `std::size_t` в этом примере нельзя, ведь декремент нуля приведёт к переполнению снизу. Вслед за нулём счётчик цикла примет максимальное для `std::size_t` значение.
 
-Чтобы проитерироваться в обратном порядке, вместо счётчика типа `int` вспомните про [обратные итераторы.](/courses/cpp/chapters/cpp_chapter_0060/#block-reverse-iterators) Другой вариант — библиотека [ranges](https://en.cppreference.com/w/cpp/ranges.html) (диапазоны), появившаяся в C++20. В этом курсе мы её тоже рассмотрим.
+Чтобы проитерироваться в обратном порядке, вместо счётчика типа `int` вспомните про [обратные итераторы.](/courses/cpp/chapters/cpp_chapter_0062/#block-reverse-iterators) Другой вариант — библиотека [ranges](https://en.cppreference.com/w/cpp/ranges.html) (диапазоны), появившаяся в C++20. В этом курсе мы её тоже рассмотрим.
 
 Перед вами функция `build_inverted_index()`, которая принимает коллекцию отсортированных по возрастанию популярности документов. Функция строит по ним [обратный индекс](https://ru.wikipedia.org/wiki/%D0%98%D0%BD%D0%B2%D0%B5%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D1%8B%D0%B9_%D0%B8%D0%BD%D0%B4%D0%B5%D0%BA%D1%81). В данном случае это просто словарь, соотносящий имени документа его позицию в коллекции. Если в ней встречаются документы с одинаковым именем, то в словарь попадает только самый популярный из них. {.task_text}
 
 Функция реализована циклом со счётчиком типа `int` при обработке больших коллекций вызывает UB. Перепишите её через обратные итераторы и замените тип индекса документа с `int` на `std::size_t`. {.task_text}
 
 Вам помогут: {.task_text}
-- Функция [std::distance()](/courses/cpp/chapters/cpp_chapter_0060/#block-distance).
-- Метод [base()](/courses/cpp/chapters/cpp_chapter_0060/#block-base) обратного итератора.
+- Функция [std::distance()](/courses/cpp/chapters/cpp_chapter_0061/#block-distance).
+- Метод [base()](/courses/cpp/chapters/cpp_chapter_0062/#block-base) обратного итератора.
 
 ```cpp {.task_source #cpp_chapter_0141_task_0100}
 using DocName = std::string;

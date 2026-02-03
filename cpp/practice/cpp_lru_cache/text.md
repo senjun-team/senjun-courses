@@ -63,7 +63,7 @@ cache.get(8);      // "", false
 
 — Двусвязный список хранит [пары](/courses/cpp/chapters/cpp_chapter_0073/#block-pair) ключ-значение, которые попадают в кеш. Добавляйте и удаляйте из списка элементы таким образом, чтобы они всегда были отсортированы в порядке убывания «новизны». В начале списка располагаются самые свежие записи, а в конце — те, к которым не было обращений дольше всех.
 
-— Хеш-таблица хранит пары из ключей и [итераторов,](/courses/cpp/chapters/cpp_chapter_0060/) указывающих на соответствующие этим ключам элементы списка.
+— Хеш-таблица хранит пары из ключей и [итераторов,](/courses/cpp/chapters/cpp_chapter_0061/) указывающих на соответствующие этим ключам элементы списка.
 
 
 ![Организация LRU-кеша](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-practice-lru/illustrations/cpp/lru_cache.jpg) {.illustration}
@@ -75,7 +75,7 @@ cache.get(8);      // "", false
 l.splice(l.begin(), l, it);
 ```
 
-[Инвалидации итераторов](/courses/cpp/chapters/cpp_chapter_0060/#block-invalidation) на элементы списка опасаться [не стоит.](/courses/cpp/chapters/cpp_chapter_0072/#block-list-it)
+[Инвалидации итераторов](/courses/cpp/chapters/cpp_chapter_0062/#block-invalidation) на элементы списка опасаться [не стоит.](/courses/cpp/chapters/cpp_chapter_0072/#block-list-it)
 
 ## Тестирование
 
