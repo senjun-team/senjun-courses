@@ -148,7 +148,7 @@ int main()
 3
 ```
 
-Функция [std::find_if()](https://en.cppreference.com/w/cpp/algorithm/find) вместо значения принимает [предикат](/courses/cpp/chapters/cpp_chapter_0050/#block-predicate) и применяет его к элементам диапазона. Она возвращает итератор на первый элемент, для которого предикат вернул `true`.
+Функция [std::find_if()](https://en.cppreference.com/w/cpp/algorithm/find) вместо значения принимает [предикат](/courses/cpp/chapters/cpp_chapter_0056/#block-predicate) и применяет его к элементам диапазона. Она возвращает итератор на первый элемент, для которого предикат вернул `true`.
 
 У функции [std::find_if_not()](https://en.cppreference.com/w/cpp/algorithm/find) единственное отличие от `std::find_if()`: она возвращает итератор на элемент, для которого предикат вернул `false`.
 

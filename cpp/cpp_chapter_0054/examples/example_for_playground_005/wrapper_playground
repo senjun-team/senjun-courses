@@ -1,0 +1,13 @@
+import std;
+
+enum HashType
+{
+    MD5,
+    SHA1,
+    SHA2
+};
+
+int main()
+{
+    #INJECT-b585472fa
+}
