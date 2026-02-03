@@ -1,0 +1,42 @@
+import boost.ut;
+import TestHelpers;
+
+#INJECT-b585472fa
+
+bool is_eq(double a, double b)
+{
+    return std::abs(a - b) < 1e-4;
+}
+
+int main()
+{
+    using namespace boost::ut;
+
+    "Check function overload for circle area"_test = [] {
+        std::vector<std::pair<double, double>> cases = {
+            {1.1,    3.80132},
+            {504.97, 801089.47905},
+            {81.0,   20611.98940}
+        };
+
+        for(const auto & [r, plan]: cases)
+        {
+            const double fact = area(r);
+            expect(is_eq(fact, plan)) << std::format("area({}) returns {}. But expected result is {}",
+                                           r, fact, plan) << fatal;
+        }
+    };
+
+    "Check function overload for triangle area"_test = [] {
+        std::vector<std::tuple<double, double, double>> cases = {
+            {6.8, 5.2, 17.68},
+        };
+
+        for(const auto & [a, h, plan]: cases)
+        {
+            const double fact = area(a, h);
+            expect(is_eq(fact, plan)) << std::format("area({}, {}) returns {}. But expected result is {}",
+                                           a, h, fact, plan) << fatal;
+        }
+    };
+}
