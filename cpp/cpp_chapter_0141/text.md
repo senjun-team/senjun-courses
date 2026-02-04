@@ -270,7 +270,7 @@ void swap(double & a, double & b)
 
 ## Использование ссылок в цикле range-for
 
-Как вы помните, один из вариантов цикла `for` — это [цикл по диапазону](/courses/cpp/chapters/cpp_chapter_0040/#block-range-for) (range-for):
+Как вы помните, один из вариантов цикла `for` — это [цикл по диапазону](/courses/cpp/chapters/cpp_chapter_0042/#block-range-for) (range-for):
 
 ```cpp
 for (item : range-initializer)
