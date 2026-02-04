@@ -1,0 +1,313 @@
+# Глава 3.1. Условия if-else и тернарный оператор
+
+В C++ есть три варианта условного выполнения кода:
+- классический `if-else`,
+- лаконичный тернарный оператор,
+- сопоставление выражения с набором значений через `switch-case`.
+
+## Условия if-else
+
+Чтобы выполнять различные действия в зависимости от условия, используется конструкция `if-else`. Условием может быть любое выражение, приводимое к `bool`:
+
+```cpp
+if (условное выражение)
+    Инструкция для true
+else
+    Инструкция для false
+```
+
+Ветка `else` может отсутствовать.
+
+Каждая ветка условия состоит строго из одной инструкции (statement). Как вы [помните,](/courses/cpp/chapters/cpp_chapter_0021/#block-statements) инструкции (statements) — это фрагменты кода, выполняемые последовательно. И они бывают трёх видов: простые, составные и управляющие.
+
+С простыми инструкциями вы уже знакомы. Они оканчиваются точкой с запятой:
+
+```cpp
+return 0;
+```
+
+```cpp
+char quit = 'Q';
+```
+
+```cpp
+std::println("{}", a > b);
+```
+
+Составная инструкция (compound statement) — это обёрнутые фигурными скобками простые инструкции. Составные инструкции называют блоками. {#block-compound-statement}
+
+В этом примере каждая ветка условия — это блок:
+
+```cpp {.example_for_playground .example_for_playground_001}
+const std::string filename = "scale_2400.png";
+
+if (filename.contains('.'))
+{
+    std::println("Processing file: {}", filename);
+}
+else
+{
+    std::println("Please provide filename with extension");
+    handle_user_input();
+}
+```
+
+И третий вид инструкций — управляющие. К ним, например, относятся условия и циклы. В данном примере `if-else` — это одна управляющая инструкция, ветки которой содержат по блоку:
+
+```cpp
+if (a > b)
+{
+    // ...
+}
+else
+{
+    // ...
+}
+```
+
+### Когда фигурные скобки обязательны, а когда — опциональны? {#block-braces}
+
+Каждая ветка условия содержит _только одну_ инструкцию, будь то простая, составная или управляющая инструкция. Отсюда следуют правила расстановки фигурных скобок:
+- Если в ветке условия требуется выполнить больше одной инструкции, то такие инструкции объединяются в блок с помощью фигурных скобок. То есть превращаются в составную инструкцию.
+- Если же требуется выполнить только одну инструкцию, фигурные скобки **можно** опустить.
+
+Если фигурные скобки нужны только в одной из веток условия, то для единообразия лучше ставить их и в другой ветке.
+
+Эти же правила расстановки фигурных скобок действуют и для тела циклов.
+
+В данном случае скобки обязательны:
+
+```cpp {.example_for_playground .example_for_playground_002}
+std::size_t cpu_count = 0;
+
+if (cpu_count == 0)
+{
+    std::println("Setting CPU count to default value");
+    cpu_count = 4;
+}
+```
+
+А здесь скобки можно опустить:
+
+```cpp  {.example_for_playground .example_for_playground_003}
+const std::string s = "Some user input";
+
+if (s.empty())
+    std::println("Empty input!");
+else
+    std::println("User entered: {}", s);
+```
+
+Чему равно значение `a`? {.task_text}
+
+```cpp
+int a = 3;
+
+if (++a < 4)
+    a++;
+    a *= 4;
+```
+
+```consoleoutput {.task_source #cpp_chapter_0031_task_0070}
+```
+Префиксный инкремент сначала увеличивает `a` на 1, а потом возвращает значение. Поэтому условие в `if` не выполняется: `a` равно 4. Тело `if` состоит из единственной инструкции `a++`. Вторая инструкция выполнится безусловно. {.task_hint}
+```cpp {.task_answer}
+16
+```
+
+Нужно реализовать функцию `vertical_flight_speed()`. Она вычисляет вертикальную скорость полёта самолёта. Положительная вертикальная скорость означает подъем, а отрицательная — спуск. Функция принимает два показания высотомера и прошедшее между ними время. {.task_text}
+
+Напишите тело функции, соответствующее многострочному комментарию в коде. Вам пригодятся две константы, объявленные в заголовочном файле `cmath`. Про заголовочные файлы вы узнаете в главе 10. А пока просто используйте константы из `cmath`: {.task_text #block-nan}
+- `NAN` — not a number, [нечисло](https://en.cppreference.com/w/c/numeric/math/NAN).
+- `INFINITY` — [бесконечность](https://en.cppreference.com/w/cpp/numeric/math/INFINITY).
+
+```cpp {.task_source #cpp_chapter_0031_task_0010}
+#include <cmath>
+
+/* cur_height   — текущая высота, м.
+   prev_height  — предыдущая высота, м.
+   elapsed_time — время (с), за которое произошло изменение высоты.
+
+   Возвращаемое значение — вертикальная скорость полёта, м/c.
+   Если значение одной из высот ниже -500 м, то возвращается NAN.
+   Если время меньше либо равно 0, то возвращается INFINITY.
+*/
+double vertical_flight_speed(double cur_height,
+                             double prev_height,
+                             double elapsed_time)
+{
+
+}
+```
+Пример раннего выхода из функции: `if (elapsed_time <= 0) return INFINITY;`. {.task_hint}
+```cpp {.task_answer}
+#include <cmath>
+
+double vertical_flight_speed(double cur_height,
+                             double prev_height,
+                             double elapsed_time)
+{
+    const double min_height = -500.0;
+
+    if (cur_height < min_height || prev_height < min_height)
+    {
+        return NAN;
+    }
+
+    if (elapsed_time <= 0)
+    {
+        return INFINITY;
+    }
+
+    return (cur_height - prev_height) / elapsed_time;
+}
+```
+
+Напишите функцию `is_valid()` для наивной валидации e-mail. Она должна принимать строку и возвращать `true`, если в строке соблюдены условия: есть символы `@` и `.`; после символа `@` есть `.`; `@` не идёт первым. {.task_text}
+
+Вам поможет метод строки [find().](https://en.cppreference.com/w/cpp/string/basic_string/find) Он принимает подстроку или символ и опциональный параметр — индекс, начиная с которого искать вхождение. По умолчанию это 0. Метод возвращает индекс первого вхождения либо константу `std::string::npos`, означающую, что подстрока не найдена. Тип возвращаемого значения — `std::size_t`. {.task_text #block-string-find}
+
+```cpp {.task_source #cpp_chapter_0031_task_0020}
+
+```
+Пример проверки индекса символа: `email.find('.', i) != std::string::npos`. {.task_hint}
+```cpp {.task_answer}
+bool is_valid(std::string email)
+{
+    const std::size_t i = email.find('@');
+    if (i == std::string::npos || i == 0)
+    {
+        return false;
+    }
+
+    return email.find('.', i) != std::string::npos;
+}
+```
+
+### Вложенные условия
+
+В C++ нет конструкций наподобие `if-elif-else` как в Python, позволяющих внутри одного условия организовать неограниченное количество проверок. На помощь приходят вложенные условия.
+
+Перед вами цепочка `if-else` для сравнения цвета из RGB-палитры с тремя значениями. Префикс `0x` нужен для обозначения шестнадцатеричных чисел:
+
+```cpp
+if (color_code == 0x80ED99)
+{
+    std::println("Light green");
+}
+else
+{
+    if (color_code == 0x22577A)
+    {
+        std::println("Lapis Lazuli");
+    }
+    else
+    {
+        if (color_code == 0xC7F9CC)
+        {
+            std::println("Tea green");
+        }
+        else
+        {
+            std::println("Color not in this palette");
+        }
+    }
+}
+```
+
+Этот код «лесенкой» выглядит ужасно. Поэтому подобные вложенные условия лучше форматировать без отступов и избыточных фигурных скобок. Ведь `if-else` — это инструкция, а вокруг единственной инструкции скобки можно не ставить. Такой код проще воспринимать:
+
+```cpp {.example_for_playground .example_for_playground_004}
+if (color_code == 0x80ED99)
+{
+    std::println("Light green");
+} else if (color_code == 0x22577A)
+{
+    std::println("Lapis Lazuli");
+} else if (color_code == 0xC7F9CC)
+{
+    std::println("Tea green");
+} else
+{
+    std::println("Color not in this palette");
+}
+```
+
+Но в длинных цепочках вложенных `if-else` все равно легко допустить ошибку. И в некоторых случаях им на замену приходит конструкция `switch-case`, которую мы рассмотрим дальше.
+
+## Тернарный оператор
+
+Тернарный оператор (ternary operator) позволяет компактно записывать простые условия. А называется он так, потому что состоит из трёх выражений: условия и веток выполнения.
+
+```
+(условное выражение) ? выражение для true : выражение для false;
+```
+
+Например:
+
+```cpp {.example_for_playground .example_for_playground_005}
+std::println("{}", price < 250 ? "cheap" : "expensive");
+```
+
+Условие записывается до символа `?`. За ним следует выражение, выполняющееся, если условие истинно. И после `:` указывается выражение для случая, если условие ложно.
+
+Перепишем этот `if-else` на тернарный оператор:
+
+```cpp
+int status_code = 0;
+
+if (request_body_len > max_len)
+{
+    status_code = -1;
+}
+else
+{
+    status_code = handle_request();
+}
+```
+
+Отказ от `if-else` позволяет сделать переменную `status_code` константой:
+
+```cpp
+const int status_code = (request_body_len > max_len) ? -1 : handle_request();
+```
+
+Скомпилируется ли этот код? Зависит от того, какой тип возвращает `handle_request()`! Дело в том, что типы возвращаемых тернарным оператором значений должны быть приводимы один к другому. Поэтому если `handle_request()` возвращает `int` или `bool`, код скомпилируется. А если `void`, то нет:
+
+```
+error: right operand to ? is void, but left operand is of type 'int'
+```
+
+Перепишите функцию `max()` с использованием тернарного оператора. Тело функции должно состоять из единственной инструкции. {.task_text #block-max}
+
+```cpp {.task_source #cpp_chapter_0031_task_0030}
+int max(int a, int b)
+{
+    if (a > b)
+    {
+        return a;
+    }
+
+    return b;
+}
+```
+Оператор `return` должен вернуть результат применения тернарного оператора к условию `a > b`. {.task_hint}
+```cpp {.task_answer}
+int max(int a, int b)
+{
+    return a > b ? a : b;
+}
+```
+
+Кстати, в стандартной библиотеке C++ есть функции [std::max()](https://en.cppreference.com/w/cpp/algorithm/max) и [std::min()](https://en.cppreference.com/w/cpp/algorithm/min). При работе над реальными проектами руководствуйтесь правилом: [используй готовое.](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#res-lib) То есть прежде чем писать функцию самостоятельно, проверьте — вдруг она уже реализована в стандартной библиотеке? {#block-min-max}
+
+----------
+
+## Резюме
+
+- Инструкции (statements) — это фрагменты кода, выполняемые последовательно.
+- Инструкции бывают простыми, составными и управляющими.
+- Составные инструкции — это инструкции, объединённые в блок с помощью фигурных скобок.
+- Для условного выполнения кода предусмотрены конструкции: `if-else`, тернарный оператор и `switch-case`.
+- Конструкции `if-else` и `switch-case` относятся к управляющим инструкциям.
+
