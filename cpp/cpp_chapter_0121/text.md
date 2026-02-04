@@ -38,7 +38,7 @@ std::vector<int> v{1, 2, 3};
 int count;
 ```
 
-Это называется [инициализацией по умолчанию](https://en.cppreference.com/w/cpp/language/default_initialization) (default-initialization). Мы [предупреждали,](/courses/cpp/chapters/cpp_chapter_0030/#block-initialization) что её следует избегать. А теперь объясним, почему.
+Это называется [инициализацией по умолчанию](https://en.cppreference.com/w/cpp/language/default_initialization) (default-initialization). Мы [предупреждали,](/courses/cpp/chapters/cpp_chapter_0031/#block-initialization) что её следует избегать. А теперь объясним, почему.
 
 Для [фундаментальных типов](/courses/cpp/chapters/cpp_chapter_0021/#block-fundamental-types) инициализация по умолчанию сводится к тотальному _отсутствию инициализации._ Компилятор выделяет под переменную область памяти, но не записывает туда никакого значения. В переменной может находиться что угодно!
 

@@ -51,7 +51,7 @@ else
 
 ## Обзор алгоритмов стандартной библиотеки
 
-Стандарт языка описывает [сотни алгоритмов.](https://en.cppreference.com/w/cpp/algorithm) В прошлых главах вы уже познакомились с [std::for_each()](/courses/cpp/chapters/cpp_chapter_0011/#block-for-each), [std::clamp()](/courses/cpp/chapters/cpp_chapter_0011/#block-clamp), [std::min(), std::max()](/courses/cpp/chapters/cpp_chapter_0030/#block-min-max), [std::reverse()](/courses/cpp/chapters/cpp_chapter_0061/#block-vector), [std::find(), std::find_if()](/courses/cpp/chapters/cpp_chapter_0061/#block-find-if) и [std::sort()](/courses/cpp/chapters/cpp_chapter_0073/#block-sort).
+Стандарт языка описывает [сотни алгоритмов.](https://en.cppreference.com/w/cpp/algorithm) В прошлых главах вы уже познакомились с [std::for_each()](/courses/cpp/chapters/cpp_chapter_0011/#block-for-each), [std::clamp()](/courses/cpp/chapters/cpp_chapter_0011/#block-clamp), [std::min(), std::max()](/courses/cpp/chapters/cpp_chapter_0031/#block-min-max), [std::reverse()](/courses/cpp/chapters/cpp_chapter_0061/#block-vector), [std::find(), std::find_if()](/courses/cpp/chapters/cpp_chapter_0061/#block-find-if) и [std::sort()](/courses/cpp/chapters/cpp_chapter_0073/#block-sort).
 
 Перечислим самые популярные классы задач, решаемые с помощью алгоритмов. Для каждого из них приведём в пример по паре функций.
 - Изменение элементов диапазона.
@@ -180,7 +180,7 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 
 }
 ```
-Вам потребуется завести вспомогательную функцию-предикат, которая сравнивает поле `first` объекта `std::pair` с нужным заголовком. И в случае успеха ищет в поле `second` подстроку `"gzip"`. Вам пригодится метод строки `find()`, с которым вы [уже работали.](/courses/cpp/chapters/cpp_chapter_0030/#block-string-find) {.task_hint}
+Вам потребуется завести вспомогательную функцию-предикат, которая сравнивает поле `first` объекта `std::pair` с нужным заголовком. И в случае успеха ищет в поле `second` подстроку `"gzip"`. Вам пригодится метод строки `find()`, с которым вы [уже работали.](/courses/cpp/chapters/cpp_chapter_0031/#block-string-find) {.task_hint}
 ```cpp {.task_answer}
 bool accepts(std::pair<std::string, std::string> header)
 {
