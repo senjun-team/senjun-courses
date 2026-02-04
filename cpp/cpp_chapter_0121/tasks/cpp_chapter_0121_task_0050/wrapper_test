@@ -1,0 +1,17 @@
+import boost.ut;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+int main()
+{
+    "check make_new_job"_test = [] {
+        LoadJob job = make_new_job();
+        expect(job.load_status == LoadStatus::InProgress) << "make_new_job() must return LoadJob object with load_status field set to LoadStatus::InProgress" << fatal;
+    };
+
+
+}

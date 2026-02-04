@@ -1,48 +1,10 @@
-import boost.ut;
 import TestHelpers;
-
 import std;
-
-#INJECT-b585472fa
-
-using namespace boost::ut;
-
-void check_case(std::vector<std::string> & fact, const std::vector<std::string> & plan)
-{
-    auto copy = fact;
-    lower(fact);
-    const bool eq = plan == fact;
-    expect(eq) << std::format("lower({}) transformed vector to: {}. Expected result: {}.",
-                                            copy, fact, plan) << fatal;
-}
 
 int main()
 {
-    "empty vector"_test = [] {
-        std::vector<std::string> data = {};
-        std::vector<std::string> plan = {};
-        
-        check_case(data, plan);
-    };
+    std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
+    std::string plan = "8";
 
-    "vector with single empty string"_test = [] {
-        std::vector<std::string> data = {""};
-        std::vector<std::string> plan = {""};
-        
-        check_case(data, plan);
-    };
-
-    "vector with single upper-case string"_test = [] {
-        std::vector<std::string> data = {"TEST"};
-        std::vector<std::string> plan = {"test"};
-        
-        check_case(data, plan);
-    };
-
-    "vector with two strings"_test = [] {
-        std::vector<std::string> data = {"ReFeRenCe", "A L G O"};
-        std::vector<std::string> plan = {"reference", "a l g o"};
-        
-        check_case(data, plan);
-    };
+    return user_input == plan ? 0 : 1;
 }

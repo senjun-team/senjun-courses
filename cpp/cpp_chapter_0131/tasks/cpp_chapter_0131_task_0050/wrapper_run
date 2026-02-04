@@ -4,5 +4,6 @@ import std;
 
 int main()
 {
-    make_new_job();
+    std::println("Console output of test_chartable():");
+    test_chartable();
 }

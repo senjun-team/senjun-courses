@@ -2,11 +2,5 @@ import std;
 
 int main()
 {
-    std::vector<std::string> available_bluetooth_devices = {
-        "TV 4562",
-        "Sonny's headset",
-        "jbl headphones"
-    };
-    
     #INJECT-b585472fa
 }

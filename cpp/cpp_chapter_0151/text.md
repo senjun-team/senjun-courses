@@ -1,484 +1,829 @@
-# Глава 15.1. Ссылки: знакомство
+# Глава 15.1. Основы работы с указателями
 
-Вы уже [знаете,](/courses/cpp/chapters/cpp_chapter_0141/#block-alias) что в C++ для любого типа можно завести псевдоним. То есть определить новое имя и работать с ним вместо исходного типа. Точно так же можно поступить и с переменной: создать альтернативное имя и обращаться к переменной через него. Это имя и будет называться ссылкой.
+C++ — это высокоуровневый язык с низкоуровневыми возможностями. С одной стороны, в нем есть средства для построения абстракций. В первую очередь это классы и шаблоны. С другой стороны, вы можете спуститься на уровень, максимально близкий к аппаратному. C++ позволяет работать с памятью напрямую: вручную контролировать её выделение и освобождение, обращаться по конкретному адресу.
 
-## Что такое ссылка
+Управление памятью завязано на концепцию указателей. Они лежат в основе реализации динамических структур данных, размер которых может изменяться во время выполнения программы. Например, это списки, динамические массивы, деревья и хеш-таблицы. Вы найдёте указатели под капотом контейнеров стандартной библиотеки.
 
-[Ссылка](https://www.en.cppreference.com/w/cpp/language/reference.html) (reference) — это псевдоним для существующей переменной.
+## Что такое указатель
 
-Чтобы объявить ссылку, между типом и именем переменной ставится символ амперсанда `&`. Он означает, что перед вами не обычный тип, а ссылочный. В данном примере у переменной `c_ref` тип `char &`: это ссылка на `char`.
+[Указатель](https://en.cppreference.com/w/cpp/language/pointer.html) (pointer) — это переменная, которая хранит адрес в оперативной памяти. Отсюда и название: значение такой переменной как бы _указывает_ на область памяти. А адрес — это по сути число. Например, `0x55ae9a41c2a0`. Поэтому можно сказать, что указатель — это переменная, в которой лежит целое неотрицательное число, трактуемое компилятором как адрес.
 
-```cpp {.example_for_playground .example_for_playground_001}
-char c = 'A';
-char & c_ref = c;  // Ссылка
+Если указатель содержит адрес конкретной переменной, то через него можно получить к ней доступ. Такой доступ является _косвенным:_ вместо обращения к значению переменной напрямую сначала происходит обращение к указателю, а затем — по адресу, на который он указывает.
 
-std::println("{}", c_ref);
-```
-```
-A
-```
+## Объявление указателя
 
-Разработчику удобно думать про ссылки как про псевдонимы переменных. Но как выглядят ссылки с точки зрения компилятора? Это целиком и полностью зависит от реализации. Стандарт даже [не определяет,](https://timsong-cpp.github.io/cppwp/n4868/dcl.ref#4) выделяется ли под ссылку память. Как правило — нет, [не выделяется.](https://isocpp.org/wiki/faq/references#overview-refs) Каждая переменная живёт в своей области памяти: она связывается с конкретным адресом. И компилятор работает со ссылкой как с адресом исходной переменной.
+При объявлении указателя между его типом и именем ставится символ звёздочки `*`. Так выглядит объявление указателя `name` на переменную типа `T`:
 
-
-![Ссылки](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-15/illustrations/cpp/references.jpg) {.illustration}
-
-
-## Работа со ссылками
-
-Читать и изменять значение можно как через исходную переменную, так и через ссылку:
-
-```cpp {.example_for_playground .example_for_playground_002}
-std::size_t count = 1;
-std::size_t & n = count;
-std::println("count={} n={}", count, n);
-
-++n;
-std::println("count={} n={}", count, n);
-
-count += 2;
-std::println("count={} n={}", count, n);
-```
-```
-count=1 n=1
-count=2 n=2
-count=4 n=4
+```cpp
+T * name;
 ```
 
-Что выведется в консоль? {.task_text}
+Здесь символ `*` — это часть типа `T *`, а вовсе не оператор умножения. Как и у многих других символов, его смысл зависит от контекста.
 
-```cpp {.example_for_playground .example_for_playground_003}
-unsigned char x = 255;
-unsigned char & ref1 = x;
-unsigned char & ref2 = x;
+Расставлять пробелы можно как угодно:
 
-++ref1;
-++ref2;
-
-std::println("{} {} {}", x, ref1, ref2);
+```cpp
+T* name;
+T * name;
+T *name;
 ```
+
+Разберем создание указателя на вектор:
+
+```cpp
+std::vector * p;
+```
+
+Что происходит на этой строке?
+- Компилятор выделяет память под указатель `p`, но не под объект типа `std::vector`, на который указывает `p`. Вектор может уже существовать или создаваться дальше по коду.
+- Компилятор не инициализирует выделенную память, ведь мы не присвоили указателю никакого значения. Как и при [инициализации по умолчанию](/courses/cpp/chapters/cpp_chapter_0121/#block-default-initialization) других типов, не имеющих конструктора, объект `p` может содержать любой мусор. Чтобы указатель ссылался на адрес переменной, нужно этот адрес получить.
+
+Напишите, как выглядит объявление указателя `node` на объект класса `Node` без инициализации. {.task_text}
 
 ```consoleoutput {.task_source #cpp_chapter_0151_task_0010}
 ```
-Тип `unsigned char` занимает 1 байт. Значит, 255 — это максимальное для него значение, и при его увеличении произойдёт беззнаковое переполнение. {.task_hint}
+Нужно создать указатель типа `Node *` с именем `node`. Не забудьте `;` в конце. {.task_hint}
 ```cpp {.task_answer}
-1 1 1
+Node * node;
 ```
 
-Расстановка пробелов вокруг символа `&` роли не играет. Все эти объявления считаются допустимыми:
+## Оператор взятия адреса
+
+[Оператор взятия адреса](https://en.cppreference.com/w/cpp/language/operator_member_access.html#Built-in_address-of_operator) (address-of operator) `&` — это унарный оператор, который ставится перед своим операндом и возвращает его адрес:
+
+```cpp {.example_for_playground .example_for_playground_001}
+bool b = true;
+
+// Инициализируем указатель b_ptr адресом переменной b
+bool * b_ptr = &b;
+```
+
+
+![Указатели](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-15/illustrations/cpp/pointers.jpg) {.illustration}
+
+
+В данном контексте символ `&` не имеет ничего общего с объявлением ссылки или логическим «И». При объявлении ссылки символ `&` относится к типу. А при взятии адреса он ставится перед уже существующей переменной. Сравните:
+
+```cpp {.example_for_playground .example_for_playground_002}
+int x = 5;
+
+int & ref = x;  // Это - объявление ссылки на x
+
+int * ptr = &x; // А это - инициализация указателя адресом x
+```
+
+### Как вывести в консоль адрес объекта
+
+Чтобы вывести адрес объекта в консоль, нужно явно привести его к типу указателя `void *`. 
 
 ```cpp
-T& name;
-
-T & name;
-
-T &name;
+std::println("{}", static_cast<void *>(&x));
+```
+```
+0x7ffe4f884814
 ```
 
-Тип ссылки должен совпадать с типом переменной, на которую она указывает. При нарушении этого правила ваш код не скомпилируется:
+Тип `void *` означает, что указатель [может ссылаться](https://timsong-cpp.github.io/cppwp/n4868/basic.compound#5) на адрес объекта любого типа. Явное приведение типа неудобно, зато подчёркивает намерение получить адрес:
+
+```cpp {.example_for_playground .example_for_playground_003}
+int val = 256;
+int * ptr = &val;
+
+std::println("val={}. Address: {}", val, static_cast<void *>(&val));
+std::println("ptr={}", static_cast<void *>(ptr));
+```
+```
+val=256. Address: 0x7ffe4f884814
+ptr=0x7ffe4f884814
+```
+
+[Спецификатор](https://en.cppreference.com/w/cpp/utility/format/spec.html) `p` добавляется в строку форматирования, чтобы указать: в данном месте будет подставлен указатель.
+
+```cpp
+std::println("ptr={:p}", static_cast<void *>(ptr));
+```
+```
+ptr=0x7ffd6df3c614
+```
+
+А чтобы вывести адрес в верхнем регистре, используется спецификатор `P`.
+
+```cpp
+std::println("ptr={:P}", static_cast<void *>(ptr));
+```
+```
+ptr=0X7FFDA8185ED4
+```
+
+Реализуйте функцию `check_eq()`, которая принимает _по ссылке_ два параметра типа `double`. {.task_text}
+
+Функция возвращает строку. Строка содержит один либо два разделённых пробелом адреса в зависимости от того, являются ли аргументы функции одним и тем же объектом в памяти. {.task_text}
+
+Например, если первый аргумент расположен по адресу `0x7ffce00d8bc0`, а второй — по адресу `0x7ffce00d8bb8`, то функция должна вернуть строку `"0x7ffce00d8bc0 0x7ffce00d8bb8"`. {.task_text}
+
+Для форматирования строки вам понадобится функция [std::format()](https://en.cppreference.com/w/cpp/utility/format/format.html).
+
+```cpp {.task_source #cpp_chapter_0151_task_0020}
+// Ваша реализация check_eq()
+```
+Чтобы выяснить, являются ли аргументы одним и тем же объектом в памяти, нужно проверить, совпадают ли их адреса. Для возврата форматированной строки из функции вызовите `std::format()`. Например, `std::format("{:p}", static_cast<void *>(&a))`. {.task_hint}
+```cpp {.task_answer}
+std::string check_eq(double & a, double & b)
+{
+    return &a == &b ?
+        std::format("{:p}", static_cast<void *>(&a)) :
+        std::format("{:p} {:p}", static_cast<void *>(&a), static_cast<void *>(&b));
+}
+```
+
+## Оператор разыменования
+
+Чтобы обратиться к переменной, на которую ссылается указатель, перед ним ставится [оператор разыменования](https://en.cppreference.com/w/cpp/language/operator_member_access.html#Built-in_indirection_operator) (dereference operator) `*`. Он также известен как оператор косвенного доступа (indirection operator).
 
 ```cpp {.example_for_playground .example_for_playground_004}
-bool has_access = false;
-    
-std::string & ref = has_access;
+int x = 504;
+int * x_ptr = &x;
+
+// Через указатель x_ptr косвенно обращаемся к x
+std::println("{}", *x_ptr);
 ```
 ```
-main.cpp:7:19: error: non-const lvalue reference to type 'std::string' (aka 'basic_string<char>') cannot bind to a value of unrelated type 'bool'
-    7 |     std::string & ref = has_access;
-      |                   ^     ~~~~~~~~~~
+504
 ```
 
-В момент создания ссылки её необходимо инициализировать. Не инициализированная ссылка приведёт к ошибке компиляции:
+Применение оператора `*` к указателю называется **разыменованием указателя.** Так, `*x_ptr` читается как «разыменование указателя `x_ptr`» или «обращение по указателю `x_ptr`».
+
+Указатель типа `void *` нельзя разыменовывать: компилятору неизвестно, на переменную какого размера ссылается такой указатель, и поэтому не может корректно работать с её значением.
+
+Разыменование необходимо и для чтения, и для _записи_ данных, адрес которых хранит указатель:
+
+```cpp {.example_for_playground .example_for_playground_005}
+// Изменяем значение переменной, на которую указывает x_ptr
+*x_ptr = 200;
+std::println("{}", x);
+```
+```
+200
+```
+
+Что выведет этот код? Напишите `ub` в случае неопределенного поведения или `err` в случае ошибки компиляции. {.task_text}
+
+```cpp {.example_for_playground .example_for_playground_006}
+std::uint16_t code = 100;
+
+std::uint16_t * p = &code;
+
+*p += *p * 3;
+
+std::println("{}", *p);
+```
+
+```consoleoutput {.task_source #cpp_chapter_0151_task_0030}
+```
+Мы завели переменную `code` со значением `100` и указатель `p`, хранящий её адрес. Затем мы разыменовали указатель, чтобы работать с оригитальной переменной. Выражение `*p * 3` означает, что значение переменой, на которую указывает `p`, мы умножаем на 3. Запись `*p += ...` означает, что полученный результат мы прибавляем к оригинальной переменной. Строку `*p += *p * 3;` можно переписать так: `code += code * 3;`. {.task_hint}
+```cpp {.task_answer}
+400
+```
+
+В прошлой главе вы уже [реализовывали](/courses/cpp/chapters/cpp_chapter_0140/#block-swap) функцию `swap()`. На этот раз нужно написать немного странный и избыточный вариант `swap_via_pointers()`, в котором обмен значениями двух параметров происходит через указатели. {.task_text}
+
+Для вас уже заведены два указателя. Пользуйтесь ими и временной переменной. Обращаться к параметрам `a` и `b` нельзя. {.task_text}
+
+```cpp {.task_source #cpp_chapter_0151_task_0040}
+void swap_via_pointers(double & a, double & b)
+{
+    double * x = &a;
+    double * y = &b;
+
+   // Ваш код. К параметрам a и b обращаться нельзя.
+}
+```
+Заведите временную переменную типа `double`. Сохраните в неё значение переменной, на которую указывает `x`. Затем разыменуйте `x`, чтобы сохранить значение разыменованного указателя `y`. И, наконец, разыменуйте `y`, чтобы сохранить в него значение временной переменной. {.task_hint}
+```cpp {.task_answer}
+void swap_via_pointers(double & a, double & b)
+{
+    double * x = &a;
+    double * y = &b;
+
+    double tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+```
+
+Приоритет оператора взятия адреса `&` и оператора разыменования `*` одинаковый. Он [такой же,](https://en.cppreference.com/w/cpp/language/operator_precedence.html) как у пре-инкремента, и ниже, чем у пост-инкремента. Поэтому не забывайте правильно расставлять скобки.
+
+```cpp  {.example_for_playground .example_for_playground_007}
+int x = 200;
+int * x_ptr = &x;
+
+// Делаем инкремент значения, на которое указывает x_ptr
+(*x_ptr)++;
+std::println("{}", x);
+```
+```
+201
+```
+
+Что выведет этот код? Введите `err` в случае ошибки компиляции. {.task_text}
+
+```cpp {.example_for_playground .example_for_playground_008}
+int a = 4;
+int b = *&a; // То же самое, что *(&a)
+std::println("{}", b == 4);
+```
+
+```consoleoutput {.task_source #cpp_chapter_0151_task_0050}
+```
+Чтобы было проще читать конструкцию `int b = *&a;`, можно расставить скобки: `int b = *(&a);`. Мы берём адрес переменной `a` и к получившемуся значению применяем разыменование, то есть обращаемся к переменной по адресу. При последовательном применении к переменной операторов `&` и `*` мы получаем исходную переменную. {.task_hint}
+```cpp {.task_answer}
+true
+```
+
+## Размер указателя
+
+Сколько памяти выделяется под указатель? Ее должно быть достаточно, чтобы указатель мог хранить _любой_ адрес оперативной памяти. Но конкретный размер указателя зависит в основном от целевой ОС и архитектуры. В большинстве реализаций длина указателя равна длине [машинного слова:](https://ru.wikipedia.org/wiki/%D0%9C%D0%B0%D1%88%D0%B8%D0%BD%D0%BD%D0%BE%D0%B5_%D1%81%D0%BB%D0%BE%D0%B2%D0%BE) для 32-битных платформ это 4 байта, а для 64-битных — 8 байт. Есть особые случаи, когда указатель занимает больше. Про них вы узнаете позже.
+
+Размер указателя **не зависит** от типа, на который он указывает.
+
+Сколько байт занимает указатель в нашей [песочнице?](https://senjun.ru/playground/cpp/) Чтобы узнать, откройте песочницу и примените оператор `sizeof` у указателю. {.task_text}
+
+```consoleoutput {.task_source #cpp_chapter_0151_task_0060}
+```
+Пример: `std::println("{}", sizeof(int *))`. {.task_hint}
+```cpp {.task_answer}
+8
+```
+
+Что выведет этот код? {.task_text}
+
+```cpp {.example_for_playground .example_for_playground_009}
+std::vector<int> * p_vec;
+bool * p_bool;
+
+std::println("{}", sizeof(p_vec) == sizeof(p_bool));
+```
+
+```consoleoutput {.task_source #cpp_chapter_0151_task_0070}
+```
+Размер указателя не зависит от типа, на который он указывает. {.task_hint}
+```cpp {.task_answer}
+true
+```
+
+## Нулевой указатель
+
+В отличие от ссылок, указатель не требуется инициализировать конкретным адресом. Его можно присвоить и после создания.
+
+```cpp  {.example_for_playground .example_for_playground_010}
+std::size_t a = 16;
+std::size_t b = 32;
+
+std::size_t *  ptr;
+ptr = &a; // присваиваем адрес после объявления
+ptr = &b; // переназначаем адрес
+```
+
+Главное — помнить, что указатель, как и любая другая переменная, должен быть инициализирован:
+
+```cpp
+int * ptr; // В ptr может лежать любой мусор
+
+std::println("{}", *ptr); // UB
+```
+
+Если указатель не ссылается на конкретный объект, обязательно присваивайте ему значение [nullptr](https://en.cppreference.com/w/cpp/language/nullptr.html). Это ключевое слово и одновременно литерал, означающий, что указатель не хранит адрес объекта:
+
+```cpp
+int * ptr = nullptr;
+```
+
+Литерал `nullptr` появился в C++11. В более старом коде вместо него используется макрос [NULL](https://cppreference.com/w/c/types/NULL.html):
+
+```cpp
+int * ptr = NULL;
+```
+
+Определение `NULL` зависит от реализации. Оно может быть таким:
+
+```cpp
+#define NULL 0
+```
+
+Или, например, таким:
+```cpp
+#define NULL nullptr
+```
+
+У `nullptr` тип [std::nullptr_t](https://en.cppreference.com/w/cpp/types/nullptr_t.html), а `NULL` может быть целым числом `int`. В любом случае они совместимы между собой благодаря [неявному приведению типов.](/courses/cpp/chapters/cpp_chapter_0011/#block-implicit-cast) 
 
 ```cpp {.example_for_playground}
 import std;
 
+#include <cstddef> // Хедер содержит объявление макроса NULL
+
 int main()
 {
-    std::string & s;
+    int * ptr = nullptr;
+    std::println("{}", ptr == NULL);
 }
 ```
 ```
-main.cpp:5:19: error: declaration of reference variable 's' requires an initializer
-    5 |     std::string & s;
-      |                   ^
+true
 ```
 
-Ссылка не может быть переназначена после инициализации. Оператор `=` для ссылки изменяет значение переменной, на которую она указывает, а не саму ссылку. Иными словами, все своё время жизни ссылка «смотрит» на один и тот же объект.
+В современном C++ предпочтение отдаётся `nullptr`: его использование явно разграничивает, в каком случае идёт работа с числами, а в каком — с указателем. 
 
-Что выведется в консоль? {.task_text}
-
-```cpp  {.example_for_playground .example_for_playground_005}
-int a = 1;
-int b = 5;
-
-int & ref = a;
-ref = b;
-b = 8;
-
-std::println("{} {} {}", a, ref, b);
-```
-
-```consoleoutput {.task_source #cpp_chapter_0151_task_0020}
-```
-В выражении `ref = b` значение `b` присваивается переменной, на которую указывает ссылка `ref`. {.task_hint}
-```cpp {.task_answer}
-5 5 8
-```
-
-Как вы считаете, можно ли завести ссылку на `void`? `y/n` {.task_text}
-
-```consoleoutput {.task_source #cpp_chapter_0151_task_0030}
-```
-У типа `void` пустой набор значений, а ссылка должна указывать на полноценный объект. Поэтому стандарт [запрещает](https://timsong-cpp.github.io/cppwp/n4868/dcl.ref#1) ссылки на `void`. {.task_hint}
-```cpp {.task_answer}
-n
-```
-
-## Передача параметров по ссылке {#block-func}
-
-По умолчанию функции принимают параметры по значению (by value): при вызове функции в неё вместо исходных переменных попадают _копии._ Убедимся в этом:
+Что выведет этот код? Введите `err` в случае ошибки компиляции или `ub`, если поведение не определено. {.task_text}
 
 ```cpp  {.example_for_playground}
 import std;
 
-void sort(std::vector<int> v)
-{
-    std::sort(v.begin(), v.end());
-    std::println("Inside function: {}", v);
-}
-
 int main()
 {
-    std::vector data{5, 0, -1, 2};
-
-    std::println("Before calling sort(): {}", data);
-    sort(data);
-    std::println("After calling sort(): {}", data);
+    void * self = &self;
+    std::println("{}", static_cast<bool>(self));
 }
 ```
+
+```consoleoutput {.task_source #cpp_chapter_0151_task_0080}
 ```
-Before calling sort(): [5, 0, -1, 2]
-Inside function: [-1, 0, 2, 5]
-After calling sort(): [5, 0, -1, 2]
+В момент инициализации `self` своим же адресом эта переменная [уже существует,](https://timsong-cpp.github.io/cppwp/std23/basic.scope.pdecl#1) поэтому ошибки компиляции нет. В `self` сохраняется её же адрес, и он точно не равен `nullptr`. А приведение любого не нулевого числа к `bool` — это `true`. {.task_hint}
+```cpp {.task_answer}
+true
 ```
 
-Копирование — это дорогая операция, особенно для тяжёлых объектов. Представьте, что в этом примере в функцию `sort()` передаётся массив из миллионов элементов. Он целиком будет скопирован! Так вот, предотвращение лишнего копирования — это наиболее частый сценарий использования ссылок.
-
-Так заменим же передачу вектора по значению на передачу по ссылке (by reference). Для этого между типом и именем параметра функции добавим амперсанд:
+Указатель, равный `nullptr` или `NULL`, называется **нулевым указателем.** Если указатель не хранит адрес конкретного объекта, всегда делайте его нулевым. Но помните, что разыменование нулевого указателя — это тоже UB:
 
 ```cpp
-void sort(std::vector<int> & v);
+int * ptr = nullptr;
+
+std::println("{}", *ptr); // Так делать нельзя
 ```
 
-Когда функция принимает аргумент по ссылке, компилятор связывает существующую переменную с новым именем — параметром функции. То есть заводит для неё псевдоним. И функция получает доступ к исходному объекту вместо копии:
+Если по логике программы указатель _может_ оказаться нулевым, перед его разыменованием добавляйте проверку на `nullptr`.
 
-```cpp  {.example_for_playground}
-import std;
+```cpp   {.example_for_playground .example_for_playground_011}
+int * ptr = nullptr;
 
-void sort(std::vector<int> & v) // передаём v по ссылке
+// ...
+
+if (ptr == nullptr)
+    std::println("Null pointer");
+else
+    std::println("{}", *ptr);
+```
+
+Обратите внимание, что с `nullptr` сравнивается сам указатель `ptr`, а не объект `*ptr`, на который он указывает. При сравнении указателей происходит _сравнение адресов,_ на которые они указывают.
+
+Иногда проверку вида `ptr != nullptr` записывают более лаконично:
+
+```cpp   {.example_for_playground .example_for_playground_012}
+if (ptr)
 {
-    std::sort(v.begin(), v.end());
-    std::println("Inside function: {}", v);
+    std::println("Valid pointer");
 }
-
-int main()
+else
 {
-    std::vector data{5, 0, -1, 2};
-
-    std::println("Before calling sort(): {}", data);
-    sort(data);
-    std::println("After calling sort(): {}", data);
+    std::println("Null pointer");
 }
 ```
-```
-Before calling sort(): [5, 0, -1, 2]
-Inside function: [-1, 0, 2, 5]
-After calling sort(): [-1, 0, 2, 5]
-```
 
-Реализуйте функцию `rotate_clockwise()`, которая принимает по ссылке квадратную матрицу `m` и ничего не возвращает. Матрица — это вектор векторов с элементами типа `short`. {.task_text}
+Этот вариант работает благодаря неявному приведению `nullptr` к `false` и остальных значений — к `true`. Однако мы рекомендуем более явную проверку вида `ptr == nullptr` и `ptr != nullptr`. Она подчёркивает, что перед вами указатель, а не `bool`, число или какой-то другой тип.
 
-Функция поворачивает исходную матрицу на 90 градусов по часовой стрелке. В подсказке описан простой вариант реализации поворота. {.task_text}
 
-Например, матрица `{{1, 2}, {3, 4}}` после вызова функции превратится в `{{3, 1}, {4, 2}}`: {.task_text}
+## Оператор доступа к полям и методам класса
 
-```
-// Исходная матрица
-[
-    [1, 2]
-    [3, 4]
-]
+Допустим, у нас есть указатель на объект класса `std::pair`:
 
-// Поворот на 90 градусов по часовой стрелке
-[
-    [3, 1]
-    [4, 2]
-]
+```cpp
+std::pair<std::string, bool> res = {"/", true};
+
+std::pair<std::string, bool> * res_ptr = &res;
 ```
 
-```cpp {.task_source #cpp_chapter_0151_task_0040}
-// Ваша реализация rotate_clockwise()
+Обращение к полям объекта осуществляется через оператор `.`. Его приоритет выше, чем у оператора разыменования `*`. Но чтобы обратиться к полю объекта, нужно сначала получить к нему косвенный доступ, разыменовав указатель. Чтобы поменять порядок применения операторов, используем скобки:
 
+```cpp  {.example_for_playground .example_for_playground_013}
+(*res_ptr).first = "/etc/search.yaml"; // обращаемся к полю
+
+std::println("{} {}", (*res_ptr).first, (*res_ptr).second);
 ```
-Сначала [поменяйте местами](https://en.cppreference.com/w/cpp/algorithm/swap.html) все элементы `m[i][j]` и `m[j][i]`. Это транспонирует матрицу, то есть превратит строки в столбцы, а столбцы — в строки. Затем [инвертируйте](https://cppreference.com/w/cpp/algorithm/reverse.html) порядок элементов в каждом ряду. {.task_hint}
-```cpp {.task_answer}
-void rotate_clockwise(std::vector<std::vector<short>> & m)
+```
+/etc/search.yaml true
+```
+
+Аналогично выглядит вызов метода объекта:
+
+```cpp {.example_for_playground .example_for_playground_014}
+std::string uuid = "a674b109-b08d-433a-aed4-7e03861345d0";
+
+std::string * p = &uuid;
+
+std::size_t len = (*p).size(); // вызываем метод строки
+
+std::println("{}", len);
+```
+```
+36
+```
+
+Синтаксис вида `(*p).field` слишком громоздкий. Удобнее использовать оператор `->` для косвенного доступа к полю или методу класса через указатель. Считайте `p->field` синтаксическим сахаром, по сути не отличающимся от `(*p).field`.
+
+```cpp {.example_for_playground .example_for_playground_015}
+std::pair<std::string, bool> res = {"/", true};
+std::pair<std::string, bool> * res_ptr = &res;
+
+res_ptr->first = "/etc/search.yaml"; // обращаемся к полю
+```
+
+```cpp {.example_for_playground .example_for_playground_016}
+std::string uuid = "a674b109-b08d-433a-aed4-7e03861345d0";
+std::string * p = &uuid;
+
+std::size_t len = p->size(); // вызываем метод строки
+```
+
+### Указатели и рекурсивные структуры данных
+
+Итак, через указатели мы можем работать с объектами классов и структур. А они в свою очередь могут иметь поля с типом «указатель». Если тип такого поля совпадает с типом исходного класса, то перед вами рекурсивная структура данных.
+
+Например, так выглядит структура, реализующая элемент [односвязного списка](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA) целых чисел:
+
+```cpp {.example_for_playground .example_for_playground_017}
+struct ListNode
 {
-    for (std::size_t i = 0; i < m.size(); ++i)
-    {
-        for (std::size_t j = i + 1; j < m.size(); ++j)
-        {
-            std::swap(m[i][j], m[j][i]);
-        }
-    }
-
-    for (std::size_t i = 0; i < m.size(); ++i)
-        std::reverse(m[i].begin(), m[i].end());
+    // Конструкторы
+    ListNode() {}
+    explicit ListNode(int value) : val(value) {}
     
-}
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
+    
+    // Значение элемента списка
+    int val = 0;
+
+    // Указатель на следующий элемент списка
+    ListNode * next = nullptr;
+};
 ```
 
-В стандартной библиотеке есть функция [std::swap()](https://en.cppreference.com/w/cpp/algorithm/swap.html), которая принимает два параметра и меняет местами их значения. Разумеется, для этого она принимает оба параметра по ссылке. Так выглядит её объявление:
+Нам даже не обязательно заводить класс `List`. Структуры `ListNode` достаточно, чтобы собрать список и работать с ним:
 
-```cpp
-namespace std {
-    template<class T>
-    void swap(T & a, T & b);
+```cpp {.example_for_playground .example_for_playground_018}
+// Составляем список из 3-х элементов
+ListNode tail{5, nullptr};
+ListNode middle{3, &tail};
+ListNode head{1, &middle};
 
-    // ...
-}
+// Итерируемся по списку
+for(ListNode * node = &head; node != nullptr; node = node->next)
+    std::println("Node value: {}", node->val);
+```
+```
+Node value: 1
+Node value: 3
+Node value: 5
 ```
 
-Реализуйте собственную функцию `swap()`. Она принимает два параметра типа `double` и меняет их местами. {.task_text #block-swap}
+Заведите структуру `BinTreeNode`, представляющую собой узел [бинарного дерева.](https://ru.wikipedia.org/wiki/%D0%94%D0%B2%D0%BE%D0%B8%D1%87%D0%BD%D0%BE%D0%B5_%D0%B4%D0%B5%D1%80%D0%B5%D0%B2%D0%BE) Она должна хранить значение `val` типа `std::size_t`, указатели на левое и правое поддерево `left` и `right`. По умолчанию поля должны принимать значения 0 и `nullptr` соответственно. {.task_text}
 
-Например, есть две переменные `x = 1.0` и `y = 5.0`. После вызова `swap(x, y)` в `x` должно лежать число `5.0`, а в `y` —  число `1.0`. {.task_text}
+У структуры должно быть два параметризованных конструктора со [спецификатором](/courses/cpp/chapters/cpp_chapter_0121/#block-explicit) `explicit`: {.task_text}
+- для инициализации переданным значением `val`,
+- для инициализации `val`, `left` и `right`. Именно в таком порядке.
 
-```cpp {.task_source #cpp_chapter_0151_task_0050}
-// Ваша реализация swap()
-
+```cpp {.task_source #cpp_chapter_0151_task_0090}
+// Ваша реализация BinTreeNode
 ```
-Функция должна принимать два параметра по ссылке. Чтобы поменять их местами, внутри функции вы можете завести дополнительную переменную. {.task_hint}
+Для инициализации полей воспользуйтесь [DMI](/courses/cpp/chapters/cpp_chapter_0122/#block-dmi) (default member initialization, прямая инициализация полей). Это инициализация поля по месту его объявления. Затем заведите два конструктора: для инициализации `val` и для инициализации всех полей. В этих конструкторах используйте [список инициализации полей.](/courses/cpp/chapters/cpp_chapter_0122/#block-member-initializer-list) {.task_hint}
 ```cpp {.task_answer}
-void swap(double & a, double & b)
+struct BinTreeNode
 {
-    double tmp = a;
-    a = b;
-    b = tmp;
-}
+    // Конструкторы
+    BinTreeNode()
+    { }
+
+    explicit BinTreeNode(std::size_t x) : val(x)
+    { }
+
+    explicit BinTreeNode(std::size_t x, BinTreeNode * l, BinTreeNode * r)
+    : val(x), left(l), right(r)
+    { }
+    
+    // Значение узла
+    std::size_t val = 0;
+    
+    // Указатели на левое и правое поддерево
+    BinTreeNode * left = nullptr;
+    BinTreeNode * right = nullptr;
+};
 ```
 
-## Использование ссылок в цикле range-for
+## Передача параметров по указателю
 
-Как вы помните, один из вариантов цикла `for` — это [цикл по диапазону](/courses/cpp/chapters/cpp_chapter_0040/#block-range-for) (range-for):
+В C++ существует три способа передачи в функцию параметров:
+- По значению (by value).
+- По ссылке (by reference).
+- По указателю (by pointer).
 
-```cpp
-for (item : range-initializer)
+В прошлой главе мы [рассмотрели](/courses/cpp/chapters/cpp_chapter_0140/#block-func) передачу по значению и по ссылке. При передаче по значению функция работает с копией объекта, а при передаче по ссылке — с исходным объектом.
+
+Как и передача по ссылке, передача по указателю нужна, чтобы избежать копирования: функция получает указатель и через него косвенно обращается к исходному объекту. Но передача по указателю означает, что он может быть равен `nullptr`. Поэтому если чётко не установлено, что такого быть не может, обязательно проверяйте, является ли указатель нулевым.
+
+```cpp {.example_for_playground}
+import std;
+
+struct ConfValue
 {
-    // ...
-}
-```
-
-В таком цикле удобно перебирать элементы контейнеров:
-
-```cpp   {.example_for_playground .example_for_playground_006}
-std::vector<std::string> available_bluetooth_devices = {
-    "TV 4562",
-    "Sonny's headset",
-    "jbl headphones"
+    std::string section;
+    std::string name;
+    std::string value;
 };
 
-for(std::string device: available_bluetooth_devices)
-    std::println("{}", device);
-```
-```
-TV 4562
-Sonny's headset
-jbl headphones
-```
-
-Здесь на каждой итерации цикла в переменную `device` попадает _копия_ элемента контейнера `available_bluetooth_devices`. Как неэффективно! Чтобы избежать лишнего копирования, нужно всего лишь поменять тип переменной, через которую перебирается контейнер:
-
-```cpp  {.example_for_playground .example_for_playground_007}
-for(std::string & device: available_bluetooth_devices)
-    std::println("{}", device);
-```
-
-Теперь `device` — это ссылка на строку. Мы избавились от копирования при итерировании по контейнеру. Кроме того, теперь мы можем по этой ссылке модифицировать сами элементы, а не их копии:
-
-```cpp  {.example_for_playground .example_for_playground_008}
-for(std::string & device: available_bluetooth_devices)
-    device = "*****";
-
-std::println("{}", available_bluetooth_devices);
-```
-```
-["*****", "*****", "*****"]
-```
-
-Чтобы достичь схожего результата, до сих пор вам приходилось организовывать циклы с итераторами или циклы по индексам. Кстати, при обращении по индексу или по ключу используется [оператор](https://en.cppreference.com/w/cpp/container/vector/operator_at.html) `[]`. Он возвращает _ссылку_ на элемент контейнера. Именно за счёт этого синтаксис квадратных скобок позволяет работать с элементами контейнера, а не их копиями. 
-
-```cpp   {.example_for_playground .example_for_playground_009}
-available_bluetooth_devices[1] = "-"; // Присваиваем значение "-"
-
-std::println("{}", available_bluetooth_devices);
-```
-
-Реализуйте функцию `lower()`, которая принимает вектор строк и переводит все строки в нижний регистр. {.task_text}
-
-Например, строка `"ReFeRenCe"` в нижнем регистре будет выглядеть как `"reference"`. {.task_text}
-
-Вам помогут:  {.task_text}
-- Функция [std::tolower()](https://en.cppreference.com/w/cpp/string/byte/tolower.html), которая переводит символ типа `unsigned char` в нижний регистр.
-- Знание того, что `std::string` состоит из символов `char`, а не `unsigned char`.
-- Явное приведение типов через [static_cast](https://en.cppreference.com/w/cpp/language/static_cast.html).
-- Алгоритм [std::transform()](https://en.cppreference.com/w/cpp/algorithm/transform) для применения `std::tolower()` к каждому символу строки.
-- Цикл `range-for` по ссылкам на элементы вектора.
-
-```cpp {.task_source #cpp_chapter_0151_task_0060}
-void lower(std::vector<std::string> & words)
+bool is_set(ConfValue * conf_val) // Принимаем conf_val по указателю
 {
-
-}
-```
-Заведите вспомогательную функцию, которая приводит символ `char` к нижнему регистру: `char make_lower(char c)`. Внутри неё вызовите `std::tolower()` от символа, приведённого к `unsigned char`. Результатом вызова `std::tolower()` будет `unsigned char`. Поэтому его нужно привести обратно к `char`. {.task_hint}
-```cpp {.task_answer}
-char make_lower(char c)
-{
-    return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    return conf_val != nullptr && !conf_val->value.empty();
 }
 
-void lower(std::vector<std::string> & words)
+int main()
 {
-    for (auto & w: words)
-        std::transform(w.cbegin(), w.cend(), w.begin(), make_lower);
+    ConfValue v{"net", "ip", "127.0.0.1"};
+    std::println("{}", is_set(&v));    // Передаем адрес v
+
+    ConfValue * v_ptr = &v;
+    std::println("{}", is_set(v_ptr)); // Передаем указатель v_ptr
+
+    std::println("{}", is_set(nullptr));
 }
 ```
+```
+true
+true
+false
+```
 
-Цикл `range-for` также позволяет итерироваться по контейнерам, хранящим пары ключ-значение. Это особенно удобно в связке с конструкцией [structured binding](/courses/cpp/chapters/cpp_chapter_0073/#block-structured-binding):
+Под капотом передача параметра по ссылке и по указателю сводится к одному и тому же: в функцию попадает адрес объекта, и функция работает с этим объектом.
 
-```cpp  {.example_for_playground .example_for_playground_010}
-std::map<std::string, std::string> headers = {
-    {"Accept", "text/html"},
-    {"Accept-Charset", "utf-8"},
-    {"Cache-Control", "no-cache"}
+Перед вами классическая задача с собеседований. Нужно написать функцию `has_cycle()`, которая принимает указатель на первый элемент односвязного списка и определяет, есть ли в списке цикл. {.task_text}
+
+Список содержит цикл, если есть такой узел, до которого можно _повторно_ добраться, непрерывно перебирая указатели `next`. {.task_text}
+
+Решите эту задачу, используя `O(1)` дополнительной памяти. У вашего решения должна быть линейная сложность `O(N)`. Если вы хотите узнать простой алгоритм решения, то можете воспользоваться подсказкой. {.task_text}
+
+Пример списка с циклом: {.task_text}
+
+
+![Пример списка с циклом](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16/illustrations/cpp/linked_list_with_cycle.jpg) {.illustration}
+
+
+```cpp {.task_source #cpp_chapter_0151_task_0100}
+struct ListNode
+{
+    ListNode() {}
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
+    
+    int val = 0;
+    ListNode * next = nullptr;
 };
 
-for (auto [k, v]: headers)
-    std::println("Header: {}. Value: {}", k, v);
-```
-```
-Header: Accept. Value: text/html
-Header: Accept-Charset. Value: utf-8
-Header: Cache-Control. Value: no-cache
-```
-
-Здесь на каждой итерации цикла в переменную `k` сохраняется копия ключа, а в `v` — копия его значения. Заменим копирование на работу со ссылками на ключи и значения:
-
-```cpp  {.example_for_playground .example_for_playground_011}
-for (auto & [k, v]: headers)
-    std::println("Header: {}. Value: {}", k, v);
-```
-
-Уже лучше! Но это код можно ещё чуть-чуть усовершенствовать. Ведь в данном случае нам не требуется возможность изменять значение по ссылке: достаточно только доступа на чтение. А значит, вместо обычной ссылки правильнее использовать константную.
-
-
-## Ссылки и константность
-
-Зачастую требуется сделать так, чтобы через ссылку можно было только читать, но не изменять значение. Именно эту задачу решают константные ссылки. Их также называют ссылками на константные объекты. {#block-const}
-
-Чтобы сделать ссылку константной, к её типу добавляется квалификатор `const`. Как и при объявлении любой переменной, тип и `const` могут идти в любом порядке:
-
-```cpp
-const T &
-```
-
-```cpp
-T const &
-```
-
-В этом примере мы создаём константную ссылку, но пытаемся обратиться к ней на запись. Это приводит к ошибке компиляции:
-
-```cpp  {.example_for_playground .example_for_playground_012}
-int val = 16;
-const int & ref = val;
-++val; // ок
-
-std::println("{}", ref); // ок: обращение по ссылке на чтение
-++ref;                   // ошибка: обращение на запись
-```
-```
-main.cpp:12:5: error: cannot assign to variable 'ref' with const-qualified type 'const int &'
-   12 |     ++ref;
-      |     ^ ~~~
-```
-
-Константные ссылки активно используются в функциях, которые должны получить доступ к объекту только на чтение.
-
-```cpp
-bool is_localhost(const IpAddr & ip)
+bool has_cycle(ListNode * head)
 {
-    // Только читаем поля объекта ip
+
 }
 ```
-
-Реализуйте функцию `most_common_word()`, которая принимает два параметра: строку `text` и неупорядоченное множество из строк `stop_words`. Оба параметра передаются по константной ссылке. {.task_text}
-
-Функция должна вернуть слово, встречающееся в `text` чаще всего и не входящее в `stop_words`. Строка `text` состоит из слов, разделённых одним пробелом. Считаем, что строка не может начинаться и заканчиваться пробелом. Если она пустая, то функция должна вернуть пустую строку. {.task_text}
-
-Например, для `text="a bb a bb"` и `stop_words={"a", "c"}` функция должна вернуть строку `"bb"`. {.task_text}
-
-```cpp {.task_source #cpp_chapter_0151_task_0070}
-// Ваша реализация most_common_word()
-```
-Для разбиения текста по пробелам вам помогут методы строки [find()](https://en.cppreference.com/w/cpp/string/basic_string/find.html) и [substr()](https://en.cppreference.com/w/cpp/string/basic_string/substr.html). Для построения частотного словаря слов пригодится `std::unordered_map` с ключами - строками и значениями - количеством их вхождений в `text`. Чтобы найти в этом словаре слово с максимальной частотой, поможет алгоритм [std::max_element()](https://en.cppreference.com/w/cpp/algorithm/max_element.html). {.task_hint}
+[Алгоритм «Черепаха и заяц»](https://ru.wikipedia.org/wiki/%D0%9D%D0%B0%D1%85%D0%BE%D0%B6%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5_%D1%86%D0%B8%D0%BA%D0%BB%D0%B0#%D0%A7%D0%B5%D1%80%D0%B5%D0%BF%D0%B0%D1%85%D0%B0_%D0%B8_%D0%B7%D0%B0%D1%8F%D1%86) работает с двумя указателями: медленный указатель (черепаха) сдвигается по списку на один элемент, а быстрый (заяц) — на два элемента. Если они встретятся, то найден цикл. В своём решении не забывайте вовремя проверять указатель на равенство `nullptr`. {.task_hint}
 ```cpp {.task_answer}
-using KV = std::pair<std::string, std::size_t>;
-
-bool less(const KV & a, const KV & b)
-{  
-    return a.second < b.second;
-}
-
-std::string most_common_word(const std::string & text,
-                             const std::unordered_set<std::string> & stop_words)
+struct ListNode
 {
-    if (text.empty())
-        return {};
-        
-    std::unordered_map<std::string, std::size_t> freq;
+    ListNode() {}
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
+    
+    int val = 0;
+    ListNode * next = nullptr;
+};
 
-    const char delim = ' ';
-    std::size_t pos = text.find(delim);
-    std::size_t pos_prev = 0;
+bool has_cycle(ListNode * head)
+{
+    ListNode * slow = head;
+    ListNode * fast = head;
 
-    while(pos != std::string::npos)
+    while (fast != nullptr && fast->next != nullptr)
     {
-        std::string word = text.substr(pos_prev, pos - pos_prev);
-        if (!stop_words.contains(word))
-            freq[word] += 1;
-        
-        pos_prev = pos + 1;
-        pos = text.find(delim, pos_prev);
+        slow = slow->next;
+        fast = fast->next->next;
+        if (slow == fast)
+            return true;
     }
 
-    std::string word = text.substr(pos_prev, 
-                                   std::min(pos, text.size()) - pos_prev + 1);
-    if (!stop_words.contains(word))
-        freq[word] +=1;
-
-    auto it = std::max_element(freq.begin(), freq.end(), less);
-    return it->first;
+    return false;
 }
 ```
+
+### Низведение массива (array to pointer decay)
+
+Как вы [помните,](/courses/cpp/chapters/cpp_chapter_0132/#block-array-to-pointer-decay) при передаче сишного массива в функцию теряется информация о его длине. Вместе с массивом приходится передавать дополнительный параметр — количество его элементов. А виной всему механизм под названием низведение массива (array to pointer decay).
+
+Теперь вам легко понять, в чем его суть, ведь вы узнали про указатели. Сишный массив — это непрерывная область памяти, выделенная под фиксированное количество элементов типа `T`. Но в функцию вместо самого массива попадает указатель на нулевой элемент. Происходит низведение, то есть неявное приведение массива к указателю. Оно позволяет избежать лишнего копирования.
+
+Так выглядит передача сишного массива в функцию:
+
+```cpp
+double get_median(double data[], std::size_t len);
+```
+
+А это — эквивалентный вариант записи:
+
+```cpp
+double get_median(double * data, std::size_t len);
+```
+
+В этих двух вариантах передача массива в функцию и работа с ним внутри функции совершенно не отличаются.
+
+При этом оба способа нежелательно использовать в новом коде. Запись `double * data` запутывает: перед нами массив или указатель на единственное значение? Запись `double data[]` понятнее, но лучший совет по работе с сишными массивами — [избегать их.](/courses/cpp/chapters/cpp_chapter_0132/#block-advice) Поэтому самый безопасный и современный [вариант](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#rr-ap) передачи массива в функцию — это `std::span`:
+
+```cpp
+double get_median(std::span<double> data);
+```
+
+## Указатели и константность
+
+В главе про ссылки мы [говорили,](/courses/cpp/chapters/cpp_chapter_0140/#block-const) что константная ссылка и ссылка на константный объект — это одно и то же. В случае с указателями все разнообразнее. Константный указатель и указатель на константный объект — это разные вещи.
+
+**Константный указатель** нельзя «перевесить» на другой объект, зато сам объект изменять через него можно:
+
+```cpp  {.example_for_playground .example_for_playground_019}
+bool is_authorized = true;
+bool * const p = &is_authorized; // Константный указатель
+
+*p = false;                      // Ок
+p = nullptr;                     // ошибка
+```
+```
+main.cpp:9:7: error: cannot assign to variable 'p' with const-qualified type 'bool *const'
+    9 |     p = nullptr;
+      |     ~ ^
+```
+
+**Указатель на константный объект** можно переназначить, но объект через него модифицировать не получится:
+
+```cpp  {.example_for_playground .example_for_playground_020}
+bool enable_encoding = true;
+const bool * p = &enable_encoding; // Указатель на константу
+
+*p = false;                        // Ошибка
+p = nullptr;                       // Ок
+```
+```
+main.cpp:8:8: error: read-only variable is not assignable
+    8 |     *p = false;
+      |     ~~ ^
+```
+
+Из этого примера видно, что указатель на константный объект можно использовать для доступа к неконстантной переменной. Просто у вас не получится изменить эту переменную через такой указатель. А получить неконстантый указатель на константный объект нельзя.
+
+И, наконец, **константный указатель на константный объект** не разрешает ни переприсваивать указатель, ни изменять объект:
+
+```cpp  {.example_for_playground .example_for_playground_021}
+bool has_focus = true;
+const bool * const p = &has_focus; // Константный указатель на константу
+
+*p = false;                        // Ошибка
+p = nullptr;                       // Ошибка
+```
+
+Правило расстановки `const` при объявлении указателей легко запомнить:
+- Если константность относится к объекту, то `const` ставится слева от `*`. То есть рядом с типом объекта.
+- Если константность относится к указателю, то `const` ставится справа.
+
+
+![Указатели и константность](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16/illustrations/cpp/const_pointers.jpg) {.illustration}
+
+
+На какой строке кода допущена ошибка? Введите `0`, если ошибок нет и код скомпилируется. {.task_text}
+
+```cpp  {.example_for_playground .example_for_playground_022}
+std::vector<int> v = {1, 5, 10};   // 1
+std::vector<int> * const ptr = &v; // 2
+
+ptr->clear();                      // 3
+ptr = nullptr;                     // 4
+```
+
+```consoleoutput {.task_source #cpp_chapter_0151_task_0110}
+```
+Указатель `ptr` является константным. По нему можно изменять объект. Но сам указатель изменять нельзя. {.task_hint}
+```cpp {.task_answer}
+4
+```
+
+В промышленной разработке константные указатели встречаются довольно редко. Чаще всего используются указатели на константные объекты. Поэтому в обиходе под константными указателями понимаются именно они.
+
+Попробуем вывести в консоль указатель, у которого есть константность.
+
+```cpp   {.example_for_playground .example_for_playground_023}
+int val = 101;
+const int * ptr = &val;
+
+std::println("{}", static_cast<void *>(ptr));
+```
+```
+main.cpp:8:25: error: static_cast from 'const int *' to 'void *' is not allowed
+    8 | std::println("{}", static_cast<void *>(ptr));
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~
+```
+
+Ошибка компиляции говорит о том, что нельзя привести тип `const T *` к `void *`, то есть убрать константность. Поэтому нужно правильно расставить `const` в результирующем типе `void *`:
+
+```cpp
+std::println("{:p}", static_cast<const void *>(ptr));
+```
+```
+0x7ffc36211234
+```
+
+А вот — ещё одна популярная задача про указатели с собеседований. Нужно написать функцию `get_intersection()`, которая принимает указатели на первые элементы двух списков. Функция должна вернуть указатель на элемент, на котором эти списки пересекаются. Если пересечения нет, функция возвращает `nullptr`. {.task_text}
+
+Решите эту задачу, используя `O(1)` дополнительной памяти. У вашего решения должна быть линейная сложность `O(N + M)`, где `N` и `M` — длины списков. Чтобы посмотреть алгоритм, воспользуйтесь подсказкой. {.task_text}
+
+Пересечение — это указатель, хранящий адрес элемента, который присутствует в обоих списках. В этом примере пересечение — это указатель на элемент со значением `8`: {.task_text}
+
+
+![Пример пересечения списков](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16/illustrations/cpp/lists_intersection.jpg) {.illustration}
+
+
+```cpp {.task_source #cpp_chapter_0151_task_0120}
+struct ListNode
+{
+    ListNode() {}
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
+    
+    int val = 0;
+    ListNode * next = nullptr;
+};
+
+const ListNode * get_intersection(const ListNode * head_a, const ListNode * head_b)
+{
+
+}
+```
+Алгоритм называется «Метод двух указателей с переключением». Его суть в том, что два указателя перемещаются по своим спискам. При достижении конца они переключаются на начало _другого_ списка. Это уравнивает количество элементов, перебираемое указателями. Если списки не пересекаются, указатели достигают конца одновременно. Если пересекаются, то указатели одновременно устанавливаются на общий элемент. Инициализируем указатели `ptr_a` и `ptr_b`, чтобы они указывали на начало двух списков. Пока эти указатели не равны, смещаем их по соответствующим спискам. Если какой-то из указателей достиг конца списка, перевешиваем его на другой список. Если пересечения нет, указатели _одновременно_ станут нулевыми. А если у списков есть пересечение, то указатели встретятся максимум через два обхода списков. {.task_hint}
+```cpp {.task_answer}
+struct ListNode
+{
+    ListNode() {}
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
+    
+    int val = 0;
+    ListNode * next = nullptr;
+};
+
+const ListNode * get_intersection(const ListNode * head_a, const ListNode * head_b)
+{
+    const ListNode * ptr_a = head_a;
+    const ListNode * ptr_b = head_b;
+
+    while(ptr_a != ptr_b)
+    {
+        ptr_a = (ptr_a == nullptr) ? head_b : ptr_a->next;
+        ptr_b = (ptr_b == nullptr) ? head_a : ptr_b->next;
+    }
+
+    return ptr_a;
+}
+```
+
+## Когда использовать указатели, а когда — ссылки
+
+Указатели — довольно опасный инструмент. И в следующих главах мы подробно обсудим, почему. Речь пойдёт о том, что в основном указатели применяются для адресной арифметики и управления динамической памятью. В остальных же случаях [предпочитайте](https://isocpp.org/wiki/faq/references#refs-vs-ptrs) ссылки. Нужно, чтобы функция модифицировала параметр? Передавайте его по ссылке. Нужно избежать копирования? Передавайте объект по константной ссылке.
+
+Есть несколько сценариев, при которых потребуется указатель, а не ссылка:
+- Обнуление или переназначение на другой объект.
+- Адресная арифметика.
+- Динамическое управление памятью.
+- Предоставление си-интерфейса для кода на другом языке. В Си есть указатели и нет ссылок.
 
 ----------
 
 ## Резюме
-
-- Про ссылку (reference) удобно думать как про псевдоним существующей переменной.
-- При создании ссылку нужно инициализировать.
-- Ссылку нельзя переназначить.
-- Константная ссылка — это ссылка, по которой можно только читать значение, но не изменять его.
-- Если функция принимает параметр _по значению,_ то при её вызове происходит копирование соответствующего аргумента.
-- Если функция принимает параметр _по ссылке,_ то она работает с исходным объектом. Копирования не происходит.
+- Указатель — это переменная, хранящая адрес в оперативной памяти.
+- В типе указателя присутствует символ `*`. Например, `std::string *` — это указатель на строку.
+- Чтобы присвоить указателю адрес переменной, к ней применяется оператор взятия адреса `&`. Например, `&val` читается как «взятие адреса `val`».
+- Чтобы через указатель косвенно обратиться к переменной, перед ним ставится оператор разыменования `*`. Так, `*p` читается как «разыменование `p`».
+- Размер указателя не зависит от типа, на который он указывает.
+- Указатель, который не хранит конкретный адрес, нужно делать нулевым: `p = nullptr`.
+- Для доступа к полям и методам класса через указатель используется оператор `->`.
+- Константный указатель не даёт переназначать указателю новый адрес, а указатель на константный объект не даёт изменять объект.
+- Функция может принимать параметры по значению, по ссылке или по указателю.
+- Если в функцию передаётся сишный массив, происходит низведение массива: он неявно приводится к указателю на нулевой элемент.
