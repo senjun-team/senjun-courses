@@ -8,7 +8,7 @@
 
 Допустим, у нас есть три локальных переменных размером в 1, 4 и 8 байт:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_001}
 int ret_code = -5;
 bool retry = false;
 bool * p = &retry;
@@ -39,30 +39,25 @@ bool * p = &retry;
 
 Элементы контейнера `std::array` и сишных массивов расположены друг за другом [в непрерывной области памяти.](/courses/cpp/chapters/cpp_chapter_0132/#block-c-array-under-the-hood) Убедимся в этом: переберем в цикле все элементы массива и выведем их адреса. Для консольного вывода в виде таблицы используем [спецификаторы форматирования.](https://en.cppreference.com/w/cpp/utility/format/spec.html)
 
-```cpp
-import std;
+```cpp  {.example_for_playground .example_for_playground_002}
+std::println("Size of int: {} bytes", sizeof(int));
+std::array<int, 5> pow_series = {16, 32, 64, 128, 256};
 
-int main()
+std::println("\nArray of ints:");
+std::string line(30, '-');
+std::println("{}", line);
+std::println("{:>2} {:>16} {:>9}", 'i', "address", "value");
+std::println("{}", line);
+
+for (std::size_t i = 0; i < pow_series.size(); ++i)
 {
-    std::println("Size of int: {} bytes", sizeof(int));
-    std::array<int, 5> pow_series = {16, 32, 64, 128, 256};
-
-    std::println("\nArray of ints:");
-    std::string line(30, '-');
-    std::println("{}", line);
-    std::println("{:>2} {:>16} {:>9}", 'i', "address", "value");
-    std::println("{}", line);
-
-    for (std::size_t i = 0; i < pow_series.size(); ++i)
-    {
-        std::println("{:>2} {:>16} {:>9}",
-                     i,
-                     static_cast<void *>(&pow_series[i]),
-                     pow_series[i]);
-    }
-
-    std::println("{}", line);
+    std::println("{:>2} {:>16} {:>9}",
+                    i,
+                    static_cast<void *>(&pow_series[i]),
+                    pow_series[i]);
 }
+
+std::println("{}", line);
 ```
 ```
 Size of int: 4 bytes
@@ -83,25 +78,35 @@ Array of ints:
 
 Чтобы присвоить указателю адрес элемента массива, к этому нему применяется оператор взятия адреса `&`:
 
-```cpp
-std::array<int, 3> arr = {-1, 0, 1};
+```cpp  {.example_for_playground .example_for_playground_003}
+std::array<int, 3> arr = {-2, -1, 0};
 
 int * p = &arr[0];
+
+std::println("{}", *p);
+```
+```
+-2
 ```
 
 Для получения указателя _на нулевой элемент сишного массива_ есть более лаконичная запись:
 
-```cpp
-int arr[] = {-1, 0, 1};
+```cpp  {.example_for_playground .example_for_playground_004}
+int arr[] = {-2, -1, 0};
 
 int * p = arr;
+
+std::println("{}", *p);
+```
+```
+-2
 ```
 
 Здесь срабатывает неявное приведение типов: тип массива `int[3]` приводится к типу указателя `int *` на нулевой элемент.
 
 Синтаксис языка позволяет применять к указателю оператор `[]` и через него обращаться к элементам массива:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_005}
 std::uint64_t seed[] = {
         9621534751069176051UL,
         2054564862222048242UL
@@ -118,12 +123,12 @@ std::println("{} {}", *p, p[1]);
 
 Вспомните [способы](/courses/cpp/chapters/cpp_chapter_0132/#block-array-length) определения длины массива. {.task_text}
 
-```cpp
-int arr[] = {1, 2};
+```cpp  {.example_for_playground .example_for_playground_006}
+int arr[] = {3, 9};
 std::println("{}", sizeof(arr) / sizeof(*arr));
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0162_task_0080}
+```consoleoutput {.task_source #cpp_chapter_0152_task_0010}
 ```
 . {.task_hint}
 ```cpp {.task_answer}
@@ -148,7 +153,7 @@ char null_char = '\0';
 
 В обиходе нуль-терминированные строки называют сишными. Создание такой строки из литерала равносильно инициализации массива набором символов, но к литералу не нужно добавлять завершающий ноль вручную:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_007}
 const char * c_str = "C-like string";
 
 const char c_arr[] = {'C',
@@ -172,7 +177,7 @@ C-like string
 
 В стандартной библиотеке C++ есть [функции](https://en.cppreference.com/w/cpp/header/cstring.html) для работы с сишными строками. Например, [std::strcmp()](https://en.cppreference.com/w/cpp/string/byte/strcmp.html) для сравнения строк. Ведь строки, как и массивы, [нельзя](/courses/cpp/chapters/cpp_chapter_0132/#block-compare) сравнивать напрямую такими операторами как `==` или `>`.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_008}
 // strcmp() возвращает 0, если строки равны.
 // -1, если первая строка лексикографически
 // меньше второй и 1, если она больше.
@@ -195,7 +200,7 @@ int main()
 
 Когда к указателю прибавляется целое число, то адрес увеличивается на соответствующее значение, умноженное на размер типа данных. Если прибавить к указателю число, не превышающее длину массива, то он будет ссылаться на один из последующих элементов:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_009}
 double thresholds[]{0.009, 0.01, 0.5, 1.5};
     
 double * p = &thresholds[0];
@@ -228,7 +233,7 @@ std::println("{}", *p);  // UB
 2. К хранящемуся в указателе адресу прибавляется число `i`, умноженное на размер типа.
 3. Затем к нему применяется разыменование `*`. Мы получаем значение массива по индексу `i`.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_010}
 std::uint8_t cmyk_color[] = {73, 45, 0, 4};
 
 std::println("cmyk_color[3] == {}. *(cmyk_color + 3) == {}", 
@@ -243,13 +248,13 @@ cmyk_color[3] == 4. *(cmyk_color + 3) == 4
 
 Что выведет этот код? Напишите `err` в случае ошибки или `ub` в случае неопределенного поведения. {.task_text}
 
-```cpp
-std::unit8_t rgb_color[] = {66, 135, 245};
+```cpp  {.example_for_playground .example_for_playground_011}
+std::uint8_t rgb_color[] = {66, 135, 245};
 
 std::println("{}", 1[rgb_color]);
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0162_task_0010}
+```consoleoutput {.task_source #cpp_chapter_0152_task_0020}
 ```
 . {.task_hint}
 ```cpp {.task_answer}
@@ -260,7 +265,7 @@ std::println("{}", 1[rgb_color]);
 
 Эквивалентны ли выражения `&arr[i]` и `ptr + i`? `y/n` {.task_text}
 
-```consoleoutput {.task_source #cpp_chapter_0162_task_0020}
+```consoleoutput {.task_source #cpp_chapter_0152_task_0030}
 ```
 . {.task_hint}
 ```cpp {.task_answer}
@@ -269,7 +274,7 @@ y
 
 Обойдем массив с помощью указателей:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_012}
 const std::size_t n = 3;
 std::size_t sizes[n] = {16384, 32768, 65536};
 
@@ -291,7 +296,7 @@ i=2. Addr=0x7fffc75c9750. Val=65536
 
 Напишите свою реализацию функции. Будем считать, что в нее не может быть передан `nullptr`. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0162_task_0030}
+```cpp {.task_source #cpp_chapter_0152_task_0040}
 const char * strchr(const char * str, int ch)
 {
 
@@ -304,7 +309,7 @@ const char * strchr(const char * str, int ch)
 
 Применим адресную арифметику, чтобы посмотреть, какие адреса в памяти занимают переменные. Заведем шаблонную функцию `show_used_memory()`, которая принимает указатель на переменную любого типа `T`. Внутри функции приведем тип указателя `const T *` к типу `const char *` с помощью [reinterpret_cast](https://en.cppreference.com/w/cpp/language/reinterpret_cast.html). Это нужно, чтобы при инкременте указателя адрес увеличивался ровно на 1 байт. Выражение `reinterpret_cast<T>(expr)` приводит тип `expr` к типу `T`.
 
-```cpp
+```cpp  {.example_for_playground}
 import std;
 
 template<class T>
@@ -355,7 +360,7 @@ int main()
 
 Вычитание целых чисел из указателей работает по той же схеме, что и сложение: из адреса отнимается значение, умноженное на размер типа.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_013}
 int random_numbers[] = {-67, 9, 22, 18};
     
 int * p = &random_numbers[3];
@@ -387,7 +392,7 @@ Address: 0x7ffe027539d0. Value: -43
 
 Напишите функцию `reverse()`, которая принимает указатель на сишную строку. Она должна перевернуть строку, то есть расположить ее символы в обратном порядке. Считаем, что в функцию не может быть передан `nullptr`. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0162_task_0040}
+```cpp {.task_source #cpp_chapter_0152_task_0050}
 void reverse(char * str)
 {
 
@@ -418,7 +423,7 @@ void reverse(char * str)
 
 Указатели можно вычитать один из другого. Для этого они должны иметь одинаковый тип и ссылаться на области непрерывного участка памяти. Например, указывать на элементы одного и того же массива. Разность между указателями равна количеству объектов заданного типа между ними, а вовсе не количеству байт! При вычитании указателей компилятор делит получившееся значение на размер типа данных. Поэтому через разность указателей на элементы массива можно определять расстояние между ними.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_014}
 int http_non_retriable_errors[] = {
     400, // Bad Request
     401, // Unauthorized
@@ -447,7 +452,7 @@ std::println("{}", dist);
 
 Что выведет этот код, если размер `int` равен 4 байта? Напишите `err` в случае ошибки компиляции или `ub` в случае неопределенного поведения. {.task_text}
 
-```cpp
+```cpp  {.example_for_playground}
 import std;
 
 std::size_t size_ptr(int * buf)
@@ -461,14 +466,14 @@ int main()
     std::size_t a = &raw_data[4] - raw_data;
     std::size_t b = sizeof(raw_data);
 
-    std::println("{} {} {} {}",
+    std::println("{} {} {}",
                  a,
                  b,
                  b == size_ptr(raw_data));
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0162_task_0050}
+```consoleoutput {.task_source #cpp_chapter_0152_task_0060}
 ```
 . {.task_hint}
 ```cpp {.task_answer}
@@ -479,7 +484,7 @@ int main()
 
 Напишите свою реализацию функции. Будем считать, что в нее не может попасть `nullptr`. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0162_task_0060}
+```cpp {.task_source #cpp_chapter_0152_task_0070}
 std::size_t strlen(const char * str)
 {
 
