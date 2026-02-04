@@ -239,7 +239,7 @@ func (c *cache) modify(key string, i int, value string) error {
 
 func (c *cache) get(key string) (string, bool) {
 	value, ok := c.store[key]
-	// имитация долгой обработки
+	// Имитация долгой обработки
 	time.Sleep(1 * time.Millisecond)
 	return value, ok
 }
@@ -260,7 +260,7 @@ func main() {
 		}(i)
 	}
 
-	// ждем все горутины
+	// Ждем все горутины
 	for i := 0; i < codeLength; i++ {
 		<-done
 	}
