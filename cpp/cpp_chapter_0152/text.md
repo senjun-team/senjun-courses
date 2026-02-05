@@ -130,7 +130,7 @@ std::println("{}", sizeof(arr) / sizeof(*arr));
 
 ```consoleoutput {.task_source #cpp_chapter_0152_task_0010}
 ```
-. {.task_hint}
+Здесь `arr` — это сишный массив, и `sizeof(arr)` возвращает размер массива в байтах. А `sizeof(*arr)` возвращает размер нулевого элемента в байтах. Оператор разыменования `*` применяется к массиву, который неявно приводится к указателю. {.task_hint}
 ```cpp {.task_answer}
 2
 ```
@@ -151,22 +151,26 @@ std::string protocol = "UART";
 char null_char = '\0';
 ```
 
-В обиходе нуль-терминированные строки называют сишными. Создание такой строки из литерала равносильно инициализации массива набором символов, но к литералу не нужно добавлять завершающий ноль вручную:
+В обиходе нуль-терминированные строки называют сишными. Создание такой строки из литерала равносильно инициализации массива набором символов, но к литералу не нужно добавлять завершающий ноль вручную.
+
+Перед вами три варианта создания сишной строки:
 
 ```cpp  {.example_for_playground .example_for_playground_007}
-const char * c_str = "C-like string";
+const char * a = "C-like string";
 
-const char c_arr[] = {'C',
-                      '-',
-                      'l', 'i', 'k', 'e',
-                      ' ', 
-                      's', 't', 'r', 'i', 'n', 'g', 
-                      '\0'};
+const char b[] = "C-like string";
 
-std::println("{}", c_str);
-std::println("{}", c_arr);
+const char c[] = {'C',
+                        '-',
+                        'l', 'i', 'k', 'e',
+                        ' ', 
+                        's', 't', 'r', 'i', 'n', 'g', 
+                        '\0'}; // Добавляем сами
+
+std::println("{}\n{}\n{}", a, b, c);
 ```
 ```
+C-like string
 C-like string
 C-like string
 ```
@@ -256,7 +260,7 @@ std::println("{}", 1[rgb_color]);
 
 ```consoleoutput {.task_source #cpp_chapter_0152_task_0020}
 ```
-. {.task_hint}
+Запись `1[rgb_color]` равносильна `rgb_color[1]`. {.task_hint}
 ```cpp {.task_answer}
 135
 ```
@@ -267,7 +271,7 @@ std::println("{}", 1[rgb_color]);
 
 ```consoleoutput {.task_source #cpp_chapter_0152_task_0030}
 ```
-. {.task_hint}
+Применение оператора взятия адреса в выражении `&arr[i]` применяется [после](https://en.cppreference.com/w/cpp/language/operator_precedence.html) оператора `[]`. {.task_hint}
 ```cpp {.task_answer}
 y
 ```
@@ -294,17 +298,27 @@ i=2. Addr=0x7fffc75c9750. Val=65536
 
 В стандартной библиотеке есть функция [std::strchr()](https://en.cppreference.com/w/cpp/string/byte/strchr.html), которая принимает сишную строку и символ. Она возвращает указатель на первое вхождение символа в строку. Завершающий ноль _участвует_ в поиске. Если символ не найден, функция возвращает `nullptr`. {.task_text}
 
-Напишите свою реализацию функции. Будем считать, что в нее не может быть передан `nullptr`. {.task_text}
+Напишите свою реализацию функции под названием `find_char()`. Считаем, что `nullptr` в нее передаваться не будет. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0152_task_0040}
-const char * strchr(const char * str, int ch)
+const char * find_char(const char * str, char c)
 {
 
 }
 ```
-. {.task_hint}
+Организуйте цикл, в котором увеличивайте указатель, пока значение по указателю не станет равным искомому символу. Если же значение равно `'\0'`, верните `nullptr`. {.task_hint}
 ```cpp {.task_answer}
+const char * find_char(const char * str, char c)
+{
+    while (*str != c)
+    {
+        if (*str == '\0')
+            return nullptr;
+        ++str;
+    }
 
+    return str;
+}
 ```
 
 Применим адресную арифметику, чтобы посмотреть, какие адреса в памяти занимают переменные. Заведем шаблонную функцию `show_used_memory()`, которая принимает указатель на переменную любого типа `T`. Внутри функции приведем тип указателя `const T *` к типу `const char *` с помощью [reinterpret_cast](https://en.cppreference.com/w/cpp/language/reinterpret_cast.html). Это нужно, чтобы при инкременте указателя адрес увеличивался ровно на 1 байт. Выражение `reinterpret_cast<T>(expr)` приводит тип `expr` к типу `T`.
@@ -398,7 +412,7 @@ void reverse(char * str)
 
 }
 ```
-. {.task_hint}
+Заведите две переменных типа `char *`: `start` и `end`. Обе инициализируйте указателем на начало строки. Сдвиньте `end` так, чтобы он смотрел на последний значащий символ строки. Это символ, предшествующий `'\0'`. Затем в цикле пока `start` меньше `end` меняйте местами значения по этим указателям, увеличивайте `start` и уменьшайте `end`. {.task_hint}
 ```cpp {.task_answer}
 void reverse(char * str)
 {
@@ -412,7 +426,7 @@ void reverse(char * str)
 
     while (start < end)
     {
-        std::swap(start, end);
+        std::swap(*start, *end);
         ++start;
         --end;
     }
@@ -475,7 +489,7 @@ int main()
 
 ```consoleoutput {.task_source #cpp_chapter_0152_task_0060}
 ```
-. {.task_hint}
+Что возвращает `sizeof()` от указателя? {.task_hint}
 ```cpp {.task_answer}
 4 20 false
 ```
