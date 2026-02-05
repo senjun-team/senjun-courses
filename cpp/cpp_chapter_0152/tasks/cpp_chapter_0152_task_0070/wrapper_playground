@@ -1,0 +1,10 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const std::string s = "Test";
+
+    std::println("strlen(\"{}\") returns {}", s, strlen(s.c_str())); 
+}

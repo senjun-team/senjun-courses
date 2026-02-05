@@ -1,0 +1,38 @@
+import boost.ut;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+int main()
+{
+    "empty string"_test = [] {
+        char s[] = "";
+        reverse(s);
+        std::string fact{s};
+        expect(fact == "") << "reverse() for empty string must produce empty string" << fatal;
+    };
+
+    "string consisting of single letter"_test = [] {
+        char s[] = "a";
+        reverse(s);
+        std::string fact{s};
+        expect(fact == "a") << "reverse() for string consisting of single letter must produce unmodified string" << fatal;
+    };
+
+    "string with even number of letters"_test = [] {
+        char s[] = "abcdef";
+        reverse(s);
+        std::string fact{s};
+        expect(fact == "fedcba") << std::format("reverse() for string `abcdef` must produce `fedcba`. Result: {}", fact) << fatal;
+    };
+
+    "string with odd number of letters"_test = [] {
+        char s[] = "abcdefg";
+        reverse(s);
+        std::string fact{s};
+        expect(fact == "gfedcba") <<  std::format("reverse() for string `abcdefg` must produce `gfedcba`. Result: {}", fact) << fatal;
+    };
+}
