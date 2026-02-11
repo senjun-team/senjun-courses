@@ -2,17 +2,5 @@ import std;
 
 int main()
 {
-    double thresholds[]{0.009, 0.01, 0.5, 1.5};
-    
-    double * p = &thresholds[0];
-    std::println("{}", *p);  // 0.009
-
-    ++p;
-    std::println("{}", *p);  // 0.01
-
-    p += 2;
-    std::println("{}", *p);  // 1.5
-
-    // ++p;                     // Выход за пределы массива
-    // std::println("{}", *p);  // UB
+    #INJECT-b585472fa
 }

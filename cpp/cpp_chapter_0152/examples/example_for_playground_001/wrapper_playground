@@ -4,8 +4,5 @@ int main()
 {
     #INJECT-b585472fa
 
-    std::println("{} - ret_code address", static_cast<void *>(&ret_code));
-    std::println("{} - retry address", static_cast<void *>(&retry));
-    std::println("{} - p address. {} - address in p.",
-        static_cast<void *>(&p), static_cast<void *>(p));
+    std::println("{}", b);
 }

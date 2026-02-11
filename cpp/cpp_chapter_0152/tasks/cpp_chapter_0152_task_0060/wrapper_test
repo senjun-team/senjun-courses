@@ -4,6 +4,7 @@ import std;
 int main()
 {
     std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
-    std::string plan = hlp::normalize("4 20 false");
+    std::string plan = "8";
+
     return user_input == plan ? 0 : 1;
 }

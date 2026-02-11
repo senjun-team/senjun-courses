@@ -1,9 +1,0 @@
-import TestHelpers;
-import std;
-
-int main()
-{
-    std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
-    std::string plan = hlp::normalize("400");
-    return user_input == plan ? 0 : 1;
-}

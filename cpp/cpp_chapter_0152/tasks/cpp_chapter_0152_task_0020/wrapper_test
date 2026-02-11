@@ -1,8 +1,44 @@
+import boost.ut;
 import TestHelpers;
+
 import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+namespace senjun
+{
+    std::string check_eq(double & a, double & b)
+    {
+        return &a == &b ?
+            std::format("{:p}", static_cast<void *>(&a)) :
+            std::format("{:p} {:p}", static_cast<void *>(&a), static_cast<void *>(&b));
+    }
+}
 
 int main()
 {
-    std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
-    return user_input == "135" ? 0 : 1;
+    "References to the same object"_test = [] {
+        double x = 10.0;
+
+        const std::string plan = senjun::check_eq(x, x);
+        const std::string fact = check_eq(x, x);
+
+        expect(plan == fact) << std::format("Calling check_eq() for references to the same object.\nExpected result: \"{}\"\nActual result:\"{}\"",
+                                           plan, fact) << fatal;
+
+    };
+
+    "References to different object"_test = [] {
+        double x = 10.0;
+        double y = 10.0;
+
+        const std::string plan = senjun::check_eq(x, y);
+        const std::string fact = check_eq(x, y);
+
+        expect(plan == fact) << std::format("Calling check_eq() for references to different objects.\nExpected result: \"{}\"\nActual result:\"{}\"",
+                                           plan, fact) << fatal;
+
+    };
 }

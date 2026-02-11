@@ -2,15 +2,12 @@ import std;
 
 #INJECT-b585472fa
 
-
 int main()
 {
-    const char text[] = "C-like string";
+    double prev = -1.2;
+    double cur = 4.5;
 
-    std::println("Searching for letter 'i' in string \"C-like string\"");
-    const char * p = find_char(text, 'i');
-    if (p == nullptr)
-        std::println("find_char() returned nullptr");
-    else
-        std::println("find_char() returned pointer to symbol with index {}", p-text);
+    std::println("calling swap_via_pointers(prev, cur) where prev={} and cur={}...", prev, cur);
+    swap_via_pointers(prev, cur);
+    std::println("After the call: prev={} and cur={}", prev, cur);
 }
