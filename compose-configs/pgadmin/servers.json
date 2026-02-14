@@ -1,0 +1,11 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "handymanDB",
+            "Port": 5432,
+            "Username": "senjun",
+            "Host": "postgres",
+            "MaintenanceDB": "postgres"
+        }
+    }
+}

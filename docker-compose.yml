@@ -18,6 +18,25 @@ services:
     networks:
       - senjun-network
 
+  init_postgres:
+    profiles: [init]
+    image: postgres:15
+    container_name: init_postgres
+    environment:
+      PGPASSWORD: some_password
+    networks:
+      - senjun-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: no
+    command: >
+      sh -c "
+      psql -h postgres -U senjun -d postgres -tc \"SELECT 1 FROM pg_database WHERE datname = 'handyman'\" | grep -q 1 || psql -h postgres -U senjun -d postgres -c 'CREATE DATABASE handyman OWNER senjun';
+      psql -h postgres -U senjun -d postgres -tc \"SELECT 1 FROM pg_database WHERE datname = 'scene'\" | grep -q 1 || psql -h postgres -U senjun -d postgres -c 'CREATE DATABASE scene OWNER senjun';
+      echo 'Databases created successfully'
+      "
+
   watchman_cpp:
     build:
       context: ./infra/watchman_cpp
@@ -28,13 +47,17 @@ services:
       - "9000:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      #- watchman_config:/app
+      - ./compose-configs/watchman_cpp/watchman_cpp_config.json:/app/watchman_cpp_config.json:ro
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
     networks:
       - senjun-network
     depends_on:
       - postgres
+    # Необходимо для работы с Docker API
+    user: root
+    group_add:
+      - "${DOCKER_GID:-999}"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/check", "-X", "POST", "-H", "Content-Type: application/json", "-d", "{}", "-o", "/dev/null", "-s"]
       interval: 10s
@@ -55,7 +78,7 @@ services:
       - .:/app/courses:ro
     environment:
       - WATCHMAN_ADDR=http://watchman_cpp:8000
-      - POSTGRES_CONN_STR=postgresql://senjun:some_password@postgres:5432/senjun?sslmode=disable
+      - POSTGRES_CONN_STR=postgresql://senjun:some_password@postgres:5432/handyman?sslmode=disable
     networks:
       - senjun-network
     depends_on:
@@ -81,10 +104,11 @@ services:
     environment:
       POSTGRES_USER: senjun
       PGPASSWORD: some_password
-      POSTGRES_DB: senjun
+      POSTGRES_DB: handyman
     restart: no
     depends_on:
-      - postgres
+      init_postgres:
+        condition: service_completed_successfully
     networks:
       - senjun-network
     volumes:
@@ -94,10 +118,37 @@ services:
       - python
       - /init_tools/scripts/init_db.py
       - --postgres_conn 
-      - postgresql://senjun:some_password@postgres:5432/senjun?sslmode=disable 
+      - postgresql://senjun:some_password@postgres:5432/handyman?sslmode=disable 
       - --courses_dir
       - /courses 
       - /init_tools/postgres_migrations/
+
+  init_scene_db:
+    profiles: [init]
+    build:
+      context: ./infra/scene
+      dockerfile: Dockerfile
+    image: sj/scene
+    container_name: init_scene_db
+    volumes:
+      - ./compose-configs/scene/conf.json:/app/scene/conf.json:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - senjun-network
+    depends_on:
+      init_postgres:
+        condition: service_completed_successfully
+    restart: no
+    working_dir: /app/scene
+    command: >
+      sh -c "
+      mkdir -p staticfiles/courses/authors staticfiles/courses/default_projects &&
+      if [ -f courses/static/courses/authors/courses.json ]; then cp courses/static/courses/authors/courses.json staticfiles/courses/authors/courses.json; fi &&
+      python manage.py migrate --noinput &&
+      python manage.py createcachetable &&
+      echo 'Scene DB initialized successfully'
+      "
 
   scene:
     build:
@@ -109,7 +160,7 @@ services:
     ports:
       - "8001:8000"
     volumes:
-      - ./infra/scene/scene/conf.json:/app/scene/conf.json:ro
+      - ./compose-configs/scene/conf.json:/app/scene/conf.json:ro
     environment:
       - PYTHONUNBUFFERED=1
     networks:
@@ -136,7 +187,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@senjun.ru
       PGADMIN_DEFAULT_PASSWORD: admin
     volumes:
-      - ./infra/handyman/etc/servers.json:/pgadmin4/servers.json
+      - ./compose-configs/pgadmin/servers.json:/pgadmin4/servers.json
     ports:
       - 10000:80
     networks:
@@ -145,7 +196,6 @@ services:
 
 volumes:
   postgres_data:
-  watchman_config:
 
 networks:
   senjun-network:
