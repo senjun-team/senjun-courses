@@ -1,0 +1,46 @@
+from io import StringIO
+import sys
+from inspect import signature
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "make_string_prefixer" not in globals():
+    print("Function make_string_prefixer() doesn't exist")
+    exit(1)
+
+if not callable(make_string_prefixer):
+    print("'make_string_prefixer' is not a function")
+    exit(1)
+
+make_string_prefixer_params = signature(make_string_prefixer).parameters
+if "prefix" not in make_string_prefixer_params or len(make_string_prefixer_params) != 1:
+    print("Please use function signature make_string_prefixer(prefix)")
+    exit(1)
+
+# Test the returned function
+test_prefixer = make_string_prefixer("Hello ")
+if not callable(test_prefixer):
+    print("Function make_string_prefixer should return a function")
+    exit(1)
+
+# Test functionality
+tests = [
+    ("Hello ", "World", "Hello World"),
+    ("Hi ", "John", "Hi John"),
+    ("", "Test", "Test"),
+    ("Prefix", "", "Prefix"),
+]
+
+for prefix, text, expected in tests:
+    prefixer = make_string_prefixer(prefix)
+    result = prefixer(text)
+    if result != expected:
+        print(f"Invalid function output for arguments: '{prefix}', '{text}'. Expected: '{expected}', got: '{result}'")
+        exit(1)
+
+print("All tests passed!")
