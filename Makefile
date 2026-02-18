@@ -13,6 +13,7 @@ $(IMAGES):
 
 start_services: build init_db $(IMAGES) 
 	docker compose up -d --remove-orphans
+	docker compose exec -e DJANGO_SUPERUSER_PASSWORD=admin scene ./manage.py createsuperuser --username admin --email admin@senjun.ru --noinput
 
 init_db:
 	docker compose --profile init kill --remove-orphans init_postgres init_handyman_db init_scene_db postgres
