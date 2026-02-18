@@ -76,7 +76,7 @@ services:
     ports:
       - "9080:8080"
     volumes:
-      - .:/app/courses:ro
+      - .:/courses:ro
     environment:
       - WATCHMAN_ADDR=http://watchman_cpp:8000
       - POSTGRES_CONN_STR=postgresql://senjun:some_password@postgres:5432/handyman?sslmode=disable
