@@ -1,6 +1,6 @@
 {
     "django_secret_key": "django-insecure",
-    "static_root": "staticfiles",
+    "static_root": "/app/scene/staticfiles",
     "socialaccount": {
         "yandex": {
             "client_id": "client-id",

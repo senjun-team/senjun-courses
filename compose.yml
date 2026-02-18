@@ -1,3 +1,4 @@
+name: sj
 services:
   postgres:
     image: postgres:15
@@ -9,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U senjun"]
       interval: 5s
@@ -141,14 +142,12 @@ services:
         condition: service_completed_successfully
     restart: no
     working_dir: /app/scene
-    command: >
-      sh -c "
-      mkdir -p staticfiles/courses/authors staticfiles/courses/default_projects &&
-      if [ -f courses/static/courses/authors/courses.json ]; then cp courses/static/courses/authors/courses.json staticfiles/courses/authors/courses.json; fi &&
-      python manage.py migrate --noinput &&
-      python manage.py createcachetable &&
-      echo 'Scene DB initialized successfully'
-      "
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        python3 manage.py migrate --noinput &&
+        python3 manage.py createcachetable &&
+        echo 'Scene DB initialized successfully'
 
   scene:
     build:
@@ -158,11 +157,13 @@ services:
     pull_policy: never
     container_name: scene
     ports:
-      - "8001:8000"
+      - "8001:80"
     volumes:
       - ./compose-configs/scene/conf.json:/app/scene/conf.json:ro
     environment:
       - PYTHONUNBUFFERED=1
+      - HANDYMAN_URL=http://handyman:8080/
+      - DJANGO_DEBUG=1
     networks:
       - senjun-network
     depends_on:
@@ -172,30 +173,91 @@ services:
         condition: service_started
       watchman_cpp:
         condition: service_healthy
+    entrypoint:
+     - /app/.venv/bin/python
+     - /app/scene/manage.py
+     - runserver
+     - 0.0.0.0:80
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/", "-o", "/dev/null", "-s"]
+      test: ["CMD", "curl", "-f", "http://localhost:80/", "-o", "/dev/null", "-s"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
   pgadmin:
-    profiles: [devtools]
     image: dpage/pgadmin4:latest
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@senjun.ru
       PGADMIN_DEFAULT_PASSWORD: admin
     volumes:
       - ./compose-configs/pgadmin/servers.json:/pgadmin4/servers.json
+      - ./compose-configs/pgadmin/pgpass:/pgpass
     ports:
       - 10000:80
     networks:
       - senjun-network
 
+  # Образы для выполнения пользовательского кода в watchman_cpp
+  senjun_python_image:
+    profiles: [images]
+    build:
+      context: ../senjun-images/python
+      dockerfile: Dockerfile
+    image: senjun_python
+    pull_policy: never
+    container_name: senjun_python_builder
+    restart: no
+    command: "true"
+
+  senjun_cpp_image:
+    profiles: [images]
+    build:
+      context: ../senjun-images/cpp
+      dockerfile: Dockerfile
+    image: senjun_cpp
+    pull_policy: never
+    container_name: senjun_cpp_builder
+    restart: no
+    command: "true"
+
+  senjun_golang_image:
+    profiles: [images]
+    build:
+      context: ../senjun-images/golang
+      dockerfile: Dockerfile
+    image: senjun_golang
+    pull_policy: never
+    container_name: senjun_golang_builder
+    restart: no
+    command: "true"
+
+  senjun_rust_image:
+    profiles: [images]
+    build:
+      context: ../senjun-images/rust
+      dockerfile: Dockerfile
+    image: senjun_rust
+    pull_policy: never
+    container_name: senjun_rust_builder
+    restart: no
+    command: "true"
+
+  senjun_haskell_image:
+    profiles: [images]
+    build:
+      context: ../senjun-images/haskell
+      dockerfile: Dockerfile
+    image: senjun_haskell
+    pull_policy: never
+    container_name: senjun_haskell_builder
+    restart: no
+    command: "true"
+
 
 volumes:
-  postgres_data:
+  postgres:
 
 networks:
   senjun-network:
