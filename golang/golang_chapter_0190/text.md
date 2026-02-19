@@ -218,5 +218,78 @@ cpuNumber = 6
 Бывает сложно сказать, может ли задача быть выполнена параллельно на логических ядрах. Проще всего провести эксперимент с числом горутин по количеству физических ядер, а затем — по количеству всех ядер. Выбрать стоит тот вариант, который работает быстрее. 
 
 ## Ключевое слово select 
-## Захват глобальных переменных горутиной
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func slowOperation(timeout time.Duration) (string, error) {
+	resultCh := make(chan string, 1)
+
+	// Запускаем операцию
+	go func() {
+		time.Sleep(2 * time.Second)
+		resultCh <- "OK"
+	}()
+
+	// Ждем таймаут
+	time.Sleep(timeout)
+
+	// Проверяем, есть ли данные в канале (неблокирующая проверка)
+	if len(resultCh) > 0 {
+		return <-resultCh, nil
+	}
+	return "", fmt.Errorf("timeout")
+}
+
+func main() {
+	result, err := slowOperation(1 * time.Millisecond)
+	if err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println("Result:", result)
+	}
+}
+```
+```
+Error: timeout
+```
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func slowOperation() <-chan string {
+	ch := make(chan string, 1)
+	go func() {
+		time.Sleep(1 * time.Second)
+		ch <- "OK"
+	}()
+	return ch
+}
+
+func main() {
+	resultCh := slowOperation()
+
+	select {
+	case res := <-resultCh:
+		fmt.Println("Res:", res)
+	case <-time.After(1 * time.Millisecond):
+		fmt.Println("Error: timeout")
+	}
+}
+```
+```
+Error: timeout
+```
 ## Мьютекс
+## Захват глобальных переменных горутиной
+
