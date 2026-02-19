@@ -51,10 +51,10 @@ import (
 )
 
 type Connection struct {
-	ID int
+	ID uint
 }
 
-func newPool(size int) chan *Connection {
+func newPool(size uint) chan *Connection {
 	// Ваш код здесь
 }
 
@@ -94,15 +94,15 @@ import (
 )
 
 type Connection struct {
-	ID int
+	ID uint
 }
 
-func newPool(size int) chan *Connection {
+func newPool(size uint) chan *Connection {
 	// Пул из size соединений
 	pool := make(chan *Connection, size)
 
 	// Инициализируем пул
-	for i := 1; i <= size; i++ {
+	for i := uint(1); i <= size; i++ {
 		pool <- &Connection{ID: i}
 	}
 	return pool

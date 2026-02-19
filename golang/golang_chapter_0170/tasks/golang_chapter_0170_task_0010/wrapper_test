@@ -1,0 +1,31 @@
+package main
+
+import (
+	"reflect"
+	"testing"
+)
+
+func TestNewPool(t *testing.T) {
+	p := newPool(0)
+	T := reflect.TypeOf(p).Kind()
+	if T != reflect.Chan {
+		t.Fatalf("unexpected type of the newPool(0), got: %v, want: chan", T)
+	}
+	casesLen := []uint{0, 5, 10, 100, 1000}
+
+	for _, caseLen := range casesLen {
+		p := newPool(caseLen)
+		gotCap := cap(p)
+		wantCap := int(caseLen)
+		if wantCap != gotCap {
+			t.Errorf("unexpected cap for the newPool(%d), got: %d, want: %d",
+				caseLen, gotCap, wantCap)
+		}
+		gotLen := len(p)
+		wantLen := int(caseLen)
+		if gotLen != wantLen {
+			t.Errorf("unexpected length for the newPool(%d), got: %d, want: %d",
+				caseLen, gotLen, wantLen)
+		}
+	}
+}
