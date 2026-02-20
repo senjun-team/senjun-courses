@@ -76,7 +76,7 @@ services:
     ports:
       - "9080:8080"
     volumes:
-      - .:/courses:ro
+      - .:/app/courses:ro
     environment:
       - WATCHMAN_ADDR=http://watchman_cpp:8000
       - POSTGRES_CONN_STR=postgresql://senjun:some_password@postgres:5432/handyman?sslmode=disable
@@ -141,7 +141,6 @@ services:
       init_postgres:
         condition: service_completed_successfully
     restart: no
-    working_dir: /app/scene
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
