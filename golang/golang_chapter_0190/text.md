@@ -219,6 +219,10 @@ cpuNumber = 6
 
 ## Ключевое слово select 
 
+Существует ряд задач, когда горутины выполняются параллельно. В таких задачах иногда возникает необходимость выбрать тот результат работы горутины, которая завершится раньше.
+
+Рассмотрим пример. Допустим, у нас есть некоторая тяжелая задача `slowTask`. Мы хотим ждать ее выполнения лишь до некоторого таймаута. Мы могли бы написать что-то вроде такой код:
+
 ```go {.example_for_playground}
 package main
 
@@ -227,7 +231,7 @@ import (
 	"time"
 )
 
-func slowOperation(timeout time.Duration) (string, error) {
+func slowTask(timeout time.Duration) (string, error) {
 	resultCh := make(chan string, 1)
 
 	// Запускаем операцию
@@ -247,7 +251,7 @@ func slowOperation(timeout time.Duration) (string, error) {
 }
 
 func main() {
-	result, err := slowOperation(1 * time.Millisecond)
+	result, err := slowTask(1 * time.Millisecond)
 	if err != nil {
 		fmt.Println("Error:", err)
 	} else {
@@ -259,6 +263,8 @@ func main() {
 Error: timeout
 ```
 
+Но это неудобно! Нам приходтся вводить дополнтельный входной параметр для функции `slowTask` — timeout. Кроме того, теперь мы должны вернуть особый вид ошибки в случае таймаута. Код внутри функции становится сложным и запутанным. Чтобы избежать таких проблем, удобно использовать конструкцию `select-case`: 
+
 ```go {.example_for_playground}
 package main
 
@@ -267,7 +273,7 @@ import (
 	"time"
 )
 
-func slowOperation() <-chan string {
+func slowTask() <-chan string {
 	ch := make(chan string, 1)
 	go func() {
 		time.Sleep(1 * time.Second)
@@ -277,7 +283,7 @@ func slowOperation() <-chan string {
 }
 
 func main() {
-	resultCh := slowOperation()
+	resultCh := slowTask()
 
 	select {
 	case res := <-resultCh:
@@ -290,5 +296,36 @@ func main() {
 ```
 Error: timeout
 ```
+
+Внутри конструкции `select` будет выполнен тот `case`, для которого результат из канала придет раньше.  В общем случае конструкция имеет такой вид: 
+
+```
+select{
+	case <v1> := <-ch1:
+		...
+	case <v2> := <-ch2:
+		...
+	...
+	default:
+		...
+}
+```
+
+Здесь в треугольных скобках `<>` обозначены необязательные переменные. Переменные используются только тогда, когда они нужны. Если переменная не нужна, то конструкция выглядит таким образом: 
+
+```
+select{
+	case <-ch1:
+		...
+	case <-ch2:
+		...
+	default:
+		...
+}
+```
+
+Допустимо одноременно использовать часть конструкций `case` с переменной, а часть — без них. Слово `default` является необязательным. Этот случай срабатывает, если не были выполнены все предыдущие.
+
+
 ## Мьютекс
 ## Захват глобальных переменных горутиной
