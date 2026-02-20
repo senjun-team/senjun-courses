@@ -76,7 +76,7 @@ services:
     ports:
       - "9080:8080"
     volumes:
-      - .:/courses:ro
+      - .:/data/courses:ro
     environment:
       - WATCHMAN_ADDR=http://watchman_cpp:8000
       - POSTGRES_CONN_STR=postgresql://senjun:some_password@postgres:5432/handyman?sslmode=disable
@@ -114,14 +114,14 @@ services:
       - senjun-network
     volumes:
       - ./infra/handyman/etc:/init_tools
-      - ./:/courses
+      - ./:/data/courses
     entrypoint:
       - python
       - /init_tools/scripts/init_db.py
       - --postgres_conn 
       - postgresql://senjun:some_password@postgres:5432/handyman?sslmode=disable 
       - --courses_dir
-      - /courses 
+      - /data/courses 
       - /init_tools/postgres_migrations/
 
   init_scene_db:
