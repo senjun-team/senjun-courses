@@ -18,11 +18,9 @@ start_services: build init_db $(IMAGES)
 init_db:
 	docker compose --profile init kill --remove-orphans init_postgres init_handyman_db init_scene_db postgres
 	docker compose --profile init rm -f init_postgres init_handyman_db init_scene_db postgres
-	docker volume rm -f sj_postgres
+	docker compose volumes --format '{{.Name}}' | xargs -r docker volume rm
 	docker compose up -d postgres --remove-orphans
 	docker compose --profile init up init_postgres init_handyman_db init_scene_db
-
-retry: clean start_services
 
 build:
 	 docker compose --profile images build
