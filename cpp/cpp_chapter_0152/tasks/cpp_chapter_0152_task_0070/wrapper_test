@@ -1,40 +1,10 @@
-import boost.ut;
-
+import TestHelpers;
 import std;
-
-#INJECT-b585472fa
-
-using namespace boost::ut;
-
-void check_case(const std::string & s)
-{
-    std::size_t len = strlen(s.c_str()); 
-
-    expect(len == s.size()) << std::format("called strlen() for string \"{}\". Expected result: {}. Actual result: {}",
-        s, s.size(), len) << fatal;
-
-} 
 
 int main()
 {
-    "Corner cases"_test = [] {
-        std::vector<std::string> tests = {
-            "",
-            "1"
-        };
+    std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
+    std::string plan = hlp::normalize("true");
 
-        for(const auto & s : tests)
-            check_case(s);
-    };
-
-    "Simple cases"_test = [] {
-        std::vector<std::string> tests = {
-            "ab",
-            "abc",
-            "ab c de",
-        };
-
-        for(const auto & s : tests)
-            check_case(s);
-    };
+    return user_input == plan ? 0 : 1;
 }

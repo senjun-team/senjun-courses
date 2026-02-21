@@ -2,8 +2,5 @@ import std;
 
 int main()
 {
-    int x = 504;
-    int * x_ptr = &x;
-    
     #INJECT-b585472fa
 }
