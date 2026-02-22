@@ -1,0 +1,22 @@
+#INJECT-b585472fa
+
+fn calc_and_print(first: f64, second: f64) {
+    let res = distance_ulp(first, second);
+    println!("distance_ulp({}, {})\t-> {}", first, second, res);
+}
+
+fn main() {
+    let cases: Vec<(f64, f64)> = vec![
+        (-0.0, 0.0),
+        (0.0, 1.0),
+        (-1.0, -0.0),
+        (-1.0, 1.0),
+        (1.0, 2.0),
+        (10.0, 11.0),
+        (100.0, 101.0),
+    ];
+
+    for cur in &cases {
+        calc_and_print(cur.0, cur.1);
+    }
+}

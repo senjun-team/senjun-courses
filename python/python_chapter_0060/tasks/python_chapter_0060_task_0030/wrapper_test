@@ -1,0 +1,30 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "triangle_area" not in globals():
+    print("Function triangle_area() doesn't exist")
+    exit(1)
+
+if not callable(triangle_area):
+    print("'triangle_area' is not a function")
+    exit(1)
+
+tests = [[4, 8, 16.0], 
+         [1, 2, 1.0], 
+         [0.5, 2.0, 0.5]]
+
+for b, h, plan in tests:
+    area = triangle_area(b, h)
+
+    if area != plan:
+        print(f"Invalid function output for arguments: {b}, {h}.")
+        exit(1)
+

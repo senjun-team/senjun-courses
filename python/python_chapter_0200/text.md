@@ -384,7 +384,7 @@ import utils.fs.filetypes.bin
 
 ```python {.task_source #python_chapter_0200_task_0090}
 ```
-Для сорировки имен модулей воспользуйтесь встроенной функцией `sorted()`. {.task_hint}
+Для сортировки имен модулей воспользуйтесь встроенной функцией `sorted()`. {.task_hint}
 ```python {.task_answer}
 from sys import stdlib_module_names
 

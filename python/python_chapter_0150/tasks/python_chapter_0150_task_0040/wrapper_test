@@ -1,0 +1,27 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "temperatures" not in globals():
+    print("Variable 'temperatures' doesn't exist")
+    exit(1)
+
+if temperatures != {"max": 28.0, "avg": 14.1}:
+    print("Dictionary 'temperatures' has invalid value")
+    exit(1)
+
+
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if s.find('temperatures.pop(') == -1:
+    print("Invalid expression for key-val removal")
+    exit(1)

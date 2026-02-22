@@ -1,0 +1,12 @@
+import std;
+
+#INJECT-b585472fa
+
+
+int main()
+{
+    std::vector<char> v = {'a', 'b', 'b', 'c'};
+    std::size_t n = count_unique(v);
+
+    std::println("count_unique() returns {} for vector {}", n, v);
+}

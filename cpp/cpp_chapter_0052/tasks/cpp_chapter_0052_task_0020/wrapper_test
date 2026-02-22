@@ -1,0 +1,169 @@
+import boost.ut;
+import TestHelpers;
+
+namespace case1 
+{
+    bool is_sort_called = false;
+    bool is_count_called = false;
+
+    void filter()
+    {
+        throw std::runtime_error("couldn't filter queries");
+    }
+
+    void sort()
+    {
+        is_sort_called = true;
+    }
+
+    void count()
+    {
+        is_count_called = true;
+    }
+
+    #INJECT-b585472fa
+}
+
+namespace case2
+{
+    bool is_filter_called = false;
+    bool is_count_called = false;
+
+    void filter()
+    {
+        is_filter_called = true;
+    }
+
+    void sort()
+    {
+        throw std::runtime_error("couldn't sort queries");
+    }
+
+    void count()
+    {
+        is_count_called = true;
+    }
+
+    #INJECT-b585472fa
+}
+
+namespace case3
+{
+    bool is_filter_called = false;
+    bool is_sort_called = false;
+    bool is_count_called = false;
+
+    void filter()
+    {
+        is_filter_called = true;
+    }
+
+    void sort()
+    {
+        is_sort_called = true;
+    }
+
+    void count()
+    {
+        throw std::runtime_error("couldn't count queries");
+    }
+
+    #INJECT-b585472fa
+}
+
+namespace case4
+{
+    bool is_filter_called = false;
+    bool is_sort_called = false;
+    bool is_count_called = false;
+
+    void filter()
+    {
+        is_filter_called = true;
+    }
+
+    void sort()
+    {
+        is_sort_called = true;
+    }
+
+    void count()
+    {
+        is_count_called = true;
+    }
+
+    #INJECT-b585472fa
+}
+
+int main()
+{
+    using namespace boost::ut;
+
+    "filter throws"_test = [] {
+        using namespace case1;
+
+        std::string captured_text;
+        auto stdout_receiver = [&captured_text](std::string&& txt) { captured_text = std::move(txt); };
+
+        {
+            hlp::stdout_capture_t capture(stdout_receiver);
+            handle_daily_stats();
+        }
+
+        expect(captured_text == "couldn't filter queries\n") << "\nIf filter() throws, handle_daily_stats() must capture exception and print its message\n" << fatal;
+
+        expect(!is_sort_called) << "\nIf filter() throws, handle_daily_stats() must not call sort()\n" << fatal;
+        expect(!is_count_called) << "\nIf filter() throws, handle_daily_stats() must not call count()\n" << fatal;
+    };
+
+    "sort throws"_test = [] {
+        using namespace case2;
+
+        std::string captured_text;
+        auto stdout_receiver = [&captured_text](std::string&& txt) { captured_text = std::move(txt); };
+
+        {
+            hlp::stdout_capture_t capture(stdout_receiver);
+            handle_daily_stats();
+        }
+
+        expect(captured_text == "couldn't sort queries\n")  << "\nIf sort() throws, handle_daily_stats() must capture exception and print its message\n" << fatal;
+        expect(is_filter_called) << "\nhandle_daily_stats() must call filter() before sort()\n" << fatal;
+        expect(!is_count_called) << "\nIf sort() throws, handle_daily_stats() must not call count()\n" << fatal;
+    };
+
+    "count throws"_test = [] {
+        using namespace case3;
+
+        std::string captured_text;
+        auto stdout_receiver = [&captured_text](std::string&& txt) { captured_text = std::move(txt); };
+
+        {
+            hlp::stdout_capture_t capture(stdout_receiver);
+            handle_daily_stats();
+        }
+
+        expect(captured_text == "couldn't count queries\n") << "\nIf count() throws, handle_daily_stats() must capture exception and print its message\n" << fatal;
+
+        expect(is_filter_called) << "\nhandle_daily_stats() must call filter() before count()\n" << fatal;
+        expect(is_sort_called) << "\nhandle_daily_stats() must call sort() before count()\n" << fatal;
+    };
+
+    "success"_test = [] {
+        using namespace case4;
+
+        std::string captured_text;
+        auto stdout_receiver = [&captured_text](std::string&& txt) { captured_text = std::move(txt); };
+
+        {
+            hlp::stdout_capture_t capture(stdout_receiver);
+            handle_daily_stats();
+        }
+
+        expect(captured_text == "success\n") << "\nhandle_daily_stats() must print \"success\" if no exception was captured\n" << fatal;
+
+        expect(is_filter_called) << "\nhandle_daily_stats() must call filter()\n" << fatal;
+        expect(is_sort_called) << "\nhandle_daily_stats() must call sort()\n" << fatal;
+        expect(is_count_called) << "\nhandle_daily_stats() must call count()\n" << fatal;
+    };
+}

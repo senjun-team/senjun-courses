@@ -1,0 +1,98 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "Message" not in globals():
+    print("Class Message doesn't exist")
+    exit(1)
+
+if type(Message) is not type:
+    print("'Message' is not a class")
+    exit(1)
+
+for m in ["print", "next_free_id"]:
+    mtd = getattr(Message, m, None)
+    if not callable(mtd):
+        print(f"Please implement {m} method in 'Message' class")
+        exit(1)
+
+# Test case to check that object is properly instantiated
+try:
+    msg = Message("message data")
+    field = getattr(msg, "_id", None)
+    if field is None:
+        print(f"Couldn't find _id object field in 'Message' instance")
+        exit(1)
+except Exception as e:
+    print(f'Couldn\'t instantiate class object: msg = Message("message data")')
+    exit(1)
+
+
+# Test case to check class field
+try:
+    field = getattr(Message, "_id", None)
+    if field is None:
+        print(f"Couldn't find _id class field in 'Message'")
+        exit(1)
+
+except Exception as e:
+    print(f"Exception while searching for _id class field in 'Message': {e}")
+    exit(1)
+
+
+# Check attributes
+try:
+    Message._id = 0
+    msg1 = Message("message data 1")
+    msg2 = Message("message data 2")
+
+    if Message._id != 2:
+        print(f"After instantiating 2 objects Message._id should be equal to 2. But it is equal to {Message._id}")
+        exit(1)
+
+    if msg1._id != 0:
+        print(f"After instantiating first object it's _id should be equal to 0. But it is equal to {msg1._id}")
+        exit(1)
+    
+    if msg2._id != 1:
+        print(f"After instantiating second object it's _id should be equal to 1. But it is equal to {msg2._id}")
+        exit(1)
+
+    old_stdout = sys.stdout
+    sys.stdout = mystdout = StringIO()
+
+    msg1.print()
+    msg2.print()
+
+    sys.stdout = old_stdout
+
+    text = mystdout.getvalue()
+
+    if text.find("message data 1	 id 0 / 2") == -1:
+        print("Please check print() method's output")
+        exit(1)
+
+    if text.find("message data 2	 id 1 / 2") == -1:
+        print("Please check print() method's output")
+        exit(1)
+
+except Exception as e:
+    sys.stdout = old_stdout
+    print(f'Exception while running test: {e}')
+    exit(1)
+
+
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if s.count("type(self)._id") < 2:
+    print("Please replace all Message._id occurences with type(self)._id")
+    exit(1)

@@ -1,0 +1,46 @@
+import boost.ut;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+struct testcase
+{
+    std::forward_list<int> lst;
+    int plan = 0;
+};
+
+void check_case(std::forward_list<int> lst, int plan)
+{
+    try
+    {
+        const int fact = get_equator(lst);
+        expect(fact == plan) << std::format("get_equator({}) returns wrong result. Plan: {}, Fact: {}", lst, plan, fact) << fatal;
+    }
+    catch(const std::exception & e)
+    {
+        expect(false) << std::format("get_equator({}) throws an exception: {}", lst, e.what()) << fatal;
+    }
+    catch(...)
+    {
+        expect(false) << std::format("get_equator({}) throws an exception", lst) << fatal;
+    }
+}
+
+int main()
+{
+    "simple cases"_test = [] {
+        std::vector<testcase> cases {
+            { {5, 2, 4, 8, 1}, 4},
+            { {100, 50, 25, 12}, 100},
+            { {12, 25, 50, 100}, 50},
+            { {11, 25, -50, 26, 13, 10}, 26},
+        };
+
+        for (const auto & c: cases)
+            check_case(c.lst, c.plan);
+    };
+
+}

@@ -1,0 +1,24 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "Error handling request\n":
+    print("Solution output isn't correct")
+    exit(1)
+
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+for line in s.split("\n"):
+    if line.startswith("if"):
+        if len(line) >= 69:
+            print("line with 'if' is too long")
+            exit(1)

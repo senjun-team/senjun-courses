@@ -61,16 +61,16 @@ func TestMain(t *testing.T) {
 	}
 
 	if valsForTesting[0] != "true" {
-		t.Fatalf("main() prints \"" + valsForTesting[0] + "\" as first value, not \"true\"")
+		t.Fatalf("main() prints %q as first value, not \"true\"", valsForTesting[0])
 	}
 	if valsForTesting[1] != "true" {
-		t.Fatalf("main() prints \"" + valsForTesting[1] + "\" as second value, not \"true\"")
+		t.Fatalf("main() prints %q as second value, not \"true\"", valsForTesting[1])
 	}
 	if valsForTesting[2] != "false" {
-		t.Fatalf("main() prints \"" + valsForTesting[2] + "\" as third value, not \"false\"")
+		t.Fatalf("main() prints %q as third value, not \"false\"", valsForTesting[2])
 	}
 	if valsForTesting[3] != "true" {
-		t.Fatalf("main() prints \"" + valsForTesting[3] + "\" as fourth value, not \"true\"")
+		t.Fatalf("main() prints %q as fourth value, not \"true\"", valsForTesting[3])
 	}
 
 }

@@ -1,0 +1,77 @@
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult
+}
+
+fn main() -> Result<(), TestResult> {
+
+    let path_array = vec![
+        "",
+        "/",
+        "./",
+        "../",
+        "change_list",
+        ".gitignore",
+        "tmp.",
+        "readme.md",
+        "/change_list",
+        "/.gitignore",
+        "/readme.md",
+        "./get_file_name",
+        "/rust/get_file_name/src/",
+        "/rust/get_file_name/.git/",
+        "/rust/get_file_name/.git/config",
+        "/rust/get_file_name/tmp",
+        "/rust/get_file_name/tmp.",
+        "/rust/get_file_name/Cargo.toml",
+        "/rust/get_file_name/notes",
+        "/rust/get_file_name/how.to.build.txt",
+        "/rust/get_file_name/.gitignore",
+    ];
+
+    let expected = vec![
+        "",
+        "",
+        "",
+        "",
+        "change_list",
+        ".gitignore",
+        "tmp",
+        "readme",
+        "change_list",
+        ".gitignore",
+        "readme",
+        "get_file_name",
+        "",
+        "",
+        "config",
+        "tmp",
+        "tmp",
+        "Cargo",
+        "notes",
+        "how.to.build",
+        ".gitignore",
+    ];
+
+    let mut index = 0;
+    for path in path_array.iter() {
+
+        let result = get_file_name(path);
+        if result != expected[index] {
+            println!(
+                "Ошибка! Входные параметры:\n\
+                - путь — '{}'\n\
+                Результат:\n\
+                - ожидаемый — '{}'\n\
+                - полученный — '{}'",
+                path, expected[index], result);
+            return Err(TestResult::WrongResult);
+        }
+
+        index += 1;
+    }
+
+    Ok(())
+}

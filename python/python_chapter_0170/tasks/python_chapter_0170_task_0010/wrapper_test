@@ -1,0 +1,123 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "InMemoryStorage" not in globals():
+    print("Class InMemoryStorage doesn't exist")
+    exit(1)
+
+if type(InMemoryStorage) is not type:
+    print("'InMemoryStorage' is not a class")
+    exit(1)
+
+for m in ["save_message", "get_message"]:
+    mtd = getattr(InMemoryStorage, m, None)
+    if not callable(mtd):
+        print(f"Please extend {m} method in 'InMemoryStorage' class")
+        exit(1)
+
+if Storage not in InMemoryStorage.__bases__:
+    print(f"InMemoryStorage doesn't inherit Storage")
+    exit(1)
+
+
+# Test case to check that object is properly instantiated
+try:
+    s = InMemoryStorage(3, 2)
+except Exception as e:
+    print(f"Couldn't instantiate class object: s = InMemoryStorage(3, 2)")
+    exit(1)
+
+try:
+    s = InMemoryStorage(message_size_limit=3, message_count_limit=2)
+except Exception as e:
+    print(f"Couldn't instantiate class object: s = InMemoryStorage(message_size_limit=3, message_count_limit=2)")
+    exit(1)
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("super().__init__(message_size_limit") == -1:
+    print("InMemoryStorage's __init__() should extend Storage's method")
+    exit(1)
+
+if text.find("super().save_message(") == -1:
+    print("InMemoryStorage's save_message() should extend Storage's method")
+    exit(1)
+
+if text.find("super().get_message(") == -1:
+    print("InMemoryStorage's get_message() should extend Storage's method")
+    exit(1)
+
+try:
+    s = InMemoryStorage(message_size_limit=3, message_count_limit=2)
+    try:
+        s.save_message(1, "TEXT")
+    except Exception as e:
+        plan = "Message is too long"
+        if str(e) != plan:
+            print(f"If message length exceeds 'message_size_limit' you should throw exception with text '{plan}'. You throwed: {e}")
+            exit(1)
+
+        if s.get_message(1) is not None:
+            print(f"If message length exceeds 'message_size_limit' you should throw exception and skip message. But this message is saved.")
+            exit(1)
+
+    else:
+        print('Failed test: InMemoryStorage(message_size_limit=3, message_count_limit=2) must throw while calling save_message(1, "TEXT")')
+        exit(1)
+
+    try:
+        s.save_message(1, "MSG")
+    except Exception as e:
+        print(f'Error calling save_message(1, "MSG") from object constructed with InMemoryStorage(message_size_limit=3, message_count_limit=2): {e}')
+        exit(1)
+    
+    try:
+        s.save_message(2, "...")
+    except Exception as e:
+        print(f'Error calling 2nd time save_message() from object constructed with InMemoryStorage(message_size_limit=3, message_count_limit=2): {e}')
+        exit(1)
+
+    try:
+        s.save_message(3, "2")
+    except Exception as e:
+        plan = "Too many messages"
+        if str(e) != plan:
+            print(f"If message count exceeds 'message_count_limit' you should throw exception with text '{plan}'. You throwed: {e}")
+            exit(1)
+
+        if s.get_message(3) is not None:
+            print(f"If message count exceeds 'message_count_limit' you should throw exception and skip message. But this message is saved.")
+            exit(1)
+    else:
+        print('Failed test: InMemoryStorage(message_size_limit=3, message_count_limit=2) must throw while calling save_message() third time')
+        exit(1)
+        
+    try:
+        if s.get_message(2) != "...":
+            print(f'Unexpected result while calling get_message() for the existing key')
+            exit(1)
+    except Exception as e:
+        print(f'Error calling get_message(): {e}')
+        exit(1)
+
+    try:
+        if s.get_message(8) is not None:
+            print(f'Unexpected result while calling get_message() for non-existing key')
+            exit(1)
+    except Exception as e:
+        print(f'Error calling get_message(): {e}')
+        exit(1)
+except Exception as e:
+    print(f"Unexpected exception while testing InMemoryStorage: {e}")
+    exit(1)

@@ -1,0 +1,18 @@
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("import sys") == -1:
+    print("There is no 'import sys' statement in solution")
+    exit(1)
+
+text = text.replace(" ", "")
+if text.find("sys.path") == -1:
+    print("There is no call to print(sys.path) in solution")
+    exit(1)
+if text.find("sys.version") == -1:
+    print("There is no call to print(sys.path) in solution")
+    exit(1)
+if text.find("print(") == -1:
+    print("There is no call to print() in solution")
+    exit(1)

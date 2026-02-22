@@ -1,0 +1,26 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "obj" not in globals():
+    print("Variable 'obj' doesn't exist")
+    exit(1)
+
+if mystdout.getvalue() != "1024\n":
+    print("Invalid solution output")
+    exit(1)
+
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if s.find('obj[3]["k6"]["val"]') == -1 and s.find("obj[3]['k6']['val']") == -1 and s.find('obj[-1]["k6"]["val"]') == -1:
+    print("Invalid 'obj' expression")
+    exit(1)

@@ -31,7 +31,7 @@ func TestMain(t *testing.T) {
 
 	out = strings.TrimSpace(out)
 	if out[0] != '[' || out[len(out)-1] != ']' {
-		t.Fatalf("main() prints \"" + out + "\", wants output in the format [2 3 5 7 ...]")
+		t.Fatalf("main() prints %q, wants output in the format [2 3 5 7 ...]", out)
 	}
 
 	out = out[1 : len(out)-1]

@@ -1,0 +1,21 @@
+import boost.ut;
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    using namespace boost::ut;
+
+    "gcd"_test = [] {
+        for (int i = 1; i < 100; ++i)
+        {
+            for (int j = 1; j < 100; j++)
+            {
+                const auto plan = std::gcd(i, j);
+                const auto fact = gcd(i, j);
+                expect(fact == plan) << std::format("\ngcd({}, {}) must return {}\n", i, j, plan) << fatal;
+            }
+        }
+    };
+}

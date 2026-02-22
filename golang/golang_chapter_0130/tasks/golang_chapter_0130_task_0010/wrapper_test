@@ -1,0 +1,84 @@
+package main
+
+import (
+	"errors"
+	"strings"
+	"testing"
+)
+
+func TestParseAll(t *testing.T) {
+	type inT struct {
+		eqs []equipmentParser
+		s   []string
+	}
+	type caseT []struct {
+		in        inT
+		want      []string
+		wantError error
+	}
+
+	cases := caseT{
+		{
+			inT{[]equipmentParser{&systemUnit{}, &monitor{}},
+				[]string{"Ubuntu, 16, 8, " +
+					"Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
+					"1280x1024, Dell"},
+			},
+			[]string{"System unit: Ubuntu OS, " +
+				"16 RAM, 8 cores, Intel(R) Core(TM) " +
+				"i5-10505 CPU @ 3.20GHz, Dell",
+				"Monitor: 1280x1024, Dell"},
+			nil,
+		},
+		{
+			inT{[]equipmentParser{&systemUnit{}, &monitor{}},
+				[]string{"Windows 10, 8, 4, " +
+					"Intel(R) Core(TM) i5-10505 CPU @ 3.20GHz, Dell",
+					"1920x1080, Dell"},
+			},
+			[]string{"System unit: Windows 10 OS, " +
+				"8 RAM, 4 cores, Intel(R) Core(TM) " +
+				"i5-10505 CPU @ 3.20GHz, Dell",
+				"Monitor: 1920x1080, Dell"},
+			nil,
+		},
+		{
+			inT{[]equipmentParser{&systemUnit{}, &monitor{}},
+				[]string{"simple error",
+					"1920x1080, Dell"},
+			},
+			[]string{"System unit: Windows 10 OS, " +
+				"8 RAM, 4 cores, Intel(R) Core(TM) " +
+				"i5-10505 CPU @ 3.20GHz, Dell",
+				"Monitor: 1920x1080, Dell"},
+			errors.New("failed to parse"),
+		},
+	}
+
+	for _, c := range cases {
+		gotError := parseAll(c.in.eqs, c.in.s)
+
+		if parseError(gotError) != parseError(c.wantError) {
+			t.Errorf("parseAll(%v) returns \"%s\" as error, want \"%s\" as error",
+				c.in.s, parseError(gotError), parseError(c.wantError))
+			continue
+		}
+
+		if gotError == nil {
+			for i, eq := range c.in.eqs {
+				if strings.TrimSpace(eq.(equipmentPrinter).sprintf()) != c.want[i] {
+					t.Errorf("for string: \n\n%v\n\n after parseAll() got: \n\n%v\n\n want: \n\n%v\n\n",
+						c.in.s[i], eq.(equipmentPrinter).sprintf(), c.want[i])
+				}
+			}
+		}
+	}
+
+}
+
+func parseError(err error) string {
+	if err == nil {
+		return "nil"
+	}
+	return err.Error()
+}

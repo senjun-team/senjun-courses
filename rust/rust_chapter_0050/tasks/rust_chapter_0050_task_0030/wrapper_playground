@@ -1,0 +1,5 @@
+#INJECT-b585472fa
+
+fn main() {
+    println!("{}", seq_len(982785));
+}

@@ -1,0 +1,33 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if 'y' not in locals():
+    print("There is no `y` variable")
+    exit(1)
+
+if type(y) is not str:
+    print("Variable 'y' is not a string")
+    exit(1)
+
+if y != "89":
+    print("Variable 'y' has unexpected value")
+    exit(1)
+
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+user_code = user_code.replace(" ", "")
+
+if user_code.find('y=vals[') == -1:
+    print("There is no valid slice assignement for 'y' variable")
+    exit(1)

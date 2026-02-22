@@ -1,0 +1,82 @@
+import boost.ut;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+struct testcase
+{
+    std::vector<std::pair<std::string, std::string>> headers;
+    bool accepts = false;
+};
+
+void check(const testcase & t)
+{
+    try
+    {
+        const bool fact = accepts_gzip(t.headers);
+        expect(fact == t.accepts) << std::format("accepts_gzip() returns wrong result for headers:\n{}\nPlan: {}, Fact: {}", t.headers, t.accepts, fact) << fatal;
+    }
+    catch(const std::exception& e)
+    {
+        expect(false) << std::format("accepts_gzip() throws an exception: {}\nHeaders:\n{}", e.what(), t.headers) << fatal;
+    }
+    catch(...)
+    {
+        expect(false) << std::format("accepts_gzip() terminates with error.\nHeaders:\n{}", t.headers) << fatal;
+    }
+}
+
+int main()
+{
+    "corner cases"_test = [] {
+        std::vector<testcase> cases
+        {
+            testcase{.headers={}, .accepts=false},
+            testcase{.headers={ {"", ""} }, .accepts=false},
+            testcase{.headers={ {"Accept-Encoding", ""} }, .accepts=false},
+            testcase{.headers={ {"Accept-Encoding", "1"} }, .accepts=false},
+            testcase{.headers={ {"Accept-Encoding", "gzip"} }, .accepts=true},
+        };
+
+        for(const testcase & c: cases)
+            check(c);
+    };
+
+    "simple cases"_test = [] {
+        std::vector<testcase> cases
+        {
+            testcase{
+                .headers={
+                    {"Referrer-Policy", "same-origin"},
+                    {"Accept-Encoding", "deflate, br, zstd"},
+                    {"Accept-Encoding", "gzip, deflate, br, zstd"},
+                    {"Connection", "keep-alive"}
+                },
+                .accepts=true
+            },
+            testcase{
+                .headers={
+                    {"Referrer-Policy", "same-origin"},
+                    {"Accept-Encoding", "deflate, br, zstd"},
+                    {"Connection", "keep-alive"}
+                },
+                .accepts=false
+            },
+        testcase{
+                .headers={
+                    {"Referrer-Policy", "same-origin"},
+                    {"Accept-Encoding", "deflate, br, zstd"},
+                    {"Connection", "keep-alive"},
+                    {"Accept-Encoding", "deflate, br, gzip, zstd"},
+                },
+                .accepts=true
+            },
+        };
+
+        for(const testcase & c: cases)
+            check(c);
+    };
+}

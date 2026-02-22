@@ -1,0 +1,79 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'cycle' not in locals():
+    print("There is no `cycle` coroutine")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("yield") == -1:
+    print("There is no call to yield in 'cycle'")
+    exit(1)
+
+try:
+    test_pool = cycle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+
+    for i, elem in enumerate(test_pool, 1):
+        if i != elem and i % 10 != elem:
+            print(f"Invalid yielded value from cycle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) on {i-1}-th iteration. Got: {elem}")
+            exit(1)
+        if i > 17:
+            break
+
+    if i <= 17:
+        print("Generator cycle([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) is not infinite")
+        exit(1)
+        
+except Exception as e:
+    print(f"Couldn't iterate 'cycle': {e}")
+    exit(1)
+
+try:
+    test_pool = cycle(["A"])
+
+    for i, elem in enumerate(test_pool, 1):
+        if elem != "A":
+            print(f'Invalid yielded value from cycle(["A"]) on {i-1}-th iteration. Got: {elem}')
+            exit(1)
+        if i > 17:
+            break
+
+    if i <= 17:
+        print("Generator cycle(['A']) is not infinite")
+        exit(1)
+        
+except Exception as e:
+    print(f"Couldn't iterate 'cycle': {e}")
+    exit(1)
+
+
+try:
+    test_pool = cycle(["B", "X"])
+    plan_vals = ["B", "X", "B", "X", "B"]
+
+    for i, elem in enumerate(test_pool):
+        if elem != plan_vals[i]:
+            print(f'Invalid yielded value from cycle(["B", "X"]) on {i}-th iteration. Got: {elem}')
+            exit(1)
+        if i == 4:
+            break
+
+    if i < 4:
+        print("Generator cycle(['B', 'X']) is not infinite")
+        exit(1)
+        
+except Exception as e:
+    print(f"Couldn't iterate 'cycle': {e}")
+    exit(1)

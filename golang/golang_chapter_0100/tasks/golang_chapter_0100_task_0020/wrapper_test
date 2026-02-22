@@ -1,0 +1,43 @@
+package main
+
+import (
+	"errors"
+	"testing"
+)
+
+func TestParseAddress(t *testing.T) {
+	invalid := errors.New("invalid address")
+
+	cases := []struct {
+		in        string
+		wantIp    string
+		wantPort  string
+		wantError error
+	}{
+		{"192.168.23.48:6060", "192.168.23.48", "6060", nil},
+		{"127.0.0.1:4040", "127.0.0.1", "4040", nil},
+		{"192.268.23.48:6060", "", "", invalid},
+		{"192.168.23.48:60b8", "", "", invalid},
+		{"192.168.23.48.56:4040", "", "", invalid},
+		{"192.168.23:7070", "", "", invalid},
+	}
+	for _, c := range cases {
+		gotIp, gotPort, gotError := parseAddress(c.in)
+		if parseError(gotError) != parseError(c.wantError) {
+			t.Errorf("parseAddress(\"%s\") returns \"%s\" as error, want \"%s\" as error",
+				c.in, parseError(gotError), parseError(c.wantError))
+			continue
+		}
+		if (gotIp != c.wantIp || gotPort != c.wantPort) && gotError == nil {
+			t.Errorf("parseAddress(\"%s\") == \"%s, %s, %s\", want \"%s, %s, %s\"",
+				c.in, gotIp, gotPort, parseError(gotError), c.wantIp, c.wantPort, parseError(c.wantError))
+		}
+	}
+}
+
+func parseError(err error) string {
+	if err == nil {
+		return "nil"
+	}
+	return err.Error()
+}

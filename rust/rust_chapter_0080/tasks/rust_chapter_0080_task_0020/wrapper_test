@@ -1,0 +1,111 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_assignments)]
+
+#INJECT-b585472fa
+
+mod test {
+
+    #[derive(Debug)]
+    pub enum TestResult {
+        WrongResult,
+    }
+
+    pub struct TestCase {
+        val: f64,
+        min: f64,
+        max: f64,
+        nan: f64,
+        exp: f64,
+    }
+
+    impl TestCase {
+        pub fn new(val: f64, min: f64, max: f64, nan: f64, exp: f64) -> TestCase {
+            TestCase {
+                val: val,
+                min: min,
+                max: max,
+                nan: nan,
+                exp: exp,
+            }
+        }
+    }
+
+    fn format_f64(value: f64) -> String {
+        const E_FORMAT_EXP: u32 = 21;
+        let exp = value.abs().log10().floor().abs() as u32;
+
+        if exp < E_FORMAT_EXP || value == 0.0 {
+            format!("{}", value)
+        } else {
+            format!("{:e}", value)
+        }
+    }
+
+    pub fn test_clamp(cases: &Vec<TestCase>) -> Result<(), TestResult> {
+        for cur in cases {
+            let res = super::clamp(cur.val, cur.min, cur.max, cur.nan);
+            if res != cur.exp {
+                println!(
+                    "Ошибка! Входные параметры:\n\
+                    - val: {}\n\
+                    - min: {}\n\
+                    - max: {}\n\
+                    - nan: {}\n\
+                    Результат:\n\
+                    - ожидаемый:  {}\n\
+                    - полученный: {}",
+                    format_f64(cur.val),
+                    format_f64(cur.min),
+                    format_f64(cur.max),
+                    format_f64(cur.nan),
+                    format_f64(cur.exp),
+                    format_f64(res)
+                );
+                return Err(TestResult::WrongResult);
+            }
+        }
+        Ok(())
+    }
+
+} // mod test
+
+fn main() -> Result<(), test::TestResult> {
+    use test::*;
+
+    const NEAR_ONE: f64 = 1.0 - f64::EPSILON;
+    const NEAR_NEG_ONE: f64 = -1.0 + f64::EPSILON;
+
+    let test_cases: Vec<TestCase> = vec![
+        TestCase::new(0.0, NEAR_NEG_ONE, NEAR_ONE, 0.0, 0.0),
+        TestCase::new(f64::NAN, NEAR_NEG_ONE, NEAR_ONE, 0.0, 0.0),
+        TestCase::new(0.8, NEAR_NEG_ONE, NEAR_ONE, 0.0, 0.8),
+        TestCase::new(-0.8, NEAR_NEG_ONE, NEAR_ONE, 0.0, -0.8),
+        TestCase::new(NEAR_ONE, NEAR_NEG_ONE, NEAR_ONE, 0.0, NEAR_ONE),
+        TestCase::new(NEAR_NEG_ONE, NEAR_NEG_ONE, NEAR_ONE, 0.0, NEAR_NEG_ONE),
+        TestCase::new(1.0, NEAR_NEG_ONE, NEAR_ONE, 0.0, NEAR_ONE),
+        TestCase::new(-1.0, NEAR_NEG_ONE, NEAR_ONE, 0.0, NEAR_NEG_ONE),
+        TestCase::new(0.0, 10.0, 10.0, 0.0, 10.0),
+        TestCase::new(20.0, 10.0, 10.0, 0.0, 10.0),
+        TestCase::new(f64::NAN, 10.0, 10.0, 20.0, 20.0),
+        TestCase::new(-42.0, 100.0, 200.0, 0.0, 100.0),
+        TestCase::new(42.0, 100.0, 200.0, 0.0, 100.0),
+        TestCase::new(142.0, 100.0, 200.0, 0.0, 142.0),
+        TestCase::new(242.0, 100.0, 200.0, 0.0, 200.0),
+        TestCase::new(42.0, -200.0, -100.0, 0.0, -100.0),
+        TestCase::new(-42.0, -200.0, -100.0, 0.0, -100.0),
+        TestCase::new(-142.0, -200.0, -100.0, 0.0, -142.0),
+        TestCase::new(-242.0, -200.0, -100.0, 0.0, -200.0),
+        TestCase::new(142.0, 100.0, 200.0, 0.0, 142.0),
+        TestCase::new(242.0, 100.0, 200.0, 0.0, 200.0),
+        TestCase::new(f64::MAX, NEAR_NEG_ONE, NEAR_ONE, 0.0, NEAR_ONE),
+        TestCase::new(f64::MIN, NEAR_NEG_ONE, NEAR_ONE, 0.0, NEAR_NEG_ONE),
+        TestCase::new(f64::INFINITY, NEAR_NEG_ONE, NEAR_ONE, 0.0, NEAR_ONE),
+        TestCase::new(f64::NEG_INFINITY, NEAR_NEG_ONE, NEAR_ONE, 0.0, NEAR_NEG_ONE),
+        TestCase::new(f64::MAX, f64::NEG_INFINITY, f64::INFINITY, 0.0, f64::MAX),
+        TestCase::new(f64::MIN, f64::NEG_INFINITY, f64::INFINITY, 0.0, f64::MIN),
+    ];
+
+    test_clamp(&test_cases)
+}

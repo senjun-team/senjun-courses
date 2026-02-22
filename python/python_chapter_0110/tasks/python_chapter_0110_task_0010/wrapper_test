@@ -1,0 +1,23 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "list\n":
+    print(f"Console output must consist of single line")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if user_code.replace(" ", "").find("sequences[1]") == -1:
+    print("There is no getting of second list element by index in user solution")
+    exit(1)

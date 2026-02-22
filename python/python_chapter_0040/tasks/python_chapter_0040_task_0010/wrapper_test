@@ -1,0 +1,26 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "Analyzing string...\nAll characters are in the alphabet\nFinished string analysis\n":
+    print("Solution output isn't correct")
+    exit(1)
+
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+count_if = s.count("if s.isdigit():")
+count_elif = s.count("elif ")
+count_else = s.count("else:")
+
+if count_if != 1 or count_elif != 2 or count_else != 1:
+    print("'if/else' is not correctly refactored to 'if/elif/else'")
+    exit(1)

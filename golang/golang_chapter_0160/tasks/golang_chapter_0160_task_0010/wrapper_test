@@ -1,0 +1,59 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestMain(t *testing.T) {
+	old := os.Stdout // keep backup of the real stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	outC := make(chan string)
+	// copy the output in a separate goroutine so printing can't block indefinitely
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+		outC <- buf.String()
+	}()
+
+	main()
+
+	// back to normal state
+	w.Close()
+	os.Stdout = old // restoring the real stdout
+	out := <-outC
+	out = strings.TrimSpace(out)
+
+	res := strings.Split(out, "\n")
+	var valsForTesting []string
+
+	for _, el := range res {
+		val := strings.TrimSpace(el)
+		if val != "" {
+			valsForTesting = append(valsForTesting, val)
+		}
+	}
+
+	num := 4
+	messages := []string{"starting server...",
+		"task data prepared",
+		"calculating...",
+		"stopping server..."}
+
+	if len(valsForTesting) != num {
+		t.Fatalf("main() prints %d values, wants %d values",
+			len(valsForTesting), num)
+	}
+
+	for i := range num {
+		if valsForTesting[i] != messages[i] {
+			t.Errorf("main() prints \"%s\" as %d value, not \"%s\"",
+				valsForTesting[i], i+1, messages[i])
+		}
+	}
+}

@@ -1,0 +1,69 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_assignments)]
+
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult,
+}
+
+struct TestCase {
+    c: f64,
+    f: f64,
+}
+
+fn approx_equal_abs(left: f64, right: f64, epsilon: f64) -> bool {
+    left == right || (left - right).abs() <= epsilon
+}
+
+fn test_to_fahrenheit(f_cases: &Vec<TestCase>) -> Result<(), TestResult> {
+    for case in f_cases {
+        let result = to_fahrenheit(case.c);
+        if !approx_equal_abs(result, case.f, 0.01) {
+            println!(
+                "Ошибка при вызове функции:\n\
+                  to_fahrenheit({})\n\
+                Результат:\n\
+                - ожидаемый  — {}\n\
+                - полученный — {}",
+                case.c, case.f, result);
+            return Err(TestResult::WrongResult);
+        }
+    }
+
+    Ok(())
+}
+
+fn test_to_celsius(c_cases: &Vec<TestCase>) -> Result<(), TestResult> {
+    for case in c_cases {
+        let result = to_celsius(case.f);
+        if !approx_equal_abs(result, case.c, 0.01) {
+            println!(
+                "Ошибка при вызове функции:\n\
+                  to_celsius({})\n\
+                Результат:\n\
+                - ожидаемый  — {}\n\
+                - полученный — {}",
+                case.f, case.c, result);
+            return Err(TestResult::WrongResult);
+        }
+    }
+
+    Ok(())
+}
+
+fn main() -> Result<(), TestResult> {
+    let test_cases: Vec<TestCase> = vec![
+        TestCase { c: -1000000.0, f: -1799968.0, },
+        TestCase { c: -40.0, f: -40.0 },
+        TestCase { c: -17.778, f: 0.0 },
+        TestCase { c: 0.0, f: 32.0 },
+        TestCase { c: 1000000.0, f: 1800032.0, },
+    ];
+
+    test_to_fahrenheit(&test_cases)?;
+    test_to_celsius(&test_cases)
+}

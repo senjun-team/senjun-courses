@@ -1,0 +1,10 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::forward_list<int> lst = {5, 2, 4, 8, 1};
+
+    std::println("get_equator({}) == {}", lst, get_equator({5, 2, 4, 8, 1}));
+}

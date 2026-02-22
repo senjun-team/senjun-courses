@@ -1,0 +1,15 @@
+import std;
+
+using UserId = short;
+using UserIdArr = std::vector<UserId>;
+
+UserIdArr get_blocked_users()
+{
+    return {9, 81, 177};
+} 
+
+int main()
+{
+    UserIdArr blocked_users = get_blocked_users();
+    std::println("{}", blocked_users);
+}

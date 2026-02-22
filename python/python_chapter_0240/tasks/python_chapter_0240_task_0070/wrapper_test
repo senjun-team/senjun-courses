@@ -1,0 +1,19 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'plain' not in locals():
+    print("There is no 'plain' variable")
+    exit(1)
+
+if plain != ['search engine', 3000, 'analytics', 1100, 'crawler', 3000]:
+    print("plain has invalid value")
+    exit(1)

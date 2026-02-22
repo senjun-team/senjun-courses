@@ -1,0 +1,44 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+#![allow(unused_assignments)]
+
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    WrongResult
+}
+
+struct TestCase {
+    first: bool,
+    second: bool,
+    expected: bool,
+}
+
+fn main() -> Result<(), TestResult> {
+
+    let test_cases: Vec<TestCase> = vec![
+        TestCase { first: false, second: false, expected: true, },
+        TestCase { first: false, second: true, expected: true, },
+        TestCase { first: true, second: false, expected: false, },
+        TestCase { first: true, second: true, expected: true, },
+    ];
+
+    for case in test_cases.iter() {
+        let result = implication(case.first, case.second);
+        if result != case.expected {
+            println!(
+                "Ошибка! Входные параметры:\n\
+                - a — {}\n\
+                - b — {}\n\
+                Результат:\n\
+                - ожидаемый — {}\n\
+                - полученный — {}",
+                case.first, case.second, case.expected, result);
+            return Err(TestResult::WrongResult);
+        }
+    }
+
+    Ok(())
+}

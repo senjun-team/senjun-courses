@@ -44,7 +44,7 @@ func TestMain(t *testing.T) {
 
 	// reading our temp stdout
 	if out != "true" && out != "false" {
-		t.Fatalf("main() prints \""+strings.TrimSpace(out)+"\", not %t ot %t", true, false)
+		t.Fatalf("main() prints %q, not \"true\" or \"false\"", strings.TrimSpace(out))
 	}
 
 }

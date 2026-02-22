@@ -6,19 +6,45 @@ set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(STD_MODULE_FILE /usr/local/lib/std.pcm)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Werror -Wall -O2 -fmodule-file=std=${STD_MODULE_FILE}")
+set(CMAKE_COLOR_DIAGNOSTICS ON) # Для цветного вывода ошибок сборки
 
-add_executable(main main.cpp)
-add_executable(tests tests.cpp)
+set(CMAKE_CXX_FLAGS
+    "${CMAKE_CXX_FLAGS} -stdlib=libc++ -Werror -Wall \
+    -Wno-unused-variable -Wno-logical-op-parentheses -O3 \
+    -fcolor-diagnostics") # Для цветного вывода ошибок сборки
+
+include(precompiled_modules.cmake) # Подключение модулей
+
+add_executable(main)
+
+target_sources(main
+    PUBLIC
+    main.cpp
+    PUBLIC
+    FILE_SET senjun_modules TYPE CXX_MODULES FILES
+    div.cppm
+)
+target_link_libraries(main PUBLIC std_module)
+
+add_executable(tests)
+
+target_sources(tests
+    PUBLIC
+    tests.cpp
+    PUBLIC
+    FILE_SET senjun_modules TYPE CXX_MODULES FILES
+    div.cppm
+)
+
+target_link_libraries(tests PUBLIC test_modules)
+
 # Docker-образ, внутри которого компилируется и запускается проект:
 # https://github.com/senjun-team/senjun-images/blob/main/cpp/Dockerfile
 
 # Чтобы собрать проект локально, заранее соберите модуль std.
 # Как это сделать, можно посмотреть в нашем Docker-образе.
-# В нем же можно посмотреть, какие версии clang, cmake и ninja точно подходят.
+# В нём же можно посмотреть, какие версии clang, cmake и ninja точно подходят.
 
 # Затем выполните шаги:
-# mkdir build
-# cmake -Wno-dev -Bbuild -GNinja
+# cmake -Wno-dev -B build -G Ninja
 # cmake --build build/ -- -j4

@@ -1,0 +1,47 @@
+from io import StringIO
+import sys
+from inspect import signature
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "make_power" not in globals():
+    print("Function make_power() doesn't exist")
+    exit(1)
+
+if not callable(make_power):
+    print("'make_power' is not a function")
+    exit(1)
+
+make_power_params = signature(make_power).parameters
+if "n" not in make_power_params or len(make_power_params) != 1:
+    print("Please use function signature make_power(n)")
+    exit(1)
+
+# Test the returned function
+test_power = make_power(2)
+if not callable(test_power):
+    print("Function make_power should return a function")
+    exit(1)
+
+# Test functionality
+tests = [
+    (2, 3, 9),  # 3^2 = 9
+    (3, 2, 8),  # 2^3 = 8
+    (1, 5, 5),  # 5^1 = 5
+    (0, 10, 1), # 10^0 = 1
+    (4, 2, 16), # 2^4 = 16
+]
+
+for n, x, expected in tests:
+    power_func = make_power(n)
+    result = power_func(x)
+    if result != expected:
+        print(f"Invalid function output for arguments: n={n}, x={x}. Expected: {expected}, got: {result}")
+        exit(1)
+
+print("All tests passed!")

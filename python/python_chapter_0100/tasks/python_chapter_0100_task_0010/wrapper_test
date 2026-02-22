@@ -1,0 +1,65 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'a' not in locals():
+    print("There is no `a` variable")
+    exit(1)
+
+if type(a) is not str:
+    print("Variable 'a' is not a string")
+    exit(1)
+
+if a != "TEXT":
+    print("Variable 'a' value is not 'TEXT'")
+    exit(1)
+
+
+if 'b' not in locals():
+    print("There is no `b` variable")
+    exit(1)
+
+if type(b) is not str:
+    print("Variable 'b' is not a string")
+    exit(1)
+
+if b != "TEXT2":
+    print("Variable 'b' value is not 'TEXT2'")
+    exit(1)
+
+
+arr = print_res.strip().split("\n")
+if len(arr) != 8:
+    print(f"Expected 8 lines of output in console, but got {len(arr)}")
+    exit(1)
+
+if arr[0] != "TEXT":
+    print(f"First line of output is not 'a' value")
+    exit(1)
+
+if arr[2] != "TEXT":
+    print(f"Third line of output is not 'b' value")
+    exit(1)
+
+if arr[4] != "TEXT":
+    print(f"Fifth line of output is not 'a' value")
+    exit(1)
+
+if arr[6] != "TEXT2":
+    print(f"Seventh line of output is not 'b' value after concatenation")
+    exit(1)
+
+for val in arr[1::2]:
+    try:
+        x = int(val)
+    except:
+        print(f"One of output lines for id is not an id")
+        exit(1)

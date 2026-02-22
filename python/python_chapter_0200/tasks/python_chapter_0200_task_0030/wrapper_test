@@ -1,0 +1,26 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "3\n8.0\n":
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find(" pi as ") == -1:
+    print("There is no import as alias for pi")
+    exit(1)
+
+
+if text.find(" pow as ") == -1:
+    print("There is no import as alias for pow()")
+    exit(1)

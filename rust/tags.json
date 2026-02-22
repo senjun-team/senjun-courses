@@ -1,6 +1,6 @@
 {
     "title": "Rust",
-    "version": "Rust 1.79.0",
+    "version": "Rust 1.91.0",
     "url": "https://www.rust-lang.org/",
     "chapters": "30 глав", 
     "projects": [

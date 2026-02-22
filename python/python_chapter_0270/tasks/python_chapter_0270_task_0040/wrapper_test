@@ -1,0 +1,51 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if print_res != "[(baz)]\n":
+    print('Console output is not correct')
+    exit(1)
+
+if 'parentheses' not in locals():
+    print("There is no `parentheses` function")
+    exit(1)
+
+if 'brackets' not in locals():
+    print("There is no `brackets` function")
+    exit(1)
+
+if 'f' not in locals():
+    print("There is no `f` function")
+    exit(1)
+
+if not callable(parentheses):
+    print("Variable 'parentheses' is not a function")
+    exit(1)
+
+if not callable(brackets):
+    print("Variable 'brackets' is not a function")
+    exit(1)
+
+if not callable(f):
+    print("Variable 'f' is not a function")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("@parentheses") == -1:
+    print("There is no function decorated with @parentheses")
+    exit(1)
+
+if text.find("@brackets") == -1:
+    print("There is no function decorated with @brackets")
+    exit(1)

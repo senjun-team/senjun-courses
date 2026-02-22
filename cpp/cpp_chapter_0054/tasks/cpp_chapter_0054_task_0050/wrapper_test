@@ -1,0 +1,43 @@
+import boost.ut;
+import TestHelpers;
+import std;
+
+#INJECT-b585472fa
+
+
+std::string test_to_string(Rarity rarity)
+{
+    switch(rarity)
+    {
+        case Rarity::Common:
+            return "Rarity::Common";
+        case Rarity::Rare:
+            return "Rarity::Rare";
+        case Rarity::Legendary:
+            return "Rarity::Legendary";
+    }
+}
+
+int main()
+{
+    using namespace boost::ut;
+
+    "enum class values"_test = [] {
+        expect(static_cast<int>(Rarity::Common) < static_cast<int>(Rarity::Rare)) << "Integer representation of Rarity::Common must be less then Rarity::Rare" << fatal;
+        expect(static_cast<int>(Rarity::Rare) < static_cast<int>(Rarity::Legendary)) << "Integer representation of Rarity::Rare must be less then Rarity::Legendary" << fatal;
+    };
+
+    "to_string() return values"_test = [] {
+        std::vector<std::pair<Rarity, std::string>> in_out{
+            {Rarity::Common, "Common"},
+            {Rarity::Rare, "Rare"},
+            {Rarity::Legendary, "Legendary"}
+        };
+
+        for (const auto & [in, out]: in_out)
+        {
+            const std::string s = to_string(in);
+            expect(s == out) << std::format("\nto_string({}) must return \"{}\"\n", test_to_string(in), out) << fatal;
+        }
+    };
+}

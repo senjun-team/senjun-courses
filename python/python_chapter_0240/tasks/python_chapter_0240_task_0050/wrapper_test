@@ -1,0 +1,19 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'matrix' not in locals():
+    print("There is no `matrix` variable")
+    exit(1)
+
+if matrix != [[1, 2, 3], [1, 2, 3], [1, 2, 3]]:
+    print("matrix has invalid value")
+    exit(1)

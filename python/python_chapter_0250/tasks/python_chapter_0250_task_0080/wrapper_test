@@ -1,0 +1,35 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if len(mystdout.getvalue()) != len("{1, 2, 3, 4, 5, 6, 10, 20}\n"):
+    print("Console output is not correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+
+if text.find("merged={") == -1:
+    print("There is no merging statement")
+    exit(1)
+
+if "merged" not in globals():
+    print("Variable merged doesn't exist")
+    exit(1)
+
+if type(merged) is not set:
+    print("merged is not a set")
+    exit(1)
+
+if merged  != {1, 2, 3, 4, 5, 6, 10, 20}:
+    print("merged has invalid value")
+    exit(1)

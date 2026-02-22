@@ -1,0 +1,12 @@
+#INJECT-b585472fa
+
+fn main() {
+    let table: Vec<Vec<f32>> = vec![
+        vec![10.0, 10.0, 10.0, 10.0],
+        vec![2_f32.sqrt(), 2.0, 3.0, 7.0],
+        vec![4.0, 9.0, 16.0, 25.0, 36.0],
+    ];
+    for line in &table {
+        println!("rms({:?}) -> {}", line, rms(&line));
+    }
+}

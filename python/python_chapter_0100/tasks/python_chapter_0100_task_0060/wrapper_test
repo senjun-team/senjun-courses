@@ -1,0 +1,31 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "count" not in globals():
+    print("Function count() doesn't exist")
+    exit(1)
+
+if not callable(count):
+    print("'count' is not a function")
+    exit(1)
+
+tests = [["", "a", 0], 
+         ["--", "c", 0], 
+         ["abc", "b", 1],
+         ["aaaa", "a", 4],
+         ["concatenation", "o", 2]]
+
+for s, c, plan in tests:
+    res = count(s, c)
+
+    if res != plan:
+        print(f"Invalid function output for arguments: '{s}', '{c}'.")
+        exit(1)

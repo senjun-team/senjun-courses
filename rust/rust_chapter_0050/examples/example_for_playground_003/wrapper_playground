@@ -1,0 +1,6 @@
+#INJECT-b585472fa
+
+fn main() {
+    let val: usize = 19425;
+    println!("value: {:b}, bits: {}", val, bit_count(val));
+}

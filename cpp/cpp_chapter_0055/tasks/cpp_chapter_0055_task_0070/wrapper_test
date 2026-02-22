@@ -1,0 +1,158 @@
+import boost.ut;
+import TestHelpers;
+
+using db_handle = int;
+
+const db_handle INVALID_DB_HANDLE = -1;
+
+namespace case1
+{
+    db_handle open_db(const char * conn_str)
+    {
+        return INVALID_DB_HANDLE;
+    }
+
+    void close_db(db_handle h)
+    {
+
+    }
+
+    bool exec_db_query(db_handle h, const char * query)
+    {
+        return true;
+    }
+
+    #INJECT-b585472fa
+}
+
+namespace case2
+{
+    bool is_closed = false;
+
+    db_handle open_db(const char * conn_str)
+    {
+        return 1;
+    }
+
+    void close_db(db_handle h)
+    {
+        is_closed = true;
+    }
+
+    bool exec_db_query(db_handle h, const char * query)
+    {
+        return true;
+    }
+
+    #INJECT-b585472fa
+}
+
+namespace case3
+{
+    bool is_query_successful = true;
+
+    db_handle open_db(const char * conn_str)
+    {
+        return 1;
+    }
+
+    void close_db(db_handle h)
+    {
+    }
+
+    bool exec_db_query(db_handle h, const char * query)
+    {
+        return is_query_successful;
+    }
+
+    #INJECT-b585472fa
+}
+
+namespace case4
+{
+    bool queried = false;
+
+    db_handle open_db(const char * conn_str)
+    {
+        return 1;
+    }
+
+    void close_db(db_handle h)
+    {
+    }
+
+    bool exec_db_query(db_handle h, const char * query)
+    {
+        queried = true;
+        return true;
+    }
+
+    #INJECT-b585472fa
+}
+
+int main()
+{
+    using namespace boost::ut;
+
+    "Constructor throws"_test = [] {
+        using namespace case1;
+
+        try
+        {
+            DBConn c("postgresql://user:secret@localhost");
+        }
+        catch(const std::runtime_error & e)
+        {
+            return;
+        }
+
+        expect(false) << "\nIf open_db() returns INVALID_DB_HANDLE, DBConn constructor must throw std::runtime_error\n" << fatal;
+    };
+
+    "Destructor closes conn"_test = [] {
+        using namespace case2;
+
+        {
+            DBConn c("postgresql://user:secret@localhost");
+            expect(!is_closed)  << "\nDBConn constructor must call open_db()\n" << fatal;
+        }
+
+        expect(is_closed)  << "\nDBConn destructor must call close_db()\n" << fatal;
+    };
+
+    "Exec query"_test = [] {
+        using namespace case3;
+
+        const std::string message = 
+        "\nDBConn exec() method must call exec_db_query()\n"
+        "exec_db_query() returns true in case of successful query\n";
+        DBConn c("postgresql://user:secret@localhost");
+
+        expect(c.exec("select * from table")) << message << fatal;
+        is_query_successful = false;
+        expect(!c.exec("select * from table")) << message << fatal;
+    };
+
+    "handle_metrics() throws"_test = [] {
+        using namespace case1;
+
+        try
+        {
+            handle_metrics();
+        }
+        catch(const std::runtime_error & e)
+        {
+            return;
+        }
+
+        expect(false)  << "\nhandle_metrics() must throw std::runtime_error in case of some error\n" << fatal;
+    };
+
+    "handle_metrics() runs query"_test = [] {
+        using namespace case4;
+        
+        handle_metrics();
+
+        expect(queried) << "\nhandle_metrics() must call DBConn exec() method\n" << fatal;
+    };
+}

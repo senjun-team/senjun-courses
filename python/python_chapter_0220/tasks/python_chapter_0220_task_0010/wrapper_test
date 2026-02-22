@@ -1,0 +1,42 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "10\n":
+    print("print() output isn't correct")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+text = text.replace(" ", "")
+if text.find("print(a)") == -1:
+    print("There is no print(a) statement in solution")
+    exit(1)
+
+if text.find("while") == -1:
+    print("There is no while loop in solution")
+    exit(1)
+
+if text.find("a=10") == -1:
+    print("There is no 'a' assignment in solution")
+    exit(1)
+
+if "a" not in globals():
+    print("Variable a doesn't exist")
+    exit(1)
+
+if type(a) is not int:
+    print("'a' is not an integer")
+    exit(1)
+
+if a != 10:
+    print("'a' is not equal to 10")
+    exit(1)

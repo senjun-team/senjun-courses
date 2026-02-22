@@ -1,0 +1,29 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "-2\n":
+    print("Solution output isn't correct")
+    exit(1)
+
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if user_code.count(":=") != 4:
+    print("Please use operator walrus to initialize all of the variables")
+    exit(1)
+
+
+for x in ["a", "b", "c", "d"]:
+    if x not in globals():
+        print(f"Variable '{x}' doesn't exist")
+        exit(1)

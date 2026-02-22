@@ -1,0 +1,24 @@
+#INJECT-b585472fa
+
+func newNode(node *linkedNode, value int) *linkedNode {
+	node.next = &linkedNode{nil, value}
+	return node.next
+}
+
+func newList(nodeNumber int) *linkedNode {
+	if nodeNumber <= 0 {
+		return nil
+	}
+	var beginNode = &linkedNode{nil, 0}
+	node := beginNode
+
+	for i := 1; i < nodeNumber; i++ {
+		node = newNode(node, i*5)
+	}
+	return beginNode
+}
+
+func main() {
+	beginNode := newList(5)
+	printList(beginNode)
+}

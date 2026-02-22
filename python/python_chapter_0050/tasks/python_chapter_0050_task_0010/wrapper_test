@@ -1,0 +1,32 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "get_words_count" not in globals():
+    print("Function get_words_count() doesn't exist")
+    exit(1)
+
+if not callable(get_words_count):
+    print("'get_words_count' is not a function")
+    exit(1)
+
+
+tests = [["", 0], 
+         ["t", 1], ["test", 1], 
+         ["a_b", 2], ["ab_c", 2], ["a_bc", 2],
+         ["a_b_c", 3], ["ab_cd_ef", 3]]
+
+for s, count in tests:
+    fact = get_words_count(s)
+    if fact != count:
+        print(f"Words count in string '{s}' must be {count}, but function returned {fact}")
+        exit(1)
+
+

@@ -1,0 +1,8 @@
+import TestHelpers;
+import std;
+
+int main()
+{
+    std::string user_input = hlp::remove_spaces(R"(#INJECT-b585472fa)");
+    return user_input == "16" ? 0 : 1;
+}

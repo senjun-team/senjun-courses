@@ -1,0 +1,9 @@
+import std;
+
+int main()
+{
+    double a = 11.0004;
+    double b = 11.0005;
+    #INJECT-b585472fa
+    std::println("a equals b? {}", eq);
+}

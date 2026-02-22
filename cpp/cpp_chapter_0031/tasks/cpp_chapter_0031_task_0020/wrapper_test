@@ -1,0 +1,25 @@
+import boost.ut;
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    using namespace boost::ut;
+
+    "Invalid e-mails"_test = [] {
+        expect(!is_valid("")) << "\nis_valid(\"\") must return false\n" << fatal;
+        expect(!is_valid("1")) << "\nis_valid(\"1\") must return false\n" << fatal;
+        expect(!is_valid("@")) << "\nis_valid(\"@\") must return false\n" << fatal;
+        expect(!is_valid(".")) << "\nis_valid(\".\") must return false\n" << fatal;
+        expect(!is_valid(".@")) << "\nis_valid(\".@\") must return false\n" << fatal;
+        expect(!is_valid("@kjl.su")) << "\nis_valid(\"@kjl.su\") must return false\n" << fatal;
+        expect(!is_valid("kjl@")) << "\nis_valid(\"kjl@\") must return false\n" << fatal;
+        expect(!is_valid("kjl@t")) << "\nis_valid(\"kjl@t\") must return false\n" << fatal;
+    };
+
+    "Valid e-mails"_test = [] {
+        expect(is_valid("test@test.su")) << "\nis_valid(\"test@test.su\") must return true\n" << fatal;
+        expect(is_valid("t@t.t")) << "\nis_valid(\"t@t.t\") must return true\n" << fatal;
+    };
+}

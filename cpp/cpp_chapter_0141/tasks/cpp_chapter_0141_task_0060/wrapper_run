@@ -1,0 +1,15 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::vector<std::string> words = {
+        "ReFeRenCe",
+        "ALGO"
+    };
+
+    std::println("Vector before calling lower(): {}", words);
+    lower(words);
+    std::println("Vector after calling lower(): {}", words);
+}

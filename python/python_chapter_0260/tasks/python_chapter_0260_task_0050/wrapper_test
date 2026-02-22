@@ -1,0 +1,19 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+for x in ["a", "d", "f"]:
+    if x in globals():
+        print(f"Function '{x}' shouldn't exist")
+        exit(1)
+
+for x in ["b", "c", "e"]:
+    if x not in globals():
+        print(f"Function '{x}' doesn't exist")
+        exit(1)

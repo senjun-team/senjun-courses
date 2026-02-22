@@ -1,0 +1,14 @@
+#INJECT-b585472fa
+
+fn main() {
+    assert!(!approx_equal_rel(0.005, -0.005, 0.01));
+    println!("{} != {} with epsilon {}", 0.005, -0.005, 0.01);
+
+    assert!(!approx_equal_rel(0.009, 9e-300, 0.01));
+    println!("{:e} != {:e} with epsilon {}", 0.009, 9e-300, 0.01);
+
+    let left  = 100000000000000.0_f64;
+    let right = 100000000000000.015625_f64;
+    assert!(approx_equal_rel(left, right, 0.01));
+    println!("{} == {:.6} with epsilon {}", left, right, 0.01);
+}

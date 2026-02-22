@@ -1,0 +1,52 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+lines = print_res.split("\n")
+if len(lines) < 2:
+    print("Console output is invalid")
+    exit(1)
+    
+for line in lines:
+    line = line.strip()
+    if len(line) == 0:
+        continue
+
+    if len(line) != len("2.03 seconds"):
+        print('Console output length is not equal to example output "2.03 seconds"')
+        exit(1)
+
+    try:
+        sec = float(line[0:4])
+    except:
+        print('Console output deosn\'t start with floating-point number (4 characters, e.g. 2.03)')
+        exit(1)
+
+    if not line.endswith(" seconds"):
+        print('Console output format is not equal to example output format "2.03 seconds"')
+        exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.count('@measure_time') < 2:
+    print("Please add decorator @measure_time to 2 functions")
+    exit(1)
+
+
+if 'measure_time' not in locals():
+    print("There is no `measure_time` function")
+    exit(1)
+
+if not callable(measure_time):
+    print("Variable 'measure_time' is not a function")
+    exit(1)

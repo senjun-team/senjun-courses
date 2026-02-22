@@ -1,0 +1,6 @@
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if s.strip().lower() != "import utils.fs.filetypes.bin":
+    exit(1)

@@ -1,0 +1,134 @@
+package main
+
+import (
+	"testing"
+	"time"
+)
+
+func TestCache(t *testing.T) {
+	const intCacheKey1 = "request_count"
+	const intCacheKey2 = "active_users"
+	const intCacheVal1 = 42
+	const intCacheVal2 = 150
+	const initTimeMinutes = 10
+
+	intCache := NewCache[string, int](initTimeMinutes * time.Minute)
+	intCache.Set(intCacheKey1, intCacheVal1)
+	intCache.Set(intCacheKey2, intCacheVal2)
+
+	if val1, ok := intCache.Get(intCacheKey1); ok {
+		if val1 != intCacheVal1 {
+			t.Errorf("for Cache[string, int] set %q=%d, %q=%d and %d minutes, Get %q=%d, want %q=%d",
+				intCacheKey1, intCacheVal1,
+				intCacheKey2, intCacheVal2,
+				initTimeMinutes, intCacheKey1,
+				val1, intCacheKey1, intCacheVal1)
+		}
+	} else {
+		t.Errorf("for Cache[string, int] set %q=%d, %q=%d and %d minutes, Get no %q, want %q=%d",
+			intCacheKey1, intCacheVal1,
+			intCacheKey2, intCacheVal2,
+			initTimeMinutes, intCacheKey1,
+			intCacheKey1, intCacheVal1)
+	}
+
+	if val2, ok := intCache.Get(intCacheKey2); ok {
+		if val2 != intCacheVal2 {
+			t.Errorf("for Cache[string, int] set %q=%d, %q=%d and %d minutes, Get %q=%d, want %q=%d",
+				intCacheKey1, intCacheVal1,
+				intCacheKey2, intCacheVal2,
+				initTimeMinutes, intCacheKey2,
+				val2, intCacheKey2,
+				intCacheVal2)
+		}
+	} else {
+		t.Errorf("for Cache[string, int] set %q=%d, %q=%d and %d minutes, Get no %q, want %q=%d",
+			intCacheKey1, intCacheVal1,
+			intCacheKey2, intCacheVal2,
+			initTimeMinutes, intCacheKey2,
+			intCacheKey2, intCacheVal2)
+	}
+
+	intCache.Delete(intCacheKey1)
+	intCache.Delete(intCacheKey2)
+	if val1, ok := intCache.Get(intCacheKey1); ok {
+		t.Errorf("for Cache[string, int] set %q=%d, %q=%d and %d minutes, after deleting all Get %q=%d, want no %q",
+			intCacheKey1, intCacheVal1,
+			intCacheKey2, intCacheVal2,
+			initTimeMinutes, intCacheKey1,
+			val1, intCacheKey1)
+	}
+	if val2, ok := intCache.Get("active_users"); ok {
+		t.Errorf("for Cache[string, int] set %q=%d, %q=%d and %d minutes, after deleting all Get %q=%d, want no %q",
+			intCacheKey1, intCacheVal1,
+			intCacheKey2, intCacheVal2,
+			initTimeMinutes, intCacheKey2,
+			val2, intCacheKey2)
+	}
+
+	type User struct {
+		Name  string
+		Email string
+	}
+
+	const userCacheKey1 = 1
+	var userCacheVal1 = User{Name: "Bob", Email: "bob@example.com"}
+	const userCacheKey2 = 2
+	var userCacheVal2 = User{Name: "Charlie", Email: "charlie@test.com"}
+
+	userCache := NewCache[int, User](time.Hour)
+	userCache.Set(userCacheKey1, userCacheVal1)
+	userCache.Set(userCacheKey2, userCacheVal2)
+
+	if val1, ok := userCache.Get(userCacheKey1); ok {
+		if val1 != userCacheVal1 {
+			t.Errorf("for Cache[int, User] set %d=%v, %d=%v and %d minutes, Get %d=%v, want %d=%v",
+				userCacheKey1, userCacheVal1,
+				userCacheKey2, userCacheVal2,
+				initTimeMinutes, userCacheKey1,
+				val1, userCacheKey1,
+				userCacheVal1)
+		}
+	} else {
+		t.Errorf("for Cache[int, User] set %d=%q, %d=%q and %d minutes, Get no %d, want %d=%q",
+			userCacheKey1, userCacheVal1,
+			userCacheKey2, userCacheVal2,
+			initTimeMinutes, userCacheKey1,
+			userCacheKey1, userCacheVal1)
+	}
+
+	if val2, ok := userCache.Get(userCacheKey2); ok {
+		if val2 != userCacheVal2 {
+			t.Errorf("for Cache[int, User] set %d=%v, %d=%v and %d minutes, Get %d=%v, want %d=%v",
+				userCacheKey1, userCacheVal1,
+				userCacheKey2, userCacheVal2,
+				initTimeMinutes, userCacheKey2,
+				val2, userCacheKey2,
+				userCacheVal2)
+		}
+	} else {
+		t.Errorf("for Cache[int, User] set %d=%q, %d=%q and %d minutes, Get no %d, want %d=%q",
+			userCacheKey1, userCacheVal1,
+			userCacheKey2, userCacheVal2,
+			initTimeMinutes, userCacheKey2,
+			userCacheKey2, userCacheVal2)
+	}
+
+	userCache.Delete(userCacheKey1)
+	userCache.Delete(userCacheKey2)
+
+	if val1, ok := userCache.Get(userCacheKey1); ok {
+		t.Errorf("for Cache[int, User] set %d=%v, %d=%v and %d minutes, after deleting all Get %d=%v, want no %d",
+			userCacheKey1, userCacheVal1,
+			userCacheKey2, userCacheVal2,
+			initTimeMinutes, userCacheKey1, val1,
+			userCacheKey1)
+	}
+	if val2, ok := userCache.Get(userCacheKey2); ok {
+		t.Errorf("for Cache[int, User] set %d=%v, %d=%v and %d minutes, after deleting all Get %d=%v, want no %d",
+			userCacheKey1, userCacheVal1,
+			userCacheKey2, userCacheVal2,
+			initTimeMinutes, userCacheKey2, val2,
+			userCacheKey2)
+	}
+}

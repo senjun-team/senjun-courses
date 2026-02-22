@@ -1,0 +1,23 @@
+#INJECT-b585472fa
+
+fn expected(big: f64, small: f64) -> f64 {
+    COUNT as f64 * small + big
+}
+
+fn calc_and_print(big: f64, small: f64) {
+    let res = sum(big, small);
+    let exp = expected(big, small);
+    let abs_err = (exp - res).abs();
+    let rel_err = abs_err / exp;
+    println!("sum({:e}, {:.1}) ->       {}", big, small, res);
+    println!("ожидаемое значение:     {}", exp);
+    println!("абсолютная погрешность: {} ", abs_err);
+    println!("относительная погрешность: {:.6}%\n", rel_err * 100.0);
+}
+
+fn main() {
+    let pairs: Vec<(f64, f64)> = vec![(1e16, 1.0), (1e16, 3.0)];
+    for cur in & pairs {
+        calc_and_print(cur.0, cur.1);
+    }
+}

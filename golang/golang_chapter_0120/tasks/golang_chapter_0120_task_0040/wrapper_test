@@ -1,0 +1,54 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"os"
+	"strings"
+	"testing"
+)
+
+func TestPrintAddr(t *testing.T) {
+
+	cases := []struct {
+		in   textbook
+		want string
+	}{
+		{
+			textbook{"Go",
+				book{"Alan A. A. Donovan",
+					"The Go Programming Language", 380, 2015},
+				library{"Moscow State Library",
+					"Moscow city"}},
+			"Moscow State Library Moscow city"},
+		{
+			textbook{},
+			""},
+	}
+
+	for _, c := range cases {
+		old := os.Stdout // keep backup of the real stdout
+		r, w, _ := os.Pipe()
+		os.Stdout = w
+
+		outC := make(chan string)
+		// copy the output in a separate goroutine so printing can't block indefinitely
+		go func() {
+			var buf bytes.Buffer
+			io.Copy(&buf, r)
+			outC <- buf.String()
+		}()
+
+		c.in.printAddr()
+
+		w.Close()
+		os.Stdout = old // restoring the real stdout
+		out := <-outC
+
+		if strings.TrimSpace(out) != c.want {
+			t.Errorf("for textbook: \n\n%v\n\n textbook.printAddr() prints:\n\n%s\n\nwant:\n\n%s",
+				c.in, strings.TrimSpace(out), c.want)
+		}
+	}
+
+}

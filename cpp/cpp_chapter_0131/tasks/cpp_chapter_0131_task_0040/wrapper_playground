@@ -1,0 +1,12 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const std::string s = "*";
+
+    auto const hash = naive_hash(s);
+
+    std::println("naive_hash(\"{}\") returns {}", s, hash);
+}

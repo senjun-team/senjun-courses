@@ -1,0 +1,239 @@
+#INJECT-b585472fa
+
+#[deny(dead_code)]
+mod exec {
+    use std::sync::mpsc;
+    use std::sync::mpsc::{Receiver, Sender};
+    use std::{thread, time};
+
+    const MAX_SLEEP_TIME_MS: u64 = 128;
+    const MAX_ATTEMPTS_COUNT: usize = 3;
+
+    #[derive(Debug)]
+    pub enum RuntimeError {
+        MissedTasks,
+        AbortedTasks,
+    }
+
+    pub struct Config<'a> {
+        messages: Vec<(u32, &'a str)>,
+    }
+
+    impl<'a> Config<'a> {
+        pub fn read() -> Config<'static> {
+            Config {
+                messages: vec![
+                    (0, "Find unsent acts for last month"),
+                    (24, "Collect errors received in last hour"),
+                    (120 * 60, "Find unlinked items for all time"),
+                    (300, "Verify integrity of contract set"),
+                    (75 * 60, "Verify integrity of acts"),
+                ],
+            }
+        }
+
+        pub fn queue_params(&self) -> Vec<(u32, &'a str)> {
+            self.messages.clone()
+        }
+
+        pub fn pool_params(&self) -> u32 {
+            self.messages.len() as u32
+        }
+    }
+
+    #[derive(Clone, Debug)]
+    pub struct Job {
+        info: String,
+        data: u32,
+    }
+
+    impl Job {
+        pub fn new(info: &str, data: u32) -> Job {
+            Job {
+                info: String::from(info),
+                data: data,
+            }
+        }
+
+        fn get_data(&self) -> u32 {
+            self.data
+        }
+
+        pub fn get_info(&self) -> &str {
+            &self.info
+        }
+    }
+
+    pub struct RunnerPool {
+        receiver: Receiver<(u32, bool)>,
+        sender: Sender<(u32, bool)>,
+        handles: Vec<std::thread::JoinHandle<()>>,
+        job_count: u32,
+    }
+
+    impl RunnerPool {
+        pub fn new(cfg: &Config) -> RunnerPool {
+            let (snd, rcv) = mpsc::channel::<(u32, bool)>();
+
+            RunnerPool {
+                receiver: rcv,
+                sender: snd,
+                handles: Vec::new(),
+                job_count: cfg.pool_params(),
+            }
+        }
+
+        pub fn execute(&mut self, id: u32, job: &Job, time: u32) {
+            if time == 0 {
+                println!(
+                    "[ wrn ] The job {} will be executed without time limit.",
+                    id
+                );
+            }
+            let expected = job.get_data();
+            let thread_sender = self.sender.clone();
+
+            let new_handle = thread::spawn(move || {
+                let sleep_time: u64 = if time == 0 {
+                    MAX_SLEEP_TIME_MS
+                } else {
+                    (MAX_SLEEP_TIME_MS * (expected as u64)) / (u32::MAX as u64)
+                };
+
+                if sleep_time > 0 {
+                    let sleep_time = time::Duration::from_millis(sleep_time);
+                    thread::sleep(sleep_time);
+                }
+
+                let ok = time == expected;
+                thread_sender.send((id, ok)).unwrap();
+
+                if ok {
+                    println!("[ inf ] Complete job {}.", id);
+                } else if time > 0 {
+                    println!("[ err ] Abort job {}.", id);
+                } else {
+                    println!("[ err ] Failed to process job {}.", id);
+                }
+            });
+            self.handles.push(new_handle);
+        }
+
+        pub fn stop_all(self) -> Result<(), RuntimeError> {
+            let mut attempts = MAX_ATTEMPTS_COUNT;
+            let mut passed = 0_u32;
+            let mut aborted = Vec::<u32>::new();
+            let timeout = time::Duration::from_millis(MAX_SLEEP_TIME_MS);
+
+            while attempts > 0 && passed < self.job_count {
+                match self.receiver.recv_timeout(timeout) {
+                    Ok(result) => {
+                        passed += 1;
+                        attempts = MAX_ATTEMPTS_COUNT;
+                        if !result.1 {
+                            aborted.push(result.0);
+                        }
+                    }
+                    Err(_) => {
+                        attempts -= 1;
+                    }
+                };
+            }
+
+            for cur_handle in self.handles {
+                match cur_handle.join() {
+                    Ok(_) => (),
+                    Err(err) => println!("Failed to stop thread: {:?}", err),
+                }
+            }
+
+            if !aborted.is_empty() {
+                println!("[ err ] Failed to process jobs: {:?}.", aborted);
+                Err(RuntimeError::AbortedTasks)
+            } else if passed < self.job_count {
+                println!("[ err ] Missed some jobs.");
+                Err(RuntimeError::MissedTasks)
+            } else {
+                println!("[ inf ] All jobs are completed.");
+                Ok(())
+            }
+        }
+    }
+} // mod exec
+
+#[deny(dead_code)]
+mod comm {
+
+    #[derive(Debug)]
+    pub struct Message {
+        job: crate::exec::Job,
+        id: u32,
+        time: u32,
+    }
+
+    fn to_micros(sec: u32) -> u32 {
+        match sec.checked_mul(1000000) {
+            Some(val) => val,
+            None => 0,
+        }
+    }
+
+    impl Message {
+        pub fn new(id: u32, info: &str, time: u32) -> Message {
+            Message {
+                id: id,
+                job: crate::exec::Job::new(info, to_micros(time)),
+                time: time,
+            }
+        }
+
+        pub fn get_id(&self) -> u32 {
+            self.id
+        }
+
+        pub fn get_time_limit(&self) -> u32 {
+            self.time
+        }
+
+        pub fn get_job(&self) -> &crate::exec::Job {
+            &self.job
+        }
+
+        pub fn to_string(&self) -> String {
+            format!("{}, {}s, {}", self.id, self.time, self.job.get_info())
+        }
+    }
+
+    #[derive(Debug)]
+    pub enum PopResult {
+        Value(Message),
+        Eof,
+    }
+
+    pub struct Queue<'a> {
+        messages: Vec<(u32, &'a str)>,
+        pos: usize,
+    }
+
+    impl<'a> Queue<'a> {
+        pub fn new(cfg: &crate::exec::Config<'a>) -> Queue<'a> {
+            Queue {
+                messages: cfg.queue_params(),
+                pos: 0,
+            }
+        }
+
+        pub fn pop(&mut self) -> PopResult {
+            if self.pos >= self.messages.len() {
+                println!("[ inf ] End of queue.");
+                PopResult::Eof
+            } else {
+                let (time, info) = self.messages[self.pos];
+                let msg = Message::new(self.pos as u32, info, time);
+                self.pos += 1;
+                println!("[ inf ] Pop message: {}.", msg.to_string());
+                PopResult::Value(msg)
+            }
+        }
+    }
+} // mod comm

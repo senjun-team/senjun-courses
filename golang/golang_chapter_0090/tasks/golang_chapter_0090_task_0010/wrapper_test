@@ -1,0 +1,41 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestMustIndex(t *testing.T) {
+
+	cases := []struct {
+		in   [2]string
+		want int
+	}{
+		{[2]string{"banana", "ana"}, 1},
+		{[2]string{"", ""}, 0},
+		{[2]string{"orange", "apple"}, -1},
+	}
+
+	for _, c := range cases {
+		if c.want == -1 {
+			var wasPanic bool
+
+			defer func() {
+				if p := recover(); p != nil {
+					wasPanic = true
+				}
+			}()
+
+			if wasPanic {
+				continue
+			}
+			got := MustIndex(c.in[0], c.in[1])
+			t.Errorf("MustIndex(%q, %q) == %d, want panic", c.in[0], c.in[1], got)
+		}
+
+		got := MustIndex(c.in[0], c.in[1])
+
+		if got != c.want {
+			t.Errorf("MustIndex(%q, %q) == %d, want %d", c.in[0], c.in[1], got, c.want)
+		}
+	}
+}

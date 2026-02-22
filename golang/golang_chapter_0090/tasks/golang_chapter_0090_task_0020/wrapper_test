@@ -1,0 +1,15 @@
+package main
+
+import (
+	"strings"
+	"testing"
+)
+
+func TestMain(t *testing.T) {
+	answer := "CBAE"
+	codeInput := "#INJECT-b585472fa"
+	normalizedCode := strings.ToUpper(strings.TrimSpace(codeInput))
+	if answer != normalizedCode {
+		t.Fatalf("wrong answer")
+	}
+}

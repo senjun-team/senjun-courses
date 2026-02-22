@@ -1,0 +1,21 @@
+fn approx_equal_ulp(left: f64, right: f64, ulps: u64) -> bool {
+    if left.is_nan() || right.is_nan() {
+        // одно из значений нечисло
+        false
+    } else if left.is_sign_positive() != right.is_sign_positive() {
+        // проверка на +0 == -0
+        left == right
+    } else {
+        let lbits = left.to_bits();
+        let rbits = right.to_bits();
+        if lbits > rbits {
+            ulps >= lbits - rbits
+        } else {
+            ulps >= rbits - lbits
+        }
+    }
+}
+
+fn main() {
+    #INJECT-b585472fa
+}

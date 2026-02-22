@@ -1,0 +1,10 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::println("to_string(Rarity::Common)    = {}", to_string(Rarity::Common));
+    std::println("to_string(Rarity::Rare)      = {}", to_string(Rarity::Rare));
+    std::println("to_string(Rarity::Legendary) = {}", to_string(Rarity::Legendary));
+}

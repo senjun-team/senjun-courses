@@ -1,0 +1,36 @@
+import std;
+
+#INJECT-b585472fa
+
+std::vector<int> random_vector()
+{
+    const std::size_t len = 1e6;
+    std::random_device rnd_device;
+    std::mt19937 mersenne_engine {rnd_device()};
+    std::uniform_int_distribution<int> dist {-100, 200};
+    
+    auto gen = [&](){ return dist(mersenne_engine); };
+
+    std::vector<int> vec(len);
+    std::generate(vec.begin(), vec.end(), gen);
+    return vec;
+}
+
+int main()
+{
+    const std::vector<int> v = random_vector();
+
+    {
+        std::vector<int> copy = v;
+        MeasureTime mt;
+        std::sort(copy.begin(), copy.end());
+        std::println("Duration of std::sort() on vector with 1e6 elements:");
+    }
+
+    {
+        std::vector<int> copy = v;
+        MeasureTime mt;
+        std::stable_sort(copy.begin(), copy.end());
+        std::println("Duration of std::stable_sort() on vector with 1e6 elements:");
+    }
+}

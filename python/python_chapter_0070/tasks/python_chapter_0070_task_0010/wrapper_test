@@ -1,0 +1,35 @@
+from io import StringIO
+import sys
+from inspect import signature
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "calc_gcd" not in globals():
+    print("Function calc_gcd() doesn't exist")
+    exit(1)
+
+if not callable(calc_gcd):
+    print("'calc_gcd' is not a function")
+    exit(1)
+
+calc_gcd_params = signature(calc_gcd).parameters 
+if "a" not in calc_gcd_params or "b" not in calc_gcd_params or len(calc_gcd_params) != 2:
+    print("Please use function signature calc_gcd_params(a, b)")
+    exit(1)
+
+tests = [[25, 15, 5, 4], 
+         [8, 3, 1, 5], 
+         [14, 49, 7, 5]]
+
+for a, b, gcd_plan, calls_count_plan in tests:
+    gcd, calls_count = calc_gcd(a, b)
+
+    if gcd != gcd_plan or calls_count != calls_count_plan:
+        print(f"Invalid function output for arguments: {a}, {b}.")
+        exit(1)
+

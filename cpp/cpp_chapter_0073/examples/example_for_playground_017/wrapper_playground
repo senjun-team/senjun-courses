@@ -1,0 +1,11 @@
+import std;
+
+int main()
+{
+    std::map<std::size_t, std::string> server_names;
+
+    std::size_t server_id = 902;
+    std::string name = "stage";
+
+    #INJECT-b585472fa
+}

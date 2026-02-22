@@ -1,0 +1,33 @@
+﻿#![deny(unused_variables)]
+#![deny(unused_mut)]
+#![deny(unused_assignments)]
+#![allow(dead_code)]
+
+#INJECT-b585472fa
+
+#[derive(Debug)]
+enum TestResult {
+    DeclarationRequired,
+    LabelRequired
+}
+
+fn remove_whitespace(text: &str) -> String {
+    text.chars().filter(|c| !c.is_whitespace()).collect()
+}
+
+fn main() -> Result<(), TestResult> {
+
+let text: String = remove_whitespace(r#"#INJECT-b585472fa"#);
+
+if !text.contains("fncheck(matrix:&Vec<Vec<i32>>,min:i32,max:i32)->bool{") {
+    println!("Нет объявления функции `fn check(matrix: &Vec<Vec<i32>>, min: i32, max: i32) -> bool`");
+    return Err(TestResult::DeclarationRequired);
+}
+
+if !text.contains("break'") {
+    println!("Необходимо использовать `break` с меткой");
+    return Err(TestResult::LabelRequired);
+}
+ 
+Ok(())
+}

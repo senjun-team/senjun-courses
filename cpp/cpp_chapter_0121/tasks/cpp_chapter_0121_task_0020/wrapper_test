@@ -1,0 +1,21 @@
+import TestHelpers;
+import std;
+
+int main()
+{
+    std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
+
+    if (user_input == "err")
+    {
+        std::println(std::cerr, "Область видимости переменной начинается со строки с её объявлением, поэтому с точки зрения компилятора выражение корректно.");
+        return 1;   
+    }
+
+    if (user_input == "ok")
+    {
+        std::println(std::cerr, "В выражении участвует ещё не проинициализированный объект.");
+        return 1;
+    }
+
+    return user_input == "ub" ? 0 : 1;
+}

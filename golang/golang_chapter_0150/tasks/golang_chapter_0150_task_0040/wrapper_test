@@ -1,0 +1,28 @@
+package main
+
+import (
+	"testing"
+)
+
+func TestHasPrefix(t *testing.T) {
+	type Username string
+	type Prefix string
+
+	cases := []struct {
+		in1  Username
+		in2  Prefix
+		want bool
+	}{
+		{"angel336", "angel", true},
+		{"angel336", "devil", false},
+		{"", "", true},
+		{"devtool", "", true},
+		{"a", "a", true},
+	}
+	for _, c := range cases {
+		got := hasPrefix(c.in1, c.in2)
+		if got != c.want {
+			t.Errorf("hasPrefix(%q, %q) == %t, want %t", c.in1, c.in2, got, c.want)
+		}
+	}
+}

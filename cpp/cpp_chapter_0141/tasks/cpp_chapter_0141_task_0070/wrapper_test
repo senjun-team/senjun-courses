@@ -1,0 +1,65 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+struct TestCase
+{
+    std::string text;
+    std::unordered_set<std::string> stop_words;
+    std::string plan;
+};
+
+void check(const TestCase & c)
+{
+    const std::string fact = most_common_word(c.text, c.stop_words);
+    expect(c.plan == fact) << std::format("ismost_common_word({}, {}) returns {}. But expected result is {}",
+                                           c.text, c.stop_words, fact, c.plan) << fatal;
+}
+
+int main()
+{
+    "Empty string"_test = [] {
+        TestCase c = {
+            .text = "",
+            .stop_words = {},
+            .plan = ""
+        };
+
+        check(c);
+    };
+
+    "Example from task text"_test = [] {
+        TestCase c = {
+            .text = "a bb a bb",
+            .stop_words = {"a", "c"},
+            .plan = "bb"
+        };
+
+        check(c);
+    };
+
+    "Empty stop words"_test = [] {
+        TestCase c = {
+            .text = "a bb a bb c a",
+            .stop_words = {},
+            .plan = "a"
+        };
+
+        check(c);
+    };
+
+    "Single-letter word"_test = [] {
+        TestCase c = {
+            .text = "11 22 3333 22 3333 8 11",
+            .stop_words = {"11", "22", "3333"},
+            .plan = "8"
+        };
+
+        check(c);
+    };
+}

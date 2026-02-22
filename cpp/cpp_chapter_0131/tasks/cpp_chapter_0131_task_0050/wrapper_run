@@ -1,0 +1,9 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::println("Console output of test_chartable():");
+    test_chartable();
+}

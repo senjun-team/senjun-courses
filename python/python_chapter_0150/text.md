@@ -218,20 +218,20 @@ TypeError: unhashable type: 'slice'
 Например, для входного списка `["first", 2, "third", {4, 44}, "first"]` функция должна вернуть словарь `{'first': 4, 2: 1, 'third': 2}`. {.task_text}
 
 ```python {.task_source #python_chapter_0150_task_0010}
-import typing
+import collections.abc
 
 def to_dict(items):
     # Your code here
 ```
 
-Создайте пустой словарь. Проитерируйтесь по `items` и заполните словарь хэшируемыми элементами `items` и их индексами. Для проверки, является ли объект `item` хешируемым, используйте функцию `isinstance(item, typing.Hashable)`. Она объявлена в модуле `typing`. {.task_hint}
+Создайте пустой словарь. Проитерируйтесь по `items` и заполните словарь хэшируемыми элементами `items` и их индексами. Для проверки, является ли объект `item` хешируемым, используйте функцию `isinstance(item, collections.abc.Hashable)`. Она объявлена в модуле `collections.abc`. {.task_hint}
 ```python {.task_answer}
-import typing
+import collections.abc
 
 def to_dict(items):
     d = {}
     for i, item in enumerate(items):
-        if isinstance(item, typing.Hashable):
+        if isinstance(item, collections.abc.Hashable):
             d[item] = i
     return d
 ```

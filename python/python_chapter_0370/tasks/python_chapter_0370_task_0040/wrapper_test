@@ -1,0 +1,63 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+
+if print_res.find("False\nTrue") == -1:
+    print("Console output is invalid")
+    exit(1)
+
+
+if 'SimpleClass' not in locals():
+    print("There is no `SimpleClass` class")
+    exit(1)
+
+
+if 'UpperAttrMeta' not in locals():
+    print("There is no `UpperAttrMeta` class")
+    exit(1)
+
+if type(UpperAttrMeta) is not type:
+    print("Variable 'UpperAttrMeta' is not a class")
+    exit(1)
+
+
+if hasattr(SimpleClass, "attr1"):
+    print("`SimpleClass` shouldn't have attribute `attr1`")
+    exit(1)
+
+if hasattr(SimpleClass, "attr2"):
+    print("`SimpleClass` shouldn't have attribute `attr2`")
+    exit(1)
+
+if not hasattr(SimpleClass, "ATTR1"):
+    print("`SimpleClass` should have attribute `ATTR1`")
+    exit(1)
+
+if not hasattr(SimpleClass, "ATTR2"):
+    print("`SimpleClass` should have attribute `ATTR2`")
+    exit(1)
+
+
+try:
+    class X(metaclass=UpperAttrMeta):
+        a = 8
+    
+    if hasattr(X, "a"):
+        print("Please check that UpperAttrMeta replaces attribute names with UPPERCASE names")
+        exit(1)
+
+    if not hasattr(X, "A"):
+        print("Please check that UpperAttrMeta replaces attribute names with UPPERCASE names")
+        exit(1)
+except Exception as e:
+    print(f"Error while testing `UpperAttrMeta` on test class `X`: {e}")
+    exit(1)

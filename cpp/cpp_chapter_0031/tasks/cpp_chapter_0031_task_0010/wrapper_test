@@ -1,0 +1,80 @@
+#INJECT-b585472fa
+
+import boost.ut;
+
+using namespace boost::ut;
+
+struct TestCase
+{
+    double cur_height = 0.0;
+    double prev_height = 0.0;
+    double elapsed_time = 0.0;
+};
+
+void check(const TestCase & c, double plan)
+{
+    const double fact = vertical_flight_speed(c.cur_height,
+                                              c.prev_height,
+                                              c.elapsed_time);
+    
+    const std::string msg = std::format(
+        "\nvertical_flight_speed({}, {}, {}) must return {} but returned {}\n",
+        c.cur_height, c.prev_height, c.elapsed_time, plan, fact
+    );
+
+    if (std::isnan(plan))
+    {
+        expect(std::isnan(fact)) << msg << fatal;
+        return;
+    }
+
+    if (std::isinf(plan))
+    {
+        expect(std::isinf(fact)) << msg << fatal;
+        return; 
+    }
+
+    const double eps = 1e-3;
+    expect(std::abs(plan - fact) < eps) << msg << fatal;
+}
+
+int main()
+{
+
+    "NAN vertical_flight_speed"_test = [] {
+        std::vector<TestCase> cases = {
+            {.cur_height=-1000, .prev_height=1000, .elapsed_time=2},
+            {.cur_height=1000, .prev_height=-1000, .elapsed_time=2},
+            {.cur_height=-400, .prev_height=-501, .elapsed_time=5},
+            {.cur_height=-500.01, .prev_height=-499, .elapsed_time=5}
+        };
+
+        for (const auto & c: cases)
+            check(c, NAN);
+    };
+
+    "INFINITY vertical_flight_speed"_test = [] {
+        std::vector<TestCase> cases = {
+            {.cur_height=1000, .prev_height=1000, .elapsed_time=0},
+            {.cur_height=1000, .prev_height=1000, .elapsed_time=-2},
+        };
+
+        for (const auto & c: cases)
+            check(c, INFINITY);
+    };
+
+    "Valid vertical_flight_speed"_test = [] {
+        std::vector<TestCase> cases = {
+            {.cur_height=900.0, .prev_height=920.0, .elapsed_time=2},
+            {.cur_height=3000.0, .prev_height=3500.0, .elapsed_time=17},
+            {.cur_height=-500, .prev_height=-498.2, .elapsed_time=0.2},
+        };
+
+        const auto calc = [](const TestCase & c) {
+            return (c.cur_height - c.prev_height) / c.elapsed_time;
+        };
+
+        for (const auto & c: cases)
+            check(c, calc(c));
+    };
+}

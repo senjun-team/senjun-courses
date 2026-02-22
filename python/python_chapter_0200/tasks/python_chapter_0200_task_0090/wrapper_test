@@ -1,0 +1,40 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+text = mystdout.getvalue()
+
+if text.find("argparse") == -1:
+    print("print() output isn't correct")
+    exit(1)
+
+if text.find("_ast") != -1:
+    print("print() output isn't correct")
+    exit(1)
+
+try:
+    vals = text.split("\n")
+    trimmed = []
+    for v in vals:
+        v_new = v.strip()
+        
+        if v_new.startswith("_"):
+            print("Skip mudules starting with '_'")
+            exit(1)
+        
+        if len(v_new) > 0:
+            trimmed.append(v_new)
+
+    if trimmed != sorted(trimmed):
+        print("Please print modules sorted alphabetically")
+        exit(1)
+
+except Exception as e:
+    print("Couldn't check that modules are sorted alphabetically")
+    exit(1)

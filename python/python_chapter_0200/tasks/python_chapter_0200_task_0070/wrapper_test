@@ -1,0 +1,30 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "csv\n":
+    print("print() output isn't correct:")
+    exit(1)
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("import csv") == -1:
+    print("There is no import statement for csv module")
+    exit(1)
+
+text = text.replace(" ", "")
+if text.find('if__name__=="__main__":') == -1 and text.find("if__name__=='__main__':") == -1:
+    print("There is no 'if __name__ == ...' statement")
+    exit(1)
+
+if text.find("print(csv.__name__)") == -1:
+    print("There is no call to print(csv.__name__)")
+    exit(1)

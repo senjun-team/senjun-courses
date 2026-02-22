@@ -1,0 +1,14 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::vector<std::vector<short>> matrix = {{1, 2}, {3, 4}};
+
+    std::println("Matrix before rotation:\n{}", matrix);
+
+    rotate_clockwise(matrix);
+
+    std::println("Matrix after rotation:\n{}", matrix);
+}

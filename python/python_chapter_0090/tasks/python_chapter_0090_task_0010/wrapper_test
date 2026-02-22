@@ -1,0 +1,30 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if 'hex_val' not in locals():
+    print("There is no `hex_val` variable")
+    exit(1)
+
+if type(hex_val) is not int:
+    print("Variable 'hex_val' is not an integer")
+    exit(1)
+
+if hex_val != 0x10:
+    print("Variable 'hex_val' value is wrong")
+    exit(1)
+
+user_code = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if user_code.find("0x10") == -1:
+    print("Please set variable 'hex_val' to hexadecimal value")
+    exit(1)

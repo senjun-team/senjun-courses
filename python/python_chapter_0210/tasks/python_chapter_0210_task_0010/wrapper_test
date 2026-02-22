@@ -1,0 +1,40 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if mystdout.getvalue() != "0: https://www.python.org\n1: https://senjun.ru\n":
+    print("Solution output isn't correct")
+    exit(1)
+
+if "FILEPATH" not in globals():
+    print("Variable FILEPATH doesn't exist")
+    exit(1)
+
+try:
+    with open(FILEPATH, "r") as file:
+        text = file.read()
+        if text != "https://www.python.org\nhttps://senjun.ru\n":
+            print("File contents isn't equal to:\nhttps://www.python.org\nhttps://senjun.ru")
+            exit(1)
+except FileNotFoundError as fnfe:
+    print(f"There is no file {FILEPATH}")
+    exit(1)
+except Exception as e:
+    print(f"Couldn't open file {FILEPATH}: {e}")
+    exit(1)
+
+
+s = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if s.count("with open(FILEPATH") < 2:
+    print(f"Please use 'with' to write and to read from file")
+    exit(1)

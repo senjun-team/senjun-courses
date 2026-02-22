@@ -1,0 +1,52 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+print_res = mystdout.getvalue()
+
+if 'match' not in locals():
+    print("There is no `match` function")
+    exit(1)
+
+if not callable(match):
+    print("'match' is not a function")
+    exit(1)
+
+
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
+
+if text.find("zip") == -1:
+    print("There is no call to zip")
+    exit(1)
+
+tests = [
+    [
+        [[1, 2, 3], [], [9, 2, 0]],
+        [(1, 9), (2, 2), (3, 0)]
+    ],
+    [
+        [],
+        []
+    ],
+    [
+        [[], [], []],
+        []
+    ],
+    [
+        [[1, 2, 3, 4], [5, 9, 2, 0]],
+        [(1, 5), (2, 9), (3, 2), (4, 0)]
+    ],
+]
+for test, res in tests:
+    if match(*test) != res:
+        print(f"Invalid return value of match() for input:\n{test}")
+        exit(1)
+
