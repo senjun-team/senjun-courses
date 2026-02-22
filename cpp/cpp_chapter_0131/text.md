@@ -751,7 +751,7 @@ typedef signed short int int16_t;
 
 Вам помогут: {.task_text}
 - Функция [std::stoi()](https://en.cppreference.com/w/cpp/string/basic_string/stol), которая конвертирует строку в число. 
-- Оператор `<<` для [побитового сдвига](/courses/cpp/practice/cpp_div_without_div/#block-bitwise) и оператор `|` для [побитового «ИЛИ».](https://en.cppreference.com/w/cpp/language/operator_arithmetic.html)
+- Оператор `<<` для [побитового сдвига](/courses/cpp/chapters/cpp_chapter_0022/#block-bitwise) и оператор `|` для [побитового «ИЛИ».](https://en.cppreference.com/w/cpp/language/operator_arithmetic.html)
 
 ```cpp {.task_source #cpp_chapter_0131_task_0080}
 std::uint32_t convert_ip_v4(std::string ip)
