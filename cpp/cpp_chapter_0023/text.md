@@ -160,7 +160,7 @@ x << 1 == x * 2
 int x = 1 << 3;
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0023_task_0090}
+```consoleoutput {.task_source #cpp_chapter_0023_task_0020}
 ```
 Это возведение 2 в степень 3. {.task_hint}
 ```cpp {.task_answer}
@@ -192,7 +192,7 @@ x >>= n; // эквивалентно x = x >> n;
 int x = 16 >> 4;
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0023_task_0100}
+```consoleoutput {.task_source #cpp_chapter_0023_task_0030}
 ```
 Это деление 16 на 2 в степени 4. {.task_hint}
 ```cpp {.task_answer}
@@ -430,8 +430,6 @@ void print_rights(int rights)
 
 Права на файл в Unix-стиле — далеко не единственный пример использования побитовых операторов для упаковки и распаковки нескольких значений в одну переменную. Вспомните хотя бы про цветовую модель RGB или ip-адреса. 
 
-## Практика
-
 Какое значение сохранится в переменную `flags`? Ответ введите в двоичном виде без префикса `0b`. {.task_text}
 
 ```cpp
@@ -476,7 +474,7 @@ flags ^= (1 << 4);
 
 Напишите функцию, которая проверят, включен ли `n`-ный бит числа `x`. Не забудьте суффикс `uz` для литерала. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0023_task_0100}
+```cpp {.task_source #cpp_chapter_0023_task_0090}
 bool is_on(std::size_t x, std::size_t n)
 {
 
