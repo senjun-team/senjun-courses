@@ -97,8 +97,9 @@ with ProcessPoolExecutor(mp_context=ctx) as executor:
 from multiprocessing import get_context
 
 ctx = get_context('spawn')
-with ProcessPoolExecutor(mp_context=ctx) as executor:
-    # ...
+if __name__ == "__main__":
+    with ProcessPoolExecutor(mp_context=ctx) as executor:
+        # ...
 ```
 
 ### forkserver (Unix/Linux, по умолчанию в Python 3.14+)
