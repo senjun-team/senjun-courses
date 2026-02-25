@@ -66,6 +66,115 @@ shutdown(wait=True, *, cancel_futures=False)
 Если `cancel_futures` равен `True`, то все запланированные, но не начавшие исполнятся в пуле задачи будут отменены.
 
 
+## Методы запуска процессов: fork, spawn, forkserver
+
+При создании дочернего процесса в Python используется один из трёх методов запуска. Выбор метода влияет на производительность и поведение программы.
+
+### fork (только Unix/Linux)
+
+Метод `fork` создаёт дочерний процесс путём копирования состояния родительского процесса. Все переменные, импорты и открытые файлы наследуются автоматически.
+
+**Преимущества:** быстрый запуск (просто копируется память процесса), функции и данные доступны в дочернем процессе без дополнительной сериализации, не требует `if __name__ == "__main__":` защиты.
+
+**Недостатки:** работает только на Unix-платформах (Linux, macOS), наследует всё состояние родителя, включая потенциально некорректные данные (например, состояние потоков), может вызывать проблемы с асинхронным кодом и некоторыми C-расширениями.
+
+```python
+from multiprocessing import get_context
+
+ctx = get_context('fork')
+with ProcessPoolExecutor(mp_context=ctx) as executor:
+    # ...
+```
+
+### spawn (все платформы)
+
+Метод `spawn` запускает чистый интерпретатор Python и импортирует только необходимые объекты из главного модуля.
+
+**Преимущества:** работает на всех платформах (Windows, macOS, Linux), чистое состояние дочернего процесса (нет унаследованных проблем), безопасен для асинхронного кода.
+
+**Недостатки:** медленнее `fork` (требуется запуск нового интерпретатора), все передаваемые объекты должны быть сериализуемы через pickle, требует `if __name__ == "__main__":` для защиты от рекурсивного запуска, функции должны быть определены на верхнем уровне модуля (не внутри других функций).
+
+```python
+from multiprocessing import get_context
+
+ctx = get_context('spawn')
+with ProcessPoolExecutor(mp_context=ctx) as executor:
+    # ...
+```
+
+### forkserver (Unix/Linux, по умолчанию в Python 3.14+)
+
+Метод `forkserver` создаёт отдельный процесс-сервер, который порождает дочерние процессы по запросу.
+
+**Преимущества:** безопаснее `fork` (сервер не наследует состояние вашего кода), быстрее `spawn` после первоначального запуска сервера, решает проблемы `fork` с потоками и асинхронным кодом.
+
+**Недостатки:** работает только на Unix-платформах, функции должны быть импортируемы из модуля (как и с `spawn`), требует `if __name__ == "__main__":` в большинстве случаев.
+
+```python
+from multiprocessing import get_context
+
+ctx = get_context('forkserver')
+with ProcessPoolExecutor(mp_context=ctx) as executor:
+    # ...
+```
+
+### Изменения в Python 3.14
+
+**В Python 3.14 метод запуска по умолчанию изменён с `fork` на `forkserver`** на Unix-платформах (кроме macOS). На Windows и macOS по-прежнему используется `spawn`.
+
+| Платформа | Python 3.13 и раньше | Python 3.14+ |
+|-----------|---------------------|--------------|
+| Linux | `fork` | `forkserver` |
+| macOS | `spawn` | `spawn` |
+| Windows | `spawn` | `spawn` |
+
+### Почему это важно
+
+Если ваш код использует `ProcessPoolExecutor` без явного указания контекста, он будет работать по-разному в разных версиях Python:
+
+```python
+# Может не работать в Python 3.14+ на Linux
+with ProcessPoolExecutor() as executor:
+    for result in executor.map(func, data):
+        print(result)
+```
+
+Для совместимости с Python 3.14+ и кроссплатформенной работы используйте:
+
+```python
+from multiprocessing import get_context
+
+# Пытаемся использовать fork (быстрее, работает с exec/inject)
+try:
+    ctx = get_context('fork')
+except ValueError:
+    # На Windows fork недоступен, используем spawn
+    ctx = get_context('spawn')
+
+with ProcessPoolExecutor(mp_context=ctx) as executor:
+    for result in executor.map(func, data):
+        print(result)
+```
+
+### Рекомендации
+
+1. **Для локальной разработки на Windows/macOS** всегда используйте `if __name__ == "__main__":` и определяйте функции на верхнем уровне модуля.
+2. **Для Linux-серверов с Python 3.14+** явно указывайте `mp_context=get_context('fork')`, если код выполняется через `exec()` или инджектится в тестовые файлы.
+3. **Для кроссплатформенных проектов** используйте динамическое определение контекста:
+
+```python
+try:
+    ctx = get_context('fork')
+except ValueError:
+    ctx = get_context('spawn')
+
+if __name__ == "__main__":
+    with ProcessPoolExecutor(mp_context=ctx) as executor:
+        # ...
+```
+
+---
+
 Дан массив чисел `nums` и функция `is_prime()`, определяющая, является ли число простым. {.task_text}
 
 Через `ProcessPoolExecutor` нужно распараллелить применение `is_prime()` к элементам `nums`. Для каждого из чисел в том порядке, в котором они идут в `nums`, вывести в консоль строку вида `"112272535095293 is prime: True"`. {.task_text}
@@ -104,6 +213,7 @@ def is_prime(n):
 import math
 
 from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 
 nums = [
     112272535095293,
@@ -127,8 +237,13 @@ def is_prime(n):
             return False
     return True
 
+try:
+    ctx = get_context('fork')
+except ValueError:
+    ctx = get_context('spawn')
+
 if __name__ == "__main__":
-    with ProcessPoolExecutor() as executor:
+    with ProcessPoolExecutor(mp_context=ctx) as executor:
         for number, prime in zip(nums, executor.map(is_prime, nums)):
             print(f"{number} is prime: {prime}")
 ```
