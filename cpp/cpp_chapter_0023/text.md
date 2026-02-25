@@ -137,6 +137,26 @@ int x = 5 & 6; // 4
 //     0b100  - 4
 ```
 
+Чему равен результат выполнения операции `0b11 & 0b1101`? Ответ введите в бинарном формате без префикса `0b`. {.task_text}
+
+```consoleoutput {.task_source #cpp_chapter_0023_task_0020}
+```
+Добавим в первый операнд два нуля слева: `0b0011 & 0b1101`. {.task_hint}
+```cpp {.task_answer}
+1
+```
+
+Кстати, через побитовое «И» можно проверить, четное число или нечетное:
+
+```cpp
+if ((n & 1) == 1)
+{
+    // n - нечетное
+}
+```
+
+Разберем, как это работает. У литерала `1` все биты, кроме младшего (нулевого), установлены в `0`. Поэтому у результата операции `n & 1` все биты, кроме нулевого, гарантированно равны 0. А нулевой бит будет равен 1 только в случае, если младший бит числа `n` тоже равен 1. А младший бит числа равен 1 только у нечетных чисел. Это легко заметить: `0b1 == 1`, `0b10 == 2`, `0b11 == 3`, `0b100 == 4` и так далее.
+
 
 ## Побитовое «ИЛИ»: оператор |
 
@@ -167,6 +187,15 @@ int x = 8 | 6; // 14
 //     0b1110  - 14
 ```
 
+Чему равен результат выполнения операции `0b1 | 0b10`? Ответ введите в десятичной системе счисления. {.task_text}
+
+```consoleoutput {.task_source #cpp_chapter_0023_task_0030}
+```
+Добавим в первый операнд 0 слева: `0b01 & 0b10`. Получим результат `0b11`. {.task_hint}
+```cpp {.task_answer}
+1
+```
+
 ## Побитовый XOR: оператор ^
 
 У оператора `^` (XOR) нет аналога среди логических операторов. Он устанавливает бит в 1, если соответствующие биты чисел `a` и `b` не равны.
@@ -195,6 +224,25 @@ int x = 3 ^ 5; // 6
 //     -----
 //     0b110  - 6
 ```
+
+Чему равен результат выполнения операции `0b1011 | 0b1011`? Ответ введите в десятичной системе счисления. {.task_text}
+
+```consoleoutput {.task_source #cpp_chapter_0023_task_0040}
+```
+XOR возвращает 0, если соответствующие биты числа равны. {.task_hint}
+```cpp {.task_answer}
+0
+```
+
+Кстати, через XOR можно проверять числа на равенство:
+
+```cpp
+if ((a ^ b) == 0)
+{
+    // a и b равны
+}
+```
+
 
 ## Побитовый сдвиг влево: оператор << {#block-bitwise}
 
@@ -257,7 +305,7 @@ x << 1 == x * 2
 int x = 1 << 3;
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0023_task_0020}
+```consoleoutput {.task_source #cpp_chapter_0023_task_0050}
 ```
 Это возведение 2 в степень 3. {.task_hint}
 ```cpp {.task_answer}
@@ -283,7 +331,7 @@ int x = 1 << 3;
 int x = 16 >> 4;
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0023_task_0030}
+```consoleoutput {.task_source #cpp_chapter_0023_task_0060}
 ```
 Это деление 16 на 2 в степени 4. {.task_hint}
 ```cpp {.task_answer}
@@ -355,7 +403,7 @@ int x = 16 >> 4;
 3uz << 30 // 3221225472
 ```
 
-Значение типа `int` при побитовом сдвиге влево стало отрицательным из-за уже упомянутого способа представления чисел [«Дополнительный код»](https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BF%D0%BE%D0%BB%D0%BD%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%BA%D0%BE%D0%B4) (two's complement).
+Значение типа `int` при побитовом сдвиге влево стало отрицательным. Это произошло из-за способа представления чисел под названием [«Дополнительный код»](https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BF%D0%BE%D0%BB%D0%BD%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%BA%D0%BE%D0%B4) (two's complement). Сейчас это не имеет особого значения, но потом пригодится.
 
 
 ## Составное присваивание {#block-compound-assignment}
@@ -470,7 +518,7 @@ ob111 << 3 == 0b111'000
 
 Реализуйте ее. Для краткости используйте составное присваивание вместо обычных побитовых операций. Например, `a <<= n` вместо `a = a << n`. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0023_task_0040}
+```cpp {.task_source #cpp_chapter_0023_task_0070}
 int set_rights(int user, int group, int other)
 {
     int rights = 0;
@@ -529,7 +577,7 @@ const int user = rights & 0b111;  // 0b111
 
 Главное — правильно расставьте скобки: приоритет оператора `>>` выше, чем `&`. Найдите в таблице [на cppreference](https://en.cppreference.com/w/cpp/language/operator_precedence) приоритет всех побитовых операторов. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0023_task_0050}
+```cpp {.task_source #cpp_chapter_0023_task_0080}
 void print_rights(int rights)
 {
     // Ваш код
@@ -560,7 +608,7 @@ int flags = 0b10101;
 flags |= (1 << 3);
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0023_task_0060}
+```consoleoutput {.task_source #cpp_chapter_0023_task_0090}
 ```
 Это установка 3-го бита `flags`. Индексация битов идет справа налево и начинается с нуля. {.task_hint}
 ```cpp {.task_answer}
@@ -574,7 +622,7 @@ int flags = 0b10101;
 flags &= ~(1 << 2);
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0023_task_0070}
+```consoleoutput {.task_source #cpp_chapter_0023_task_0100}
 ```
 Это сброс 2-го бита `flags`. Индексация битов идет справа налево и начинается с нуля. {.task_hint}
 ```cpp {.task_answer}
@@ -588,7 +636,7 @@ int flags = 0b10101;
 flags ^= (1 << 4);
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0023_task_0080}
+```consoleoutput {.task_source #cpp_chapter_0023_task_0110}
 ```
 Это инверсия 4-го бита `flags`. Индексация битов идет справа налево и начинается с нуля. {.task_hint}
 ```cpp {.task_answer}
@@ -597,7 +645,7 @@ flags ^= (1 << 4);
 
 Напишите функцию, которая проверят, включен ли `n`-ный бит числа `x`. Не забудьте суффикс `uz` для литерала. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0023_task_0090}
+```cpp {.task_source #cpp_chapter_0023_task_0120}
 bool is_on(std::size_t x, std::size_t n)
 {
 
