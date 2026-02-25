@@ -1,0 +1,72 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+void check_case(const std::string & s, bool plan)
+{
+    try
+    {
+        const bool fact = is_balanced(s);
+        expect(fact == plan) << std::format("is_balanced(\"{}\") returns wrong result. Plan: {}, Fact: {}", s, plan, fact) << fatal;
+    }
+    catch(const std::exception & e)
+    {
+        expect(false) << std::format("is_balanced(\"{}\") throws an exception: {}", s, e.what()) << fatal;
+    }
+}
+
+int main()
+{
+    "Balanced strings. Simple cases"_test = [] {
+        const std::vector<std::string> cases = {
+            "",
+            "{}",
+            "[]<>",
+            "(())",
+            "()[]{}<>",
+            "([{<>}])",
+            "()<<>>",
+            "((((()))))"
+        };
+
+        for (const auto & s: cases)
+            check_case(s, true);
+    };
+
+    "Not balanced strings. Simple cases"_test = [] {
+        const std::vector<std::string> cases = {
+            "(",
+            "}",
+            ">>",
+            ")(",
+            "[]]",
+            "[[]",
+            "([)]",
+            "((()",
+            "[)",
+            "[](",
+            ")[]("
+        };
+
+        for (const auto & s: cases)
+            check_case(s, false);
+    };
+
+    "Not balanced strings. Long strings"_test = [] {
+        const std::vector<std::string> cases = {
+            "()[]}<>",
+            "([{<>}]()",
+            "()<<[>>]",
+            "((((())))",
+            "(((()))))"
+        };
+
+        for (const auto & s: cases)
+            check_case(s, false);
+    };
+}

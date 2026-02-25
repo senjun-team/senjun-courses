@@ -1,8 +1,6 @@
 import std;
 
-#INJECT-b585472fa
-
 int main()
 {
-    Message m{"text", 1759929355, 1759929609};
+    #INJECT-b585472fa
 }

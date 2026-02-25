@@ -1,0 +1,9 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    ListNode node{6};
+    std::println("{}", node.val);
+}

@@ -1,0 +1,50 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+void check(int arr[], std::size_t n, std::function<bool(int, int)> comp,
+            const std::string & arr_descr,
+            const std::string & comp_descr, bool plan)
+{
+    const bool fact = is_sorted(arr, n, comp);
+    expect(plan == fact) << std::format("is_sorted({}, {}, {}) returns {}. Expected result: {}",
+                arr_descr, n, comp_descr, fact, plan) << fatal;
+}
+
+int main()
+{
+    "test array containing single element"_test = [] {
+        int arr[] = {1};
+        check(arr, 1, std::less(), std::format("{}", arr), "std::less()", true);
+        check(arr, 1, std::greater(), std::format("{}", arr), "std::greater()", true);
+    };
+
+    "test array containing 2 elements"_test = [] {
+        int arr[] = {1, 2};
+        check(arr, 2, std::less(), std::format("{}", arr), "std::less()", true);
+        check(arr, 2, std::greater(), std::format("{}", arr), "std::greater()", false);
+    };
+
+    "test array containing 3 elements"_test = [] {
+        int arr[] = {1, 2, 1};
+        check(arr, 3, std::less(), std::format("{}", arr), "std::less()", false);
+        check(arr, 3, std::greater(), std::format("{}", arr), "std::greater()", false);
+    };
+
+    "test array sorded asc"_test = [] {
+        int arr[] = {1, 2, 5};
+        check(arr, 3, std::less(), std::format("{}", arr), "std::less()", true);
+        check(arr, 3, std::greater(), std::format("{}", arr), "std::greater()", false);
+    };
+
+    "test array sorded desc"_test = [] {
+        int arr[] = {9, 5, 4, 3, 2, 1};
+        check(arr, 6, std::less(), std::format("{}", arr), "std::less()", false);
+        check(arr, 6, std::greater(), std::format("{}", arr), "std::greater()", true);
+    };
+}

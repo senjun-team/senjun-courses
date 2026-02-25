@@ -1,0 +1,24 @@
+import std;
+
+#INJECT-b585472fa
+
+
+bool is_bob(std::string user)
+{
+    return user.starts_with("Bob");
+}
+
+int main()
+{
+    const std::map<std::string, std::size_t> user_cache = {
+        {"Alice", 67},
+        {"Bob", 824},
+        {"Eve", 100},
+        {"Bob_2", 9},
+    };
+
+    std::println("Calling sum_if() for dict {} and predicate which checks that string starts with \"Bob\"...", user_cache);
+
+    const std::size_t res = sum_if(user_cache, is_bob);
+    std::println("sum_if() returns {}", res);
+}

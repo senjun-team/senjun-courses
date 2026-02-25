@@ -4,5 +4,5 @@ import std;
 
 int main()
 {
-    make_new_job();
+    test_chartable();
 }

@@ -1,0 +1,14 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    BinTreeNode left{5};
+    BinTreeNode right{8};
+
+    BinTreeNode root{6, &left, &right};
+
+    std::println("Created 3 nodes: root with two children. Root val: {}",
+                 root.val);
+}

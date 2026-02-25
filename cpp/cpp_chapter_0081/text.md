@@ -1,6 +1,6 @@
 # Глава 8.1. Немодифицирующие алгоритмы
 
-Алгоритмы стандартной библиотеки C++ — это шаблонные функции для поиска, сортировки, слияния и других распространенных действий над диапазонами и отдельными значениями.
+Алгоритмы стандартной библиотеки C++ — это шаблонные функции для поиска, сортировки, слияния и других распространённых действий над диапазонами и отдельными значениями.
 
 ## Мотивация применять алгоритмы
 
@@ -40,7 +40,7 @@ else
     std::println("Max temperature: {}", *it_max);
 ```
 
-Этот код делает то же самое, но выглядит короче и понятнее. Похожий пример мы [приводили,](/courses/cpp/chapters/cpp_chapter_0010/#block-zero-overhead) когда описывали одно из достоинств C++ — абстракции с нулевой стоимостью.
+Этот код делает то же самое, но выглядит короче и понятнее. Похожий пример мы [приводили,](/courses/cpp/chapters/cpp_chapter_0011/#block-zero-overhead) когда описывали одно из достоинств C++ — абстракции с нулевой стоимостью.
 
 Всегда предпочитайте стандартные алгоритмы и их комбинацию наивным самописным решениям. Вы получите преимущества:
 - Более выразительный и понятый код. Алгоритмы стандартной библиотеки можно сравнить со словарным запасом, которым должен владеть разработчик на C++.
@@ -51,12 +51,12 @@ else
 
 ## Обзор алгоритмов стандартной библиотеки
 
-Стандарт языка описывает [сотни алгоритмов.](https://en.cppreference.com/w/cpp/algorithm) В прошлых главах вы уже познакомились с [std::for_each()](/courses/cpp/chapters/cpp_chapter_0010/#block-for-each), [std::clamp()](/courses/cpp/chapters/cpp_chapter_0010/#block-clamp), [std::min(), std::max()](/courses/cpp/chapters/cpp_chapter_0030/#block-min-max), [std::reverse()](/courses/cpp/chapters/cpp_chapter_0060/#block-vector), [std::find(), std::find_if()](/courses/cpp/chapters/cpp_chapter_0060/#block-find-if) и [std::sort()](/courses/cpp/chapters/cpp_chapter_0073/#block-sort).
+Стандарт языка описывает [сотни алгоритмов.](https://en.cppreference.com/w/cpp/algorithm) В прошлых главах вы уже познакомились с [std::for_each()](/courses/cpp/chapters/cpp_chapter_0011/#block-for-each), [std::clamp()](/courses/cpp/chapters/cpp_chapter_0011/#block-clamp), [std::min(), std::max()](/courses/cpp/chapters/cpp_chapter_0031/#block-min-max), [std::reverse()](/courses/cpp/chapters/cpp_chapter_0061/#block-vector), [std::find(), std::find_if()](/courses/cpp/chapters/cpp_chapter_0061/#block-find-if) и [std::sort()](/courses/cpp/chapters/cpp_chapter_0073/#block-sort).
 
-Перечислим самые популярные классы задач, решаемые с помощью алгоритмов. Для каждого из них приведем в пример по паре функций.
+Перечислим самые популярные классы задач, решаемые с помощью алгоритмов. Для каждого из них приведём в пример по паре функций.
 - Изменение элементов диапазона.
     - [std::for_each()](https://en.cppreference.com/w/cpp/algorithm/for_each), [std::replace](https://en.cppreference.com/w/cpp/algorithm/replace).
-- Поиск и подсчет.
+- Поиск и подсчёт.
     - [std::find()](https://en.cppreference.com/w/cpp/algorithm/find), [std::count()](https://en.cppreference.com/w/cpp/algorithm/count).
 - Бинарный поиск в отсортированном диапазоне.
     - [std::lower_bound()](https://en.cppreference.com/w/cpp/algorithm/lower_bound), [std::equal_range()](https://en.cppreference.com/w/cpp/algorithm/equal_range).
@@ -125,7 +125,7 @@ std::println("{}", raw_data);
 
 Чему равна переменная `i`? {.task_text}
 
-С функцией `std::distance()` вы [познакомились](/courses/cpp/chapters/cpp_chapter_0060/#block-distance) в главе про итераторы. {.task_text}
+С функцией `std::distance()` вы [познакомились](/courses/cpp/chapters/cpp_chapter_0061/#block-distance) в главе про итераторы. {.task_text}
 
 ```cpp {.example_for_playground}
 import std;
@@ -148,11 +148,11 @@ int main()
 3
 ```
 
-Функция [std::find_if()](https://en.cppreference.com/w/cpp/algorithm/find) вместо значения принимает [предикат](/courses/cpp/chapters/cpp_chapter_0050/#block-predicate) и применяет его к элементам диапазона. Она возвращает итератор на первый элемент, для которого предикат вернул `true`.
+Функция [std::find_if()](https://en.cppreference.com/w/cpp/algorithm/find) вместо значения принимает [предикат](/courses/cpp/chapters/cpp_chapter_0056/#block-predicate) и применяет его к элементам диапазона. Она возвращает итератор на первый элемент, для которого предикат вернул `true`.
 
 У функции [std::find_if_not()](https://en.cppreference.com/w/cpp/algorithm/find) единственное отличие от `std::find_if()`: она возвращает итератор на элемент, для которого предикат вернул `false`.
 
-Чтобы искать элементы начиная с конца диапазона, в алгоритм поиска передаются [обратные итераторы:](/courses/cpp/chapters/cpp_chapter_0060/#block-reverse-iterators)
+Чтобы искать элементы начиная с конца диапазона, в алгоритм поиска передаются [обратные итераторы:](/courses/cpp/chapters/cpp_chapter_0062/#block-reverse-iterators)
 
 ```cpp {.example_for_playground .example_for_playground_005}
 std::deque<int> d = {5, 6, 10, 10, 1};
@@ -164,7 +164,7 @@ std::println("{}", std::distance(d.begin(), (rit + 1).base()));
 3
 ```
 
-Функция `std::find()` и ее вариации нужны для поиска одного элемента. Они работают за линейное время `O(N)`, где `N` — длина диапазона.
+Функция `std::find()` и её вариации нужны для поиска одного элемента. Они работают за линейное время `O(N)`, где `N` — длина диапазона.
 
 Для поиска одного диапазона внутри другого используется алгоритм [std::search()](https://en.cppreference.com/w/cpp/algorithm/search). Он работает за время `O(N * M)`, где `N` и `M` — длины диапазонов.
 
@@ -180,7 +180,7 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 
 }
 ```
-Вам потребуется завести вспомогательную функцию-предикат, которая сравнивает поле `first` объекта `std::pair` с нужным заголовком. И в случае успеха ищет в поле `second` подстроку `"gzip"`. Вам пригодится метод строки `find()`, с которым вы [уже работали.](/courses/cpp/chapters/cpp_chapter_0030/#block-string-find) {.task_hint}
+Вам потребуется завести вспомогательную функцию-предикат, которая сравнивает поле `first` объекта `std::pair` с нужным заголовком. И в случае успеха ищет в поле `second` подстроку `"gzip"`. Вам пригодится метод строки `find()`, с которым вы [уже работали.](/courses/cpp/chapters/cpp_chapter_0031/#block-string-find) {.task_hint}
 ```cpp {.task_answer}
 bool accepts(std::pair<std::string, std::string> header)
 {
@@ -208,7 +208,7 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 1. Сравниваем с `X` элемент в середине диапазона.
 2. Если его значение меньше `X`, то продолжаем поиск в первой половине диапазона. Иначе — во второй.
 3. Сравниваем с `X` элемент в середине выбранной половины.
-4. Выполняем шаги 2 и 3, пока не найдем `X`, либо пока не получим пустой диапазон. Это будет означать, что поиск завершился неудачей.
+4. Выполняем шаги 2 и 3, пока не найдём `X`, либо пока не получим пустой диапазон. Это будет означать, что поиск завершился неудачей.
 
 На каждой итерации бинарного поиска рассматриваемый диапазон сокращается в 2 раза. Значит, алгоритм работает за `O(log(N))`.
 
@@ -218,7 +218,7 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 ![Бинарный поиск](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-8/illustrations/cpp/binary_search.jpg) {.illustration}
 
 
-Понять алгоритм бинарного поиска просто, но совершить ошибку в его реализации — еще проще. Чаще всего ошибаются при определении середины и границ диапазона. Это приводит к вечным циклам, пропуску элементов и выходу за границы диапазона. Поэтому реализация бинарного поиска — одна из классических задач на собеседованиях.
+Понять алгоритм бинарного поиска просто, но совершить ошибку в его реализации — ещё проще. Чаще всего ошибаются при определении середины и границ диапазона. Это приводит к вечным циклам, пропуску элементов и выходу за границы диапазона. Поэтому реализация бинарного поиска — одна из классических задач на собеседованиях.
 
 Напишите шаблонную функцию `bin_search()`, которая принимает итераторы на отсортированный диапазон: `first` — итератор на первый элемент, `last` — итератор, указывающий за последний элемент. Также функция принимает искомое значение `x`. Для простоты будем считать, что `x` встречается в диапазоне не более 1 раза. {.task_text}
 
@@ -226,7 +226,7 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 
 Например, для диапазона `[2, 5, 8, 9, 11, 12, 16]` и значения `x=11` функция должна вернуть итератор на элемент с индексом 4. {.task_text}
 
-Не у всех контейнеров итераторы поддерживают инкремент через `+` и `+=`. Для перемещения итератора на `n` позиций вперед используйте функцию [std::advance()](https://cppreference.com/w/cpp/iterator/advance): `std::advance(it, n)`. Если `n` — отрицательное число, то итератор передвинется на `n` позиций назад. {.task_text}
+Не у всех контейнеров итераторы поддерживают инкремент через `+` и `+=`. Для перемещения итератора на `n` позиций вперёд используйте функцию [std::advance()](https://cppreference.com/w/cpp/iterator/advance): `std::advance(it, n)`. Если `n` — отрицательное число, то итератор передвинется на `n` позиций назад. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0081_task_0030}
 template<class It, class Val>
@@ -348,7 +348,7 @@ std::size_t count_vals(std::vector<int> data, int val)
 
 ## Подсчет
 
-Для подсчета количества элементов диапазона, удовлетворяющих некоторому критерию, есть алгоритмы [std::count() и std::count_if()](https://en.cppreference.com/w/cpp/algorithm/count): 
+Для подсчёта количества элементов диапазона, удовлетворяющих некоторому критерию, есть алгоритмы [std::count() и std::count_if()](https://en.cppreference.com/w/cpp/algorithm/count): 
 - `std::count()` принимает итераторы на диапазон и значение. И возвращает количество элементов диапазона, равных значению.
 - `std::count_if()` вместо значения принимает предикат.
 
@@ -395,7 +395,7 @@ int main()
 1
 ```
 
-Еще одна распространенная задача — найти сумму или произведение элементов диапазона. Ее можно решить с помощью алгоритмов [std::accumulate()](https://en.cppreference.com/w/cpp/algorithm/accumulate) и [std::reduce()](https://en.cppreference.com/w/cpp/algorithm/reduce). {#block-accumulate}
+Еще одна распространённая задача — найти сумму или произведение элементов диапазона. Ее можно решить с помощью алгоритмов [std::accumulate()](https://en.cppreference.com/w/cpp/algorithm/accumulate) и [std::reduce()](https://en.cppreference.com/w/cpp/algorithm/reduce). {#block-accumulate}
 
 Функция `std::accumulate()` принимает итераторы на диапазон и начальное значение. И возвращает сумму начального значения с элементами диапазона:
 
@@ -413,7 +413,7 @@ std::println("{}", total_distance);
 103.8
 ```
 
-Функция `get_average()` принимает вектор чисел и возвращает их среднее арифметическое. В ней допущена ошибка. Исправьте ее и перепишите код с использованием `std::accumulate()`. {.task_text}
+Функция `get_average()` принимает вектор чисел и возвращает их среднее арифметическое. В ней допущена ошибка. Исправьте её и перепишите код с использованием `std::accumulate()`. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0081_task_0090}
 double get_average(std::vector<int> values)
@@ -439,7 +439,7 @@ double get_average(std::vector<int> values)
 }
 ```
 
-У `std::accumulate()` есть перегрузка, дополнительно принимающая функцию с двумя параметрами. Она нужна для расчета произведения или любого другого значения. {#block-accumulate-overload}
+У `std::accumulate()` есть перегрузка, дополнительно принимающая функцию с двумя параметрами. Она нужна для расчёта произведения или любого другого значения. {#block-accumulate-overload}
 
 Что будет выведено в консоль? {.task_text}
 
@@ -481,4 +481,4 @@ int main()
 
 - Всегда предпочитайте алгоритмы стандартной библиотеки наивным самописным реализациям.
 - Алгоритмы стандартной библиотеки — это шаблонные функции для поиска, сортировки, копирования диапазонов и других полезных операций.
-- Старайтесь периодически просматривать, [какие алгоритмы есть](https://en.cppreference.com/w/cpp/algorithm) в стандартной библиотеке. Применяйте их в своем коде.
+- Старайтесь периодически просматривать, [какие алгоритмы есть](https://en.cppreference.com/w/cpp/algorithm) в стандартной библиотеке. Применяйте их в своём коде.

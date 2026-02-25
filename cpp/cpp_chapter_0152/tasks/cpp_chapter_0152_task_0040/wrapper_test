@@ -1,0 +1,23 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+int main()
+{
+    "check swap_via_pointers"_test = [] {
+        double a = 300.0;
+        double b = 400.0;
+
+        swap_via_pointers(a, b);
+        
+        expect(a == 400.0) << std::format("called swap(a, b) where a=300.0 and b=400.0. After the call a={}",
+                                           a) << fatal;
+        expect(b == 300.0) << std::format("called swap(a, b) where a=300.0 and b=400.0. After the call b={}",
+                                           b) << fatal;
+    };
+}

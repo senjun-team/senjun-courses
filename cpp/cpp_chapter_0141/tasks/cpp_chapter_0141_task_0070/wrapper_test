@@ -7,72 +7,59 @@ import std;
 
 using namespace boost::ut;
 
-template<class T>
-struct SimpleTest
+struct TestCase
 {
-    T a = 0.0;
-    T b = 0.0;
-    T eps = 0.0;
-    bool plan = false;
+    std::string text;
+    std::unordered_set<std::string> stop_words;
+    std::string plan;
 };
 
-template<class T>
-void check(T x, T y, T eps, bool plan)
+void check(const TestCase & c)
 {
-    const bool fact = is_eq(x, y, eps); 
-    expect(plan == fact) << std::format("is_eq({}, {}, {}) returns {}. But expected result is {}",
-                                           x, y, eps, fact, plan) << fatal;
-}
-
-template<class T>
-void check_case(const SimpleTest<T> & t)
-{
-    check(t.a, t.b, t.eps, t.plan);
-    check(t.b, t.a, t.eps, t.plan);
-}
-
-template<class T>
-void run_cases()
-{
-    const T min = std::numeric_limits<T>::min();
-    const T max = std::numeric_limits<T>::max();
-    const T inf = std::numeric_limits<T>::infinity();
-    const T nan = std::numeric_limits<double>::quiet_NaN();
-
-    std::vector<SimpleTest<T>> cases = {
-        {.a = 5.001,  .b = 5.002,  .eps = 0.01, .plan = true},
-        {.a = -3.001,  .b = -3.002, .eps = 0.001, .plan = true},
-        {.a = nan, .b = 0.0,  .eps = 1e-4, .plan = false},
-        {.a = -0.02, .b = inf,  .eps = 1e-6, .plan = false},
-        {.a = min, .b = min + 1.0,  .eps = 1.0, .plan = true},
-        {.a = max - 3.5, .b = max,  .eps = 3.5, .plan = true},
-        {.a = 1000.5, .b = 1000.59,  .eps = 0.01, .plan = false},
-        };
-
-    for (const auto & c: cases)
-        check_case(c);
-
+    const std::string fact = most_common_word(c.text, c.stop_words);
+    expect(c.plan == fact) << std::format("ismost_common_word({}, {}) returns {}. But expected result is {}",
+                                           c.text, c.stop_words, fact, c.plan) << fatal;
 }
 
 int main()
 {
-    "test double"_test = [] {
-        run_cases<double>(); 
-    };
-
-    "test long double"_test = [] {
-        run_cases<long double>(); 
-    };
-
-    "test float"_test = [] {
-        std::vector<SimpleTest<float>> cases = {
-            {.a = 14.001,  .b = 14.002,  .eps = 0.01, .plan = true},
-            {.a = 14.001,  .b = 14.002,  .eps = 0.0001, .plan = false},
-            {.a = -8.001,  .b = -8.002, .eps = 0.01, .plan = true},
-            {.a = -8.1,  .b = -9.2, .eps = 1.01, .plan = false},
+    "Empty string"_test = [] {
+        TestCase c = {
+            .text = "",
+            .stop_words = {},
+            .plan = ""
         };
 
-        for (const auto & c: cases)
-            check_case(c);
+        check(c);
+    };
+
+    "Example from task text"_test = [] {
+        TestCase c = {
+            .text = "a bb a bb",
+            .stop_words = {"a", "c"},
+            .plan = "bb"
+        };
+
+        check(c);
+    };
+
+    "Empty stop words"_test = [] {
+        TestCase c = {
+            .text = "a bb a bb c a",
+            .stop_words = {},
+            .plan = "a"
+        };
+
+        check(c);
+    };
+
+    "Single-letter word"_test = [] {
+        TestCase c = {
+            .text = "11 22 3333 22 3333 8 11",
+            .stop_words = {"11", "22", "3333"},
+            .plan = "8"
+        };
+
+        check(c);
     };
 }

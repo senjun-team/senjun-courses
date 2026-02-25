@@ -1,0 +1,27 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    // Список с иллюстрации к задаче:
+    
+    //  [7] -> [-1] -> [8] -> [3] -> [1] -
+    //                  ^                 |
+    //                  |_________________|
+
+    ListNode n0{7};
+    ListNode n1{-1};
+    ListNode n2{8};
+    ListNode n3{3};
+    ListNode n4{1};
+
+    n0.next = &n1;
+    n1.next = &n2;
+    n2.next = &n3;
+    n3.next = &n4;
+    n4.next = &n2; // Появляется цикл
+
+    std::println("Calling has_cycle() for list from illustration. Result: {}",
+                 has_cycle(&n0));
+}

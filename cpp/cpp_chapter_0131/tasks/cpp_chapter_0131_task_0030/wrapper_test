@@ -1,8 +1,74 @@
+import boost.ut;
 import TestHelpers;
-import sts;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+struct SimpleTest
+{
+    int a = 0;
+    int b = 0;
+    int plan = 0;
+};
+
+void check(int x, int y, int plan)
+{
+    const int fact = checked_sum(x, y); 
+    expect(plan == fact) << std::format("checked_sum({}, {}) returns {}. But expected result is {}",
+                                           x, y, fact, plan) << fatal;
+}
+
+void check_case(const SimpleTest & t)
+{
+    check(t.a, t.b, t.plan);
+    check(t.b, t.a, t.plan);
+}
 
 int main()
 {
-    std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
-    return user_input == "1" ? 0 : 1;
+    const int min = std::numeric_limits<int>::min();
+    const int max = std::numeric_limits<int>::max();
+
+    "simple cases"_test = [] {
+        std::vector<SimpleTest> cases = {
+            {.a = 2,  .b = 2, .plan = 4},
+            {.a = 0,  .b = 0, .plan = 0},
+            {.a = -101,  .b = 2, .plan = -99},
+            {.a = 1234,  .b = -4, .plan = 1230},
+            {.a = min + 10,  .b = -8, .plan = min + 2},
+            {.a = max - 5,  .b = 2, .plan = max - 3},
+        };
+
+        for (const auto & c: cases)
+            check_case(c);
+    };
+
+    "overflows"_test = [] {
+        std::vector<SimpleTest> cases = {
+            {.a = max / 2,  .b = max / 2 + 1, .plan = max},
+            {.a = max,  .b = max, .plan = max},
+            {.a = max - 1,  .b = 1, .plan = max},
+            {.a = 3,  .b = max - 2, .plan = max},
+            {.a = 0,  .b = max, .plan = max},
+        };
+
+        for (const auto & c: cases)
+            check_case(c);
+    };
+
+    "underflows"_test = [] {
+        std::vector<SimpleTest> cases = {
+            {.a = min / 2,  .b = min / 2 - 1, .plan = min},
+            {.a = min,  .b = min, .plan = min},
+            {.a = min + 1,  .b = -1, .plan = min},
+            {.a = -3,  .b = min + 2, .plan = min},
+            {.a = 0,  .b = min, .plan = min},
+        };
+
+        for (const auto & c: cases)
+            check_case(c);
+    };
 }

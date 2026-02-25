@@ -1,20 +1,6 @@
 import std;
 
-class Array
-{
-public:
-    Array(std::size_t length)
-    {
-        len = length;
-    }
-
-private:
-    std::size_t len;
-};
-
 int main()
 {
-    Array arr1 = 3; // Ошибка!
-    
-    Array arr2(3);  // Ок
+    #INJECT-b585472fa
 }

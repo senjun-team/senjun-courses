@@ -1,0 +1,41 @@
+package main
+
+import (
+	"fmt"
+	"sync"
+	"testing"
+)
+
+func TestModify(t *testing.T) {
+	const codeLength = 10
+	memory := newMemory()
+	const val = "0123456789"
+	const want = "9876543210"
+	const attemptNumber = 10
+	memory.set("code", val)
+
+	for range attemptNumber {
+		var wg sync.WaitGroup
+		wg.Add(codeLength)
+		ch := make(chan error, codeLength)
+		for i := range codeLength {
+			go func(i int, ch chan error) {
+				err := memory.modify("code", i, fmt.Sprintf("%d", 9-i))
+				ch <- err
+				wg.Done()
+			}(i, ch)
+		}
+		wg.Wait()
+		close(ch)
+		for err := range ch {
+			if err != nil {
+				t.Fatalf("the goroutine failed to modify the code: %v", err)
+			}
+		}
+		got := memory.store["code"]
+		if got != want {
+			t.Fatalf("unexpected result after %d gooutines modified the value %s, got: %s, want: %s",
+				codeLength, val, got, want)
+		}
+	}
+}

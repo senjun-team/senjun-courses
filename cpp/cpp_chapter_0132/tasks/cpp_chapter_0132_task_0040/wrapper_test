@@ -1,0 +1,93 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+struct TestCase
+{
+    std::map<std::string, std::size_t> data;
+    std::function<bool(std::string)> pred;
+    std::string pred_descr;
+    std::size_t plan = 0;
+};
+
+void check(const TestCase & c)
+{
+    const auto fact = sum_if(c.data, c.pred); 
+
+    expect(c.plan == fact) << std::format("sum_if() returns invalid value for data:\n {}.\nPredicate: {}.\nsum_if() returns {}.\nExpected result: {}",
+                                           c.data, c.pred_descr, fact, c.plan) << fatal;
+}
+
+bool ends_with_dot(std::string s)
+{
+    return s.ends_with(".");
+}
+
+int main()
+{
+    "Check empty map"_test = [] {
+        TestCase c{
+            .data = {
+            },
+            .pred = ends_with_dot,
+            .pred_descr = "returns true if string ends with '.'",
+            .plan = 0
+        };
+
+        check(c);
+    };
+    
+    "Check zero return"_test = [] {
+        TestCase c{
+            .data = {
+                {"a", 1},
+                {"bb", 2},
+                {"c", 3},
+                {"d", 4},
+                {"-", 5}
+            },
+            .pred = ends_with_dot,
+            .pred_descr = "returns true if string ends with '.'",
+            .plan = 0
+        };
+
+        check(c);
+    };
+    "Check function as predicate"_test = [] {
+        TestCase c{
+            .data = {
+                {"a", 1},
+                {"bb", 2},
+                {"c.", 3},
+                {"d..", 4},
+                {".", 5}
+            },
+            .pred = ends_with_dot,
+            .pred_descr = "returns true if string ends with '.'",
+            .plan = 12
+        };
+
+        check(c);
+    };
+
+    "Check lambda as predicate"_test = [] {
+        TestCase c{
+            .data = {
+                {"AAAA", 1},
+                {"B", 2},
+                {"CCCC", 3},
+                {"", 5}
+            },
+            .pred = [](std::string s ) -> bool { return s.size() == 4; },
+            .pred_descr = "returns true if string lenght == 4",
+            .plan = 4
+        };
+
+        check(c);
+    };
+}

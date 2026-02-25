@@ -2,11 +2,11 @@ import std;
 
 #INJECT-b585472fa
 
-
 int main()
 {
-    std::vector<char> v = {'a', 'b', 'b', 'c'};
-    std::size_t n = count_unique(v);
+    const std::string s = "*";
 
-    std::println("count_unique() returns {} for vector {}", n, v);
+    auto const hash = naive_hash(s);
+
+    std::println("naive_hash(\"{}\") returns {}", s, hash);
 }
