@@ -2,5 +2,14 @@ import std;
 
 int main()
 {
-    #INJECT-b585472fa
+    const int n = 5;
+    
+    if ((n & 1) == 1)
+    {
+        std::println("{} is odd", n);
+    }
+    else
+    {
+        std::println("{} is even", n);
+    }
 }
