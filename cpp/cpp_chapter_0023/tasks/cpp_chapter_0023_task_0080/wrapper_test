@@ -33,11 +33,13 @@ void check_case(const TestCase & c)
 int main()
 {
     "Simple cases"_test = [] {
+        constexpr std::string_view text = "user={} group={} other={}";
+        
         std::vector<TestCase> cases = {
-            {.plan=std::format("user={} group={} other={}", 7, 6, 4), .rights=500},
-            {.plan=std::format("user={} group={} other={}", 0, 0, 0), .rights=0},
-            {.plan=std::format("user={} group={} other={}", 6, 4, 4), .rights=420},
-            {.plan=std::format("user={} group={} other={}", 1, 5, 1), .rights=105}
+            {.plan=std::format(text, 7, 6, 4), .rights=500},
+            {.plan=std::format(text, 0, 0, 0), .rights=0},
+            {.plan=std::format(text, 6, 4, 4), .rights=420},
+            {.plan=std::format(text, 1, 5, 1), .rights=105}
         };
 
         for(const auto & c: cases)
