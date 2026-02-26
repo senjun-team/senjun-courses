@@ -1,0 +1,10 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const int rights = 500;
+    std::println("Calling print_rights({})...", rights);
+    print_rights(rights);
+}

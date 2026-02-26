@@ -528,15 +528,18 @@ int set_rights(int user, int group, int other)
     return rights;
 }
 ```
-. {.task_hint}
+Не забудьте добавить упаковку `other`. {.task_hint}
 ```cpp {.task_answer}
 int set_rights(int user, int group, int other)
 {
     int rights = user;
+
     rights <<= 3;
     rights |= group;
+
     rights <<= 3;
     rights |= other;
+
     return rights;
 }
 ```
@@ -587,13 +590,13 @@ void print_rights(const int rights)
     std::println("user={} group={} other={}", user, group, other);
 }
 ```
-. {.task_hint}
+Чтобы получить значение `user`, нужно оператором `&` применить к `rights` битовую маску `0b111'000'000`, а результат сместить на 6 бит вправо. {.task_hint}
 ```cpp {.task_answer}
 void print_rights(const int rights)
 {
     const int user = (rights & 0b111'000'000) >> 6;
     const int group = (rights & 0b111'000) >> 3;
-    const int user = rights & 0b111;
+    const int other = rights & 0b111;
 
     std::println("user={} group={} other={}", user, group, other);
 }
