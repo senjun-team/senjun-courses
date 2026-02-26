@@ -593,7 +593,7 @@ void print_rights(const int rights)
 {
     const int user = (rights & 0b111'000'000) >> 6;
     const int group = (rights & 0b111'000) >> 3;
-    const int user = rights;
+    const int user = rights & 0b111;
 
     std::println("user={} group={} other={}", user, group, other);
 }
