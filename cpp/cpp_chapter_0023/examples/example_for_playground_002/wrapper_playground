@@ -1,0 +1,16 @@
+import std;
+
+int main()
+{
+    const int a = 4;
+    const int b = 4;
+
+    if ((a ^ b) == 0)
+    {
+        std::println("{} is equal to {}", a, b);
+    }
+    else
+    {
+        std::println("{} is not equal to {}", a, b);
+    }
+}

@@ -1,0 +1,19 @@
+import std;
+
+int main()
+{
+    const int user = 7;  // 0b111
+    const int group = 6; // 0b110
+    const int other = 4; // 0b100
+
+    int rights = 0;
+
+    rights = rights | user;  // 0b111
+    std::println("rights = {}. rights (binary) = {:0b}", rights, rights);
+
+    rights = rights << 3;    // 0b111'000
+    std::println("rights = {}. rights (binary) = {:0b}", rights, rights);
+
+    rights = rights | group; // 0b111'110
+    std::println("rights = {}. rights (binary) = {:0b}", rights, rights);
+}

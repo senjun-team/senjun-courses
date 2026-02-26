@@ -1,0 +1,21 @@
+import std;
+
+int main()
+{
+    int rights = 500; // 0b111'110'100
+    std::println("rights = {}. rights (binary) = {:0b}", rights, rights);
+
+    const int other = rights & 0b111; // 0b100
+
+    rights >>= 3;     // 0b111'110
+    std::println("rights = {}. rights (binary) = {:0b}", rights, rights);
+
+    const int group = rights & 0b111; // 0b110
+
+    rights >>= 3;     // 0b111
+    std::println("rights = {}. rights (binary) = {:0b}", rights, rights);
+
+    const int user = rights & 0b111;  // 0b111
+
+    std::println("user = {}. group = {}. other = {}", user, group, other);
+}
