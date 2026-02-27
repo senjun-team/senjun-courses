@@ -137,7 +137,7 @@ with ProcessPoolExecutor(mp_context=ctx) as executor:
 | macOS | `spawn` | `spawn` |
 | Windows | `spawn` | `spawn` |
 
-Подробнее про методы запуска потоков вы можете ознакомится на странице официальной документации [Python](https://docs.python.org/3/library/multiprocessing.html?spm=a2ty_o01.29997173.0.0.74c65171ca6ZQy#contexts-and-start-methods:~:text=the%20__main__%20module.-,Contexts%20and%20start%20methods,-%C2%B6)
+Подробнее про методы запуска потоков вы можете ознакомится на странице официальной документации [Python.](https://docs.python.org/3/library/multiprocessing.html?spm=a2ty_o01.29997173.0.0.74c65171ca6ZQy#contexts-and-start-methods:~:text=the%20__main__%20module.-,Contexts%20and%20start%20methods,-%C2%B6)
 
 ### Почему это важно
 
@@ -184,7 +184,6 @@ if __name__ == "__main__":
         # ...
 ```
 
----
 
 Дан массив чисел `nums` и функция `is_prime()`, определяющая, является ли число простым. {.task_text}
 
