@@ -46,11 +46,28 @@ http://127.0.0.1:8001/
 
 ## Доступы
 
-pgadmin:
-- login: admin@senjun.ru
-- password: admin
+### Сайт
 
-scene:
-- login: admin
-- password: admin
+- URL сайта: `http://127.0.0.1:8001/`
+- Логин: `admin`
+- Пароль: `admin`
 
+
+### pgAdmin
+
+Для работы с БД поднят [pgAdmin](https://www.pgadmin.org/).
+- URL админки: `http://127.0.0.1:10000/browser/`
+- Логин: `admin@senjun.ru`
+- Пароль: `admin`
+
+Для подключения к серверу нужно будет ввести логин/пароль. Эти значения вы можете переопределить в файле `compose-configs/scene/conf.json`:
+- `senjun`
+- `some_password`
+
+## Логи
+
+Для просмотра логов используйте команду `docker compose logs` с указанием имени контейнера. Например:
+
+```bash
+docker compose logs handyman
+```
