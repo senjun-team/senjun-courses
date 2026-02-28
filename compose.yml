@@ -159,6 +159,7 @@ services:
       - "8001:80"
     volumes:
       - ./compose-configs/scene/conf.json:/app/scene/conf.json:ro
+      - .:/data/courses:ro
     environment:
       - PYTHONUNBUFFERED=1
       - HANDYMAN_URL=http://handyman:8080/
