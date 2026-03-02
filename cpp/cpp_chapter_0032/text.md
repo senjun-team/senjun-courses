@@ -19,52 +19,116 @@ switch (выражение)
 }
 ```
 
-Но у `switch-case` есть ограничения. Выражение для `switch` должно быть:
+Например:
+
+```cpp   {.example_for_playground .example_for_playground_004}
+char op = '+';
+double a = 1.0;
+double b = 2.0;
+
+switch(op)
+{
+    case '-':
+        a -= b;
+        break;
+    case '+':
+        a += b;
+        break;
+    case '*':
+        a *= b;
+        break;
+    case '/':
+        a /= b;
+        break;
+    default:
+        std::println("Unsupported operator");
+}
+
+std::println("res={}", a);
+```
+```
+res=3
+```
+
+Тело `switch` **обязательно** обрамляется фигурными скобками. Вокруг инструкций в блоках `case` и `default` скобки можно не ставить.
+
+Блок `default` опциональный, его можно не ставить. Он срабатывает, если не подошёл ни один из блоков `case`.
+
+Что выведется в консоль? {.task_text}
+
+```cpp {.example_for_playground .example_for_playground_006}
+char user_input = 'y';
+
+switch (user_input)
+{
+    case '\n': 
+        std::println("repeat");
+        break;
+    
+    case 'y':
+        std::println("yes");
+        break;
+    
+    case 'n':
+        std::println("no");
+        break;
+    
+    default:
+        std::println("error");
+}
+```
+
+```consoleoutput {.task_source #cpp_chapter_0032_task_0030}
+```
+Выполнится блок `case 'y'`. {.task_hint}
+```cpp {.task_answer}
+yes
+```
+
+## Тип выражения для switch
+
+У `switch-case` есть ограничения. Выражение для `switch` должно быть:
 - целочисленным (например, `int`),
 - символьного типа (например, `char`),
 - либо перечислением `enum`, о котором вы скоро [узнаете.](/courses/cpp/chapters/cpp_chapter_0054/)
 
 То есть сравнивать строку `std::string` с использованием `switch` не получится.
 
-## Как выглядит switch-case
 
-Так выглядит `switch-case` для сопоставления символа со значениями:
+## Оператор break
 
-```cpp  {.example_for_playground .example_for_playground_006}
-char user_input = 'y';
+В большинстве случаев после выполнения подходящего `case` требуется выйти из `switch`. Для этого используется оператор `break`:
 
-switch (user_input)
+```cpp   {.example_for_playground .example_for_playground_007}
+const std::size_t number_system = 10;
+
+switch (number_system)
 {
-    case '\n': 
-        std::println("User pressed enter. Repeating question.");
-        show_question();
+    case 2: 
+        std::println("Binary");
         break;
     
-    case 'y':
-        std::println("Yes");
+    case 10:
+        std::println("Decimal");
         break;
-    
-    case 'n':
-        std::println("No");
+
+    case 16:
+        std::println("Hexadecimal");
         break;
-    
+
     default:
-        std::println("Invalid input");
+        std::println("Other");
 }
 ```
 ```
-Yes
+Decimal
 ```
 
-Тело `switch` **обязательно** обрамляется фигурными скобками. Вокруг инструкций в блоках `case` и `default` скобки можно не ставить.
+Если внутри `case` отсутствует `break`, то код **продолжит выполняться** во всех последующих блоках `case`, даже если их условия не совпадают с результатом выражения! Выполнение продолжится до следующего `break` или до конца `switch`. Такое поведение называют «проваливанием» (fall-through).
 
-Блок `default` опциональный. Он срабатывает, если не подошёл ни один из блоков `case`.
+Уберем все `break` из примера выше и посмотрим, как изменится консольный вывод:
 
-### Оператор break
-
-В большинстве случаев после выполнения `case` требуется выйти из `switch`. Для этого используется оператор `break`. Если его нет, то выполнение **продолжится** до следующего `break` или до самого конца `switch`:
-
-```cpp   {.example_for_playground .example_for_playground_007}
+```cpp   {.example_for_playground .example_for_playground_003}
 const std::size_t number_system = 10;
 
 switch (number_system)
