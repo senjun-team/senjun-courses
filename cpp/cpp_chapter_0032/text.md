@@ -139,10 +139,10 @@ switch (number_system)
     case 10:
         std::println("Decimal");
     
-    case 16:
+    case 16: // Выполнится, даже если number_system != 16
         std::println("Hexadecimal");
     
-    default:
+    default: // Тоже выполнится
         std::println("Other");
 }
 ```
