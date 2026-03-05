@@ -149,6 +149,48 @@ B 1 2 3
 
 Имя метода дочернего класса перекроет имя родительского метода в области видимости. Поэтому при переопределении методов не помешает лишний раз проверить соответствие параметров.
 
+Вы работаете над системой обработки событий. Базовый класс `EventHandler` объявляет метод `handle()`, который принимают два аргумента: `event_type: str` и `payload: dict`. {.task_text}
+
+Ваша задача — реализовать класс-наследник `ValidatingHandler`, который переопределяет метод `handle()`, но при этом: {.task_text}
+- Сохраняет совместимую сигнатуру с родительским методом (те же параметры в том же порядке). {.task_text}
+- Добавляет валидацию: если payload не содержит ключа "timestamp", метод должен генерировать ValueError("Missing timestamp"). {.task_text}
+- После валидации обязательно вызывает родительскую реализацию через super().handle(...), чтобы логирование сработало корректно. {.task_text}
+- Возвращает результат работы родительского метода. {.task_text}
+
+```python {.task_source #python_chapter_0170_task_0060}
+from typing import Any
+
+class EventHandler:
+    def handle(self, event_type: str, payload: dict[str, Any]) -> bool:
+        """Базовая обработка события. Возвращает True, если событие обработано."""
+        print(f"[LOG] Handling {event_type} with payload: {payload}")
+        return True
+
+# Реализуйте класс ValidatingHandler ниже
+```
+
+```{.task_hint}
+Сигнатура переопределяемого метода должна быть совместима по замещению: дочерний метод может принимать те же или более общие аргументы, но не более узкие. {.task_hint}
+В Python нет перегрузки методов по количеству параметров — последнее объявление «перекрывает» предыдущее в области видимости экземпляра. {.task_hint}
+```
+
+```python {.task_answer}
+from typing import Any
+
+class EventHandler:
+    def handle(self, event_type: str, payload: dict[str, Any]) -> bool:
+        """Базовая обработка события. Возвращает True, если событие обработано."""
+        print(f"[LOG] Handling {event_type} with payload: {payload}")
+        return True
+
+
+class ValidatingHandler(EventHandler):
+    def handle(self, event_type: str, payload: dict[str, Any]) -> bool:
+        if "timestamp" not in payload:
+            raise ValueError("Missing timestamp")
+        return super().handle(event_type, payload)
+```
+
 ## Множественное наследование {#block-multiple-inheritance}
 В языке поддерживается множественное наследование, при котором потомок получает доступ к атрибутам всех родительских классов. Родительские классы перечисляются через запятую в объявлении класса-потомка:
 
@@ -312,6 +354,43 @@ C.f(d)
 C
 ```
 
+Что выведет этот код? {.task_text}
+```python {.task_source #python_chapter_0170_task_0050}
+class A:
+    def f(self):
+        print("A")
+
+class B(A):
+    def f(self):
+        print("B")
+        super().f()
+
+class C(B):
+    def f(self):
+        print("C")
+        super(B, self).f()
+
+C().f()
+```
+MRO (`C.mro()`) для класса `C`: `C -> B -> A -> object`. Вызов `C().f()`: Печатает `C`, затем вызывает `super(B, self).f()`. `super(B, self)` начинает поиск после класса `B` в MRO. {.task_hint}
+```python {.task_answer}
+CA
+```
+
+Почему так происходит? `super()` без аргументов эквивалентен `super(ТекущийКласс, self)` и движется по цепочке MRO. `super(Класс, self)` — это "ручное управление": поиск начинается после указанного класса, в данном случае *после* класса `B`, а это значит он сам в цепочке не участвует. Это бывает полезно для: вызова метода в обход родительского класса, решение проблем с ромбовидным наследованием или более точной настйроки работы миксинов, но в тоже время и опасно - можно легко упустить особую логику работы класса.
+
+Для проверки логики работы `super()` вы к задаче можете добавить код: 
+```python
+class C2(B):
+    def f(self):
+        print("C2", end=" ")
+        super().f()  # Обычный super(), то есть от текущего класса 
+
+C2().f()  # Вывод: C2 B A
+```
+
+Вывод у `C2` будет ожидаемым, потому что мы не обходили класс в цепочке MRO, как было в задаче с вызовом `super(B, self).f()`.
+
 Дана цепочка наследования `Tail -> Z -> Y -> X -> object`. Расширьте в классе `Tail` функцию `f()` таким образом, чтобы она вызывала функцию класса `X`. {.task_text}
 
 ```python {.task_source #python_chapter_0170_task_0020}
@@ -351,7 +430,6 @@ class Z(Y):
 class Tail(Z):
     def f(self):
         super(Y, self).f()
-
 ```
 
 ## Абстрактные классы {#block-abstract-classes}
