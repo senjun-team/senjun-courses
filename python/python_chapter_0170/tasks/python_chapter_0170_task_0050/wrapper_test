@@ -8,7 +8,7 @@ sys.stdout = mystdout = StringIO()
 
 sys.stdout = old_stdout
 
-output = mystdout.getvalue().replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "")
+output = mystdout.getvalue().translate(str.maketrans("", "", " \t\n\r"))
 
 if output != "CA":
     print("print() in C().f() output isn't correct")
