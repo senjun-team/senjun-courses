@@ -1,15 +1,6 @@
-from io import StringIO
-import sys
+text = """
+#INJECT-ESCAPED-b585472fa
+"""
 
-old_stdout = sys.stdout
-sys.stdout = mystdout = StringIO()
-
-#INJECT-b585472fa
-
-sys.stdout = old_stdout
-
-output = mystdout.getvalue().translate(str.maketrans("", "", " \t\n\r"))
-
-if output != "CA":
-    print("print() in C().f() output isn't correct")
+if text.strip().lower() != "ca":
     exit(1)
