@@ -1,0 +1,119 @@
+from io import StringIO
+import sys
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+# Проверка существования классов
+for c in ["EventHandler", "ValidatingHandler"]:
+    if c not in globals():
+        print(f"Class {c} doesn't exist")
+        exit(1)
+
+# Проверка наследования
+if not issubclass(ValidatingHandler, EventHandler):
+    print(f"ValidatingHandler doesn't inherit EventHandler")
+    exit(1)
+
+# Отсутствия timestamp
+try:
+    tests_missing_timestamp = [
+        {"event_type": "click"},
+        {"event_type": "submit", "user_id": 42},
+        {},
+        {"data": "some", "meta": "info"},
+    ]
+
+    handler = ValidatingHandler()
+
+    for payload in tests_missing_timestamp:
+        try:
+            handler.handle("test_event", payload)
+            print(f"ValidatingHandler didn't raise ValueError for payload without 'timestamp': {payload}")
+            exit(1)
+        except ValueError as e:
+            if str(e) != "Missing timestamp":
+                print(f"ValidatingHandler raised ValueError with wrong message: '{e}'")
+                exit(1)
+        except Exception as e:
+            print(f"ValidatingHandler raised unexpected exception: {type(e).__name__}: {e}")
+            exit(1)
+
+except Exception as e:
+    print(f"Unexpected error while testing missing timestamp: {e}")
+    exit(1)
+
+# Успешная валидация и вызов родительского метода
+try:
+    tests_valid_payload = [
+        ["login", {"timestamp": 1234567890}, True],
+        ["logout", {"timestamp": 9876543210, "user": "admin"}, True],
+        ["error", {"timestamp": 1111111111, "code": 500}, True],
+    ]
+
+    for event_type, payload, expected in tests_valid_payload:
+        old_stdout = sys.stdout
+        sys.stdout = mystdout = StringIO()
+
+        handler = ValidatingHandler()
+        result = handler.handle(event_type, payload)
+
+        output = mystdout.getvalue()
+        sys.stdout = old_stdout
+
+        if result != expected:
+            print(f"ValidatingHandler.handle() returned {result}, expected {expected} for event_type='{event_type}', payload={payload}")
+            exit(1)
+
+        # Проверяем, что родительский метод сработал (есть лог-сообщение)
+        if "[LOG]" not in output or event_type not in output:
+            print(f"Parent EventHandler.handle() was not called for event_type='{event_type}'")
+            exit(1)
+
+except Exception as e:
+    print(f"Unexpected error while testing valid payloads: {e}")
+    exit(1)
+
+# Метод должен иметь совместимую сигнатуру
+try:
+    import inspect
+
+    parent_sig = inspect.signature(EventHandler.handle)
+    child_sig = inspect.signature(ValidatingHandler.handle)
+
+    parent_params = list(parent_sig.parameters.keys())[1:]
+    child_params = list(child_sig.parameters.keys())[1:]
+
+    if parent_params != child_params:
+        print(f"Signature mismatch: EventHandler.handle({', '.join(parent_params)}) vs ValidatingHandler.handle({', '.join(child_params)})")
+        exit(1)
+
+except Exception as e:
+    print(f"Error checking method signatures: {e}")
+    exit(1)
+
+# Полиморфное использование
+try:
+    def process_event(handler: EventHandler, event_type: str, payload: dict) -> bool:
+        return handler.handle(event_type, payload)
+
+    base_handler = EventHandler()
+    valid_handler = ValidatingHandler()
+
+    payload_ok = {"timestamp": 123}
+
+    if not process_event(base_handler, "test", payload_ok):
+        print("process_event failed with EventHandler")
+        exit(1)
+
+    if not process_event(valid_handler, "test", payload_ok):
+        print("process_event failed with ValidatingHandler (LSP violation)")
+        exit(1)
+
+except Exception as e:
+    print(f"Polymorphic usage test failed: {e}")
+    exit(1)
