@@ -59,7 +59,7 @@ int main()
 
 Так выглядит минимальная программа на C++, которая ничего не делает:
 
-```cpp  {.example_for_playground}
+```cpp
 int main() { }
 ```
 
