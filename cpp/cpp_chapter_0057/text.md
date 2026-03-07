@@ -13,9 +13,9 @@
 
 Как называется пространство имен стандартной библиотеки C++? Напишите его вместе с оператором разрешения области видимости. {.task_text}
 
-```consoleoutput {.task_source #cpp_chapter_0057_task_0080}
+```consoleoutput {.task_source #cpp_chapter_0057_task_0010}
 ```
-**Темы, затронутые в задаче:** [пространства имен](/courses/cpp/chapters/cpp_chapter_0053/). {.task_hint}
+Оператор разрешения области видимости: `::`. **Темы, затронутые в задаче:** [пространства имен](/courses/cpp/chapters/cpp_chapter_0053/). {.task_hint}
 ```cpp {.task_answer}
 std::
 ```
@@ -63,7 +63,7 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0057_task_0070}
+```consoleoutput {.task_source #cpp_chapter_0057_task_0020}
 ```
 Выполнение кода, бросившего исключение, прерывается. Управление передаётся обработчику исключения. **Темы, затронутые в задаче:** [исключения,](/courses/cpp/chapters/cpp_chapter_0052/) [классы](/courses/cpp/chapters/cpp_chapter_0055/). {.task_hint}
 ```cpp {.task_answer}
@@ -98,7 +98,7 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0057_task_0010}
+```consoleoutput {.task_source #cpp_chapter_0057_task_0030}
 ```
 Обратите внимание, что значения констант перечисления `Notification` — это степени двойки. При объединении двух значений `Notification` побитовым «ИЛИ» вы получите их комбинацию. Применение к такому числу побитового «И» со значением `Notification` нужно, чтобы проверить, установлено ли интересующее свойство. **Темы, затронутые в задаче:** [перечисления](/courses/cpp/chapters/cpp_chapter_0054/#block-enum) `enum`; [двоичное представление чисел и побитовые операторы](/courses/cpp/chapters/cpp_chapter_0023/) `&` и `|`; [явное приведение типов](/courses/cpp/chapters/cpp_chapter_0011/#block-static-cast) через `static_cast`, [неявное приведение типов.](/courses/cpp/chapters/cpp_chapter_0011/#block-implicit-cast). {.task_hint}
 ```cpp {.task_answer}
@@ -147,7 +147,7 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0057_task_0020}
+```consoleoutput {.task_source #cpp_chapter_0057_task_0040}
 ```
 Если в блоке `case` отсутствует `break`, то выполнение переходит к следующему `case`. **Темы, затронутые в задаче:** [конструкция](/courses/cpp/chapters/cpp_chapter_0032/) `switch-case`; [операторы составного присваивания.](/courses/cpp/chapters/cpp_chapter_0022/#block-compound-assignment) {.task_hint}
 ```cpp {.task_answer}
@@ -181,7 +181,7 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0057_task_0060}
+```consoleoutput {.task_source #cpp_chapter_0057_task_0050}
 ```
 Компилятор найдет вызов шаблонной функции `lerp()` и для данного набора аргументов инстанцирует шаблон: создаст функцию с типами аргументов `int`, `int`, `double` и типом возвращаемого значения, совпадающим с типами двух первых аргументов. **Темы, затронутые в задаче:** [шаблоны.](/courses/cpp/chapters/cpp_chapter_0056/) {.task_hint}
 ```cpp {.task_answer}
@@ -212,7 +212,7 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0057_task_0030}
+```consoleoutput {.task_source #cpp_chapter_0057_task_0060}
 ```
 Префиксный оператор возвращает обновлённое значение переменной, а постфиксный — старое. **Темы, затронутые в задаче:** [пре-инкремент и пост-инкремент.](/courses/cpp/chapters/cpp_chapter_0022/#block-increment) {.task_hint}
 ```cpp {.task_answer}
@@ -236,7 +236,7 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0057_task_0050}
+```consoleoutput {.task_source #cpp_chapter_0057_task_0070}
 ```
 Как и конструкция `if-else` тернарный оператор гарантирует, что вычисляется только одна из веток условия. Префиксный оператор возвращает обновлённое значение переменной, а постфиксный — старое. **Темы, затронутые в задаче:** [пре-инкремент и пост-инкремент,](/courses/cpp/chapters/cpp_chapter_0022/#block-increment) [тернарный оператор.](/courses/cpp/chapters/cpp_chapter_0031/#block-ternary-operator) {.task_hint}
 ```cpp {.task_answer}
@@ -255,7 +255,6 @@ int main()
     std::size_t a = 0;
     std::size_t b = 0;
 
-    
     if (a++ && ++b)
         std::println("1 {} {}", a, b);
     else
@@ -263,7 +262,7 @@ int main()
 }
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0057_task_0040}
+```consoleoutput {.task_source #cpp_chapter_0057_task_0080}
 ```
 В C++ логические операторы выполняются по короткой схеме. **Темы, затронутые в задаче:** [пре-инкремент и пост-инкремент,](/courses/cpp/chapters/cpp_chapter_0022/#block-increment) вычисление логических операторов [по короткой схеме.](/courses/cpp/chapters/cpp_chapter_0022/#block-short-circuit) {.task_hint}
 ```cpp {.task_answer}
@@ -275,9 +274,7 @@ int main()
 - Префиксный оператор возвращает обновлённое значение переменной, а постфиксный — старое.
 - Префиксные формы возвращают саму переменную, а постфиксные — её неизменяемую копию.
 
-Если эти операторы участвуют в логическом выражении, то помните, что в C++ реализована стратегия вычисления по короткой схеме (short-circuit evaluation).
-
-
+Если эти операторы участвуют в логическом выражении, то помните, что в C++ реализована [стратегия вычисления по короткой схеме](/courses/cpp/chapters/cpp_chapter_0022/#block-short-circuit) (short-circuit evaluation).
 
 ----------
 
