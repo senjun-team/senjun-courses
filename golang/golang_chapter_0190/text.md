@@ -61,7 +61,7 @@ type equipmentT struct {
 	isValid int
 }
 
-// генерирует случайное имя оборудования
+// Функция randName генерирует случайное имя оборудования
 func randName(r *rand.Rand, n int) string {
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	var invalidSymbols = []rune("!@#$%^&*()")
@@ -73,14 +73,14 @@ func randName(r *rand.Rand, n int) string {
 	return string(b)
 }
 
-// воркер, проверяющий свою часть матрицы
+// Функция worker проверяет свою часть матрицы
 func worker(input *[elementsNumber]equipmentT, min int, max int) {
 	for i := min; i < max; i++ {
 		input[i].isValid = check(input[i].name)
 	}
 }
 
-// функция проверки имени оборудования
+// Функция check проверяет имя оборудования
 func check(name string) int {
 	var invalidSymbols = []rune("!@#$%^&*()")
 	for _, r := range name {
@@ -94,7 +94,8 @@ func check(name string) int {
 }
 
 /*
-напечатать статистику по матрице:
+Функция statisticPrintln печатает 
+статистику по матрице:
 validNumber - число валидных имен
 invalidNumber - число невалидных имен
 unknownNumber - число непроверенных имен
@@ -114,10 +115,10 @@ func statisticPrintln(result *[elementsNumber]equipmentT) {
 		validNumber, invalidNumber, elementsNumber-validNumber-invalidNumber)
 }
 func main() {
-	// подготовка данных
-	// матрица для последовательных вычислений
+	// Подготовка данных
+	// Матрица для последовательных вычислений
 	equipmentMatrix := [elementsNumber]equipmentT{}
-	// матрица для параллельных вычислений
+	// Матрица для параллельных вычислений
 	workerEquipmentMatrix := [elementsNumber]equipmentT{}
 	seed := int64(42)
 	source := rand.NewSource(seed)
@@ -127,7 +128,7 @@ func main() {
 			isValid: unknown}
 		workerEquipmentMatrix[i] = equipmentMatrix[i]
 	}
-	// последовательная часть программы
+	// Последовательная часть программы
 	t1 := time.Now()
 	for i := range len(equipmentMatrix) {
 		equipmentMatrix[i].isValid = check(equipmentMatrix[i].name)
@@ -138,7 +139,7 @@ func main() {
 	statisticPrintln(&equipmentMatrix)
 	fmt.Printf("time: %d milliseconds\n", resTime)
 	fmt.Println()
-	// параллельная часть программы
+	// Параллельная часть программы
 	workersNumber := runtime.NumCPU()
 	// math.Ceil округляет значение в большую сторону
 	chunk := int(math.Ceil(float64(elementsNumber) / float64(workersNumber)))
@@ -219,7 +220,7 @@ cpuNumber = 6
 
 ## Ключевое слово select 
 
-Существует ряд задач, когда горутины выполняются параллельно. В таких задачах иногда возникает необходимость выбрать тот результат работы горутины, которая завершится раньше.
+Иногда необходимо выбрать результат работы той горутины среди всех горутин, которая завершится раньше.
 
 Рассмотрим пример. Допустим, у нас есть некоторая тяжелая задача `slowTask`. Мы хотим ждать ее выполнения лишь до некоторого таймаута. Мы могли бы написать такой код:
 
@@ -264,7 +265,7 @@ func main() {
 Error: timeout
 ```
 
-Но это неудобно! Нам приходтся вводить дополнтельный входной параметр для функции `slowTask` — timeout. Кроме того, теперь мы должны вернуть особый вид ошибки в случае таймаута. Код внутри функции становится сложным и запутанным. Чтобы избежать таких проблем, удобно использовать конструкцию `select-case`: 
+Но это неудобно! Код внутри функции становится сложным и запутанным. Чтобы избежать таких проблемы, удобно использовать конструкцию `select-case`: 
 
 ```go {.example_for_playground}
 package main
