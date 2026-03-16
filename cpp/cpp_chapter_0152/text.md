@@ -113,7 +113,7 @@ ptr=0X7FFDA8185ED4
 
 Например, если первый аргумент расположен по адресу `0x7ffce00d8bc0`, а второй — по адресу `0x7ffce00d8bb8`, то функция должна вернуть строку `"0x7ffce00d8bc0 0x7ffce00d8bb8"`. {.task_text}
 
-Для форматирования строки вам понадобится функция [std::format()](https://en.cppreference.com/w/cpp/utility/format/format.html).
+Для форматирования строки вам понадобится функция [std::format()](https://en.cppreference.com/w/cpp/utility/format/format.html).  {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0152_task_0020}
 // Ваша реализация check_eq()
@@ -440,7 +440,7 @@ std::size_t len = p->size(); // вызываем метод строки
 
 Итак, через указатели мы можем работать с объектами классов и структур. А они в свою очередь могут иметь поля с типом «указатель». Если тип такого поля совпадает с типом исходного класса, то перед вами рекурсивная структура данных.
 
-Например, так выглядит структура, реализующая элемент [односвязного списка](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA) целых чисел:
+Например, так выглядит структура, реализующая элемент [односвязного списка](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D1%8F%D0%B7%D0%BD%D1%8B%D0%B9_%D1%81%D0%BF%D0%B8%D1%81%D0%BE%D0%BA) целых чисел: {#block-listnode}
 
 ```cpp {.example_for_playground .example_for_playground_017}
 struct ListNode
