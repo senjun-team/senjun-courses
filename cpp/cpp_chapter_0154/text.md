@@ -2,19 +2,13 @@
 
 Временем жизни переменных в динамической памяти управляет разработчик. Оно _не заканчивается_ при выходе из области видимости. Поэтому все конструкции для управления памятью _парные:_ после выделения памяти ее нужно освободить. 
 
-Выделение динамической памяти называется **аллокацией** (allocation). И на одну аллокацию должно приходиться ровно одно освобождение.
+Выделение динамической памяти называется **аллокацией** (allocation). На одну аллокацию должно приходиться ровно одно освобождение.
 - Если вы забудете освобождение, то получите **утечку памяти** (memory leak). Занятая область будет возвращена ОС только при завершении программы.
-- Если вы освободите одну и ту же область дважды, то получите **двойное освобождение памяти** (double free). Это повреждение памяти, приводящее к любым последствиям. Иными словами, UB.
+- Если вы освободите одну и ту же область дважды, то получите **двойное освобождение памяти** (double free). Это повреждение памяти, приводящее к любым последствиям. Иными словами, крайне опасный вид UB.
 
-В C++ есть несколько способов для управления памятью. Перечислим их от низкоуровневых к высокоуровневым:
-- Сишные функции `malloc()` и `free()`.
-- Операторы `new` и `delete`.
-- Выражения `new` и `delete`.
-- Умные указатели.
+В C++ есть несколько способов для управления памятью. Перечислим их от низкоуровневых к высокоуровневым. Чем способ более высокоуровневый — тем он более предпочтительный. Наиболее высокоуровневый способ — это умные указатели, но их мы рассмотрим в следующих главах.
 
-Чем способ более высокоуровневый — тем он более предпочтительный. Рассмотрим первые три, а про умные указатели поговорим отдельно в следующей главе.
-
-## Низкий уровень на Си: malloc и free
+## Низкий уровень на Си: malloc() и free()
 
 Когда в 80-х годах C++ только начинал формироваться и назывался «Си с классами», важным для его распространения было:
 - Поддерживать полную совместимость с Си.
@@ -57,28 +51,24 @@ import std;
 
 int main()
 {
-    // Хотим завести массив из n элементов
     const std::size_t n = 5;
-
-    // Аллоцируем память
     const std::size_t bytes =  n * sizeof(int);
+
+    // Выделяем память
     int * arr = static_cast<int *>(malloc(bytes));
 
-    // Проверяем на nullptr, чтобы при обращении к памяти
-    // не получить UB
+    // Проверка, чтобы при обращении к памяти не получить UB
     if (arr == nullptr)
     {
         std::println("Couldn't allocate {} bytes for array", bytes);
         return 1;
     }
 
-    // Записываем в массив
     for (int i = 0; i < n; ++i)
+    {
         arr[i] = i * i;
-
-    // Читаем из массива
-    for (int i = 0; i < n; ++i)
         std::println("{}-th element. Value: {}", i, arr[i]);
+    }
 
     // Освобождаем память
     free(arr);
@@ -94,7 +84,11 @@ int main()
 
 Вызов `malloc()` вернул указатель `void *`, и нам пришлось привести его к `int *` через `static_cast`. Когда память стала не нужна, мы освободили ее через `free()`. Во многих проектах считается хорошей практикой после вызова `free()` обнулять указатель: `arr = nullptr`. Это позволяет избежать двойного освобождения памяти. Мы этого не сделали, потому что на `free()` наша программа заканчивается.
 
-[Пространства имен,](/courses/cpp/chapters/cpp_chapter_0053/) появившиеся еще на заре C++, позволяют предотвращать конфликты имен и удобно группировать код. Не удивительно, что функции библиотеки рантайма Си были добавлены в пространство имен `std`. Для использования функций управления памятью необходимо подключить заголовок `cstdlib` или модуль `std`:
+### std::malloc() и std::free()
+
+[Пространства имен,](/courses/cpp/chapters/cpp_chapter_0053/) появившиеся еще на заре C++, позволяют предотвращать конфликты имен и удобно группировать код. Не удивительно, что функции библиотеки рантайма Си были добавлены в пространство имен `std`. 
+
+Для использования функций управления памятью из пространства `std` необходимо подключить заголовок `cstdlib` или модуль `std`:
 
 ```cpp
 #include <cstdlib> // Вместо stdlib.h
@@ -121,76 +115,52 @@ int main()
     - Для других — ручной вызов конструктора.
 - `malloc()` возвращает указатель `void *`, и вам нужно самостоятельно приводить его к указателю на нужный тип.
 
-В функции `is_valid()` допущена ошибка управления памятью. Исправьте ее. {.task_text}
+Прочитайте функцию `is_valid()`. Считайте, что вспомогательные функции `normalize()`, `is_valid_char()` и `is_strong()` уже реализованы в проекте и не кидают исключений. Функция [std::strcpy()](https://en.cppreference.com/w/cpp/string/byte/strcpy.html) копирует сишную строку вместе с завершающим нулем. {.task_text}
 
-Считайте, что функции `normalize()`, `is_valid_char()` и `is_strong()` уже реализованы в проекте и не кидают исключений. {.task_text}
+Правильно ли организовано управление памятью в этой функции? Введите: `x`, если ошибок управления памятью нет; `l`, если есть утечка памяти; `f`, если память освобождается дважды. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0154_task_0010}
+```cpp {.example_for_playground}
 // Проверяет, что пароль состоит из корректных символов
-bool is_valid(const char * password)
+bool is_valid(const char * pass)
 {
-    char * buffer = static_cast<char *>(std::malloc(std::strlen(password) + 1));
+    // +1 нужен для учета завершающего нуля '\0'
+    const std::size_t bytes = std::strlen(pass) + 1;
+
+    // Выделяем память для копии строки
+    char * pass_normalized = static_cast<char *>(std::malloc(bytes));
     
-    if (buffer == nullptr)
+    if (pass_normalized == nullptr)
         return false;
 
-    std::strcpy(buffer, password);
+    std::strcpy(pass_normalized, pass);
 
-    for (std::size_t i = 0; i < std::strlen(buffer), ++i)
+    for (std::size_t i = 0; i < std::strlen(pass_normalized), ++i)
     {
-        buffer[i] = normalize(buffer[i]);
+        pass_normalized[i] = normalize(pass_normalized[i]);
 
-        if (!is_valid_char(buffer[i]))
+        if (!is_valid_char(pass_normalized[i]))
         {
             std::println("Password contains invalid symbol");
             return false; 
         }
     }
 
-    if (is_strong(buffer))
+    if (is_strong(pass_normalized))
     {
         std::println("Password is not strong enough");
         return false; 
     }
 
-    std::free(buffer);
+    std::free(pass_normalized);
     return true;
 }
 ```
-В коде есть утечка памяти. В функции есть три точки выхода. Но только в последней освобождаются ресурсы. {.task_hint}
+
+```consoleoutput {.task_source #cpp_chapter_0154_task_0010}
+```
+В функции есть три точки выхода. Но только в последней освобождаются ресурсы. {.task_hint}
 ```cpp {.task_answer}
-// Проверяет, что пароль состоит из корректных символов
-bool is_valid(const char * password)
-{
-    char * buffer = static_cast<char *>(std::malloc(std::strlen(password) + 1));
-    
-    if (buffer == nullptr)
-        return false;
-
-    std::strcpy(buffer, password);
-
-    for (std::size_t i = 0; i < std::strlen(buffer), ++i)
-    {
-        buffer[i] = normalize(buffer[i]);
-
-        if (!is_valid_char(buffer[i]))
-        {
-            std::println("Password contains invalid symbol");
-            std::free(buffer);
-            return false; 
-        }
-    }
-
-    if (is_strong(buffer))
-    {
-        std::println("Password is not strong enough");
-        std::free(buffer);
-        return false; 
-    }
-
-    std::free(buffer);
-    return true;
-}
+l
 ```
 
 ## Низкий уровень на C++: операторы new и delete
@@ -320,9 +290,10 @@ int main()
 n
 ```
 
-В этом коде допущена ошибка, связанная с управлением памятью. Исправьте ее, руководствуясь принципом «кто выделил память, тот и удаляет». {.task_text}
 
-```cpp {.task_source #cpp_chapter_0154_task_0030}
+Есть ли в этом примере кода ошибки управления памятью? Введите: `x`, если ошибок управления памятью нет; `l`, если есть утечка памяти; `f`, если память освобождается дважды. {.task_text}
+
+```cpp
 void process(int * data)
 {
     std::println("Processing data {}...", *data);
@@ -331,7 +302,7 @@ void process(int * data)
 
 void process_and_release()
 {
-    int * value = new int(1e6);
+    int * value = new int(164);
 
     process(value);
 
@@ -344,9 +315,43 @@ void process_and_release()
     }
 }
 ```
-В коде есть двойное освобождение памяти. {.task_hint}
-```cpp {.task_answer}
 
+```consoleoutput {.task_source #cpp_chapter_0154_task_0030}
+```
+Нарушен принцип «кто выделил память, тот и удаляет» {.task_hint}
+```cpp {.task_answer}
+f
+```
+
+Напишите функцию `reverse_str()`. Она принимает указатель на сишную строку и возвращает указатель на новую строку, содержащую символы исходной строки в обратном порядке. {.task_text}
+
+Если в `reverse_str()` передан `nullptr`, функция должна вернуть `nullptr`. {.task_text}
+
+```cpp {.task_source #cpp_chapter_0152_task_0040}
+char * reverse(const char * src)
+{
+
+}
+```
+Не забудьте про завершающий нуль в строке при выделении памяти и при записи символов в новую строку. {.task_hint}
+```cpp {.task_answer}
+char * reverse(const char * src)
+{
+    if (src == nullptr)
+        return nullptr;
+
+    const std::size_t len = strlen(src);
+    char * dst = static_cast<char *>(malloc(len + 1));
+    if (dst == nullptr)
+        return nullptr;
+
+    for (std::size_t i = 0; i < len; ++i)
+        dst[i] = src[len - 1 - i];
+
+    dst[len] = '\0';
+
+    return dst;
+}
 ```
 
 ## Выражения new[] и delete[] для массивов
@@ -424,9 +429,6 @@ public:
 
     // Удаляет последний элемент
     void pop_back();
-
-    // Очищает вектор
-    void clear();
 
 private:
     // Перемещает элементы в область памяти под new_size элементов
@@ -547,7 +549,7 @@ int main()
 
 Это означает, что для объекта `numbers` будет вызван деструктор. Вы можете открыть пример кода в песочнице и удостовериться в этом.
 
-Реализация оператора `[]` выглядит даже проще метода `at()`:
+Реализация оператора `[]` даже проще метода `at()`:
 
 ```cpp
 int & Vector::operator[](std::size_t i)
@@ -618,7 +620,7 @@ void Vector::reserve(std::size_t capacity)
 }
 ```
 
-Метод `move_elements()` пригодится при реализации `resize()`. Он увеличивает фактический размер массива:
+Метод `move_elements()` пригодится при реализации `resize()`. Этот метод увеличивает фактический размер массива, добавляя в него новые нулевые элементы.
 
 ```cpp
 void Vector::resize(std::size_t size)
@@ -638,7 +640,7 @@ void Vector::resize(std::size_t size)
 }
 ```
 
-Теперь напишем метод для добавления элемента в конец вектора.
+Теперь напишем метод для добавления элемента в конец вектора. При исчерпании емкости будем ее удваивать.
 
 ```cpp
 void Vector::push_back(int val)
@@ -650,23 +652,219 @@ void Vector::push_back(int val)
 }
 ```
 
-Обратите внимание на использование постфиксной формы инкремента `m_size++`: она сначала возвращает значение, а потом увеличивает его. Поэтому в выражении `m_elements[m_size++]` нет выхода за границы массива.
+Обратите внимание на использование [постфиксной формы](/courses/cpp/chapters/cpp_chapter_0022/#block-post-increment) инкремента `m_size++`, которая сначала возвращает значение, а потом увеличивает его. Поэтому в выражении `m_elements[m_size++]` нет выхода за границы массива.
 
+Итак, мы написали простой прототип класса вектора с минимальным набором методов. Для этого использовали указатель на массив и два числа: реальный размер вектора `size` и его вместимость `capacity`. Интересный факт: большинство стандартных реализаций `std::vector` вместо одного указателя и двух чисел задействуют три указателя: на начало массива, на последний элемент и на конец выделенной под массив памяти. Такой подход эффективен при вставке и удалении с конца.
 
-Реализуем последний метод: `clear()`.
+## Работа с динамической памятью на примере двусвязного списка
+
+В главе про основы работы с указателями вы уже успели порешать задачи, связанные [со структурой](/courses/cpp/chapters/cpp_chapter_0152/#block-listnode) `ListNode`. Она реализует узел односвязного списка:
 
 ```cpp
-void Vector::clear()
+struct ListNode
 {
-    m_size = 0;
+    ListNode() {}
+
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
+    
+    int val = 0;
+    ListNode * next = nullptr;
+};
+```
+
+Теперь вам нужно реализовать несколько методов класса односвязного списка `List`. {.task_text}
+
+Деструктор и методы `len()` уже готовы. Вам нужно дописать определения для `push_back()`, `remove()` и `get()`. {.task_text}
+
+```cpp {.task_source #cpp_chapter_0154_task_0050}
+class List
+{
+private:
+    ListNode * head = nullptr;
+    std::size_t size = 0;
+
+public:
+    List() = default;
+    ~List();
+
+    // Возвращает длину списка
+    std::size_t len();
+
+    // Добавляет новый узел со значением val в конец
+    void push_back(int val);
+
+    // Ищет элемент со значением val и удаляет его. Если такой
+    // элемент не найден, ничего не делает
+    void remove(int val);
+
+    // Возвращает элемент по индексу. Если индекс за пределами
+    // списка, возвращает nullptr
+    ListNode * get(std:size_t index);
+};
+
+List::~List()
+{
+    // Обратите внимание, как выглядит проход по
+    // списку с удалением его узлов
+    while (head != nullptr)
+    {
+        ListNode * tmp = head;
+        head = head->next;
+        delete tmp;
+    }
+}
+
+std::size_t List::len()
+{
+    return size; // Не забудьте обновлять size в других методах
+}
+
+void List::push_back(int val)
+{
+
+}
+
+void List::remove(int val)
+{
+
+}
+
+ListNode * List::get(std:size_t index)
+{
+    
+}
+```
+. {.task_hint}
+```cpp {.task_answer}
+class List
+{
+private:
+    ListNode * head = nullptr;
+    std::size_t size = 0;
+
+public:
+    List() = default;
+    ~List();
+
+    // Возвращает длину списка
+    std::size_t len();
+
+    // Добавляет новый узел со значением val в конец
+    void push_back(int val);
+
+    // Ищет элемент со значением val и удаляет его. Если такой
+    // элемент не найден, ничего не делает
+    void remove(int val);
+
+    // Возвращает элемент по индексу. Если индекс за пределами
+    // списка, возвращает nullptr
+    ListNode * get(std:size_t index);
+};
+
+List::~List()
+{
+    while (head != nullptr)
+    {
+        ListNode * tmp = head;
+        head = head->next;
+        delete tmp;
+    }
+}
+
+std::size_t List::len()
+{
+    return size;
+}
+
+void List::push_back(int val)
+{
+    ListNode * tail = new ListNode{val};
+    ++size;
+
+    if (!head)
+    {
+        head = tail;
+        return;
+    }
+
+    ListNode * cur = head;
+
+    while (cur->next)
+        cur = cur->next;
+
+    cur->next = tail;
+}
+
+void List::remove(int val)
+{
+    if (head == nullptr)
+        return;
+
+    if (head->val == val)
+    {
+        ListNode* tmp = head;
+        head = head->next;
+        delete tmp;
+        --size;
+        return;
+    }
+
+    ListNode * cur = head;
+
+    while (cur->next != nullptr && cur->next->val != val)
+        cur = cur->next;
+
+    if (cur->next)
+    {
+        ListNode * tmp = cur->next;
+        cur->next = cur->next->next;
+        delete tmp;
+        --size;
+    }
+}
+
+ListNode * List::get(std:size_t index)
+{
+    ListNode* cur = head;
+    std::size_t i = 0;
+
+    while (cur != nullptr)
+    {
+        if (i == index)
+            return cur;
+
+        cur = cur->next;
+        ++i;
+    }
+
+    return nullptr;
 }
 ```
 
-Не смотря на название, метод всего лишь помечает массив пустым, а не очищает его.
+## Нехватка памяти
 
+Если у программы не получается аллоцировать память, то:
+- `malloc()` возвращает `nullptr`,
+- `new` кидает исключение `std::bad_alloc`.
 
-## Указатели на указатели
+Это _почти_ наверняка произойдет, если запросить количество байт, заведомо превышающее объем всей физической памяти. Но в более сложных случаях нет никакой гарантии, что аллокация завершится ошибкой! При нехватке памяти аллокация может пройти _успешно,_ а проблемы начнутся в совершенно другом блоке кода _при обращении_ к этой памяти. Например, на старте сервиса выделяется большой блок памяти, а используется при запросах к сервису. В таком случае между началом проблемы (резервированием слишком большого куска памяти) и ее симптомом (падением сервиса) может пройти несколько минут, а то и часов.
+
+Почему так происходит? При вызове `malloc()` ОС выделяет виртуальный адрес, но не привязывает к нему физическую память сразу. Когда по этому адресу начинается запись данных, ОС пытается выделить реальную страницу физической памяти. Если на этот момент свободной памяти нет, ОС аварийно завершает программу. Причем не факт, что именно вашу. Практика выдачи памяти без гарантии ее налачия называется [overcommit](https://en.wikipedia.org/wiki/Memory_overcommitment). Она позволяет ОС гибко распределять ресурсы.
 
 ----------
 
 ## Резюме
+
+- Выделение динамической памяти называется аллокацией.
+- Выделение и освобождение памяти — это всегда парные действия.
+- Утечка памяти возникает, если забыть освободить память.
+- Двойное освобождение памяти приводит к ее повреждению и непредсказуемым последствиям (UB).
+- В C++ есть несколько способов для работы с динамической памятью:
+    - Сишные функции `malloc()` и `free()`.
+    - Операторы `new` и `delete`.
+    - Выражения `new` и `delete`.
+    - Умные указатели.
+- При нехватке памяти возможен overcommit.
