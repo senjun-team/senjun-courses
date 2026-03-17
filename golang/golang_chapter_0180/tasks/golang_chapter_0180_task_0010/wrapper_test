@@ -1,0 +1,179 @@
+package main
+
+import (
+	"math/rand"
+	"slices"
+	"testing"
+)
+
+const seed = int64(42)
+
+func TestGetData(t *testing.T) {
+	modelInData := make(chan []rune, maxMessageNumber)
+	inData := make(chan []rune, maxMessageNumber)
+	modelR := rand.New(rand.NewSource(seed))
+	modelGetData(modelR, modelInData)
+	r := rand.New(rand.NewSource(seed))
+	getData(r, inData)
+	modelInDataLen := len(modelInData)
+	inDataLen := len(inData)
+	if modelInDataLen != inDataLen {
+		t.Fatalf("the getData logic is not as original: for seed %d "+
+			"the length of the []rune slices is not the same: %d and %d\n",
+			seed, modelInDataLen, inDataLen)
+	}
+	for range modelInDataLen {
+		tVal := <-modelInData
+		val := <-inData
+		if !slices.Equal(tVal, val) {
+			t.Fatalf("the getData logic is not as original: for seed %d "+
+				"the messages are not the same", seed)
+		}
+	}
+}
+
+func TestDecode(t *testing.T) {
+	const messagesSize = 10
+	messages := []message{
+		{"", 0},
+		{"1", 1},
+		{"12", 2},
+		{"123", 3},
+		{"1234", 4},
+		{"12345", 5},
+		{"123456", 6},
+		{"1234567", 7},
+		{"12345678", 8},
+		{"12345678a", 9},
+	}
+	cases := struct {
+		in  [][]rune
+		out []message
+	}{
+		[][]rune{
+			[]rune(messages[0].data),
+			[]rune(messages[1].data),
+			[]rune(messages[2].data),
+			[]rune(messages[3].data),
+			[]rune(messages[4].data),
+			[]rune(messages[5].data),
+			[]rune(messages[6].data),
+			[]rune(messages[7].data),
+			[]rune(messages[8].data),
+			[]rune(messages[9].data),
+		},
+		messages,
+	}
+	inCh := make(chan []rune, messagesSize)
+	outCh := make(chan message, messagesSize)
+	for _, c := range cases.in {
+		inCh <- c
+	}
+	close(inCh)
+	decode(inCh, outCh)
+	for i := range messagesSize {
+		got := <-outCh
+		want := cases.out[i]
+		if got != want {
+			t.Fatalf("the decode is invalid: for %v value want %v message, got: %v",
+				messages[i].data, want, got)
+		}
+	}
+}
+
+func TestValid(t *testing.T) {
+	const messagesSize = 3
+	invalidMessage := message{"", 0}
+	messages := []message{
+		{"a", 1},
+		{"1a", 2},
+	}
+	inCh := make(chan message, messagesSize)
+	outCh := make(chan message, messagesSize)
+	inCh <- invalidMessage
+	for _, m := range messages {
+		inCh <- m
+	}
+	close(inCh)
+	valid(inCh, outCh)
+	outChLen := len(outCh)
+	if outChLen != messagesSize-1 {
+		t.Fatalf("the valid from messages %v got invalid messages number %d, want %d",
+			append([]message{invalidMessage}, messages...), outChLen, messagesSize-1)
+	}
+	for i := range messagesSize - 1 {
+		got := <-outCh
+		want := messages[i]
+		if got != want {
+			t.Fatalf("the valid from messages %v got invalid message #%d: %v, want %v",
+				messages, i, got, want)
+		}
+	}
+}
+
+func TestBrokerStart(t *testing.T) {
+	modelR := rand.New(rand.NewSource(seed))
+	r := rand.New(rand.NewSource(seed))
+	modelCommits := make(chan message, maxMessageNumber)
+	commits := make(chan message, maxMessageNumber)
+	go modelBrokerStart(modelR, modelCommits)
+	go brokerStart(r, commits)
+	i := 0
+	for {
+		got, ok := <-commits
+		want, ok2 := <-modelCommits
+		if ok != ok2 {
+			t.Fatalf("the brokerStart logic is not as original: "+
+				"the length of the commits chan for rand with seed %d is not the same",
+				seed)
+		}
+		if !ok {
+			break
+		}
+		if got != want {
+			t.Fatalf("the brokerStart logic is not as original: "+
+				"the brokerStart with seed %d got invalid message #%d: %v, want %v",
+				seed, i, got, want)
+		}
+		i++
+	}
+}
+
+func modelGetData(r *rand.Rand, out chan<- []rune) {
+	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	messageNumber := r.Intn(maxMessageNumber-minMessageNumber) + minMessageNumber
+	for range messageNumber {
+		messageLen := r.Intn(maxMessageLen-minMessageLen) + minMessageLen
+		b := make([]rune, messageLen)
+		for i := range b {
+			b[i] = letters[r.Intn(len(letters))]
+		}
+		out <- b
+	}
+	close(out)
+}
+
+func modelDecode(in <-chan []rune, out chan<- message) {
+	for data := range in {
+		out <- message{string(data), len(string(data))}
+	}
+	close(out)
+}
+
+func modelValid(in <-chan message, out chan<- message) {
+	const minLength = 1
+	for msg := range in {
+		if msg.length >= minLength {
+			out <- msg
+		}
+	}
+	close(out)
+}
+
+func modelBrokerStart(r *rand.Rand, commits chan<- message) {
+	inData := make(chan []rune, maxMessageNumber)
+	inMessage := make(chan message, maxMessageNumber)
+	go modelGetData(r, inData)
+	go modelDecode(inData, inMessage)
+	go modelValid(inMessage, commits)
+}

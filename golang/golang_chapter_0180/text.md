@@ -107,16 +107,17 @@ import (
 	"time"
 )
 
+const maxMessageLen = 42
+const minMessageLen = 1
+const maxMessageNumber = 15
+const minMessageNumber = 5
+
 type message struct {
 	data   string
 	length int
 }
 
 func getData(r *rand.Rand) [][]rune {
-	const maxMessageLen = 42
-	const minMessageLen = 1
-	const maxMessageNumber = 15
-	const minMessageNumber = 5
 	letters := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	var res [][]rune
 	messageNumber := r.Intn(maxMessageNumber-minMessageNumber) + minMessageNumber
@@ -291,7 +292,7 @@ func main() {
 	fmt.Printf("All goroutines started! Goroutines number: %d\n", runtime.NumGoroutine())
 
 	// Показываем утечку
-	time.Sleep(5 * time.Second)
+	time.Sleep(time.Second)
 	fmt.Printf("End! Goroutined number after 5 seconds: %d\n", runtime.NumGoroutine())
 }
 
@@ -346,7 +347,7 @@ func main() {
 	fmt.Printf("All goroutines started! Goroutines number: %d\n", runtime.NumGoroutine())
 
 	// Показываем утечку
-	time.Sleep(5 * time.Second)
+	time.Sleep(time.Second)
 	fmt.Printf("End! Goroutined number after 5 seconds: %d\n", runtime.NumGoroutine())
 }
 
