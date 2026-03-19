@@ -168,7 +168,9 @@ l
 
 ## На уровень выше: выражения new и delete
 
-Выражения [new](https://en.cppreference.com/w/cpp/language/new.html) и [delete](https://en.cppreference.com/w/cpp/language/delete.html) нужны, чтобы управлять памятью конкретного типа `T`:
+Выражения [new](https://en.cppreference.com/w/cpp/language/new.html) и [delete](https://en.cppreference.com/w/cpp/language/delete.html) нужны, чтобы управлять памятью конкретного типа `T`. Позже вы узнаете, что в этих выражениях участвуют одноименные операторы, которые можно перегружать. 
+
+Выражение `new` выделяет память под конкретный тип, а `delete` освобождает ее:
 
 ```cpp
 T * p = new T;
