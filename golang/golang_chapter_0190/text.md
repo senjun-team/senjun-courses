@@ -326,8 +326,254 @@ select{
 }
 ```
 
-Допустимо одноременно использовать часть конструкций `case` с переменной, а часть — без них. Слово `default` является необязательным. Этот случай срабатывает, если не были выполнены все предыдущие.
+Допустимо одноременно использовать часть конструкций `case` с переменной, а часть — без них.  
+Слово `default` является необязательным. Этот случай срабатывает, если не были выполнены все предыдущие.  
+Когда нужно досрочно прекратить выполнение `case`, пишут `break`:
 
+```
+select{
+	case <-ch1:
+		...
+	case <-ch2:
+		...
+		// досрочный выход из select
+		break
+		...
+	default:
+		...
+}
+```
 
+В представленной задаче функция `newServer` создает новый сервер c именем `name` и адресом `url`.  Функция `monitorServer` производит мониторинг сервера. В зависимости от состояния сервера она записывает сообщения в штатный канал, канал алертов, либо канал с признаком окончания мониторинга. Функция `statistics` должна собрать все сообщения в единый канал `resultCh`. Функция `analyze` запускает на мониторинг три сервера и собирает статистику по ним с помощью функции `stat`. {.task_text}
+
+Допишите функцию `statistics`. {.task_text}
+
+Функция `statistics` должна писать в следующем формате. {.task_text}
+
+Для штатных сообщений:  
+```
+<имя сервера>:<сообщение>
+```  
+Для алертов:
+```  
+<имя сервера>:<уровень критичности>:<сообщение>  
+```
+
+Например:
+```
+api-server-01:129ms
+db-server-01:CRITICAL:not responding
+```
+
+Переноса строки в конце ставить не нужно. {.task_text}
+
+```go {.task_source #golang_chapter_0160_task_0010}
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"sync"
+)
+
+// Фиксируем сид для повторяемости результатов
+const seed = 42
+
+type serverT struct {
+	name          string
+	url           string
+	healthCh      chan string   // Штатные сообщения о работе
+	alertCh       chan alertT   // Ошибки и предупреждеия
+	monitorStopCh chan struct{} // Признак того, что мониторинг завершен
+}
+
+type alertT struct {
+	severity string // Уровень критичности
+	message  string // Сообщение
+}
+
+func newServer(name string, url string) *serverT {
+	return &serverT{name: name, url: url,
+		healthCh:      make(chan string),
+		alertCh:       make(chan alertT),
+		monitorStopCh: make(chan struct{}, 1)}
+}
+
+func monitorServer(server *serverT) {
+	const checkNumber = 10
+	r := rand.New(rand.NewSource(int64(seed)))
+	for range checkNumber {
+		// Имитация проверки здоровья сервера
+		latency := r.Intn(200)
+		isDown := r.Intn(100) < 10 // 10% вероятность сбоя
+		if isDown {
+			server.alertCh <- alertT{
+				severity: "CRITICAL",
+				message:  fmt.Sprint("not responding"),
+			}
+		} else if latency > 150 {
+			server.alertCh <- alertT{
+				severity: "WARNING",
+				message:  fmt.Sprintf("high latency:%dms", latency),
+			}
+		} else {
+			server.healthCh <- fmt.Sprintf("%dms", latency)
+		}
+	}
+	server.monitorStopCh <- struct{}{}
+}
+
+func statistics(servers []*serverT, resultCh chan<- string) (res []string) {
+	var wg sync.WaitGroup
+	wg.Add(len(servers))
+	for _, server := range servers {
+		go func(server *serverT) {
+			defer wg.Done()
+			// Ваш код здесь 
+		}(server)
+	}
+	wg.Wait()
+	close(resultCh)
+	return res
+}
+
+func analyze(stat func([]*serverT, chan<- string) []string) (res []string) {
+	servers := []*serverT{
+		newServer("api-server-01", "http://192.168.23.46:8080"),
+		newServer("db-server-01", "http://192.168.23.47:5432"),
+		newServer("cache-server-01", "http://192.168.23.48:6379"),
+	}
+	const buffSize = 100
+	resultCh := make(chan string, buffSize)
+	// Запускаем мониторинг для каждого сервера
+	for _, server := range servers {
+		go monitorServer(server)
+	}
+	go stat(servers, resultCh)
+	for msg := range resultCh {
+		res = append(res, msg)
+	}
+	return
+}
+
+func main() {
+	for _, res := range analyze(statistics) {
+		fmt.Println(res)
+	}
+}
+```
+
+Используйте `select-case` внутри бесконечного цикла, чтобы записывать те сообщения, которые придут раньше. В случае, если придет признак конца мониторинга, прервите цикл. Помните, что `break` внутри `select-case` выполняет свою задачу. Он не прерывет цикл. Чтобы выйти из цикла, воспользуйтесь `break` по метке. {.task_hint}
+
+```go {.task_answer}
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"sync"
+)
+
+// Фиксируем сид для повторяемости результатов
+const seed = 42
+
+type serverT struct {
+	name          string
+	url           string
+	healthCh      chan string   // Штатные сообщения о работе
+	alertCh       chan alertT   // Ошибки и предупреждеия
+	monitorStopCh chan struct{} // Признак того, что мониторинг завершен
+}
+
+type alertT struct {
+	severity string // Уровень критичности
+	message  string // Сообщение
+}
+
+func newServer(name string, url string) *serverT {
+	return &serverT{name: name, url: url,
+		healthCh:      make(chan string),
+		alertCh:       make(chan alertT),
+		monitorStopCh: make(chan struct{}, 1)}
+}
+
+func monitorServer(server *serverT) {
+	const checkNumber = 10
+	r := rand.New(rand.NewSource(int64(seed)))
+	for range checkNumber {
+		// Имитация проверки здоровья сервера
+		latency := r.Intn(200)
+		isDown := r.Intn(100) < 10 // 10% вероятность сбоя
+		if isDown {
+			server.alertCh <- alertT{
+				severity: "CRITICAL",
+				message:  fmt.Sprint("not responding"),
+			}
+		} else if latency > 150 {
+			server.alertCh <- alertT{
+				severity: "WARNING",
+				message:  fmt.Sprintf("high latency:%dms", latency),
+			}
+		} else {
+			server.healthCh <- fmt.Sprintf("%dms", latency)
+		}
+	}
+	server.monitorStopCh <- struct{}{}
+}
+
+func statistics(servers []*serverT, resultCh chan<- string) (res []string) {
+	var wg sync.WaitGroup
+	wg.Add(len(servers))
+	for _, server := range servers {
+		go func(server *serverT) {
+			defer wg.Done()
+		loop:
+			for {
+				select {
+				case health := <-server.healthCh:
+					resultCh <- fmt.Sprintf("%s:%s",
+						server.name,
+						health)
+				case alert := <-server.alertCh:
+					resultCh <- fmt.Sprintf("%s:%s:%s",
+						server.name,
+						alert.severity,
+						alert.message)
+				case <-server.monitorStopCh:
+					break loop
+				}
+			}
+		}(server)
+	}
+	wg.Wait()
+	close(resultCh)
+	return res
+}
+
+func analyze(stat func([]*serverT, chan<- string) []string) (res []string) {
+	servers := []*serverT{
+		newServer("api-server-01", "http://192.168.23.46:8080"),
+		newServer("db-server-01", "http://192.168.23.47:5432"),
+		newServer("cache-server-01", "http://192.168.23.48:6379"),
+	}
+	const buffSize = 100
+	resultCh := make(chan string, buffSize)
+	// Запускаем мониторинг для каждого сервера
+	for _, server := range servers {
+		go monitorServer(server)
+	}
+	go stat(servers, resultCh)
+	for msg := range resultCh {
+		res = append(res, msg)
+	}
+	return
+}
+
+func main() {
+	for _, res := range analyze(statistics) {
+		fmt.Println(res)
+	}
+}
+```
 ## Мьютекс
 ## Захват глобальных переменных горутиной
