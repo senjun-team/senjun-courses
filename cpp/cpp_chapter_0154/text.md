@@ -304,36 +304,7 @@ void process_and_release()
 f
 ```
 
-Напишите функцию `reverse_str()`. Она принимает указатель на сишную строку и возвращает указатель на новую строку, содержащую символы исходной строки в обратном порядке. {.task_text}
 
-Если в `reverse_str()` передан `nullptr`, функция должна вернуть `nullptr`. {.task_text}
-
-```cpp {.task_source #cpp_chapter_0152_task_0040}
-char * reverse(const char * src)
-{
-
-}
-```
-Не забудьте про завершающий нуль в строке при выделении памяти и при записи символов в новую строку. {.task_hint}
-```cpp {.task_answer}
-char * reverse(const char * src)
-{
-    if (src == nullptr)
-        return nullptr;
-
-    const std::size_t len = strlen(src);
-    char * dst = static_cast<char *>(malloc(len + 1));
-    if (dst == nullptr)
-        return nullptr;
-
-    for (std::size_t i = 0; i < len; ++i)
-        dst[i] = src[len - 1 - i];
-
-    dst[len] = '\0';
-
-    return dst;
-}
-```
 
 ## Выражения new[] и delete[] для массивов
 
@@ -360,6 +331,35 @@ delete[] arr;
 double * arr = new double[3]{1.0, 2.2, 7.8};
 
 delete[] arr;
+```
+
+Напишите функцию `reverse_str()`. Она принимает указатель на сишную строку и возвращает указатель на новую строку, содержащую символы исходной строки в обратном порядке. {.task_text}
+
+Если в `reverse_str()` передан `nullptr`, функция должна вернуть `nullptr`. {.task_text}
+
+```cpp {.task_source #cpp_chapter_0152_task_0040}
+char * reverse(const char * src)
+{
+
+}
+```
+Не забудьте про завершающий нуль в строке при выделении памяти и при записи символов в новую строку. {.task_hint}
+```cpp {.task_answer}
+char * reverse(const char * src)
+{
+    if (src == nullptr)
+        return nullptr;
+
+    const std::size_t len = std::strlen(src);
+    char * dst = new char[len + 1];
+
+    for (std::size_t i = 0; i < len; ++i)
+        dst[i] = src[len - 1 - i];
+
+    dst[len] = '\0';
+
+    return dst;
+}
 ```
 
 ## Работа с динамической памятью на примере вектора
