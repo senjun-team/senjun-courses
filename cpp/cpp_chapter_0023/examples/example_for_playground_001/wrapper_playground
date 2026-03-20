@@ -1,0 +1,15 @@
+import std;
+
+int main()
+{
+    const int n = 5;
+    
+    if ((n & 1) == 1)
+    {
+        std::println("{} is odd", n);
+    }
+    else
+    {
+        std::println("{} is even", n);
+    }
+}

@@ -1,0 +1,16 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const int u = 7;
+    const int g = 6;
+    const int o = 4;
+
+    const int fact = set_rights(u, g, o);
+    const int plan = 500;
+
+    std::println("set_rights({}, {}, {}) returns {}. {}",
+                 u, g, o, fact, plan == fact ? "OK" : "ERR");
+}

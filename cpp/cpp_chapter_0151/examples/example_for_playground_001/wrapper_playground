@@ -1,0 +1,14 @@
+import std;
+
+int run(int pid)
+{
+    std::println("Starting process {}", pid);
+    return 0;
+}
+
+#INJECT-b585472fa
+
+int main()
+{
+    run_proc(900);
+}

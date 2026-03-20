@@ -251,7 +251,35 @@ std::println("{}", d);
 
 Многие разработчики считают дек чем-то экзотическим и никогда его не используют. На самом деле периодически попадаются задачи, для которых он отлично подходит. Рассмотрим один такой пример.
 
-[Work stealing](https://en.wikipedia.org/wiki/Work_stealing) — это известная стратегия балансировки параллельных вычислений. Она описывает, как распределять потоки выполнения по ядрам процессора. Стратегия получила своё название из-за того, что простаивающие ядра перехватывают часть работы у загруженных. Каждому ядру соотносится дек потоков. Потоки могут удаляться с обоих концов дека. Стратегия work stealing реализована в асинхронном рантайме [Tokio](https://tokio.rs/) для Rust, фреймворке [Fork/Join](https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html) для Java и библиотеке [Task Parallel Library](https://learn.microsoft.com/en-us/dotnet/standard/parallel-programming/task-parallel-library-tpl) для .NET. 
+[Work stealing](https://en.wikipedia.org/wiki/Work_stealing) — это известная стратегия балансировки параллельных вычислений. Она описывает, как распределять потоки выполнения по ядрам процессора. Стратегия получила своё название из-за того, что простаивающие ядра перехватывают часть работы у загруженных. Каждому ядру соотносится дек потоков. Потоки могут удаляться с обоих концов дека. Стратегия work stealing реализована в асинхронном рантайме [Tokio](https://tokio.rs/) для Rust, фреймворке [Fork/Join](https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html) для Java и библиотеке [Task Parallel Library](https://learn.microsoft.com/en-us/dotnet/standard/parallel-programming/task-parallel-library-tpl) для .NET.
+
+А вот классическая задача с собеседований. Дан набор `numbers` из `n — 1` целых чисел. Каждое число принимает значение от `1` до `n` и встречается в наборе строго один раз. За исключением одного числа, отсутствующего в `numbers`. Найдите это число. {.task_text}
+
+Например, вызов `get_missing({4, 1, 3, 5}, 5)` должен вернуть `2`. {.task_text}
+
+Решите эту задачу с использованием [побитового оператора XOR](/courses/cpp/chapters/cpp_chapter_0023/#block-xor) `^`. Если не получается догадаться до решения, воспользуйтесь подсказкой. {.task_text}
+
+```cpp {.task_source #cpp_chapter_0072_task_0040}
+std::size_t get_missing(std::deque<std::size_t> numbers, std::size_t n)
+{
+
+}
+```
+Вспомните [таблицу истинности](/courses/cpp/chapters/cpp_chapter_0023/#block-xor) оператора XOR. Нас интересуют два его полезных свойства. 1) Если один из аргументов XOR — это `0`, то второй является результатом: `x ^ 0 == x`. 2) Если аргументы XOR совпадают, то результат всегда равен `0`: `x ^ x == 0`. Эти свойства ведут к интересному следствию. Из последовательности операций XOR `a ^ b ^ c ^ ... ^ n` можно убрать все пары одинаковых чисел, и это не изменит результат! Ведь `a ^ a` — это `0`, а `b ^ 0` —  это `b`. Значит, задача решается двумя циклами. В первом цикле мы находим результат применения XOR ко всем числам от `1` до `n`. Во втором цикле мы последовательно применяем XOR к получившемуся значению и каждому числу набора `numbers`. Результатом будет отсутствующее в `numbers` число. {.task_hint}
+```cpp {.task_answer}
+std::size_t get_missing(std::deque<std::size_t> numbers, std::size_t n)
+{
+    std::size_t res = 0;
+
+    for(std::size_t i = 1; i <= n; ++i)
+        res ^= i;
+
+    for(std::size_t n: numbers)
+        res^= n;
+
+    return res;
+}
+```
 
 ## Классы list и forward_list
 
