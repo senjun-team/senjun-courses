@@ -39,7 +39,7 @@ func main() {
 	go processOrder(orders, processedOrders)
 
 	for order := range processedOrders {
-		fmt.Printf("Order №%d was processed, sum %.2f was got\n",
+		fmt.Printf("Order №%d was processed, reseived sum %.2f\n",
 			order.ID, order.Amount)
 	}
 }
@@ -289,11 +289,13 @@ func main() {
 	for i := 0; i < messageNumber; i++ {
 		go processTaskAsync("data", notificationChan)
 	}
-	fmt.Printf("All goroutines started! Goroutines number: %d\n", runtime.NumGoroutine())
+	fmt.Printf("All goroutines started! Goroutines number: %d\n",
+	           runtime.NumGoroutine())
 
 	// Показываем утечку
 	time.Sleep(time.Second)
-	fmt.Printf("End! Goroutined number after 5 seconds: %d\n", runtime.NumGoroutine())
+	fmt.Printf("End! Goroutined number after 5 seconds: %d\n",
+	           runtime.NumGoroutine())
 }
 
 func processTaskAsync(data string, notificationChan chan<- string) {
@@ -344,11 +346,13 @@ func main() {
 	for i := 0; i < messageNumber; i++ {
 		go processTaskAsync("data", notificationChan)
 	}
-	fmt.Printf("All goroutines started! Goroutines number: %d\n", runtime.NumGoroutine())
+	fmt.Printf("All goroutines started! Goroutines number: %d\n",
+	           runtime.NumGoroutine())
 
 	// Показываем утечку
 	time.Sleep(time.Second)
-	fmt.Printf("End! Goroutined number after 5 seconds: %d\n", runtime.NumGoroutine())
+	fmt.Printf("End! Goroutined number after 5 seconds: %d\n",
+	           runtime.NumGoroutine())
 }
 
 // ПРОБЛЕМА была ЗДЕСЬ: эта функция использовала вечный цикл
