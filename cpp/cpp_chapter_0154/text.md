@@ -130,25 +130,25 @@ bool is_valid_pass(const char * pass)
 
     // Выделяем память для копии строки
     char * pass_normalized = static_cast<char *>(std::malloc(bytes));
-    char * trg = pass_normalized;
-    trg[bytes - 1] = '\0'; // зануляем последний символ
+    char * dst = pass_normalized;
+    dst[bytes - 1] = '\0'; // зануляем последний символ
 
     const char * end = pass + bytes - 1;
 
     for (const char *src = pass; src != end; ++src)
     {
-        *trg = normalize(*src);
+        *dst = normalize(*src);
 
-        if (!is_valid(*trg))
+        if (!is_valid(*dst))
         {
             std::println("Password contains invalid symbol");
             return false; 
         }
 
-        ++trg;
+        ++dst;
     }
 
-    if (is_strong(trg))
+    if (is_strong(dst))
     {
         std::println("Password is not strong enough");
         return false; 
@@ -303,8 +303,6 @@ void process_and_release()
 ```cpp {.task_answer}
 f
 ```
-
-
 
 ## Выражения new[] и delete[] для массивов
 
