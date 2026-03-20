@@ -248,7 +248,7 @@ main.cpp:5:12: error: non-const lvalue reference to type 'basic_string<...>' can
       |            ^     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ```
 
-## Ссылки на ссылки
+## Ссылки на ссылки {#block-reference-collapsing}
 
 У вас [не получится](https://timsong-cpp.github.io/cppwp/n4868/dcl.ref#5) завести ссылку на ссылку. Если вы попытаетесь, то произойдёт [склеивание](https://en.cppreference.com/w/cpp/language/reference.html#Reference_collapsing) или схлопывание ссылок (reference collapsing):
 
