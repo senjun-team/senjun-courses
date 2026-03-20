@@ -1,0 +1,113 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+using namespace boost::ut;
+
+#INJECT-b585472fa
+
+
+std::string get_stream(std::string title, const std::vector<char> & v)
+{
+    std::string s = std::format("{}:", title);
+    for (char c: v)
+        s += std::format("{:#04x} ", c);
+    s += "\n";
+
+    return s;
+}
+
+struct testcase
+{
+    std::vector<char> stream;
+    std::vector<char> tag;
+    std::vector<char> ad;
+
+    std::vector<char> plan_res;
+};
+
+std::string get_testcase_stream(const testcase & c, const std::vector<char> & fact_res)
+{
+    std::string s = "Invalid result for testcase.\n";
+    s += get_stream("Stream", c.stream);
+    s += get_stream("Tag", c.tag);
+    s += get_stream("Ad", c.ad);
+    s += get_stream("Plan insert_ad() result", c.plan_res);
+    s += get_stream("Fact insert_ad() result", fact_res);
+
+    return s;
+}
+
+void check_testcase(const testcase & c)
+{
+    const std::vector<char> fact_res = insert_ad(c.stream, c.tag, c.ad);
+    expect(c.plan_res == fact_res) << get_testcase_stream(c, fact_res) << fatal;
+}
+
+int main()
+{
+    "Empty stream cases"_test = [] {
+        std::vector<testcase> cases = {
+            testcase{
+                .stream = {},
+                .tag = {},
+                .ad = {},
+                .plan_res = {}
+            },
+            testcase{
+                .stream = {},
+                .tag = {},
+                .ad = {0x14},
+                .plan_res = {}
+            },
+            testcase{
+                .stream = {},
+                .tag = {0x14, 0x15},
+                .ad = {0x11},
+                .plan_res = {}
+            },
+        };
+
+        for (const auto & c: cases)
+            check_testcase(c);
+    };
+
+    "Simple cases"_test = [] {
+        std::vector<testcase> cases = {
+            testcase{
+                .stream = {0x01, 0x01},
+                .tag = {0x01},
+                .ad = {0x03},
+                .plan_res = {0x01, 0x03, 0x01}
+            },
+            testcase{
+                .stream = {0x01, 0x01, 0x01, 0x01},
+                .tag = {0x01},
+                .ad = {0x03},
+                .plan_res = {0x01, 0x03, 0x01, 0x01, 0x03, 0x01}
+            },
+            testcase{
+                .stream = {0x01, 0x09, 0x05, 0x09, 0x05, 0x01, 0x01, 0x09, 0x05, 0x09, 0x05, 0x01},
+                .tag = {0x09, 0x05},
+                .ad = {0x03, 0x04, 0x05},
+                .plan_res = {0x01, 0x09, 0x05, 0x03, 0x04, 0x05, 0x09, 0x05, 0x01, 0x01, 0x09, 0x05, 0x03, 0x04, 0x05, 0x09, 0x05, 0x01}
+            },
+            testcase{
+                .stream = {0x2a, 0x17, 0x14, 0x17, 0x01, 0x01, 0x01, 0x01, 0x55, 0x7c, 0x20},
+                .tag = {0x01, 0x01},
+                .ad = {0x0b, 0x0a, 0x0d},
+                .plan_res = {0x2a, 0x17, 0x14, 0x17, 0x01, 0x01, 0x0b, 0x0a, 0x0d, 0x01, 0x01, 0x55, 0x7c, 0x20}
+            },
+            testcase{
+                .stream = {0x01, 0x01},
+                .tag = {0x01},
+                .ad = {0x03, 0x04, 0x05, 0x06, 0x07},
+                .plan_res = {0x01, 0x03, 0x04, 0x05, 0x06, 0x07, 0x01}
+            },
+        };
+
+        for (const auto & c: cases)
+            check_testcase(c);
+    };
+}

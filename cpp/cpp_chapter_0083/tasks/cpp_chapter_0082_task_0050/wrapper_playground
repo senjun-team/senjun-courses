@@ -1,0 +1,25 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::vector<Product> products = {
+        Product(1, 1000, 5),
+        Product(2, 100, 6),
+        Product(3, 100, 4)
+    };
+
+    std::println("Before sorting. Is vector sorted? {}",
+                std::is_sorted(products.begin(),
+                               products.end(),
+                               has_higher_priority));
+    
+    std::sort(products.begin(), products.end(), has_higher_priority);
+
+    std::println("After sorting. Is vector sorted? {}",
+            std::is_sorted(products.begin(),
+                           products.end(),
+                           has_higher_priority));
+    
+}
