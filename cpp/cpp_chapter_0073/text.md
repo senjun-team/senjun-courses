@@ -411,7 +411,7 @@ for (auto[it, it_end] = server_jobs.equal_range("stage"); it != it_end; ++it)
 
 ## Резюме
 
-Алгоритмическая сложность работы с упорядоченными ассоциативными контейнерами:
+Алгоритмическая сложность работы с упорядоченными ассоциативными контейнерами: {#block-algo}
 
 
 ![Алгоритмическая сложность работы с упорядоченными ассоциативными контейнерами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_associative_algo_complexity.jpg) {.illustration}
