@@ -5,7 +5,7 @@
 
 ![Адаптеры](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_adapters.jpg) {.illustration}
 
-## Класс queue
+## Класс queue {#block-queue}
 
 Класс [std::queue](https://en.cppreference.com/w/cpp/container/queue) реализует [АТД «Очередь»](https://ru.wikipedia.org/wiki/%D0%9E%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D1%8C_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)), в котором элементы добавляются с одного конца, а удаляются с другого.
 
@@ -279,7 +279,7 @@ std::priority_queue
 
 ## Резюме
 
-В качестве резюме этой главы отлично подходит таблица контейнеров, адаптеров и их алгоритмической сложности. Держите её под рукой, если будете готовиться к собеседованиям.
+В качестве резюме этой главы отлично подходит таблица контейнеров, адаптеров и их алгоритмической сложности. Держите её под рукой, если будете готовиться к собеседованиям. {#block-algo}
 
 
 ![Алгоритмическая сложность работы с контейнерами и адаптерами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_algo_complexity_senjun_ru.jpg) {.illustration}
