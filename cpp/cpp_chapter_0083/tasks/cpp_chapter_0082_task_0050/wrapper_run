@@ -1,7 +1,0 @@
-import std;
-
-#INJECT-b585472fa
-
-int main()
-{
-}
