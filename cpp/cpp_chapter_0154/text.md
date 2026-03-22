@@ -321,7 +321,22 @@ int * arr = new int[n];
 delete[] arr;
 ```
 
-В квадратные скобки выражения `new T[n]` может быть передано любое целое положительное число. Оно не обязано быть константой. Квадратные скобки `delete[]` всегда пусты.
+Квадратные скобки `delete[]` всегда пусты.
+
+В квадратные скобки выражения `new T[n]` может быть передано любое целое неотрицательное число. Оно не обязано быть константой. Допустимо выделение массива нулевого размера: `new T[0]`. Но раз такой массив не содержит элементов, разыменовывать на него указатель запрещено. Такая на первый взгляд странная возможность может пригодиться в ряде случаев.
+
+Например, чтобы не писать лишних проверок:
+
+```cpp
+if (n > 0)
+    arr = new T[n];
+else
+    arr = nullptr;
+```
+
+Во-вторых, в отличие от нулевого указателя, такой массив имеет корректный адрес, и его можно передавать в алгоритмы стандартной библиотеки.
+
+Возможность создавать динамические массивы нулевой длины отличает их от статических массивов. При попытке завести обычный сишный массив нулевой длины компилятор вернет ошибку.
 
 Чтобы инициализировать массив, в фигурных скобках перечисляются значения элементов:
 
@@ -350,13 +365,14 @@ char * reverse(const char * src)
 
     const std::size_t len = std::strlen(src);
     char * dst = new char[len + 1];
+    src += len - 1;
 
-    for (std::size_t i = 0; i < len; ++i)
-        dst[i] = src[len - 1 - i];
+    for (char * end = dst + len; dst != end; ++dst, --src)
+        *dst = *src;
 
-    dst[len] = '\0';
+    *dst = '\0';
 
-    return dst;
+    return dst - len;
 }
 ```
 
@@ -410,43 +426,72 @@ public:
     void pop_back();
 
 private:
-    // Перемещает элементы в область памяти под new_size элементов
-    void move_elements(std::size_t new_size);
-
+    // Указатель на сишный массив, в котором
+    // хранятся элементы
+    int * m_elements = nullptr;
+    
     // Реальное количество элементов
     std::size_t m_size = 0;
 
     // Емкость: под сколько элементов выделена память
     std::size_t m_capacity = 0;
-
-    // Указатель на сишный массив, в котором
-    // хранятся элементы
-    int * m_elements = nullptr;
 };
 ```
 
 Обратите внимание на метод `int & operator[](std::size_t i)`: он нужен для обращения к объекту `Vector` через оператор взятия по индексу `[]`. Подробнее про операторы будет в следующих главах.
 
-Также мы завели приватный метод `move_elements()`, который переиспользуем для реаллокации массива.
-
-Поведение методов класса `Vector` максимально приблизим к [аналогичным методам](https://en.cppreference.com/w/cpp/container/vector.html) `std::vector`.
+Поведение методов класса `Vector` приблизим к [аналогичным методам](https://en.cppreference.com/w/cpp/container/vector.html) `std::vector`.
 
 Заведем перегрузку конструктора для инициализации вектора `n` элементами, равными `val`.
 
 ```cpp
 Vector::Vector(std::size_t n, int val):
+        m_elements{new int[n]},
         m_size{n},
-        m_capacity{n},
-        m_elements{new int[n]}
+        m_capacity{n}
 {
     for (std::size_t i = 0; i < m_size; ++i)
         m_elements[i] = val;
 }
 ```
 
-Выражение `new int[n]` выделяет память под сишный массив. Указатель на эту память инициализирует поле `m_elements` в [списке инициализации полей](/courses/cpp/chapters/cpp_chapter_0122/#block-member-initializer-list) конструктора.
+Выражение `new int[n]` выделяет память под сишный массив. Указатель на эту память инициализирует поле `m_elements` в [списке инициализации полей.](/courses/cpp/chapters/cpp_chapter_0122/#block-member-initializer-list)
 
-Пример вызова этой перегрузки:
+Эту реализацию конструктора можно улучшить:
+- Для присваивания элементам значений вместо цикла использовать алгоритм стандартной библиотеки [std::fill()](https://en.cppreference.com/w/cpp/algorithm/fill.html)
+- Выделить и заполнить массив не в теле конструктора, а в списке инициализации. Инициализация всех полей в списке инициализации конструктора — очень хорошая практика.
+
+
+Напишите улучшенный вариан конструктора. Для этого реализуйте свободную функцию `make_array()`, которая аллоцирует массив из `n` элементов, заполняет его с помощью [std::fill()](https://en.cppreference.com/w/cpp/algorithm/fill.html) и возвращает на него указаель. {.task_text}
+
+Используйте эту функцию в списке инициализации конструктора. Тело конструктора должно оставаться пустым. {.task_text}
+
+```cpp {.task_source #cpp_chapter_0154_task_0050}
+int * make_array(std::size_t n, int val)
+{
+
+}
+
+Vector::Vector(std::size_t n, int val)
+{ }
+```
+. {.task_hint}
+```cpp {.task_answer}
+int * make_array(std::size_t n, int val)
+{
+    int * elements{new int[n]};
+    std::fill(elements, elements + n, val);
+    return elements;
+}
+
+Vector::Vector(std::size_t n, int val):
+        m_elements{make_array(n, val)},
+        m_size{n},
+        m_capacity{n}
+{ }
+```
+
+Конструктор готов. Пример его вызова для создания вектора из 5 элементов со значением 9:
 
 ```cpp
 Vector v(5, 9);
@@ -540,81 +585,40 @@ int & Vector::operator[](std::size_t i)
 Метод `reserve()` увеличивает емкость вектора: выделяет под него память нового размера. Если новый размер меньше текущей емкости, то метод ничего не делает.
 
 ```cpp
-void Vector::reserve(std::size_t capacity)
+void Vector::reserve(std::size_t new_capacity)
 {
-    if (capacity <= m_capacity)
+    if (new_capacity <= m_capacity)
         return;
 
-    m_capacity = capacity;
-
-    int * new_elements = new int[m_capacity];
-
-    m_size = std::min(m_size, m_capacity);
-
-    for (std::size_t i = 0; i < m_size; ++i)
-        new_elements[i] = m_elements[i];
-
-    delete[] m_elements;
-    m_elements = new_elements;
+    int * new_elements = new int[new_capacity];
+    std::copy(m_elements, m_elements + m_size, new_elements);
+    std::swap(m_elements, new_elements);
+    m_capacity = new_capacity;
+    delete[] new_elements;
 }
 ```
 
 Что происходит в этом методе? Мы:
 - Завели новый массив `new_elements` подходящего размера.
 - Скопировали в него элементы из старого массива.
-- Освободили область памяти, выделенную под старый массив.
 - Обновили значение указателя `m_elements`, чтобы он ссылался на новую область памяти.
+- Освободили ненужную область памяти.
 
 Важно, что _за_ последним скопированным элементом в новом массиве может храниться любой мусор.
 
-Перед тем как перейти к остальным публичным методам, давайте вынесем часть кода `reserve()` во вспомогательный метод `move_elements()`. Он перемещает элементы в новую область памяти под `new_size` элементов:
-
-```cpp
-void Vector::move_elements(std::size_t new_size)
-{
-    int * new_elements = new int[new_size];
-
-    m_size = std::min(m_size, new_size);
-
-    for (std::size_t i = 0; i < m_size; ++i)
-        new_elements[i] = m_elements[i];
-
-    delete[] m_elements;
-    m_elements = new_elements;
-}
-```
-
-А теперь перепишем `reserve()` с использованием `move_elements()`:
-
-```cpp
-void Vector::reserve(std::size_t capacity)
-{
-    if (capacity <= m_capacity)
-        return;
-
-    m_capacity = capacity;
-
-    move_elements(m_capacity);
-}
-```
-
-Метод `move_elements()` пригодится при реализации `resize()`. Этот метод увеличивает фактический размер массива, добавляя в него новые нулевые элементы.
+Перейдем к реализации метода `resize()`.
 
 ```cpp
 void Vector::resize(std::size_t size)
 {
-    if (size == m_size)
-        return;
-
-    move_elements(size);
-
-    m_capacity = size;
-
-    if (size > m_size)
+    if (size <= m_size)
     {
-        for(std::size_t i = m_size; i < size; ++i)
-            m_elements[i] = int{};
+        m_size = size;
+        return;
     }
+
+    reserve(size);
+    std::fill(m_elements, m_elements + size, int{});
 }
 ```
 
@@ -657,7 +661,7 @@ struct ListNode
 
 Деструктор и методы `len()` уже готовы. Вам нужно дописать определения для `push_back()`, `remove()` и `get()`. {.task_text}
 
-```cpp {.task_source #cpp_chapter_0154_task_0050}
+```cpp {.task_source #cpp_chapter_0154_task_0060}
 class List
 {
 private:
