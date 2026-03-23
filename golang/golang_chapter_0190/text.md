@@ -574,8 +574,157 @@ func main() {
 	}
 }
 ```
+
 ## Мьютекс чтения/записи `sync.RWMutex`
 
-Примитив синхронизации `sync.RWMutex` оптимальнее, так как множественные чтения могут выполняться параллельно.
+Мы говорили о мьютексах ранее. Как уже было сказано, мьютексы защищают данные, предотвращая состояние гонки. Примитив синхронизации `sync.Mutex` блокирует доступ к данным для всех других горутин, пока текущая горутина не завершит свою работу с этими данными. Однако это не всегда оптимально. Что, если `10` горутин одновременно читают данные? Если использовать `sync.Mutex`, то чтение окажется последовательным. В действительности эти `10` горутин не мешают друг другу. Может быть, тогда вообще обойтись без мьютекса? Это правильное решение в случае, когда никто эти данные не пишет. В случае, когда есть писатель, хотелось бы одновременно читать, но блокировать горутину на запись. Примитив `sync.RWMutex` решает эту задачу.
+
+Переменные типа `sync.RWMutex` имеют те же методы, что и `sync.Mutex`, а также еще два: 
+* `RLock`. Блокирует всех писателей, однако не блокирует других читателей.
+* `RUnlock`. Снимает блокировку `Rlock`.
+
+
+Примитив синхронизации `sync.RWMutex` оптимальнее, так как множественные чтения могут выполняться параллельно. Чтобы убедиться в этом, рассмотрим пример. В нем мы работаем с двумя кешами: `CacheRWMutex` и `CacheMutex`. Первый использует мьютекс `RWMutex`, второй — `Mutex`. Чем больше читателей и меньше писателей, тем больше выигрыш по производительности.
+
+```go {.example_for_playground}
+package main
+
+import (
+	"fmt"
+	"sync"
+	"time"
+)
+
+// CacheRWMutex - кэш с RWMutex
+type CacheRWMutex struct {
+	data    map[string]string
+	rwMutex sync.RWMutex
+}
+
+// CacheMutex - кэш с обычным Mutex
+type CacheMutex struct {
+	data  map[string]string
+	mutex sync.Mutex
+}
+
+func (c *CacheRWMutex) get(key string) string {
+	c.rwMutex.RLock()
+	defer c.rwMutex.RUnlock()
+	time.Sleep(1 * time.Millisecond)
+	return c.data[key]
+}
+
+func (c *CacheRWMutex) set(key, value string) {
+	c.rwMutex.Lock()
+	defer c.rwMutex.Unlock()
+	time.Sleep(1 * time.Millisecond)
+	c.data[key] = value
+}
+
+func (c *CacheMutex) get(key string) string {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	time.Sleep(1 * time.Millisecond)
+	return c.data[key]
+}
+
+func (c *CacheMutex) set(key, value string) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	time.Sleep(1 * time.Millisecond)
+	c.data[key] = value
+}
+
+type cache interface {
+	get(string) string
+	set(string, string)
+}
+
+func benchmark(name string, readers, writers, ops int,
+	useRWMutex bool) time.Duration {
+	const readSize = 10
+	var wg sync.WaitGroup
+	var c cache
+	if useRWMutex {
+		c = &CacheRWMutex{data: make(map[string]string)}
+	} else {
+		c = &CacheMutex{data: make(map[string]string)}
+	}
+	start := time.Now()
+	for i := 0; i < readers; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < ops; j++ {
+				c.get(fmt.Sprintf("key%d", j%readSize))
+			}
+		}()
+	}
+	for i := 0; i < writers; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			for j := 0; j < ops; j++ {
+				c.set(fmt.Sprintf("key%d", id), "value")
+			}
+		}(i)
+	}
+	wg.Wait()
+	return time.Since(start)
+}
+
+func main() {
+	// Количество операций на одну горутину
+	const ops = 30
+	fmt.Println("=== Сравнение RWMutex vs Mutex ===\n")
+
+	// Сценарий 1: много читателей (80%), мало писателей (20%)
+	fmt.Println("1. Много читателей (80%), мало писателей (20%):")
+	rwTime := benchmark("RWMutex", 8, 2, ops, true)
+	mutexTime := benchmark("Mutex", 8, 2, ops, false)
+	fmt.Printf("   RWMutex: %v\n", rwTime)
+	fmt.Printf("   Mutex:   %v\n", mutexTime)
+	fmt.Printf("   RWMutex быстрее в %.2f раза\n\n",
+		float64(mutexTime)/float64(rwTime))
+
+	// Сценарий 2: равное количество (50%/50%)
+	fmt.Println("2. Равное количество (50% чтений, 50% записей):")
+	rwTime = benchmark("RWMutex", 5, 5, ops, true)
+	mutexTime = benchmark("Mutex", 5, 5, ops, false)
+	fmt.Printf("   RWMutex: %v\n", rwTime)
+	fmt.Printf("   Mutex:   %v\n", mutexTime)
+	fmt.Printf("   RWMutex быстрее в %.2f раза\n\n",
+		float64(mutexTime)/float64(rwTime))
+
+	// Сценарий 3: много писателей (80%), мало читателей (20%)
+	fmt.Println("3. Много писателей (80%), мало читателей (20%):")
+	rwTime = benchmark("RWMutex", 2, 8, ops, true)
+	mutexTime = benchmark("Mutex", 2, 8, ops, false)
+	fmt.Printf("   RWMutex: %v\n", rwTime)
+	fmt.Printf("   Mutex:   %v\n", mutexTime)
+	fmt.Printf("   RWMutex быстрее в %.2f раза\n\n",
+		float64(mutexTime)/float64(rwTime))
+}
+```
+```
+=== Сравнение RWMutex vs Mutex ===
+
+1. Много читателей (80%), мало писателей (20%):
+   RWMutex: 99.242537ms
+   Mutex:   349.175565ms
+   RWMutex быстрее в 3.52 раза
+
+2. Равное количество (50% чтений, 50% записей):
+   RWMutex: 208.005973ms
+   Mutex:   352.420422ms
+   RWMutex быстрее в 1.69 раза
+
+3. Много писателей (80%), мало читателей (20%):
+   RWMutex: 316.082472ms
+   Mutex:   352.183778ms
+   RWMutex быстрее в 1.11 раза
+```
+
+Вывод будет немного отличаться от запуска к запуску.
 
 ## Захват глобальных переменных горутиной
