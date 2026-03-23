@@ -278,7 +278,7 @@ x %= 2;  // x = x % 2
 
 Таблицу с приоритетом и ассоциативностью _всех_ операторов C++ вы можете [посмотреть на cppreference.](https://en.cppreference.com/w/cpp/language/operator_precedence)
 
-Нужны ли скобки, чтобы это выражение вычислилось как ожидается? `y/n`. {.task_text}
+Нужны ли скобки, чтобы это выражение вычислилось как ожидается? `Y/N`. {.task_text}
 
 ```cpp
 width < 0 || volume / length <= max_val

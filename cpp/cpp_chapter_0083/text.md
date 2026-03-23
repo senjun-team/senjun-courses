@@ -14,7 +14,7 @@
 ```
 Строку называют псевдо-контейнером из-за ограничений на типы данных, которые она позволяет хранить. **Темы, затронутые в задаче:** [какие бывают контейнеры.](/courses/cpp/chapters/cpp_chapter_0071/#block-string) {.task_hint}
 ```cpp {.task_answer}
-n
+N
 ```
 
 Какая алгоритмическая сложность у вставки, удаления и поиска элемента в `std::map`? Введите ответ в O-нотации, например `O(N^2)`. {.task_text}
@@ -28,7 +28,7 @@ O(log(N))
 
 На каких строках кода допущены ошибки? Перечислите их через пробел. Интересующие строки отмечены пронумерованными комментариями. {.task_text}
 
-```cpp {.example_for_playground}
+```cpp {.example_for_playground .example_for_playground_001}
 std::deque<std::size_t> session_ids = {57, 89, 22};
 
 const auto it = session_ids.begin();
@@ -51,14 +51,14 @@ auto cit = session_ids.cbegin();
 
 Что выведет этот код? {.task_text}
 
-```cpp {.example_for_playground}
+```cpp {.example_for_playground .example_for_playground_002}
 std::map<int, std::string> ponies;
 
 ponies[5] = "Rumble";
 ponies[9] = "Braeburn";
 
 if (ponies[2] == "Snails")
-    std::print("1 ");
+    ponies[8] = "Starlight Glimmer";
 
 std::print("{}", ponies.size());
 ```
@@ -72,7 +72,7 @@ std::print("{}", ponies.size());
 
 В словарях `std::map` и `std::unordered_map` обращение к элементу через `[]` не является read-only операцией! Если ключ не найден, он добавляется вместе со значением по умолчанию. Поэтому к константному словарю не получится применить `[]`:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_003}
 const std::map<int, std::string> ponies = {
     {5, "Rumble"},
     {9, "Braeburn"},
@@ -80,7 +80,7 @@ const std::map<int, std::string> ponies = {
 
 
 if (ponies[2] == "Snails") // Ошибка компиляции
-    std::print("1 ");
+    std::print("Found!");
 ```
 ```
 main.cpp:13:11: error: no viable overloaded operator[] for type 'const std::map<int, std::string>' (aka 'const map<int, basic_string<char>>')
@@ -91,7 +91,7 @@ main.cpp:13:11: error: no viable overloaded operator[] for type 'const std::map<
 
 И второй вывод: используйте `[]`, чтобы писать лаконичный код без лишних проверок:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_004}
 std::string text = "3 + 3 = 6";
 
 // Строим частотный словарь символов
@@ -116,7 +116,7 @@ std::println("{}", char_count);
 
 Считайте, что класс `Session` и функция `get_sessions()` реализованы в проекте. В вектор `sessions` попадает 5 сессий, 3 из которых активны. {.task_text}
 
-```cpp {.example_for_playground}
+```cpp  {.example_for_playground .example_for_playground_005}
 std::vector<Session> sessions = get_sessions();
 
 for (auto it = sessions.begin(); it != sessions.end(); ++it)
@@ -141,7 +141,7 @@ ub
 
 Миддл написал бы так:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_006}
 for (auto it = sessions.begin(); it != sessions.end(); )
 {
     if (it->is_active())         // Инкрементируем it,
@@ -155,11 +155,12 @@ for (auto it = sessions.begin(); it != sessions.end(); )
 
 Синьор скорее всего предпочел бы циклу алгоритм стандартной библиотеки:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_007}
+// Принимает ссылку на контейнер и предикат
 std::erase_if(sessions, needs_removal);
 ```
 
-Функция [std::erase_if()](https://en.cppreference.com/w/cpp/container/vector/erase2) принимает ссылку на контейнер и [предикат.](/courses/cpp/chapters/cpp_chapter_0056/#block-predicate) Она удаляет все элементы контейнера, для которых предикат вернул `true`. Предикат `needs_removal()` мог бы выглядеть так:
+Функция [std::erase_if()](https://en.cppreference.com/w/cpp/container/vector/erase2) удаляет элементы контейнера, для которых [предикат](/courses/cpp/chapters/cpp_chapter_0056/#block-predicate) вернет `true`. Предикат `needs_removal()` мог бы выглядеть так:
 
 ```cpp
 bool needs_removal(Session s)
@@ -172,34 +173,34 @@ bool needs_removal(Session s)
 
 Что выведет этот код? {.task_text}
 
-```cpp {.example_for_playground}
+```cpp  {.example_for_playground .example_for_playground_008}
 std::string args = "-j2 -g";
 
-std::remove(args.begin(), args.end(), '-');
+auto it = std::remove(args.begin(), args.end(), '-');
 
-std::println("{}", args.size());
+std::println("{}", std::distance(it, args.end()));
 ```
 
 ```consoleoutput {.task_source #cpp_chapter_0083_task_0060}
 ```
-Алгоритм [std::remove()](https://en.cppreference.com/w/cpp/algorithm/remove.html) перегруппировывает элементы в диапазоне, сохраняя их относительный порядок. Но он их не удаляет! **Темы, затронутые в задаче:** [алгоритмы для удаления элементов](/courses/cpp/chapters/cpp_chapter_0082/#block-removal). {.task_hint}
+Алгоритм [std::remove()](https://en.cppreference.com/w/cpp/algorithm/remove.html) перегруппировывает элементы в диапазоне, сохраняя их относительный порядок. Но он их не удаляет! **Темы, затронутые в задаче:** [алгоритмы для удаления элементов,](/courses/cpp/chapters/cpp_chapter_0082/#block-removal) [алгоритм std::distance().](/courses/cpp/chapters/cpp_chapter_0061/#block-distance) {.task_hint}
 ```cpp {.task_answer}
-6
+2
 ```
 
-Алгоритм [std::remove()](https://en.cppreference.com/w/cpp/algorithm/remove.html) проходит по диапазону и сдвигает элементы, которые не надо удалять, в начало. Их относительный порядок сохраняется. Этот алгоритм возвращает итератор на получившийся диапазон. Элементы за его концом остаются в корректном состоянии, но их значения не определены. Размер контейнера при этом не меняется. Чтобы удалить элементы по-настоящему, нужно вспомнить про [идиому erase-remove:](/courses/cpp/chapters/cpp_chapter_0082/#block-erase-remove)
+Алгоритм [std::remove()](https://en.cppreference.com/w/cpp/algorithm/remove.html) проходит по диапазону и сдвигает элементы, которые не надо удалять, в начало. Их относительный порядок сохраняется. Этот алгоритм возвращает итератор на получившийся диапазон. Элементы за его концом остаются в корректном состоянии, но их значения не определены. Размер контейнера при этом не меняется. Поэтому расстояние от итератора `it` до конца строки равно 2: именно 2 символа `'-'` было сдвинуто в конец.
 
-```cpp {.example_for_playground}
+Чтобы удалить элементы по-настоящему, нужно вспомнить про [идиому erase-remove:](/courses/cpp/chapters/cpp_chapter_0082/#block-erase-remove)
+
+```cpp {.example_for_playground .example_for_playground_009}
 std::string args = "-j2 -g";
-
-std::remove(args.begin(), args.end(), '-');
 
 args.erase(std::remove(args.begin(), args.end(), '-'), args.end());
 
-std::println("{}", args.size());
+std::println("{}", args);
 ```
 ```
-4
+j2 g
 ```
 
 ## Да кому нужны эти ваши требования к компараторам
@@ -216,7 +217,7 @@ bool f(int a, int b)
 
 int main()
 {
-    std::vector<int> diffs = {8, 1, 0, 3};
+    std::vector<int> diffs = {8, 1, 8, 3, 8};
 
     std::sort(diffs.begin(), diffs.end(), f);
 
@@ -232,7 +233,7 @@ int main()
 ub
 ```
 
-В этом коде предпринята попытка сортировать числа с проверкой пар на «больше или равно» в надежде получить отсортированный вектор: `8, 3, 1, 0`. Но эта нестрогая проверка нарушает [аксиому антисимметричности.](/courses/cpp/chapters/cpp_chapter_0082/#block-comparator-requirements) Для нашего компаратора `f()` она выглядит так: если `f(x, y)`, то `!f(y, x)`. А функция `f()` для одинаковых чисел `a` и `b` всегда вернет `true` вне зависимости от того, в каком порядке они переданы.
+В этом коде предпринята попытка сортировать числа с проверкой пар на «больше или равно» в надежде получить отсортированный вектор: `8, 8, 8, 3, 1`. Но эта нестрогая проверка нарушает [аксиому антисимметричности.](/courses/cpp/chapters/cpp_chapter_0082/#block-comparator-requirements) Для нашего компаратора `f()` она выглядит так: если `f(x, y)`, то `!f(y, x)`. А функция `f()` для одинаковых чисел `a` и `b` всегда вернет `true` вне зависимости от того, в каком порядке они переданы.
 
 Нарушение этой аксиомы в компараторе, переданном алгоритму стандартной библиотеки — это UB. Чтобы исправить это, достаточно заменить проверку внутри компаратора на более строгую: `a > b`.
 
@@ -240,13 +241,13 @@ ub
 
 Какой способ получения итератора на элемент эффективнее — через функцию `std::lower_bound()` или одноименный метод? Введите соответственно `1` или `2`. Либо `3`, если считаете, что способы примерно одинаковы. {.task_text}
 
-```cpp {.example_for_playground}
+```cpp {.example_for_playground .example_for_playground_010}
 std::set<int> numbers;
 
-for (int i = 0; i <= 1000001; ++i)
+for (int i = 0; i <= 10000001; ++i)
     numbers.insert(i);
 
-const int x = 1000000;
+const int x = 10000000;
 
 auto it_f = std::lower_bound(numbers.begin(), numbers.end(), x); // 1
 

@@ -275,13 +275,13 @@ std::println("{}", 1[rgb_color]);
 
 Итак, выражение `arr[i]` эквивалентно выражению `*(arr + i)`. Которое в свою очередь можно заменить на `*(ptr + i)` и даже `ptr[i]`, если `ptr` ссылается на нулевой элемент массива.
 
-Эквивалентны ли выражения `&arr[i]` и `ptr + i`? `y/n` {.task_text}
+Эквивалентны ли выражения `&arr[i]` и `ptr + i`? `Y/N` {.task_text}
 
 ```consoleoutput {.task_source #cpp_chapter_0153_task_0030}
 ```
 Применение оператора взятия адреса в выражении `&arr[i]` применяется [после](https://en.cppreference.com/w/cpp/language/operator_precedence.html) оператора `[]`. {.task_hint}
 ```cpp {.task_answer}
-y
+Y
 ```
 
 Обойдём массив с помощью указателей:

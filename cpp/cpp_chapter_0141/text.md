@@ -126,13 +126,13 @@ std::println("{} {} {}", a, ref, b);
 5 5 8
 ```
 
-Как вы считаете, можно ли завести ссылку на `void`? `y/n` {.task_text}
+Как вы считаете, можно ли завести ссылку на `void`? `Y/N` {.task_text}
 
 ```consoleoutput {.task_source #cpp_chapter_0141_task_0030}
 ```
 У типа `void` пустой набор значений, а ссылка должна указывать на полноценный объект. Поэтому стандарт [запрещает](https://timsong-cpp.github.io/cppwp/n4868/dcl.ref#1) ссылки на `void`. {.task_hint}
 ```cpp {.task_answer}
-n
+N
 ```
 
 ## Передача параметров по ссылке {#block-func}
