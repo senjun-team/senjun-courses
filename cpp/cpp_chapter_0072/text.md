@@ -218,7 +218,7 @@ bool is_diagonal(std::array<std::array<int, N>, N> matrix)
 
 Зачастую у АТД, реализующей его структуры данных и конкретного класса в языке программирования совпадают названия. Так, класс C++ `deque` — это реализация одноимённого АТД «Дек».
 
-## Класс deque
+## Класс deque {#block-deque}
 
 Если ожидаются частые вставки в начало и конец контейнера, присмотритесь к классу [std::deque](https://en.cppreference.com/w/cpp/container/deque) (double-ended queue, двунаправленная очередь). Он реализует [абстрактный тип данных «Дек».](https://en.wikipedia.org/wiki/Double-ended_queue)
 

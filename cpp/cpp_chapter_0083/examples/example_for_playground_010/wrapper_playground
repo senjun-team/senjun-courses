@@ -1,0 +1,33 @@
+import std;
+
+int main()
+{
+    std::set<int> numbers;
+
+    for (int i = 0; i <= 10000001; ++i)
+        numbers.insert(i);
+
+    const int x = 10000000;
+
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        
+        volatile auto it_f = std::lower_bound(numbers.begin(), numbers.end(), x); // 1
+
+        auto finish = std::chrono::high_resolution_clock::now();
+
+        auto const time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(finish-start).count();
+        std::println("Duration of std::lowerbound(): {} ms", time_ms);
+    }
+
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        
+        volatile auto it_m = numbers.lower_bound(x); // 2
+
+        auto finish = std::chrono::high_resolution_clock::now();
+
+        auto const time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(finish-start).count();
+        std::println("Duration of numbers.lower_bound(): {} ms", time_ms);
+    }
+}

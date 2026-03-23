@@ -274,7 +274,7 @@ std::println("{}", std::binary_search(s.begin() + 2, s.end() - 1, 'e'));
 true
 ```
 
-Зато алгоритмы [std::lower_bound()](https://en.cppreference.com/w/cpp/algorithm/lower_bound) и [std::upper_bound()](https://en.cppreference.com/w/cpp/algorithm/upper_bound) возвращают итератор.
+Зато алгоритмы [std::lower_bound()](https://en.cppreference.com/w/cpp/algorithm/lower_bound) и [std::upper_bound()](https://en.cppreference.com/w/cpp/algorithm/upper_bound) возвращают итератор. {#block-bounds}
 
 Они принимают итераторы на упорядоченный диапазон и искомое значение `x`:
 - `std::lower_bound()` возвращает итератор на первое значение, _не меньшее_ `x`.
