@@ -9,7 +9,7 @@ code_text = """
 old_stdout = sys.stdout
 sys.stdout = mystdout = StringIO()
 
-# INJECT-b585472fa
+#INJECT-b585472fa
 
 sys.stdout = old_stdout
 output = mystdout.getvalue()
