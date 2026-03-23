@@ -547,10 +547,10 @@ counter = 0
 
 def increment():
     global counter
-    # Ваш код здесь
+    # Your code here
 
 if __name__ == "__main__":
-    # и здесь
+    # and here
     print(f"Counter: {counter}")
 ```
 
