@@ -260,6 +260,124 @@ if __name__ == "__main__":
 
 На самом деле под капотом `ProcessPoolExecutor` работает с абстракциями над POSIX и Windows процессами из модуля `multiprocessing`.
 
+
+Вам дан список целых чисел data от 1 до 100. Необходимо параллельно вычислить куб каждого числа (x ** 3), используя пул процессов и метод submit().{.task_text}
+
+Чтобы увидеть преимущество параллелизма, внутри функции calc_cube добавлена искусственная задержка time.sleep(0.05).{.task_text}
+
+Ваша цель — выполнить их параллельно и замерить реальное время выполнения.{.task_text}
+
+Требования:{.task_text}
+
+Используйте ProcessPoolExecutor.submit().{.task_text}
+
+Сохраняйте объекты Future в список.{.task_text}
+
+В том же порядке, в котором числа идут в data, получите результаты через .result() и выведите их в консоль (каждый результат с новой строки).{.task_text}
+
+```python {.task_source #python_chapter_0300_task_0050}
+import time
+import math
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
+
+data = list(range(1, 101))
+
+def calc_cube(n):
+    time.sleep(0.05)  # Имитация тяжелой нагрузки
+    return n ** 3
+
+try:
+    ctx = get_context('fork')
+except ValueError:
+    ctx = get_context('spawn')
+
+if __name__ == "__main__":
+    start = time.perf_counter()
+
+    # Your code here
+
+    finish = time.perf_counter()
+    print(f"Finished in {finish - start:.2f} seconds")
+```
+
+Создайте пустой список futures перед циклом.{.task_hint}
+
+В цикле по data делайте futures.append(executor.submit(calc_cube, number)).{.task_hint}
+
+После цикла пройдитесь по futures, вызовите f.result() и распечатайте.{.task_hint}
+
+Разница между finish и start покажет реальное время. Если оно меньше 1 секунды — вы все сделали правильно (параллелизм работает).{.task_hint}
+
+```python {.task_answer}
+import time
+import math
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
+
+data = list(range(1, 101))
+
+def calc_cube(n):
+    time.sleep(0.05)  # Имитация тяжелой нагрузки
+    return n ** 3
+
+try:
+    ctx = get_context('fork')
+except ValueError:
+    ctx = get_context('spawn')
+
+if __name__ == "__main__":
+    start = time.perf_counter()
+
+    futures = []
+
+    with ProcessPoolExecutor(mp_context=ctx) as executor:
+        for number in data:
+            future = executor.submit(calc_cube, number)
+            futures.append(future)
+
+        for future in futures:
+            print(future.result())
+
+    finish = time.perf_counter()
+    print(f"Finished in {finish - start:.2f} seconds")
+```
+
+Вы можете убедиться, что метод через multiprocessing гораздо эффективнее, чем был бы метод через цикл `for`, запустите этот код в песочнице и увидите разницу: 
+```python
+import time
+import math
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
+
+data = list(range(1, 101))
+
+def calc_cube(n):
+    time.sleep(0.05)  # Имитация тяжелой нагрузки
+    return n ** 3
+
+try:
+    ctx = get_context('fork')
+except ValueError:
+    ctx = get_context('spawn')
+
+if __name__ == "__main__":
+    start = time.perf_counter()
+    
+    results = []
+    
+    # Последовательное выполнение через цикл for
+    for number in data:
+        result = calc_cube(number)
+        results.append(result)
+    
+    for result in results:
+        print(result)
+    
+    finish = time.perf_counter()
+    print(f"Finished in {finish - start:.2f} seconds")
+```
+
 ### Модуль multiprocessing
 Модуль `multiprocessing` содержит [все необходимое](https://docs.python.org/3/library/multiprocessing.html) для управления процессами, создания пулов, синхронизации и передачи данных между процессами.
 
@@ -415,6 +533,52 @@ if __name__ == '__main__':
     p = Process(target=g, args=(lock, ))
     p.start()
     p.join()
+```
+
+Реализуйте потокобезопасное увеличение глобальной переменной counter.{.task_hint}
+
+Запустите 5 потоков. Каждый поток должен увеличить счетчик на 1 ровно 100 раз (итого должно быть 500).{.task_hint}
+
+
+```python {.task_source #python_chapter_0300_task_0060}
+from threading import Thread, Lock
+
+counter = 0
+
+def increment():
+    global counter
+    # Ваш код здесь
+
+if __name__ == "__main__":
+    # и здесь
+    print(f"Counter: {counter}")
+```
+
+Внутри функции increment создайте цикл на 100 итераций. Вся операция чтения, изменения и записи переменной counter должна находиться внутри блока with lock:{.task_hint}
+
+```python {.task_answer}
+from threading import Thread, Lock
+
+counter = 0
+lock = Lock()
+
+def increment():
+    global counter
+    for _ in range(100):
+        with lock:
+            counter += 1
+
+if __name__ == "__main__":
+    threads = []
+    for _ in range(5):
+        t = Thread(target=increment)
+        threads.append(t)
+        t.start()
+
+    for t in threads:
+        t.join()
+
+    print(f"Counter: {counter}")
 ```
 
 Для обмена данными между процессами можно использовать разделяемую память (shared memory). Поверх нее в модуле `multiprocessing` реализованы классы `Value` и `Array`. Останавливаться на них мы не будем, потому что в промышленной разработке их почти не используют. Авторы библиотеки `multiprocessing` по этому поводу [дают рекомендации:](https://docs.python.org/3/library/multiprocessing.html#multiprocessing-programming)
