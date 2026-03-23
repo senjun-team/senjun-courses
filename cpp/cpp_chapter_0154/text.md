@@ -684,9 +684,7 @@ struct ListNode
 };
 ```
 
-Теперь вам нужно реализовать несколько методов класса односвязного списка `List` из узлов типа `ListNode`. {.task_text}
-
-Деструктор и методы `len()` уже готовы. Вам нужно дописать определения для `push_back()`, `remove()` и `get()`. {.task_text}
+Реализуйте методы класса односвязного списка `List` из узлов типа `ListNode`. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0154_task_0060}
 class List
@@ -702,8 +700,8 @@ public:
     // Возвращает длину списка
     std::size_t len();
 
-    // Добавляет новый узел со значением val в конец
-    void push_back(int val);
+    // Добавляет новый узел со значением val в начало
+    void push_front(int val);
 
     // Ищет элемент со значением val и удаляет его. Если такой
     // элемент не найден, ничего не делает
@@ -716,19 +714,12 @@ public:
 
 List::~List()
 {
-    // Обратите внимание, как выглядит проход по
-    // списку с удалением его узлов
-    while (head != nullptr)
-    {
-        ListNode * tmp = head;
-        head = head->next;
-        delete tmp;
-    }
+
 }
 
 std::size_t List::len()
 {
-    return size; // Не забудьте обновлять size в других методах
+
 }
 
 void List::push_back(int val)
@@ -750,10 +741,6 @@ ListNode * List::get(std:size_t index)
 ```cpp {.task_answer}
 class List
 {
-private:
-    ListNode * head = nullptr;
-    std::size_t size = 0;
-
 public:
     List() = default;
     ~List();
@@ -761,8 +748,8 @@ public:
     // Возвращает длину списка
     std::size_t len();
 
-    // Добавляет новый узел со значением val в конец
-    void push_back(int val);
+    // Добавляет новый узел со значением val в начало
+    void push_front(int val);
 
     // Ищет элемент со значением val и удаляет его. Если такой
     // элемент не найден, ничего не делает
@@ -771,6 +758,10 @@ public:
     // Возвращает элемент по индексу. Если индекс за пределами
     // списка, возвращает nullptr
     ListNode * get(std:size_t index);
+
+private:
+    ListNode * head = nullptr;
+    std::size_t size = 0;
 };
 
 List::~List()
@@ -788,23 +779,12 @@ std::size_t List::len()
     return size;
 }
 
-void List::push_back(int val)
+void List::push_front(int val)
 {
-    ListNode * tail = new ListNode{val};
-    ++size;
-
-    if (!head)
-    {
-        head = tail;
-        return;
-    }
-
-    ListNode * cur = head;
-
-    while (cur->next)
-        cur = cur->next;
-
-    cur->next = tail;
+    ListNode * new_head = new ListNode{value};
+    
+    new_head->next = head;
+    head = new_head;
 }
 
 void List::remove(int val)
