@@ -115,8 +115,8 @@ Status code: 200
 
 ```python {.example_for_playground}
 # ❌ Ошибка: := воспринимается как часть спецификатора формата
-# f"{s:=obj}"  # TypeError
 # f"{value:.2f}"  # форматирование числа с 2 знаками после запятой
+# f"{s:=obj}"  # TypeError
 
 # Правильно: скобки явно обозначают оператор моржа
 def print_and_len(obj):
