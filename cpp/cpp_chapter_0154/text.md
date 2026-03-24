@@ -120,7 +120,7 @@ int main()
 
 Правильно ли организовано управление памятью в этой функции? Введите: `x`, если ошибок управления памятью нет; `l`, если есть утечка памяти; `f`, если память освобождается дважды. {.task_text}
 
-```cpp {.example_for_playground}
+```cpp {.example_for_playground .example_for_playground_001}
 // Проверяет, что пароль состоит из корректных символов
 // Пароль не бывает равен nullptr
 bool is_valid_pass(const char * pass)
@@ -449,13 +449,10 @@ Vector::Vector(std::size_t n, int val):
 
 Выражение `new int[n]` выделяет память под сишный массив. Указатель на эту память инициализирует поле `m_elements` в [списке инициализации полей.](/courses/cpp/chapters/cpp_chapter_0122/#block-member-initializer-list)
 
-Улучшите эту реализацию конструктора. {.task_text}
-
-Во-первых, для присваивания элементам значений вместо цикла используйте алгоритм [std::fill()](https://en.cppreference.com/w/cpp/algorithm/fill.html). {.task_text}
-
-Во-вторых, выделяйте и заполняйте массив не в теле конструктора, а в списке инициализации. Инициализация всех полей в списке инициализации конструктора — очень хорошая практика. Тело конструктора при этом остается пустым. {.task_text}
-
-Для этого напишите вспомогательную функцию `make_array()`, которая аллоцирует массив из `n` элементов, заполняет его с помощью `std::fill()` и возвращает на него указаель. 
+Улучшите эту реализацию конструктора: {.task_text}
+- Для присваивания элементам значений вместо цикла используйте алгоритм [std::fill()](https://en.cppreference.com/w/cpp/algorithm/fill.html).
+- Выделяйте и заполняйте массив не в теле конструктора, а в списке инициализации. Инициализация всех полей в списке инициализации конструктора — очень хорошая практика. Тело конструктора при этом остается пустым.
+- Для этого напишите вспомогательную функцию `make_array()`, которая аллоцирует массив из `n` элементов, заполняет его с помощью `std::fill()` и возвращает на него указаель. 
 
 ```cpp {.task_source #cpp_chapter_0154_task_0040}
 int * make_array(std::size_t n, int val)
@@ -466,7 +463,7 @@ int * make_array(std::size_t n, int val)
 Vector::Vector(std::size_t n, int val)
 { }
 ```
-. {.task_hint}
+В списке инициализации присвойте указателю `m_elements` значение, которое возвращает функция `make_array()`. {.task_hint}
 ```cpp {.task_answer}
 int * make_array(std::size_t n, int val)
 {
@@ -617,7 +614,7 @@ void Vector::reserve(std::size_t new_capacity)
 
 }
 ```
-. {.task_hint}
+Копирование элементов с помощью алгоритма: `std::copy(m_elements, m_elements + m_size, new_elements)`. {.task_hint}
 ```cpp {.task_answer}
 void Vector::reserve(std::size_t new_capacity)
 {
@@ -785,6 +782,7 @@ void List::push_front(int val)
     
     new_head->next = head;
     head = new_head;
+    ++size;
 }
 
 void List::remove(int val)
