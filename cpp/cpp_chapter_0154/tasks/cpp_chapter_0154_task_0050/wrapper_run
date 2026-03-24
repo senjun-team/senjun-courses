@@ -1,0 +1,11 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    char s[] = "example string";
+    std::println("Calling reverse() for string \"{}\"", s);
+    reverse(s);
+    std::println("Result: \"{}\"", s);
+}

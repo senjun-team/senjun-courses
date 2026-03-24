@@ -1,0 +1,23 @@
+import std;
+
+
+int main()
+{
+    int random_numbers[] = {-67, 9, 22, 18};
+    
+    int * p = &random_numbers[3];
+    std::println("Address: {}. Value: {:0x}", 
+                static_cast<void *>(p), *p);
+
+    p--;
+    std::println("Address: {}. Value: {:0x}",
+                static_cast<void *>(p), *p);
+
+    p -= 2;
+    std::println("Address: {}. Value: {:0x}",
+                static_cast<void *>(p), *p);
+
+    // --p;  // Выход за пределы массива
+    // std::println("Address: {}. Value: {:0x}", 
+    //            static_cast<void *>(p), *p);  // UB
+}

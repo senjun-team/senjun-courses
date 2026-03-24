@@ -1,0 +1,58 @@
+import std;
+
+class Vector
+{
+public:
+    Vector() = default;
+
+    // Создает вектор из n элементов со значением val
+    Vector(std::size_t n, int val);
+
+    ~Vector();
+
+    // Возвращает количество элементов
+    std::size_t size();
+
+    // Возвращает емкость - под сколько элементов
+    // выделена память
+    std::size_t capacity();
+
+private:
+    // Указатель на сишный массив, в котором
+    // хранятся элементы
+    int * m_elements = nullptr;
+    
+    // Реальное количество элементов
+    std::size_t m_size = 0;
+
+    // Емкость: под сколько элементов выделена память
+    std::size_t m_capacity = 0;
+};
+
+#INJECT-b585472fa
+
+Vector::~Vector()
+{
+    delete[] m_elements;
+}
+
+std::size_t Vector::size()
+{
+    return m_size;
+}
+
+std::size_t Vector::capacity()
+{
+    return m_capacity;
+}
+
+int main()
+{
+    std::print("Creating Vector(5, 9)... ");
+    Vector v(5, 9);
+    std::println("DONE");
+
+    std::println("Vector's size: {}", v.size());
+
+    std::println("Destroying Vector");
+}
