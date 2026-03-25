@@ -45,7 +45,7 @@ void free(void * ptr);
 
 Так выглядит вызов этих функций для аллокации и освобождение памяти под 5 объектов типа `int`:
 
-```cpp
+```cpp {.example_for_playground}
 #include <stdlib.h>
 
 import std;
@@ -91,7 +91,7 @@ int main()
 
 Для использования функций управления памятью из пространства `std` необходимо подключить заголовок `cstdlib` или модуль `std`:
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_003}
 #include <cstdlib> // Вместо stdlib.h
 
 int main()
@@ -182,7 +182,7 @@ delete p;
 
 Например:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_004}
 int * x = new int{6000};
 
 *x += 2;
@@ -206,7 +206,7 @@ delete x;
 
 Создадим класс `SemVer` для [семантического версионирования,](https://semver.org/lang/ru/#:~:text=%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5%20%D0%92%D0%B5%D1%80%D1%81%D0%B8%D0%BE%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%202.0.0%20%7C%20Semantic%20Versioning.) чтобы посмотреть в консоли стадии жизни объекта:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_005}
 class SemVer
 {
 public:
@@ -218,7 +218,8 @@ public:
     SemVer(std::int32_t major, std::int32_t minor, std::int32_t patch)
         : m_major(major), m_minor(minor), m_patch(patch)
     {
-        std::println("Parameterized constructor: {}.{}.{}", m_major, m_minor, m_patch);
+        std::println("Parameterized constructor: {}.{}.{}",
+                     m_major, m_minor, m_patch);
     }
 
     ~SemVer()
@@ -240,7 +241,7 @@ private:
 
 Заведем объект `SemVer` в динамической памяти, вызовем его метод, а затем уничтожим:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_006}
 int main()
 {
     SemVer * ver = new SemVer{1, 0, 134};
@@ -270,7 +271,7 @@ Exiting main
 
 Возьмем класс `SemVer` из примера выше. Вызовется ли его деструктор, если закомментировать `delete ver`? `Y/N`. {.task_text}
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_007}
 int main()
 {
     SemVer * ver = new SemVer{1, 0, 134};
@@ -296,7 +297,7 @@ ver = nullptr;
 
 Есть ли в этом примере кода ошибки управления памятью? Введите: `x`, если ошибок управления памятью нет; `l`, если есть утечка памяти; `f`, если память освобождается дважды. {.task_text}
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_008}
 void process(int * data)
 {
     std::println("Processing data {}...", *data);
@@ -321,7 +322,7 @@ void process_and_release()
 
 ```consoleoutput {.task_source #cpp_chapter_0154_task_0030}
 ```
-Нарушен принцип «кто выделил память, тот и удаляет» {.task_hint}
+Нарушен полезный принцип «кто выделил память, тот и удаляет». {.task_hint}
 ```cpp {.task_answer}
 f
 ```
@@ -334,7 +335,7 @@ f
 
 Так выглядит создание неинициализированного массива и его уничтожение:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_009}
 int n = 5;
 int * arr = new int[n];
 
@@ -434,6 +435,17 @@ private:
 
 Поведение методов класса `Vector` приблизим к [аналогичным методам](https://en.cppreference.com/w/cpp/container/vector.html) `std::vector`.
 
+Чтобы посмотреть полный код класса `Vector`, откройте этот пример в песочнице. Дальше мы будем последоваельно разбирать его методы.
+
+```cpp {.example_for_playground .example_for_playground_002}
+Vector v(4, 2);
+v.reserve(15);
+v.push_back(3);
+
+for(std::size_t i = 0; i < v.size(); ++i)
+    std::println("{}", v[i]);
+```
+
 Заведем перегрузку конструктора для инициализации вектора `n` элементами, равными `val`.
 
 ```cpp
@@ -526,7 +538,7 @@ int & Vector::at(std::size_t i)
 
 Есть ли в этом коде утечка памяти?
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_011}
 int main()
 {
     Vector numbers(4, 100);
@@ -538,7 +550,7 @@ int main()
 
 Как насчет утечки в таком коде?
 
-```cpp
+```cpp {.example_for_playground .example_for_playground_010}
 int main()
 {
     Vector numbers(4, 100);
@@ -681,15 +693,11 @@ struct ListNode
 };
 ```
 
-Реализуйте методы класса односвязного списка `List` из узлов типа `ListNode`. {.task_text}
+А теперь представьте класс односвязного списка, состоящий из узлов `ListNode`:
 
-```cpp {.task_source #cpp_chapter_0154_task_0060}
+```cpp
 class List
 {
-private:
-    ListNode * head = nullptr;
-    std::size_t size = 0;
-
 public:
     List() = default;
     ~List();
@@ -700,15 +708,26 @@ public:
     // Добавляет новый узел со значением val в начало
     void push_front(int val);
 
-    // Ищет элемент со значением val и удаляет его. Если такой
-    // элемент не найден, ничего не делает
+    // Ищет элемент со значением val, удаляет его и возвращает true.
+    // Если такой элемент не найден, ничего не делает и возвращает false
     void remove(int val);
 
     // Возвращает элемент по индексу. Если индекс за пределами
     // списка, возвращает nullptr
-    ListNode * get(std:size_t index);
-};
+    ListNode * get(std::size_t index);
 
+private:
+    // Указатель на первый элемент списка
+    ListNode * head = nullptr;
+
+    // Длина списка
+    std::size_t size = 0;
+};
+```
+
+Реализуйте методы класса `List`. {.task_text}
+
+```cpp {.task_source #cpp_chapter_0154_task_0060}
 List::~List()
 {
 
@@ -724,43 +743,18 @@ void List::push_back(int val)
 
 }
 
-void List::remove(int val)
+bool List::remove(int val)
 {
 
 }
 
-ListNode * List::get(std:size_t index)
+ListNode * List::get(std::size_t index)
 {
     
 }
 ```
-. {.task_hint}
+Чтобы написать деструктор, нужно понять, как в цикле удалить все узлы списка. Для этого пока `head != nullptr` делайте следующее: заводите временный указатель `ListNode * tmp = head`. Затем сдвигайте голову списка: `head = head->next`. И наконец освобождайте память по временному указателю: `delete tmp`. Он указывает на голову списка. {.task_hint}
 ```cpp {.task_answer}
-class List
-{
-public:
-    List() = default;
-    ~List();
-
-    // Возвращает длину списка
-    std::size_t len();
-
-    // Добавляет новый узел со значением val в начало
-    void push_front(int val);
-
-    // Ищет элемент со значением val и удаляет его. Если такой
-    // элемент не найден, ничего не делает
-    void remove(int val);
-
-    // Возвращает элемент по индексу. Если индекс за пределами
-    // списка, возвращает nullptr
-    ListNode * get(std:size_t index);
-
-private:
-    ListNode * head = nullptr;
-    std::size_t size = 0;
-};
-
 List::~List()
 {
     while (head != nullptr)
@@ -778,17 +772,18 @@ std::size_t List::len()
 
 void List::push_front(int val)
 {
-    ListNode * new_head = new ListNode{value};
+    ListNode * new_head = new ListNode{val};
     
     new_head->next = head;
     head = new_head;
+
     ++size;
 }
 
-void List::remove(int val)
+bool List::remove(int val)
 {
     if (head == nullptr)
-        return;
+        return false;
 
     if (head->val == val)
     {
@@ -796,7 +791,7 @@ void List::remove(int val)
         head = head->next;
         delete tmp;
         --size;
-        return;
+        return true;
     }
 
     ListNode * cur = head;
@@ -810,12 +805,15 @@ void List::remove(int val)
         cur->next = cur->next->next;
         delete tmp;
         --size;
+        return true;
     }
+
+    return false;
 }
 
-ListNode * List::get(std:size_t index)
+ListNode * List::get(std::size_t index)
 {
-    ListNode* cur = head;
+    ListNode * cur = head;
     std::size_t i = 0;
 
     while (cur != nullptr)

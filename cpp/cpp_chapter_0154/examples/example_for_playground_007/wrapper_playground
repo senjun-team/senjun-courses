@@ -1,6 +1,34 @@
 import std;
 
-int main()
+class SemVer
 {
-    #INJECT-b585472fa
-}
+public:
+    SemVer()
+    {
+        std::println("Default constructor");
+    }
+
+    SemVer(std::int32_t major, std::int32_t minor, std::int32_t patch)
+        : m_major(major), m_minor(minor), m_patch(patch)
+    {
+        std::println("Parameterized constructor: {}.{}.{}", m_major, m_minor, m_patch);
+    }
+
+    ~SemVer()
+    {
+        std::println("Destructor: {}.{}.{}", m_major, m_minor, m_patch);
+    }
+
+    void print()
+    {
+        std::println("Version: {}.{}.{}", m_major, m_minor, m_patch);
+    }
+
+private:
+    std::int32_t m_major = 0;
+    std::int32_t m_minor = 0;
+    std::int32_t m_patch = 0;
+};
+
+
+#INJECT-b585472fa

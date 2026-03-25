@@ -54,7 +54,18 @@ private:
     std::size_t m_capacity = 0;
 };
 
-#INJECT-b585472fa
+int * make_array(std::size_t n, int val)
+{
+    int * elements{new int[n]};
+    std::fill(elements, elements + n, val);
+    return elements;
+}
+
+Vector::Vector(std::size_t n, int val):
+        m_elements{make_array(n, val)},
+        m_size{n},
+        m_capacity{n}
+{ }
 
 Vector::~Vector()
 {
@@ -71,13 +82,18 @@ std::size_t Vector::capacity()
     return m_capacity;
 }
 
+#INJECT-b585472fa
+
 int main()
 {
     std::print("Creating Vector(5, 9)... ");
     Vector v(5, 9);
     std::println("DONE");
 
-    std::println("Vector's size: {}", v.size());
+    std::println("Vector's capacity: {}", v.capacity());
 
-    std::println("Destroying Vector");
+    std::println("Calling .reserve(20)...");
+    v.reserve(20);
+
+    std::println("Vector's capacity: {}", v.capacity());
 }

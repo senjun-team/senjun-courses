@@ -2,37 +2,142 @@ import boost.ut;
 
 import std;
 
+class Vector
+{
+public:
+    Vector() = default;
+
+    // Создает вектор из n элементов со значением val
+    Vector(std::size_t n, int val);
+
+    ~Vector();
+
+    // Возвращает количество элементов
+    std::size_t size();
+
+    // Возвращает емкость - под сколько элементов
+    // выделена память
+    std::size_t capacity();
+
+    // Возвращает элемент по индексу. Если индекс за
+    // пределами вектора, кидает исключение
+    int & at(std::size_t i);
+
+    // Возвращает элемент по индексу
+    int & operator[](std::size_t i);
+
+    // Увеличивает емкость вектора: выделяет под него
+    // память бОльшего размера. Если значение capacity
+    // меньше текущей емкости, то ничего не делает
+    void reserve(std::size_t capacity);
+
+    // Изменяет реальный размер вектора. Если новый размер
+    // меньше текущего, удаляет элементы с конца. Если
+    // больше, то добавляет элементы, инициализированные
+    // значением по умолчанию. Если размеры равны, то
+    // ничего не делает
+    void resize(std::size_t size);
+
+    // Добавляет элемент в конец
+    void push_back(int val);
+
+    // Удаляет последний элемент
+    void pop_back();
+
+private:
+    // Указатель на сишный массив, в котором
+    // хранятся элементы
+    int * m_elements = nullptr;
+    
+    // Реальное количество элементов
+    std::size_t m_size = 0;
+
+    // Емкость: под сколько элементов выделена память
+    std::size_t m_capacity = 0;
+};
+
+int * make_array(std::size_t n, int val)
+{
+    int * elements{new int[n]};
+    std::fill(elements, elements + n, val);
+    return elements;
+}
+
+Vector::Vector(std::size_t n, int val):
+        m_elements{make_array(n, val)},
+        m_size{n},
+        m_capacity{n}
+{ }
+
+Vector::~Vector()
+{
+    delete[] m_elements;
+}
+
+std::size_t Vector::size()
+{
+    return m_size;
+}
+
+std::size_t Vector::capacity()
+{
+    return m_capacity;
+}
+
+int & Vector::operator[](std::size_t i)
+{
+    return m_elements[i];
+}
+
 #INJECT-b585472fa
 
 using namespace boost::ut;
 
+struct TestCase
+{
+    std::size_t n = 0;
+    int val = 0;
+    std::size_t new_cap = 0;
+};
+
+void check_reserve_scenario(const TestCase & c)
+{
+    Vector v(c.n, c.val);
+
+    v.reserve(c.new_cap);
+
+    const std::size_t plan = c.new_cap > c.n ? c.new_cap : c.n;
+    const std::size_t fact = v.capacity();
+
+    expect(plan == fact) << std::format("Called .reserve({}) for Vector({}, {}). Method .capacity() must return {}, but returned {}",
+                                    c.new_cap, c.n, c.val, plan, fact) << fatal;
+
+    
+    for (std::size_t i = 0; i < c.n; ++i)
+    {
+        expect(v[i] == c.val) << std::format(
+                               "Created Vector({}, {}), then called .reserve({}). After .reserve() {}-element is not equal to {}. It's value: {}",
+                               c.n, c.val, c.new_cap, i, c.val, v[i]) << fatal;
+    }
+}
+
 int main()
 {
-    "empty string"_test = [] {
-        char s[] = "";
-        reverse(s);
-        std::string fact{s};
-        expect(fact == "") << "reverse() for empty string must produce empty string" << fatal;
+    "check usage of std::copy() and std::swap()"_test = [] {
+        const std::string code = R"(#INJECT-b585472fa)";
+        expect(code.find("std::copy(") != std::string::npos) << "Please use std::copy() in your solution" << fatal;
+        expect(code.find("std::swap(") != std::string::npos) << "Please use std::swap() in your solution" << fatal;
     };
 
-    "string consisting of single letter"_test = [] {
-        char s[] = "a";
-        reverse(s);
-        std::string fact{s};
-        expect(fact == "a") << "reverse() for string consisting of single letter must produce unmodified string" << fatal;
-    };
+    "check reserve()"_test = [] {
+        std::vector<TestCase> cases = {
+            {1, 2, 3},
+            {10, 1, 5},
+            {8, 0, 16},
+            {5, 2, 1}
+        };
 
-    "string with even number of letters"_test = [] {
-        char s[] = "abcdef";
-        reverse(s);
-        std::string fact{s};
-        expect(fact == "fedcba") << std::format("reverse() for string `abcdef` must produce `fedcba`. Result: {}", fact) << fatal;
-    };
-
-    "string with odd number of letters"_test = [] {
-        char s[] = "abcdefg";
-        reverse(s);
-        std::string fact{s};
-        expect(fact == "gfedcba") <<  std::format("reverse() for string `abcdefg` must produce `gfedcba`. Result: {}", fact) << fatal;
+        for(const auto & c: cases)
+            check_reserve_scenario(c);
     };
 }

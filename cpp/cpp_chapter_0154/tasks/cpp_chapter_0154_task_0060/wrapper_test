@@ -1,9 +1,233 @@
-import TestHelpers;
+import boost.ut;
+
 import std;
+
+struct ListNode
+{
+public:
+    ListNode() {
+        ++counter;
+    }
+
+    explicit ListNode(int value) : val(value) 
+    {
+        ++counter;
+    }
+
+    ~ListNode()
+    {
+        --counter;
+    }
+    
+    static int get_counter()
+    {
+        return counter;
+    }
+
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
+    
+    int val = 0;
+    ListNode * next = nullptr;
+
+private:
+    static int counter;
+};
+
+int ListNode::counter = 0;
+
+class List
+{
+public:
+    List() = default;
+    ~List();
+
+    std::size_t len();
+    void push_front(int val);
+    bool remove(int val);
+    ListNode * get(std::size_t index);
+
+private:
+    ListNode * head = nullptr;
+    std::size_t size = 0;
+};
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+struct TestCase
+{
+    std::size_t n = 0;
+    int val = 0;
+    std::size_t new_cap = 0;
+};
+
+void check_push_scenario(const std::vector<int> & values)
+{
+    const int count_start = ListNode::get_counter(); 
+
+    List lst;
+    expect(lst.len() == 0) << "len() of empty List must be 0" << fatal;
+
+    for(std::size_t i = 0; i < values.size(); ++i)
+    {
+        lst.push_front(values[i]);
+        expect(lst.len() == i + 1) << std::format("len() of List after {} calls to push_front() must be {}",
+                                                    i + 1, i + 1) << fatal;
+    }
+
+    const int count_end = ListNode::get_counter();
+
+    expect(count_end == count_start + values.size()) << std::format("Called push_front for values: {}. {} ListNode objects must be created",
+                                    values, values.size()) << fatal;
+
+    
+    std::vector<int> dst(values.size());
+    std::reverse_copy(std::begin(values), std::end(values), std::begin(dst));
+
+    for (std::size_t i = 0; i < dst.size(); ++i)
+    {
+        expect(lst.get(i)->val == dst[i]) << std::format(
+                               "Called push_front for values: {}. {}-th node must be equal to {}. But its value is {}",
+                               values, i, dst[i], lst.get(i)->val) << fatal;
+    }
+}
+
+
+struct TestNode
+{
+    int val = 0;
+    bool to_delete = false;
+    bool exists = false;
+};
+
+struct TestCaseRem
+{
+    std::vector<TestNode> actions;
+    std::vector<std::vector<int>> states;
+};
+
+
+std::string get_test_description(const TestCaseRem & c)
+{
+    std::string s = "Test case:\nCreated list.\n";
+    for (const TestNode & act: c.actions)
+    {
+        s += std::format("Called {}({})\n", act.to_delete ? "remove" : "push_front", act.val);
+    }
+
+    return s;
+}
+
+void check_remove_scenario(const TestCaseRem & c)
+{
+    if (c.actions.size() != c.states.size())
+        throw std::logic_error("Error in test data");
+
+    const int count_start = ListNode::get_counter(); 
+
+    {
+        List lst;
+
+        for (std::size_t i = 0; i < c.actions.size(); ++i)
+        {
+            const TestNode & act = c.actions[i];
+
+            if (act.to_delete)
+            {
+                const bool removed = lst.remove(act.val);
+                expect(removed == act.exists) << std::format("remove({}) returned {}. Expected result: {}.\n{}",
+                                                      act.val, removed, act.exists, get_test_description(c)) << fatal;
+            }
+            else
+            {
+                lst.push_front(act.val);
+            }
+
+            expect(lst.len() == c.states[i].size()) << std::format("len() returned {}. Expected result: {}.\n{}",
+                                        lst.len(), c.states[i].size(), get_test_description(c)) << fatal;
+
+            for (std::size_t j = 0; j < c.states[i].size(); ++j)
+            {
+                expect(lst.get(j)->val == c.states[i][j]) << std::format(
+                                    "{}-th node must be equal to {}. But its value is {}.\n",
+                                    j, c.states[i][j],lst.get(j)->val, get_test_description(c)) << fatal;
+            }
+            
+        }
+    }
+
+    expect(count_start == ListNode::get_counter()) << std::format("Check method remove() for memory leak.\n{}",
+                                                      get_test_description(c)) << fatal;
+}
 
 int main()
 {
-    std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
-    std::string plan = hlp::normalize("4 20 false");
-    return user_input == plan ? 0 : 1;
+    "check push_front(), get(), len()"_test = [] {
+        std::vector<std::vector<int>> cases = {
+            {8},
+            {-1, 2},
+            {3, 0, 16},
+            {9, 1, 3, 44},
+            {98, 71, 22, 5, -2}
+        };
+
+        for(const auto & v: cases)
+            check_push_scenario(v);
+    };
+
+    "check remove() simple scenario"_test = [] {
+        const TestCaseRem c{
+            .actions = {
+                {.val = 3, .to_delete = false},
+                {.val = 3, .to_delete = true, .exists = true},
+                {.val = 1, .to_delete = false},
+                {.val = 2, .to_delete = false},
+                {.val = 1, .to_delete = true, .exists = true}
+            },
+            .states = {
+                {3},
+                {},
+                {1},
+                {2, 1},
+                {2}
+            }
+        };
+
+        check_remove_scenario(c);
+    };
+
+    "check remove() unexistent elements scenario"_test = [] {
+        const TestCaseRem c{
+            .actions = {
+                {.val = 8, .to_delete = true, .exists = false},
+                {.val = 8, .to_delete = false},
+                {.val = 9, .to_delete = true, .exists = false},
+                {.val = 9, .to_delete = false},
+                {.val = 2, .to_delete = false},
+                {.val = 4, .to_delete = false},
+                {.val = 9, .to_delete = true, .exists = true},
+                {.val = 8, .to_delete = true, .exists = true},
+                {.val = 4, .to_delete = true, .exists = true},
+                {.val = 3, .to_delete = true, .exists = false},
+                {.val = 2, .to_delete = true, .exists = true},
+            },
+            .states = {
+                {},
+                {8},
+                {8},
+                {9, 8},
+                {2, 9, 8},
+                {4, 2, 9, 8},
+                {4, 2, 8},
+                {4, 2},
+                {2},
+                {2},
+                {},
+            }
+        };
+
+        check_remove_scenario(c);
+    };
 }
