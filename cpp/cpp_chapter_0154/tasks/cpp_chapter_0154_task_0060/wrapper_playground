@@ -1,0 +1,57 @@
+import std;
+
+struct ListNode
+{
+    ListNode() {}
+
+    explicit ListNode(int value) : val(value) {}
+    
+    explicit ListNode(int value, ListNode * next_node) 
+    : val(value), next(next_node) {}
+    
+    int val = 0;
+    ListNode * next = nullptr;
+};
+
+class List
+{
+public:
+    List() = default;
+    ~List();
+
+    // Возвращает длину списка
+    std::size_t len();
+
+    // Добавляет новый узел со значением val в начало
+    void push_front(int val);
+
+    // Ищет элемент со значением val, удаляет его и возвращает true.
+    // Если такой элемент не найден, ничего не делает и возвращает false
+    bool remove(int val);
+
+    // Возвращает элемент по индексу. Если индекс за пределами
+    // списка, возвращает nullptr
+    ListNode * get(std::size_t index);
+
+private:
+    // Указатель на первый элемент списка
+    ListNode * head = nullptr;
+
+    // Длина списка
+    std::size_t size = 0;
+};
+
+#INJECT-b585472fa
+
+int main()
+{
+    List lst;
+
+    lst.push_front(8);
+    lst.push_front(2);
+
+    std::println("Created list. Called push_front() for 8 and 2");
+
+    for(std::size_t i = 0; i < lst.len(); ++i)
+        std::println("{}-th list node's val: {}", i, lst.get(i)->val);
+}

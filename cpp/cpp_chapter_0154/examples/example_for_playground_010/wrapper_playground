@@ -1,0 +1,135 @@
+import std;
+
+class Vector
+{
+public:
+    Vector() = default;
+
+    // Создает вектор из n элементов со значением val
+    Vector(std::size_t n, int val);
+
+    ~Vector();
+
+    // Возвращает количество элементов
+    std::size_t size();
+
+    // Возвращает емкость - под сколько элементов
+    // выделена память
+    std::size_t capacity();
+
+    // Возвращает элемент по индексу. Если индекс за
+    // пределами вектора, кидает исключение
+    int & at(std::size_t i);
+
+    // Возвращает элемент по индексу
+    int & operator[](std::size_t i);
+
+    // Увеличивает емкость вектора: выделяет под него
+    // память бОльшего размера. Если значение capacity
+    // меньше текущей емкости, то ничего не делает
+    void reserve(std::size_t capacity);
+
+    // Изменяет реальный размер вектора. Если новый размер
+    // меньше текущего, удаляет элементы с конца. Если
+    // больше, то добавляет элементы, инициализированные
+    // значением по умолчанию. Если размеры равны, то
+    // ничего не делает
+    void resize(std::size_t size);
+
+    // Добавляет элемент в конец
+    void push_back(int val);
+
+    // Удаляет последний элемент
+    void pop_back();
+
+private:
+    // Указатель на сишный массив, в котором
+    // хранятся элементы
+    int * m_elements = nullptr;
+    
+    // Реальное количество элементов
+    std::size_t m_size = 0;
+
+    // Емкость: под сколько элементов выделена память
+    std::size_t m_capacity = 0;
+};
+
+int * make_array(std::size_t n, int val)
+{
+    int * elements{new int[n]};
+    std::fill(elements, elements + n, val);
+    return elements;
+}
+
+Vector::Vector(std::size_t n, int val):
+        m_elements{make_array(n, val)},
+        m_size{n},
+        m_capacity{n}
+{ }
+
+Vector::~Vector()
+{
+    delete[] m_elements;
+}
+
+std::size_t Vector::size()
+{
+    return m_size;
+}
+
+std::size_t Vector::capacity()
+{
+    return m_capacity;
+}
+
+int & Vector::at(std::size_t i)
+{
+    if (i >= m_size)
+    {
+        throw std::out_of_range(
+            std::format("Index {} is out of bounds. Vector size: {}",
+            i, m_size));
+    }
+
+    return m_elements[i];
+}
+
+int & Vector::operator[](std::size_t i)
+{
+    return m_elements[i];
+}
+
+void Vector::reserve(std::size_t new_capacity)
+{
+    if (new_capacity <= m_capacity)
+        return;
+
+    int * new_elements = new int[new_capacity];
+    std::copy(m_elements, m_elements + m_size, new_elements);
+    std::swap(m_elements, new_elements);
+    delete[] new_elements;
+
+    m_capacity = new_capacity;
+}
+
+void Vector::resize(std::size_t size)
+{
+    if (size <= m_size)
+    {
+        m_size = size;
+        return;
+    }
+
+    reserve(size);
+    std::fill(m_elements, m_elements + size, int{});
+}
+
+void Vector::push_back(int val)
+{
+    if (m_size + 1 > m_capacity)
+        reserve(std::max(m_capacity, 1uz) * 2);
+
+    m_elements[m_size++] = val;
+}
+
+#INJECT-b585472fa

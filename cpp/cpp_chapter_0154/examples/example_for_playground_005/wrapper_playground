@@ -1,0 +1,11 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    SemVer * ver = new SemVer{1, 0, 134};
+    ver->print();
+    delete ver;
+    std::println("Exiting main");
+}

@@ -1,0 +1,129 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+class Vector
+{
+public:
+    Vector() = default;
+
+    // Создает вектор из n элементов со значением val
+    Vector(std::size_t n, int val);
+
+    ~Vector();
+
+    // Возвращает количество элементов
+    std::size_t size();
+
+    // Возвращает емкость - под сколько элементов
+    // выделена память
+    std::size_t capacity();
+
+    // Возвращает элемент по индексу. Если индекс за
+    // пределами вектора, кидает исключение
+    int & at(std::size_t i);
+
+    // Возвращает элемент по индексу
+    int & operator[](std::size_t i);
+
+private:
+    // Указатель на сишный массив, в котором
+    // хранятся элементы
+    int * m_elements = nullptr;
+    
+    // Реальное количество элементов
+    std::size_t m_size = 0;
+
+    // Емкость: под сколько элементов выделена память
+    std::size_t m_capacity = 0;
+};
+
+#INJECT-b585472fa
+
+Vector::~Vector()
+{
+    delete[] m_elements;
+}
+
+std::size_t Vector::size()
+{
+    return m_size;
+}
+
+std::size_t Vector::capacity()
+{
+    return m_capacity;
+}
+
+int & Vector::operator[](std::size_t i)
+{
+    return m_elements[i];
+}
+
+using namespace boost::ut;
+
+void check_make_array(std::size_t n, int val)
+{
+    const int * res = make_array(n, val);
+    expect(res != nullptr) << std::format("make_array({}, {}) returned nullptr", n, val) << fatal;
+
+    for (std::size_t i = 0; i < n; ++i)
+    {
+
+        expect(res[i] == val) << std::format(
+                               "make_array({}, {}) returned pointer to array in which {}-element is not equal to {}. It's value: {}",
+                               n, val, i, val, res[i]) << fatal;
+    }
+    
+    delete[] res;
+}
+
+void check_constructor(std::size_t n, int val)
+{
+    Vector v(n, val);
+
+    expect(v.size() == n) << std::format("Vector({}, {}) must return object with .size() == {}. But size() returned {}",
+                                         n, val, n, v.size()) << fatal;
+    expect(v.capacity() == n) << std::format("Vector({}, {}) must return object with .capacity() == {}. But capacity() returned {}",
+                                         n, val, n, v.capacity()) << fatal;
+
+    for (std::size_t i = 0; i < n; ++i)
+    {
+
+        expect(v[i] == val) << std::format(
+                               "Vector({}, {}) returned vector in which {}-element is not equal to {}. It's value: {}",
+                               n, val, i, val, v[i]) << fatal;
+    }
+}
+
+int main()
+{
+    "check make_array()"_test = [] {
+        std::vector<std::pair<std::size_t, int>> cases = {
+            {0, 8},
+            {1, -4},
+            {2, 19},
+            {11, 3},
+            {51, 0},
+            {6, -100}
+        };
+
+        for (const auto & [n, val]: cases)
+            check_make_array(n, val);
+    };
+
+    "check constructor"_test = [] {
+        std::vector<std::pair<std::size_t, int>> cases = {
+            {0, -1},
+            {4, 5},
+            {1, 999},
+            {16, -54},
+            {7, 1},
+            {99, -99}
+        };
+
+        for (const auto & [n, val]: cases)
+            check_constructor(n, val);
+    };
+}
