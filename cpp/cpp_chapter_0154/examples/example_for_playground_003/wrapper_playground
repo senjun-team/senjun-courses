@@ -7,7 +7,7 @@ int main()
     const std::size_t n = 5;
     const std::size_t bytes =  n * sizeof(int);
 
-    // Обращаемся к malloc из пространства имен std
+    // Обращаемся к malloc из пространства имён std
     int * arr = static_cast<int *>(std::malloc(bytes));
 
     // Проверка, чтобы при обращении к памяти не получить UB
@@ -23,6 +23,6 @@ int main()
         std::println("{}-th element. Value: {}", i, arr[i]);
     }
 
-    // Обращаемся к free из пространства имен std
+    // Обращаемся к free из пространства имён std
     std::free(arr);
 }
