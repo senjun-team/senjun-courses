@@ -6,3 +6,4 @@
 - [Глава 15.2. Основы работы с указателями](/courses/cpp/chapters/cpp_chapter_0152/)
 - [Глава 15.3. Адресная арифметика](/courses/cpp/chapters/cpp_chapter_0153/)
 - [Глава 15.4. Динамическое выделение памяти](/courses/cpp/chapters/cpp_chapter_0154/)
+- [Глава 15.5. Указатели на указатели и ссылки на указатели](/courses/cpp/chapters/cpp_chapter_0155/)
