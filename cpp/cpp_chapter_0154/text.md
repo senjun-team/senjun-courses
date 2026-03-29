@@ -394,7 +394,7 @@ f
 
 ## Менеджер памяти рантайма Си
 
-Выражение `new T` — удобная C++ абстракция над вызовом сишной функции `malloc()`, которая находится в живет рантайма Си. Под Linux она называется [glibc](https://www.gnu.org/software/libc/) (GNU C Library), а под Windows — [CRT](https://learn.microsoft.com/en-us/cpp/c-runtime-library/windows-platforms-crt) (Microsoft C Runtime Library).
+Выражение `new T` — удобная C++ абстракция над вызовом сишной функции `malloc()`, которая живёт в библиотеке рантайма Си. Под Linux она называется [glibc](https://www.gnu.org/software/libc/) (GNU C Library), а под Windows — [CRT](https://learn.microsoft.com/en-us/cpp/c-runtime-library/windows-platforms-crt) (Microsoft C Runtime Library).
 
 В библиотеке рантайма Си реализован менеджер памяти — прослойка между программой и ОС. Его цель — сделать работу с памятью быстрой и экономной, а именно:
 - Минимизировать системные вызовы. Это важно для производительности, ведь системный вызов — дорого.
