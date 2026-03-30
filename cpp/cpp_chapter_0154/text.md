@@ -162,7 +162,7 @@ bool is_valid_pass(const char * pass)
         ++dst;
     }
 
-    if (is_strong(pass_normalized))
+    if (!is_strong(pass_normalized))
     {
         std::println("Password is not strong enough");
         return false; 
