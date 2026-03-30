@@ -354,6 +354,7 @@ void Vector::resize(std::size_t size)
 
     reserve(size);
     std::fill(m_elements, m_elements + size, int{});
+    m_size = size;
 }
 ```
 
