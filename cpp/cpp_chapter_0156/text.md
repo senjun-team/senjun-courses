@@ -118,7 +118,7 @@ int * ptr = matrix[0];
 std::println("{} {}", *(ptr + 1), *(ptr + 2));
 ```
 
-```consoleoutput {.task_source #cpp_chapter_0057_task_0040}
+```consoleoutput {.task_source #cpp_chapter_0156_task_0010}
 ```
 Указатели `matrix[0]` и `matrix[1]` смотрят на два независимых массива, которые могут находиться в совершенно разных областях динамической памяти. Между ними могут быть расположены любые данные. Поэтому `*(ptr + 2)` — это выход за границы массива `matrix[0]`, состоящего из двух элементов. {.task_hint}
 ```cpp {.task_answer}
@@ -134,7 +134,7 @@ class JaggedBuffer {
 public:
     // Конструктор принимает количество сегментов и массив длин сегментов.
     // Он аллоцирует подо все это память
-    JaggedBuffer(std::size_t rows_count, const std::size_t * col_sizes);
+    JaggedBuffer(std::size_t row_count, const std::size_t * col_sizes);
 
     // Освобождает всю память
     ~JaggedBuffer();
@@ -162,8 +162,8 @@ private:
 Давайте напишем наивную реализацию конструктора:
 
 ```cpp
-JaggedBuffer::JaggedBuffer(std::size_t rows_count, const std::size_t * col_sizes)
-: rows(rows_count)
+JaggedBuffer::JaggedBuffer(std::size_t row_count, const std::size_t * col_sizes)
+: rows(row_count)
 {
     if (rows == 0)
         return;
@@ -184,8 +184,8 @@ JaggedBuffer::JaggedBuffer(std::size_t rows_count, const std::size_t * col_sizes
 Давайте сделаем конструктор безопасным:
 
 ```cpp
-JaggedBuffer::JaggedBuffer(std::size_t rows_count, const int * col_sizes)
-: rows(rows_count)
+JaggedBuffer::JaggedBuffer(std::size_t row_count, const int * col_sizes)
+: rows(row_count)
 {
     if (rows == 0)
         return;
@@ -215,15 +215,61 @@ JaggedBuffer::JaggedBuffer(std::size_t rows_count, const int * col_sizes)
 }
 ```
 
-Обратите внимание на зануление указателей на сегменты. Это необходимо, чтобы в любой момент времени можно было безопасно удалить сегменты, на которые ссылаются указатели `data[i]`.
+Обратите внимание на зануление указателей на сегменты. Это необходимо, чтобы в любой момент времени можно было удалить сегменты, на которые ссылаются указатели `data[i]`.
 
 В этом коде есть две интересные детали, с которыми вы раньше не сталкивались:
 - Ручной вызов деструктора `~JaggedBuffer`. Вообще деструктор срабатывает автоматически, но только для полноценных объектов класса. А мы пишем код конструктора, то есть находимся на этапе, когда объекта еще нет.
 - Использование выражения [throw](https://en.cppreference.com/w/cpp/language/throw.html) без создания объекта исключения. Вместо записи `throw T{};` мы использовали просто `throw;`. Это нужно, чтобы передать уже перехваченное исключение `e` следующему обработчику.
 
 
+Реализуйте оставшиеся методы класса `JaggedBuffer`. {.task_text}
 
-## Изменение указателя внутри функции
+```cpp {.task_source #cpp_chapter_0156_task_0020}
+// Освобождает всю память
+JaggedBuffer::~JaggedBuffer()
+{
+
+}
+
+// Записывает сегмент по индексу. Если индекс границами массива,
+// ничего не делает
+void JaggedBuffer::set_segment(std::size_t index, const int * segment)
+{
+
+}
+
+// Освобождает память из-под мегмента. Если индекс границами массива,
+// ничего не делает
+void JaggedBuffer::clear_segment(std::size_t index)
+{
+
+}
+```
+. {.task_hint}
+```cpp {.task_answer}
+JaggedBuffer::~JaggedBuffer()
+{
+    if (data == nullptr)
+        return;
+
+    for (int i = 0; i < rows; ++i)
+        delete[] data[i];
+
+    delete[] data;
+}
+
+void JaggedBuffer::set_segment(std::size_t index, const int * segment)
+{
+    if (index < rows && data[index] != nullptr)
+        std::copy(segment, segment + size, data[index]);
+}
+
+void JaggedBuffer::clear_segment(std::size_t index)
+{
+    if (index < rows)
+        delete[] std::exchange(data[index], nullptr);
+}
+```
 
 ## Функция main() с аргументами командной строки
 
@@ -286,7 +332,15 @@ Arg count: 5
 4: data/conf_backup.json
 ```
 
-Все аргументы попадают в `main()` в качестве сишных строк. Чтобы получить из них числа, есть функции:
+Популярна альтернативная форма записи типа `char ** argv` — `char * argv[]`:
+
+```cpp
+int main(int argc, char * argv[]);
+```
+
+С точки зрения компилятора разницы между этими вариантами записи нет. Потому что при передаче сишного массива в функцию происходит [низведение массива:](/courses/cpp/chapters/cpp_chapter_0132/#block-array-to-pointer-decay) он автоматически приводится к указателю на нулевой элемент. Зато с точки зрения разработчика запись `char* argv[]` более «говорящая»: сразу понятно, что `argv` — это массив указателей на символы `char`.
+
+Итак, аргументы попадают в `main()` в качестве сишных строк. Чтобы получить из них числа, есть функции:
 - [std::stoi()](https://en.cppreference.com/w/cpp/string/basic_string/stol) принимает строку и возвращает `int`.
 - [std::stod()](https://en.cppreference.com/w/cpp/string/basic_string/stof.html)
 
@@ -299,33 +353,137 @@ Arg count: 5
 
 Например, программа запущена так: `./run --filelimit=10 --ignore-case=true /tmp/backup`. Здесь `./run` — нулевой аргумент, и он не должен попасть в структуру. В поле `keyword` структуры окажется две пары ключ-значение: `{"filelimit", "10"}` и `{"ignore-case", "true"}`. А в поле `positional` — единственное значение `"/tmp/backup"`.
 
-```cpp {.task_source #cpp_chapter_0155_task_0040}
+```cpp {.task_source #cpp_chapter_0156_task_0030}
 struct Args
 {
     std::unordered_map<std::string, std::string> keyword;
     std::vector<std::string> positional;
 };
 
-Args parse_args(int argc, char ** argv)
+Args parse_args(int argc, char * argv[])
 {
 
 }
 ```
 В списке инициализации присвойте указателю `m_elements` значение, которое возвращает функция `make_array()`. {.task_hint}
 ```cpp {.task_answer}
-int * make_array(std::size_t n, int val)
+
+```
+
+## Изменение указателя внутри функции
+
+Допустим, мы хотим занулить указатель, вызвав для него `set_to_null()`:
+
+```cpp
+void set_to_null(int * p)
 {
-    int * elements{new int[n]};
-    std::fill(elements, elements + n, val);
-    return elements;
+    p = nullptr;
+    std::println("p == nullptr in function: {}",
+                  p == nullptr);
 }
 
-Vector::Vector(std::size_t n, int val):
-        m_elements{make_array(n, val)},
-        m_size{n},
-        m_capacity{n}
-{ }
+int main()
+{
+    int val = 5;
+    int * p_val = &val;
+
+    set_to_null(p_val);
+
+    std::println("p_val == nullptr in main: {}",
+                  p_val == nullptr);
+}
 ```
+```
+p == nullptr in function: true
+p_val == nullptr in main: false
+```
+
+Почему ничего не получилось? Как вы помните, есть два способа передачи параметров в функцию:
+- По значению. При этом в функцию попадает копия аргумента, и функция не может изменить исходную переменную.
+- По ссылке. Иногда такой способ называют **по адресу.** В функцию попадает адрес исходной переменной, и функция может ее изменить.
+
+Мы передали переменную `p_val` _по значению,_ и в функцию попала _ее копия._ Сама по себе переменная является указателем и хранит адрес. Внутри функции адрес был занулен, но это изменение каснулось только копии `p_val`. В оригинальной переменной продолжил лежать адрес `val`.
+
+Как же изменять указатель внутри функции? Способов два. Вы можете передавать указатель:
+- [По ссылке](/courses/cpp/chapters/cpp_chapter_0141/#block-func) `int *& p`.
+- По указателю `int ** p`, то есть двойной указатель.
+
+### Передача указателя по ссылке
+
+Давайте перепишем пример и передадим указатель по ссылке:
+
+```cpp
+void set_to_null(int *& p) // Поменяли тип `int *` на `int *&`
+{
+    p = nullptr;
+    std::println("p == nullptr in function: {}",
+                  p == nullptr);
+}
+
+int main()
+{
+    int val = 5;
+    int * p_val = &val;
+
+    set_to_null(p_val);
+
+    std::println("p_val == nullptr in main: {}",
+                  p_val == nullptr);
+}
+```
+```
+p == nullptr in function: true
+p_val == nullptr in main: true
+```
+
+Единственное изменение, которое мы сделали в коде — это замена типа параметра с `int *` на `int *&`.
+
+
+[Вспомните,](/courses/cpp/chapters/cpp_chapter_0141/#block-refs-under-the-hood) что представляют собой ссылки под капотом.  {.task_text}
+
+`T *&` — это ссылка `&` на указатель `*` на объект типа `T`. Как вы считаете, допустим ли синтаксис `T &*` — указатель на ссылку? `Y/N` {.task_text}
+
+```consoleoutput {.task_source #cpp_chapter_0156_task_0040}
+```
+Указатель должен указывать на некую переменную в области памяти. Ссылка не является объектом в памяти в том же смысле, что и переменная. {.task_hint}
+```cpp {.task_answer}
+n
+```
+
+### Передача указателя по указателю
+
+А теперь опробуем передачу по указателю:
+
+```cpp
+void set_to_null(int ** p) // Поменяли тип `int *` на `int **`
+{
+    *p = nullptr;          // Разыменовываем двойной указатель
+    std::println("p == nullptr in function: {}",
+                  *p == nullptr);
+}
+
+int main()
+{
+    int val = 5;
+    int * p_val = &val;
+
+    set_to_null(&p_val);   // Передаем адрес указателя p_val
+
+    std::println("p_val == nullptr in main: {}",
+                  p_val == nullptr);
+}
+```
+```
+p == nullptr in function: true
+p_val == nullptr in main: true
+```
+
+При передаче двойного указателя изменений уже три:
+- Замена типа параметра `int *` на `int **`.
+- `*p` вместо `p`. Разыменовывание двойного указателя внутри функции для доступа к исходному.
+- `&p_val` вместо `p_val`. Передача в функцию не самого указателя, а его адреса.
+
+Как видите, передача указателя по ссылке гораздо удобнее, чем по указателю. 
 
 ----------
 
