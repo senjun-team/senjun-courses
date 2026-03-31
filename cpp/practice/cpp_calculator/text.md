@@ -222,7 +222,7 @@ double sum(double a, double b)
 
 Пример:
 
-![Алгоритм Сортировочная станция](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-practice-5/illustrations/cpp/shunting_yard_algorithm.jpg) {.illustration}
+![Алгоритм Сортировочная станция](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/shunting_yard_algorithm.jpg) {.illustration}
 
 ### 3. Вычисление выражения в постфиксной форме
 

@@ -17,7 +17,7 @@ bool * p = &retry;
 ```
 
 
-![Переменные в адресном пространстве](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16-2/illustrations/cpp/pointers_and_addresses.jpg) {.illustration}
+![Переменные в адресном пространстве](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/pointers_and_addresses.jpg) {.illustration}
 
 
 И если бы мы захотели по указателю `p` обновить значение `retry`, но компилятор имел бы _неправильное_ представление о размере этой переменной, то вместо перезаписи 1 байта мы бы перезаписали 4, 8 или больше. Мы бы повредили значения соседних переменных. А возможно, даже ячеек, в которых расположен сам указатель `p`! Такая ситуация называется **повреждением памяти** (memory corruption).
@@ -235,7 +235,7 @@ std::println("{}", *p);  // UB
 ```
 
 
-![Перемещение по массиву с помощью указателя](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16/illustrations/cpp/pointer_to_array_element.jpg) {.illustration}
+![Перемещение по массиву с помощью указателя](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/pointer_to_array_element.jpg) {.illustration}
 
 
 Важно следить, чтобы указатель не вышел за границы массива. Обращение по нему приведёт к UB.
@@ -409,7 +409,7 @@ Address: 0x7ffe027539d0. Value: -43
 ```
 
 
-![Перемещение по массиву с помощью указателя](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16-2/illustrations/cpp/pointer_to_array_substraction.jpg) {.illustration}
+![Перемещение по массиву с помощью указателя](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/pointer_to_array_substraction.jpg) {.illustration}
 
 
 Напишите функцию `reverse()`, которая принимает указатель на сишную строку. Она должна перевернуть строку, то есть расположить её символы в обратном порядке. Считаем, что в функцию не может быть передан `nullptr`. {.task_text}
@@ -469,7 +469,7 @@ std::println("{}", dist);
 ```
 
 
-![Вычитание указателей](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16-2/illustrations/cpp/pointer_substraction.jpg) {.illustration}
+![Вычитание указателей](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/pointer_substraction.jpg) {.illustration}
 
 
 Что выведет этот код, если размер `int` равен 4 байта? Напишите `err` в случае ошибки компиляции или `ub` в случае неопределённого поведения. {.task_text}

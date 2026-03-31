@@ -461,7 +461,7 @@ FetchContent_MakeAvailable(spdlog libunifex)
 - [Basel](https://bazel.build/start/cpp) — мультиязычная система сборки от Google.
 
 
-![Лого SCons, Gradle, Meson, Basel](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-12/illustrations/cpp/meson_etc__logo.png) {.illustration}
+![Лого SCons, Gradle, Meson, Basel](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/meson_etc__logo.png) {.illustration}
 
 
 ## Пакетные менеджеры
@@ -475,7 +475,7 @@ FetchContent_MakeAvailable(spdlog libunifex)
 Все эти задачи решают пакетные менеджеры. В мире C++ два самых распространённых пакетных менеджера — это [Conan](https://docs.conan.io/2/tutorial.html) и [vcpkg.](https://learn.microsoft.com/en-us/vcpkg/) Оба легко встраиваются в CI/CD и умеют работать в связке с популярными системами автоматизации сборки.
 
 
-![Лого Conan и vcpkg](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-12/illustrations/cpp/packaging.png) {.illustration}
+![Лого Conan и vcpkg](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/packaging.png) {.illustration}
 
 
 Можно ли жить без пакетных менеджеров? Вполне, хоть это и менее удобно. В таком случае разрешение зависимостей чаще всего организуется с помощью [git-сабмодулей](https://git-scm.com/book/en/v2/Git-Tools-Submodules) либо модули [ExternalProject](https://cmake.org/cmake/help/latest/module/ExternalProject.html) и [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) в CMake. Пакетирование при этом организуется стандартными средствами для создания rpm или deb пакетов. А версионирование и заливка пакета в репозиторий делегируется продуктам, отвечающим за CI/CD.

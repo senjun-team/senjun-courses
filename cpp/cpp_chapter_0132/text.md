@@ -3,7 +3,7 @@
 Если тип не относится к фундаментальным, то он считается составным. Вы уже имеете представление про некоторые из составных типов: [перечисления,](/courses/cpp/chapters/cpp_chapter_0054/#block-enum) [структуры,](/courses/cpp/chapters/cpp_chapter_0055/#block-struct) [классы](/courses/cpp/chapters/cpp_chapter_0055/#block-class) и [функции.](/courses/cpp/chapters/cpp_chapter_0021/#block-functions)
 
 
-![Составные типы](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-14/illustrations/cpp/types_compound.jpg) {.illustration}
+![Составные типы](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/types_compound.jpg) {.illustration}
 
 
 В этой главе кратко обсудим уже известные вам составные типы и познакомимся с остальными.
@@ -647,7 +647,7 @@ Accelerometer measurement #1
 Многомерные массивы хранятся в [построчном порядке](https://en.wikipedia.org/wiki/Row-_and_column-major_order) (row-major order). Это означает, что элементы каждой строки идут в памяти последовательно, один за другим, а затем следуют элементы новой строки. Построчный порядок применяется в C++, Си, Python и многих других языках. А например в MATLAB реализован столбцовый порядок (column-major order), при котором подряд идут элементы столбцов, а не строк.
 
 
-![Построчный и столбцовый порядок](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-142/illustrations/cpp/row_and_column_major_order.jpg) {.illustration}
+![Построчный и столбцовый порядок](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/row_and_column_major_order.jpg) {.illustration}
 
 
 
