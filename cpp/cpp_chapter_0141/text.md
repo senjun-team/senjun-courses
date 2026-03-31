@@ -21,7 +21,7 @@ A
 Разработчику удобно думать про ссылки как про псевдонимы переменных. Но как выглядят ссылки с точки зрения компилятора? Это целиком и полностью зависит от реализации. Стандарт даже [не определяет,](https://timsong-cpp.github.io/cppwp/n4868/dcl.ref#4) выделяется ли под ссылку память. Как правило — нет, [не выделяется.](https://isocpp.org/wiki/faq/references#overview-refs) Каждая переменная живёт в своей области памяти: она связывается с конкретным адресом. И компилятор работает со ссылкой как с адресом исходной переменной.
 
 
-![Ссылки](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-15/illustrations/cpp/references.jpg) {.illustration}
+![Ссылки](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/references.jpg) {.illustration}
 
 
 ## Работа со ссылками

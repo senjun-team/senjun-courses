@@ -170,7 +170,7 @@ Done
 В отличие от планировщика операционной системы, планировщик Go распределяет задания, касающиеся только горутин единственной программы на Go. Он работает с глобальной очередью горутин и локальными очередями, привязанными к конкретным ядрам. Если локальная очередь пуста, то ядро забирает задачу из глобальной. Если и она пуста, то ядро может забрать задачу из очереди другого ядра, чтобы более равномерно распределить нагрузку. Такая стратегия планирования называется [work stealing.](https://en.wikipedia.org/wiki/Work_stealing)
 
 
-![Планирование выполнения горутин](https://raw.githubusercontent.com/senjun-team/senjun-courses/e75023d07c030e3dd7ac0f4dbaa8d31f535f2300/illustrations/golang/goroutines_scheduling.jpg) {.illustration}
+![Планирование выполнения горутин](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/golang/goroutines_scheduling.jpg) {.illustration}
 
 
 Планировщик Go вызывается не по таймеру, а неявными инструкциями языка Go. Он работает быстро, потому что у него нет необходимости обращаться к ядру операционной системы и управлять потоками.
@@ -190,7 +190,7 @@ Done
 - **Небуферизованные** каналы не хранят сообщения. Если отправитель что-то записывает в такой канал, он тут же блокируется. Он остается заблокированным до тех пор, пока сообщение не будет прочитано из другого канала.
 
 
-![Каналы](https://raw.githubusercontent.com/senjun-team/senjun-courses/e75023d07c030e3dd7ac0f4dbaa8d31f535f2300/illustrations/golang/channels.jpg) {.illustration}
+![Каналы](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/golang/channels.jpg) {.illustration}
 
 В этой главе мы рассмотрим небуферизованные каналы.
 

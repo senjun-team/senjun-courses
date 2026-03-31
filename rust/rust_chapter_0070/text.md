@@ -478,6 +478,7 @@ fn main() -> Result<(), exec::RuntimeError> {
 
 Так выглядит компьютер PDP-1 компании DEC:
 
+
 ![Компьютер PDP-1 компании DEC](https://raw.githubusercontent.com/senjun-team/senjun-courses/main/illustrations/rust/pdp_1_dec.jpg) {.illustration}
 
 
@@ -486,6 +487,7 @@ fn main() -> Result<(), exec::RuntimeError> {
 - от младшего к старшему (_little-endian_), наименее значимый (самый младший) байт хранится первым, а за ним следуют байты в порядке возрастания значимости.
 
 Представление числа `0A0B0C0D` в big-endian и little-endian:
+
 
 ![Порядок следования байтов в big-endian и little-endian представлениях.](https://raw.githubusercontent.com/senjun-team/senjun-courses/main/illustrations/rust/endianness.jpg) {.illustration}
 
@@ -584,6 +586,7 @@ val2 => le: 0111111010000001
 
 
 Наличие двух нулей в обратном коде приводит к усложнению операции суммирования. Поэтому в современных компьютерах для представления отрицательных целых чисел используется [дополнительный код](https://ru.wikipedia.org/wiki/%D0%94%D0%BE%D0%BF%D0%BE%D0%BB%D0%BD%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9_%D0%BA%D0%BE%D0%B4). Дополнительный код отрицательного числа можно вычислить инвертированием его модуля (получается обратный код) и прибавлением к инверсии `1`:
+
 
 ![Вычисление дополнительного кода.](https://raw.githubusercontent.com/senjun-team/senjun-courses/main/illustrations/rust/twos_complement.jpg) {.illustration}
 

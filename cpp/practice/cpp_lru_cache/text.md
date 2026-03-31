@@ -66,7 +66,7 @@ cache.get(8);      // "", false
 — Хеш-таблица хранит пары из ключей и [итераторов,](/courses/cpp/chapters/cpp_chapter_0061/) указывающих на соответствующие этим ключам элементы списка.
 
 
-![Организация LRU-кеша](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-practice-lru/illustrations/cpp/lru_cache.jpg) {.illustration}
+![Организация LRU-кеша](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/lru_cache.jpg) {.illustration}
 
 
 При обращении к элементу кеша не забывайте передвигать этот элемент в начало списка. В этом вам поможет метод [std::list::splice()](https://en.cppreference.com/w/cpp/container/list/splice). Чтобы переместить элемент списка `l`, на который указывает итератор `it`, в самое начало, `splice()` вызывается следующим образом:

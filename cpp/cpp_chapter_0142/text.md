@@ -137,7 +137,7 @@ main.cpp:6:12: error: non-const lvalue reference to type 'double' cannot bind to
 - обращение к переменной `v` внутри `std::println()`. 
 
 
-![Стек вызовов](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/split-chapter-15/illustrations/cpp/call_stack_dangling_reference.jpg) {.illustration}
+![Стек вызовов](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/call_stack_dangling_reference.jpg) {.illustration}
 
 
 Разберем по шагам, когда ссылка становится висячей и в какой момент в коде появляется UB.

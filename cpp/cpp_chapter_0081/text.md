@@ -215,7 +215,7 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 Так выглядит бинарный поиск на примере небольшого диапазона:
 
 
-![Бинарный поиск](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-8/illustrations/cpp/binary_search.jpg) {.illustration}
+![Бинарный поиск](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/binary_search.jpg) {.illustration}
 
 
 Понять алгоритм бинарного поиска просто, но совершить ошибку в его реализации — ещё проще. Чаще всего ошибаются при определении середины и границ диапазона. Это приводит к вечным циклам, пропуску элементов и выходу за границы диапазона. Поэтому реализация бинарного поиска — одна из классических задач на собеседованиях.
@@ -300,7 +300,7 @@ upper bound. index = 5. value = 8
 ```
 
 
-![Пример работы std::lower_bound() и std::upper_bound()](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-imrpove-chapter-8/illustrations/cpp/lower_upper_bound_found.jpg) {.illustration}
+![Пример работы std::lower_bound() и std::upper_bound()](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/lower_upper_bound_found.jpg) {.illustration}
 
 
 Если элемент отсутствует в диапазоне, `std::lower_bound()` и `std::upper_bound()` возвращают одинаковый результат:
@@ -322,7 +322,7 @@ upper bound. index = 2. value = 9
 ```
 
 
-![Пример работы std::lower_bound() и std::upper_bound() для отсутствующего элемента](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-imrpove-chapter-8/illustrations/cpp/lowr_upper_bound_not_found.jpg) {.illustration}
+![Пример работы std::lower_bound() и std::upper_bound() для отсутствующего элемента](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/lowr_upper_bound_not_found.jpg) {.illustration}
 
 
 Как видите, итераторы от `std::lower_bound()` и `std::upper_bound()` _ограничивают_ диапазон элементов, равных указанному значению. Чтобы получить этот диапазон, можно воспользоваться всего одной функцией. Она называется [std::equal_range()](https://en.cppreference.com/w/cpp/algorithm/equal_range) и возвращает пару итераторов.

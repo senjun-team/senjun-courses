@@ -25,7 +25,7 @@ std::println("{} {}", orders.front(), orders.back());
 ```
 
 
-![Очередь](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/improve-chapters-cmake/illustrations/cpp/queue.jpg) {.illustration}
+![Очередь](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/queue.jpg) {.illustration}
 
 
 Очередь может быть организована поверх нескольких последовательных контейнеров. По умолчанию она использует `std::deque`, но через аргумент шаблона дек можно заменить на список:
@@ -49,7 +49,7 @@ std::priority_queue<int> heap;
 ```
 
 
-![Очередь с приоритетами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/improve-chapters-cmake/illustrations/cpp/priority_queue.jpg) {.illustration}
+![Очередь с приоритетами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/priority_queue.jpg) {.illustration}
 
 
 
@@ -119,7 +119,7 @@ int main()
 - `empty()` — проверка, пуст ли стек.
 
 
-![Стек](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/improve-chapters-cmake/illustrations/cpp/stack.jpg) {.illustration}
+![Стек](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/stack.jpg) {.illustration}
 
 
 Работу стека отлично иллюстрирует класс для хранения истории посещения страниц в браузере:

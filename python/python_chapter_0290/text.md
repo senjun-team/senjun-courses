@@ -40,15 +40,21 @@ print(getrefcount(d))
 
 Примерно так выглядит выполнение 2-х CPU-bound потоков на машине с единственным CPU. Иллюстрация взята из блога [Дэвида Бизли](https://dabeaz.blogspot.com/2010/01/python-gil-visualized.html) — разработчика, внесшего большой вклад в развитие питона и сообщества вокруг него.
 
+
 ![2 CPU-bound потока на машине с 1 CPU.](https://raw.githubusercontent.com/senjun-team/senjun-courses/main/illustrations/python/2-threads-1-cpu.png) {.illustration}
+
+
 
 
 ![Легенда.](https://raw.githubusercontent.com/senjun-team/senjun-courses/main/illustrations/python/theads-cpu-legend.png) {.illustration}
 
 
+
 А теперь запустим 2 CPU-bound потока на машине с двумя CPU.
 
+
 ![2 CPU-bound потока на машине с 2 CPU.](https://raw.githubusercontent.com/senjun-team/senjun-courses/main/illustrations/python/2-threads-2-cpu.png) {.illustration}
+
 
 Иллюстрация демонстрирует, насколько неэффективно запускать несколько потоков питона в попытках распараллелить CPU-bound задачи. В интервалы времени, окрашенные красным, ОС передавала управление потоку, который пытался захватить GIL и ждал, пока его освободит другой поток.
 

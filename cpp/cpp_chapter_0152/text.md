@@ -51,7 +51,7 @@ bool * b_ptr = &b;
 ```
 
 
-![Указатели](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-15/illustrations/cpp/pointers.jpg) {.illustration}
+![Указатели](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/pointers.jpg) {.illustration}
 
 
 В данном контексте символ `&` не имеет ничего общего с объявлением ссылки или логическим «И». При объявлении ссылки символ `&` относится к типу. А при взятии адреса он ставится перед уже существующей переменной. Сравните:
@@ -565,7 +565,7 @@ false
 Пример списка с циклом: {.task_text}
 
 
-![Пример списка с циклом](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16/illustrations/cpp/linked_list_with_cycle.jpg) {.illustration}
+![Пример списка с циклом](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/linked_list_with_cycle.jpg) {.illustration}
 
 
 ```cpp {.task_source #cpp_chapter_0152_task_0100}
@@ -694,7 +694,7 @@ p = nullptr;                       // Ошибка
 - Если константность относится к указателю, то `const` ставится справа.
 
 
-![Указатели и константность](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16/illustrations/cpp/const_pointers.jpg) {.illustration}
+![Указатели и константность](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/const_pointers.jpg) {.illustration}
 
 
 На какой строке кода допущена ошибка? Введите `0`, если ошибок нет и код скомпилируется. {.task_text}
@@ -746,7 +746,7 @@ std::println("{:p}", static_cast<const void *>(ptr));
 Пересечение — это указатель, хранящий адрес элемента, который присутствует в обоих списках. В этом примере пересечение — это указатель на элемент со значением `8`: {.task_text}
 
 
-![Пример пересечения списков](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-16/illustrations/cpp/lists_intersection.jpg) {.illustration}
+![Пример пересечения списков](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/lists_intersection.jpg) {.illustration}
 
 
 ```cpp {.task_source #cpp_chapter_0152_task_0120}

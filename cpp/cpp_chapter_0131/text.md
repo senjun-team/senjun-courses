@@ -23,7 +23,7 @@ std::println("{}", 34.2 / 8);
 - [Составные типы](https://timsong-cpp.github.io/cppwp/n4868/basic.compound) (compound types) основаны на других типах. Яркий пример — структуры.
 
 
-![Типы в C++](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-14/illustrations/cpp/types.jpg) {.illustration}
+![Типы в C++](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/types.jpg) {.illustration}
 
 
 **Фундаментальные типы** также называют встроенными (built-in), ведь они считаются неотъемлемой частью языка. Их можно назвать удобной обёрткой над представлением данных в архитектуре компьютера. Операции с фундаментальными типами как правило сводятся к единственной инструкции на ассемблере и выполняются максимально эффективно.
@@ -46,7 +46,7 @@ std::println("{}", n);
 Имена фундаментальных типов являются ключевыми словами (keywords) языка. Для их использования не надо подключать никаких хедеров или модулей. Исключение — добавленный в C++11 `std::nullptr_t`.
 
 
-![Фундаментальные типы](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-14/illustrations/cpp/types_fundamental.jpg) {.illustration}
+![Фундаментальные типы](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/types_fundamental.jpg) {.illustration}
 
 
 С `void` и несколькими арифметическими типами вы уже [знакомы.](/courses/cpp/chapters/cpp_chapter_0021/#block-fundamental-types) Пора узнать про остальные.
@@ -56,7 +56,7 @@ std::println("{}", n);
 - Числа с плавающей точкой (floating-point types).
 
 
-![Арифметические типы](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-14/illustrations/cpp/types_arithmetic.jpg) {.illustration}
+![Арифметические типы](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/types_arithmetic.jpg) {.illustration}
 
 
 ## Целые числа на базе int
@@ -744,7 +744,7 @@ typedef signed short int int16_t;
 Поясним это на примере преобразования адреса `172.16.254.1` в число 2886794753. Так оно выглядит в двоичном виде:
 
 
-![Пример](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-14/illustrations/cpp/ipv4.jpg) {.illustration}
+![Пример](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/ipv4.jpg) {.illustration}
 
 
 Напишите функцию `convert_ip_v4()`, которая принимает ip-адрес в виде строки, разделённой точками на октеты. Функция должна вернуть целочисленное представление адреса. {.task_text}

@@ -89,7 +89,7 @@ for(std::string::iterator it = s.begin(); it != s.end(); ++it)
 - `end()` возвращает итератор на позицию **за** последним элементом.
 
 
-![Итераторы по строке](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-6/illustrations/cpp/iterators.jpg) {.illustration}
+![Итераторы по строке](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/iterators.jpg) {.illustration}
 
 
 ## Основные действия над итераторами
@@ -118,7 +118,7 @@ for(std::string::iterator it = s.begin(); it != s.end(); ++it)
 Чтобы показать, как эти категории соотносятся друг с другом, их можно представить вложенными друг в друга. Итераторы, изображённые внешними, обладают наибольшими возможностями.
 
 
-![Категории итераторов](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-6/illustrations/cpp/iterator_categories.jpg) {.illustration}
+![Категории итераторов](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/iterator_categories.jpg) {.illustration}
 
 
 Итераторы по каждому из стандартных контейнеров относятся к одной из этих категорий. Например, итераторы по строке являются итераторами произвольного доступа.
