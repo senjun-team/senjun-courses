@@ -239,7 +239,7 @@ delete x;
 
 Если у типа есть конструктор, то он срабатывает при вызове `new` сразу после выделения памяти. При вызове `delete` сначала срабатывает деструктор, а потом освобождается память.
 
-Создадим класс `SemVer` для [семантического версионирования,](https://semver.org/lang/ru/#:~:text=%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5%20%D0%92%D0%B5%D1%80%D1%81%D0%B8%D0%BE%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%202.0.0%20%7C%20Semantic%20Versioning.) чтобы посмотреть в консоли стадии жизни объекта:
+Создадим класс `SemVer` для [семантического версионирования,](https://semver.org/lang/ru/#:~:text=%D0%A1%D0%B5%D0%BC%D0%B0%D0%BD%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5%20%D0%92%D0%B5%D1%80%D1%81%D0%B8%D0%BE%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5%202.0.0%20%7C%20Semantic%20Versioning.) чтобы посмотреть в консоли стадии жизни объекта: {#block-semver}
 
 ```cpp   {.example_for_playground .example_for_playground_005}
 class SemVer
