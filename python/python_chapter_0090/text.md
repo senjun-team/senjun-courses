@@ -282,7 +282,7 @@ print(t1 is t2)
 
 ### Технические детали реализации в CPython
 
-В Python 3.7 constant folding был перенесён из [peephole](https://en.wikipedia.org/wiki/Peephole_optimization)-оптимизатора в новый AST-оптимизатор, что позволило согласованнее применять эту оптимизацию ([bpo-11549](https://bugs.python.org/issue11549), [bpo-29469](https://bugs.python.org/issue29469)). Подробнее об изменениях в оптимизации можно прочитать в [документации Python 3.7](https://docs.python.org/3/whatsnew/3.7.html#optimizations).
+В Python 3.7 constant folding был перенесён из [peephole](https://en.wikipedia.org/wiki/Peephole_optimization)-оптимизатора в новый [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree)-оптимизатор, что позволило согласованнее применять эту оптимизацию ([bpo-11549](https://bugs.python.org/issue11549), [bpo-29469](https://bugs.python.org/issue29469)). Подробнее об изменениях в оптимизации можно прочитать в [документации Python 3.7](https://docs.python.org/3/whatsnew/3.7.html#optimizations).
 
 **Главный вывод:** не полагайтесь на `is` для сравнения значений, даже если они неизменяемые. Это деталь реализации CPython, которая может меняться от версии к версии и зависеть от контекста выполнения. Используйте `is` только для сравнения с синглтонами (`None`, `True`, `False`), а для сравнения значений — оператор `==`.
 
