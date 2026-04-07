@@ -1,0 +1,34 @@
+from io import StringIO
+import sys
+
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "safe_get_element" not in globals():
+    print("Function safe_get_element() doesn't exist")
+    exit(1)
+
+if not callable(safe_get_element):
+    print("'safe_get_element' is not a function")
+    exit(1)
+
+tests = [[None, 0, None],
+         [None, None, None],
+         [["a", "b", "c"], None, None],
+         [[10, 20, 30], 1, 20],
+         [["x", "y", "z"], 0, "x"],
+         [(1, 2, 3), 2, 3],
+         ["hello", 1, "e"]
+         ]
+
+for data, index, plan in tests:
+    res = safe_get_element(data, index)
+
+    if res != plan:
+        print(f"Invalid function output for arguments {data}, {index}.")
+        exit(1)
