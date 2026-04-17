@@ -60,9 +60,9 @@ for (std::size_t i = 0; i < rows; ++i)
     matrix[i] = new int[cols];
 
 // Работаем с массивом
-for (int i = 0; i < rows; ++i)
+for (std::size_t i = 0; i < rows; ++i)
 {
-    for (int j = 0; j < cols; ++j)
+    for (std::size_t j = 0; j < cols; ++j)
     {
         matrix[i][j] = i + j;             // Пишем
         std::print("{} ", matrix[i][j]);  // Читаем
