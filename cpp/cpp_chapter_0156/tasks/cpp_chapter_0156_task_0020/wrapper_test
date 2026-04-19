@@ -1,0 +1,1150 @@
+#include <stdint.h>
+#include <stddef.h>
+#include <assert.h>
+#include <math.h>
+#include <memory.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
+
+#include <clocale>
+
+/* КОД СИШНОЙ БИБЛИОТЕКИ, ПОВЕРХ ФУНКЦИЙ КОТОРЫХ НУЖНО НАПИСАТЬ КЛАСС */
+
+enum {
+    err_internal = -1, // внутрення ошибка (некорректное состояние канала)
+    err_no_memory = -2, // ошибка выделения памяти
+    err_bad_param = -3, // некорректный параметр
+    err_address_unreachable = -10, // указанный адоес недоступен
+    err_wait_for_data = -100, // данные ожидаются, требуется повторный вызов recv
+    err_no_more_data = -101, // данных в канале больше нет
+    err_insufficient_buffer = -200, // недостаточный размер буфера
+};
+
+// Дескриптор канала данных.
+typedef void * recv_desc_t;
+
+// Функция инициализирует получение данных. Параметры:
+// [in] addr - адрес источника данных,
+// [in] sgm_size - максимальный размер сегмента,
+// [out] pdesc - дескриптор канала данных.
+// Функция инициализирует дескриптор и возвращает 0 в случае успеха,
+// отрицательный код ошибки в противном случае. Код ошибки err_no_memory
+// означает, что не удалось выделить память для дескриптора.
+int open_recv(const char * addr, size_t sgm_size, recv_desc_t * pdesc);
+
+// Функция завершает получение данных и закрывает дескриптор канала 
+// данных. Параметры:
+// [in/out] pdesc - валидный дескриптор канала данных.
+void close_recv(recv_desc_t * pdesc);
+
+// Функция возвращает ожидаемое количество сегментов,
+// 0 означает, что все сегменты были получены. Параметры:
+// [in] desc - валидный дескриптор канала данных.
+size_t sgm_left(recv_desc_t desc);
+
+// Функция возвращает максимальный размер сегмента для указанного
+// канала данных. Параметры:
+// [in] desc - валидный дескриптор канала данных.
+size_t max_sgm_size(recv_desc_t desc);
+
+// Функция возвращает адрес канала
+// канала данных. Параметры:
+// [in] desc - валидный дескриптор канала данных.
+const char * recv_addr(recv_desc_t desc);
+
+// Функция возвращает сегмент данных. Параметры:
+// [in] desc - валидный дескриптор канала данных,
+// [out] idx - индекс сегмента,
+// [out] buf - буффер для сохранения сегмента,
+// [in/out] size - размер буффера на входе и реальный размер
+// сегмента данных на выходе.
+// Функция возвращает 0 в случае успеха и отрицательный код ошибки
+// в противном случае. Код ошибки err_wait_for_data означает, что
+// нужно повторно вызвать функцию позже. Код ошибки 
+// err_insufficient_buffer сигнализирует, что размер переданного
+// буффера недостаточен, а в size возвращается ожидаемый размер.
+// Ошибка err_no_more_data означает, что данных больше нет.
+int recv_sgm(recv_desc_t desc, size_t * idx, void * buf, size_t * size);
+
+
+// -------------------------------------------------------------------
+// закрытое API для тестов
+int reserve_recv_channel(
+    const char* addr,
+    const void* data,
+    size_t size,
+    size_t start,
+    size_t skip,
+    const uint8_t * pattern);
+
+void free_recv_channel(const char * addr);
+
+
+#define RECV_TABLE_SIZE 256
+
+typedef enum e_direction
+{
+    no_direction = 0,
+    forward_only = 1,
+    backward_only = 2,
+    both_directions = 3
+} direction_t;
+
+
+#define DEF_ARRAY_TYPE(type) \
+struct s_pattern_##type \
+{ \
+    type * array; \
+    size_t size; \
+}
+
+typedef DEF_ARRAY_TYPE(void) generic_array_t;
+typedef DEF_ARRAY_TYPE(uint8_t) byte_array_t;
+typedef DEF_ARRAY_TYPE(size_t) size_array_t;
+
+
+typedef struct s_recv_param
+{
+    // адрес псевдоисточника (по факту ключ)
+    const char * addr;
+    // данные для передачи
+    generic_array_t data;
+    // номер сегмента с которого начинается передача данных
+    size_t start_sgm;
+    // частота сбоев
+    size_t skip_rate;
+    // паттерн процентов размеров серии сегментов
+    // значения должны быть в диапазоне 1..199
+    // значение 0 является признаком конца серии
+    // сумма серии должна быть равна 100 * N, где N - длина серии
+    byte_array_t pattern;
+} recv_param_t;
+
+
+typedef struct s_recv_table
+{
+    recv_param_t items[RECV_TABLE_SIZE];
+} recv_table_t;
+
+typedef struct s_bound
+{
+    size_t idx;
+    size_t pos;
+} bound_t;
+
+typedef struct s_recv_desc_impl
+{
+    // адрес псевдоисточника (по факту ключ)
+    const char * addr;
+    // данные для передачи (внешнее владение)
+    generic_array_t data;
+    // максимальный размер сегмента
+    size_t sgm_size;
+    // общее количество сегментов для отправки
+    size_t sgm_total;
+    // номер сегмента и позиция при обратном итерировании
+    bound_t to_begin;
+    // номер сегмента и позиция при прямом итерировании
+    bound_t to_end;
+    // номер шага
+    size_t step;
+    // частота пропусков, когда recv_sgm() возвращает err_wait_for_data
+    size_t skip_rate;
+    // паттерн размеров серии сегментов
+    // значение 0 является признаком конца серии
+    size_array_t pattern;
+} recv_desc_impl_t;
+
+recv_table_t q_table;
+
+
+// закрытая часть API
+
+static recv_param_t * find_channel(const char* addr)
+{
+    recv_param_t* found = NULL;
+    assert(addr != NULL);
+
+    for (size_t i = 0; i < RECV_TABLE_SIZE; ++i)
+    {
+        recv_param_t* cur = &q_table.items[i];
+        if (cur->addr != NULL && strcmp(addr, cur->addr) == 0)
+        {
+            found = cur;
+            break;
+        }
+    }
+
+    return found;
+}
+
+static recv_param_t * find_unused_channel(const char* addr)
+{
+    recv_param_t * found = NULL;
+    assert(addr != NULL);
+
+    for (size_t i = 0; i < RECV_TABLE_SIZE; ++i)
+    {
+        recv_param_t * cur = &q_table.items[i];
+        if (cur->addr != NULL && strcmp(addr, cur->addr) == 0)
+        {
+            found = NULL;
+            break;
+        }
+
+        if (cur->addr == NULL && found == NULL)
+            found = cur;
+    }
+
+    return found;
+}
+
+static bool check_pattern(const uint8_t * pattern, size_t * size)
+{
+    assert(size != NULL);
+
+    size_t sum = 0;
+    *size = 0;
+
+    if (pattern == NULL)
+        return true;
+
+    for (const uint8_t * item = pattern; *item != 0; ++item)
+    {
+        if (*item > 199)
+            return false;
+
+        sum += *item;
+        ++*size;
+    }
+
+    return sum == 100 * *size;
+}
+
+int reserve_recv_channel(
+    const char * addr,
+    const void * data,
+    size_t size,
+    size_t start,
+    size_t skip,
+    const uint8_t * pattern)
+{
+    char * addr_copy = NULL;
+    uint8_t * pattern_copy = NULL;
+    void * data_copy = NULL;
+    recv_param_t * unused = NULL;
+    size_t pattern_size = 0;
+
+    if (addr == NULL || data == NULL || size == 0)
+        return err_bad_param;
+    
+    unused = find_unused_channel(addr);
+    if (unused == NULL)
+        return err_no_memory;
+
+    if (!check_pattern(pattern, &pattern_size))
+        return err_bad_param;
+
+    addr_copy = strdup(addr);
+    if (addr_copy == NULL)
+        return err_no_memory;
+
+    if (pattern_size > 0)
+    {
+        pattern_copy = (uint8_t *)malloc(sizeof(uint8_t) * pattern_size);
+
+        if (pattern_copy == NULL)
+        {
+            free(addr_copy);
+            return err_no_memory;
+        }
+        memcpy(pattern_copy, pattern, sizeof(uint8_t) * pattern_size);
+    }
+
+    data_copy = malloc(size);
+    if (data_copy == NULL)
+    {
+        free(addr_copy);
+        free(pattern_copy);
+        return err_no_memory;
+    }
+    memcpy(data_copy, data, size);
+
+    unused->addr = addr_copy;
+    unused->data = (generic_array_t){ data_copy, size };
+    unused->start_sgm = start;
+    unused->skip_rate = skip;
+    unused->pattern = (byte_array_t){ pattern_copy, pattern_size };
+
+    return 0;
+}
+
+void free_recv_channel(const char * addr)
+{
+    recv_param_t * found = NULL;
+    if (addr == NULL)
+        return;
+
+    found = find_channel(addr);
+    if (found == NULL)
+        return;
+
+    free((char *)found->addr);
+    free(found->data.array);
+    free(found->pattern.array);
+
+    found->addr = NULL;
+    found->data = (generic_array_t){ NULL, 0 };
+    found->start_sgm = 0;
+    found->skip_rate = 0;
+    found->pattern = (byte_array_t){ NULL, 0 };
+}
+
+inline static size_t sgm_count(size_t data_size, size_t sgm_size)
+{
+    return data_size / sgm_size + (data_size % sgm_size > 0 ? 1 : 0);
+}
+
+static direction_t possible_directions(const recv_desc_impl_t * dimpl)
+{
+    assert(dimpl != NULL);
+
+    bool can_forward = dimpl->to_end.pos < dimpl->data.size;
+    bool can_backward = dimpl->to_begin.pos > 0;
+
+    if (can_forward && can_backward)
+        return both_directions;
+
+    if (can_forward)
+        return forward_only;
+
+    if (can_backward)
+        return backward_only;
+
+    return no_direction;
+}
+
+static direction_t choose_direction(const recv_desc_impl_t * dimpl)
+{
+    direction_t possible = possible_directions(dimpl);
+    assert(possible == both_directions || possible == forward_only
+        || possible == backward_only || possible == no_direction);
+
+    if (possible == both_directions)
+    {
+        if (dimpl->step % 2 == 0)
+            return forward_only;
+
+        return backward_only;
+    }
+
+    return possible;
+}
+
+inline static int need_skip(const recv_desc_impl_t * dimpl)
+{
+    assert(dimpl != NULL);
+    return dimpl->skip_rate > 1 && dimpl->step % dimpl->skip_rate == 0;
+}
+
+inline static const void * get_sgm_at(const recv_desc_impl_t * dimpl, size_t sgm_pos)
+{
+    assert(dimpl != NULL && sgm_pos < dimpl->data.size);
+    return (const char *)dimpl->data.array + sgm_pos;
+}
+
+inline static const size_t base_sgm_size(size_t sgm_size, bool has_pattern)
+{
+    return has_pattern ? (size_t)llround((double)sgm_size / 2.0) : sgm_size;
+}
+
+inline static bool has_pattern(size_array_t pattern)
+{
+    return pattern.array != NULL && pattern.size > 0;
+}
+
+static const size_t sgm_size_to_begin(const recv_desc_impl_t * dimpl)
+{
+    assert(dimpl != NULL);
+    const bool pattern_flag = has_pattern(dimpl->pattern);
+    const size_t base_size = base_sgm_size(dimpl->sgm_size, pattern_flag);
+    size_t size_to_begin = 0;
+    size_t idx = 0;
+    size_t pos = 0;
+
+    if (dimpl->to_begin.pos == 0 || dimpl->to_begin.idx == 0)
+        return size_to_begin;
+
+    idx = dimpl->to_begin.idx - 1;
+    pos = idx * base_size;
+    size_to_begin = base_size;
+
+    if (pattern_flag)
+    {
+        const size_t pattern_size = dimpl->pattern.size * base_size;
+        const size_t repetitions = dimpl->data.size / pattern_size;
+
+        if (idx < repetitions * dimpl->pattern.size)
+        {
+            const size_t count = idx / dimpl->pattern.size;
+            const size_t rem = idx % dimpl->pattern.size;
+
+            pos = count * pattern_size;
+            for (size_t i = 0; i < rem; ++i)
+                pos += dimpl->pattern.array[i];
+
+            size_to_begin = dimpl->pattern.array[rem];
+        }
+    }
+
+    size_to_begin = pos + size_to_begin < dimpl->to_begin.pos 
+        ? size_to_begin : dimpl->to_begin.pos - pos;
+
+    return size_to_begin;
+}
+
+static const size_t sgm_size_to_end(const recv_desc_impl_t * dimpl)
+{
+    assert(dimpl != NULL);
+    const bool pattern_flag = has_pattern(dimpl->pattern);
+    const size_t base_size = base_sgm_size(dimpl->sgm_size, pattern_flag);
+    const size_t tail = dimpl->data.size - dimpl->to_end.pos;
+    size_t size_to_end = 0;
+
+    if (dimpl->to_end.pos >= dimpl->data.size || dimpl->to_end.idx >= dimpl->sgm_total)
+        return size_to_end;
+
+    size_to_end = base_size;
+    if (pattern_flag)
+    {
+        const size_t pattern_size = base_size * dimpl->pattern.size;
+        const size_t repetitions = dimpl->data.size / pattern_size;
+
+        if (dimpl->to_end.idx < repetitions * dimpl->pattern.size)
+            size_to_end = dimpl->pattern.array[dimpl->to_end.idx % dimpl->pattern.size];
+    }
+
+    size_to_end = tail < size_to_end ? tail : size_to_end;
+
+    return size_to_end;
+}
+
+static bool make_pattern(byte_array_t pattern_def, size_t sgm_size, size_array_t * pattern)
+{
+    assert(pattern != NULL);
+
+    const size_t base_size = base_sgm_size(sgm_size, pattern_def.array != NULL);
+    size_t total = pattern_def.size * sgm_size;
+    size_t sum = 0;
+
+    // паттерн не определен либо размер сегмента слишком мал либо размер сегмента и паттерна нечетные
+    if (pattern_def.array == NULL || pattern_def.size == 0 || base_size == 0 || total % 2 != 0)
+        return true;
+
+    // Условие вида `i + 1 < pattern_def.size` нужно для подавления 'Warning C6386: Buffer overrun'
+    for (size_t i = 0; i + 1 < pattern_def.size; ++i)
+    {
+        size_t item_size = base_size * pattern_def.array[i] / 100;
+
+        // паттерн не применим из-за слишком малого размера сегмента
+        if (item_size == 0)
+            return true;
+
+        sum += item_size;
+    }
+
+    total /= 2;
+
+    // паттерн не применим, игнор паттерна
+    if (total <= sum || total > sum + sgm_size)
+        return true;
+
+    pattern->array = (size_t *)malloc(sizeof(size_t) * pattern_def.size);
+
+    if (pattern->array == NULL)
+        return false;
+
+    pattern->size = pattern_def.size;
+
+    for (size_t i = 0; i + 1 < pattern->size; ++i)
+        pattern->array[i] = base_size * pattern_def.array[i] / 100;
+
+    pattern->array[pattern->size - 1] = total - sum;
+
+    return true;
+}
+
+static bound_t calc_start_bound(
+    size_array_t pattern, size_t data_size, size_t base_size, size_t start_idx, size_t total)
+{
+    bound_t start_bound = { 0, 0 };
+
+    if (start_idx >= total)
+    {
+        start_bound = (bound_t){ total, data_size };
+        return start_bound;
+    }
+
+    if (has_pattern(pattern))
+    {
+        const size_t pattern_size = pattern.size * base_size;
+        const size_t pattern_space = data_size - data_size % pattern_size;
+
+        if (start_idx * base_size < pattern_space)
+        {
+            const size_t count = start_idx / pattern.size;
+            const size_t rem = start_idx % pattern.size;
+            start_bound.idx = start_idx;
+            start_bound.pos = count * pattern_size;
+            for (size_t i = 0; i < rem; ++i)
+                start_bound.pos += pattern.array[i];
+
+            return start_bound;
+        }
+    }
+
+    start_bound = (bound_t){ start_idx, start_idx * base_size };
+    return start_bound;
+}
+
+// открытая часть API
+int open_recv(const char * addr, size_t sgm_size, recv_desc_t * pdesc)
+{
+    recv_desc_impl_t * dimpl = NULL;
+    recv_param_t * found = NULL;
+    size_array_t pattern = { NULL, 0 };
+    bound_t start_bound = {0, 0};
+    size_t total = 0;
+    size_t base_size = 0;
+
+    if (addr == NULL || sgm_size == 0 || pdesc == NULL)
+        return err_bad_param;
+
+    found = find_channel(addr);
+    if (found == NULL)
+        return err_address_unreachable;
+
+    dimpl = (recv_desc_impl_t *)malloc(sizeof(recv_desc_impl_t));
+
+    if (dimpl == NULL)
+        return err_no_memory;
+
+    if (!make_pattern(found->pattern, sgm_size, &pattern))
+    {
+        free(dimpl);
+        return err_no_memory;
+    }
+
+    base_size = base_sgm_size(sgm_size, has_pattern(pattern));
+    total = sgm_count(found->data.size, base_size);
+    start_bound = calc_start_bound(pattern, found->data.size, base_size, found->start_sgm, total);
+
+    dimpl->addr = found->addr;
+    dimpl->data = found->data;
+    dimpl->sgm_size = sgm_size;
+    dimpl->sgm_total = total;
+    dimpl->to_begin = start_bound;
+    dimpl->to_end = start_bound;
+    dimpl->step = 0;
+    dimpl->skip_rate = found->skip_rate;
+    dimpl->pattern = pattern;
+
+    *pdesc = dimpl;
+    return 0;
+}
+
+void close_recv(recv_desc_t * pdesc)
+{
+    if (pdesc != NULL)
+        free(*pdesc);
+}
+
+size_t sgm_left(recv_desc_t desc)
+{
+    const recv_desc_impl_t* dimpl = (const recv_desc_impl_t *)desc;
+    return desc == NULL ? 0 : dimpl->sgm_total - (dimpl->to_end.idx - dimpl->to_begin.idx);
+}
+
+size_t max_sgm_size(recv_desc_t desc)
+{
+    return desc == NULL ? 0 : ((recv_desc_impl_t *)desc)->sgm_size;
+}
+
+const char * recv_addr(recv_desc_t desc)
+{
+    return desc == NULL ? NULL : ((recv_desc_impl_t*)desc)->addr;
+}
+
+int recv_sgm(recv_desc_t desc, size_t * idx, void * buf, size_t * size)
+{
+    recv_desc_impl_t * dimpl = NULL;
+    const void * sgm = NULL;
+    size_t sgm_size = 0;
+    direction_t direction = no_direction;
+
+    if (desc == NULL || idx == NULL || size == NULL)
+        return err_bad_param;
+
+    dimpl = (recv_desc_impl_t *)desc;
+
+    if (sgm_left(dimpl) == 0)
+        return err_no_more_data;
+
+    if (need_skip(dimpl))
+    {
+        ++dimpl->step;
+        return err_wait_for_data;
+    }
+
+    direction = choose_direction(dimpl);
+    if (direction == no_direction)
+        return err_no_more_data;
+
+    assert(direction == forward_only || direction == backward_only);
+    if (direction == forward_only)
+    {
+        sgm_size = sgm_size_to_end(dimpl);
+        if (sgm_size == 0)
+            return err_internal;
+
+        *idx = dimpl->to_end.idx;
+
+        assert(dimpl->to_end.pos + sgm_size <= dimpl->data.size);
+        sgm = get_sgm_at(dimpl, dimpl->to_end.pos);
+
+        if (sgm_size > *size)
+        {
+            *size = sgm_size;
+            return err_insufficient_buffer;
+        }
+
+        if (buf == NULL)
+            return err_bad_param;
+
+        dimpl->to_end.pos += sgm_size;
+        ++dimpl->to_end.idx;
+    }
+    else
+    {
+        sgm_size = sgm_size_to_begin(dimpl);
+        if (sgm_size == 0)
+            return err_internal;
+
+        assert(dimpl->to_begin.idx > 0);
+        *idx = dimpl->to_begin.idx - 1;
+
+        assert(sgm_size <= dimpl->to_begin.pos);
+        sgm = get_sgm_at(dimpl, dimpl->to_begin.pos - sgm_size);
+
+        if (sgm_size > *size)
+        {
+            *size = sgm_size;
+            return err_insufficient_buffer;
+        }
+
+        if (buf == NULL)
+            return err_bad_param;
+
+        dimpl->to_begin.pos -= sgm_size;
+        --dimpl->to_begin.idx;
+    }
+
+    memcpy(buf, sgm, sgm_size);
+    *size = sgm_size;
+    ++dimpl->step;
+
+    return 0;
+}
+
+/* КОНЕЦ КОДА КОД СИШНОЙ БИБЛИОТЕКИ, ПОВЕРХ ФУНКЦИЙ КОТОРЫХ НУЖНО НАПИСАТЬ КЛАСС */
+
+import boost.ut;
+import std;
+
+#INJECT-b585472fa
+
+
+const std::string_view minimal_data = "m";
+
+const std::string_view l_internationale = R"(
+Debout! les damnes de la terre,
+Debout! les forcats de la faim!
+La raison tonne en son cratere,
+C'est l'eruption de la fin.
+Du passe faisons table rase,
+Foule esclave, debout! debout!
+Le monde va changer de base:
+Nous ne sommes rien, soyons tout!
+
+C'est la lutte-finale:
+Groupons-nous, et demain,
+L'Internationale
+Sera le genre humain!
+
+In n'est pas de sauvers supremes:
+Ni Dieu, ni Cesar, ni tribun,
+Producteurs, sauvons nous-memes!
+Decretond le salut commun!
+Pour que le voleur rende gorge,
+Pour tirer l'esprit du cachot,
+Soufflons nous-memes notre forge,
+Battons le fer quand il est chaud!
+
+C'est la lutte finale...
+
+L'etat comprime et la loi triche;
+L'impot saigne le malheurex;
+Nul devoir ne s'impose au riche;
+Le droit du pauvre est un mot creux.
+C'est assez languir ein tutelle,
+L'egalite veut d'autres lois;
+Pas de droit sans devoirs,
+dit-elle, Egaux pas de devoirs sans droits!
+
+C'est la lutte finale...
+
+Hideux dans leur apotheose,
+Le rois de la mine et du rail
+Ont-ils jamias fait autre chose
+Que devaliser le travail?
+Dans les coffres-forts de la bande
+Ce qu'il a cree s'est fondu.
+En dedretant qu'on le luirende
+Le peuple ne veut que son du.
+
+C'est la lutte finale...
+
+Le rois nous soulaient de fumees,
+Paix entre nous, guerre aux tyrans!
+Appliquons la greve aux armees,
+Crosse en l'air et rompons les rangs!
+S'il s'obstinent, ces cannibales,
+A faire denous bientot que nos balles
+Sont pour nos propres generaux.
+
+C'est la lutte finale...
+
+Ouvriers, paysans, nous sommes
+Le grand parti des Travailleurs;
+La terre n'appartient qu'aux hommes,
+L'oisif ira loger ailleurs.
+Combiern de nos chairs se repaissent!
+Mais, si les coreaux, les vautours,
+Un de ces matins, disparaissent,
+Le solei brillera toujours!
+
+C'est la lutte-finale:
+Groupons-nous, et demain,
+L'Internationale
+Sera le genre humain!
+)";
+
+
+template <class C, class T = typename C::value_type>
+class ChannelGuard final
+{
+public:
+    ChannelGuard(
+        std::string addr,
+        C data,
+        std::size_t start,
+        std::size_t skip,
+        const std::vector<std::uint8_t> & pattern);
+    ~ChannelGuard();
+
+    ChannelGuard(const ChannelGuard &) = delete;
+    ChannelGuard & operator=(const ChannelGuard &) = delete;
+
+    ChannelGuard(ChannelGuard &&) = default;
+    ChannelGuard & operator=(ChannelGuard &&) = default;
+
+
+private:
+    std::string m_address;
+};
+
+template <class C, class T>
+inline ChannelGuard<C, T>::ChannelGuard(
+    std::string addr,
+    C data,
+    std::size_t start,
+    std::size_t skip,
+    const std::vector<std::uint8_t> & pattern)
+    : m_address(std::move(addr))
+{
+    static_assert(sizeof(T) == 1);
+
+    const int code = ::reserve_recv_channel(
+        m_address.c_str(),
+        data.data(),
+        data.size(),
+        start,
+        skip,
+        pattern.empty() ? nullptr : pattern.data());
+
+    if (code != 0)
+    {
+        const std::string& msg = std::format(
+            "Failed reserve channel with address {}. Error code: {}", m_address, code);
+        throw std::runtime_error{ msg };
+    }
+}
+
+template <class C, class T>
+inline ChannelGuard<C, T>::~ChannelGuard()
+{
+    ::free_recv_channel(m_address.c_str());
+}
+
+
+template <class C>
+struct TestCase
+{
+    std::string addr;
+    C data;
+    std::size_t sgm_size;
+    std::size_t start;
+    std::size_t skip;
+    std::vector<uint8_t> pattern;
+
+    std::string info(std::size_t res_size) const;
+};
+
+using StrTestCase = TestCase<std::string_view>;
+using ByteTestCase = TestCase<std::vector<std::uint8_t>>;
+
+template <class C>
+std::string TestCase<C>::info(std::size_t res_size) const
+{
+    const std::string_view direction = start == 0 ? "прямой (0, 1, 2 ...)"
+        : (start < data.size() ? "случайный" : "обратный (N, N - 1, N - 2)");
+
+    const std::string_view wait_flag = skip < 2 ? "нет" : "да";
+    return std::format(
+        R"(
+адрес канала                 - {}
+размер оригинальных данных   - {}
+размер полученных данных     - {}
+максимальный размер сегмента - {}
+порядок получения сегментов  - {}
+требуется ожидание сегментов - {}
+)",
+        addr, data.size(), res_size, sgm_size, direction, wait_flag);
+}
+
+std::vector<std::uint8_t> generate_byte_array(std::size_t size, std::uint32_t seed)
+{
+    std::vector<std::uint8_t> arr;
+    arr.reserve(size);
+
+    std::mt19937 gen(seed);
+
+    for (std::size_t i = 0; i < size; ++i)
+        arr.push_back(gen() % std::numeric_limits<std::uint8_t>::max());
+
+    return arr;
+}
+
+template <std::size_t N, std::uint32_t S>
+std::vector<std::uint8_t> get_byte_array()
+{
+    static std::vector<std::uint8_t> arr = generate_byte_array(N, S);
+    return arr;
+}
+
+
+std::size_t calc_iter_number(std::size_t data_size, std::size_t sgm_size, std::size_t skip)
+{
+    if (sgm_size == 0)
+        return 1;
+
+    const std::size_t without_skip = data_size / sgm_size + (data_size % sgm_size > 0 ? 1 : 0);
+    return (skip < 2 ? without_skip : (without_skip * (skip + 1)) / skip) + 1;
+}
+
+template <class C>
+void simple_test(const TestCase<C> & param)
+{
+    static_assert(sizeof(typename C::value_type) == 1);
+
+    ChannelGuard guard(param.addr, param.data, param.start, param.skip, param.pattern);
+    SegmentReceiver recv(param.addr, param.sgm_size);
+
+    // Ограничиваем количество попыток, чтобы избежать бесконечного цикла
+    const std::size_t sgm_size = param.pattern.empty() ? param.sgm_size : param.sgm_size / 2;
+    std::size_t recv_count = 2 * calc_iter_number(param.data.size(), sgm_size, param.skip);
+
+    while (recv_count-- > 0)
+    {
+        std::pair<std::size_t, std::size_t> state = recv.receive_segment();
+        if (state.first == state.second)
+            break;
+    }
+
+    const std::vector<std::uint8_t> & result = recv.merge_segments();
+
+    auto is_equal = [](std::uint8_t left, auto right) -> bool
+    {
+        return left == static_cast<std::uint8_t>(right);
+    };
+
+    const bool ok = result.size() == param.data.size() &&
+        std::equal(result.begin(), result.end(), param.data.begin(), is_equal);
+
+    boost::ut::expect(ok) << std::format(
+        "\nРезультирующие данные не совпадают с оригинальными. Параметры прогона:{}",
+        param.info(result.size()));
+}
+
+
+void text_forward_direction_test()
+{
+    const std::vector<std::uint8_t> pattern_64{ 50, 125, 150, 75, 0 };
+    const std::vector<std::uint8_t> pattern_128{ 175, 150, 125, 25, 50, 75, 0 };
+    const std::vector<std::uint8_t> pattern_256{ 25, 50, 75, 100, 125, 150, 175, 0 };
+    const std::vector<std::uint8_t> pattern_512{ 140, 100, 60, 0 };
+
+    std::vector<StrTestCase> test_cases{
+        { "127.0.0.1", minimal_data, 1, 0, 0, {} },
+        { "127.0.0.2", l_internationale, 1, 0, 0, {} },
+        { "127.0.0.3:64", l_internationale, 64, 0, 0, pattern_64},
+        { "127.0.0.4:128", l_internationale, 128, 0, 0, pattern_128 },
+        { "127.0.0.5:256", l_internationale, 256, 0, 0, pattern_256 },
+        { "127.0.0.6:512", l_internationale, 512, 0, 0, pattern_512 },
+        { "127.0.0.7:1024", l_internationale, 1024, 0, 0, {} },
+        { "127.0.0.8:2048", l_internationale, 2048, 0, 0, {} },
+        { "127.0.10.2", l_internationale, 1, 0, 10, {} },
+        { "127.0.6.3:64", l_internationale, 64, 0, 6, pattern_64 },
+        { "127.0.5.4:128", l_internationale, 128, 0, 5, pattern_128 },
+        { "127.0.4.5:256", l_internationale, 256, 0, 4, pattern_256 },
+        { "127.0.3.6:512", l_internationale, 512, 0, 3, pattern_512 },
+        { "127.0.2.7:1024", l_internationale, 1024, 0, 2, {} },
+        { "127.0.2.8:2048", l_internationale, 2048, 0, 2, {} },
+    };
+
+    for (const StrTestCase& cur_case : test_cases)
+        simple_test(cur_case);
+}
+
+void text_backward_direction_test()
+{
+    const std::vector<std::uint8_t> pattern_64{ 50, 125, 150, 75, 0 };
+    const std::vector<std::uint8_t> pattern_128{ 175, 150, 125, 25, 50, 75, 0 };
+    const std::vector<std::uint8_t> pattern_256{ 25, 50, 75, 100, 125, 150, 175, 0 };
+    const std::vector<std::uint8_t> pattern_512{ 140, 100, 60, 0 };
+
+    std::vector<StrTestCase> test_cases{
+        { "168.0.0.1", minimal_data, 1, minimal_data.size(), 0, {} },
+        { "168.0.0.2", l_internationale, 1, l_internationale.size(), 0, {} },
+        { "168.0.0.3:64", l_internationale, 64, l_internationale.size(), 0, pattern_64 },
+        { "168.0.0.4:128", l_internationale, 128, l_internationale.size(), 0, pattern_128 },
+        { "168.0.0.5:256", l_internationale, 256, l_internationale.size(), 0, pattern_256 },
+        { "168.0.0.6:512", l_internationale, 512, l_internationale.size(), 0, pattern_512 },
+        { "168.0.0.7:1024", l_internationale, 1024, l_internationale.size(), 0, {} },
+        { "168.0.0.8:2048", l_internationale, 2048, l_internationale.size(), 0, {} },
+        { "168.0.10.2", l_internationale, 1, l_internationale.size(), 10, {} },
+        { "168.0.6.3:64", l_internationale, 64, l_internationale.size(), 6, pattern_64 },
+        { "168.0.5.4:128", l_internationale, 128, l_internationale.size(), 5, pattern_128 },
+        { "168.0.4.5:256", l_internationale, 256, l_internationale.size(), 4, pattern_256 },
+        { "168.0.3.6:512", l_internationale, 512, l_internationale.size(), 3, pattern_512 },
+        { "168.0.2.7:1024", l_internationale, 1024, l_internationale.size(), 2, {} },
+        { "168.0.2.8:2048", l_internationale, 2048, l_internationale.size(), 2, {} },
+    };
+
+    for (const StrTestCase& cur_case : test_cases)
+        simple_test(cur_case);
+}
+
+void text_random_direction_test()
+{
+    const std::vector<std::uint8_t> pattern_64{ 50, 125, 150, 75, 0 };
+    const std::vector<std::uint8_t> pattern_128{ 175, 150, 125, 25, 50, 75, 0 };
+    const std::vector<std::uint8_t> pattern_256{ 25, 50, 75, 100, 125, 150, 175, 0 };
+    const std::vector<std::uint8_t> pattern_512{ 140, 100, 60, 0 };
+
+    auto l_internationale_middle = [](std::size_t sgm_size) -> std::size_t
+    {
+        // размер сегмента с паттерном в среднем равен половине максимального
+        // поэтому деление на 2 не требуется
+        return l_internationale.size() / sgm_size;
+    };
+
+    std::vector<StrTestCase> test_cases{
+        { "192.0.0.1", l_internationale, 1, l_internationale.size() / 2, 0, {} },
+        { "192.0.0.2:64", l_internationale, 64, l_internationale_middle(64), 0, pattern_64 },
+        { "192.0.0.3:128", l_internationale, 128, l_internationale_middle(128), 0, pattern_128 },
+        { "192.0.0.4:256", l_internationale, 256, l_internationale_middle(256), 0, pattern_256 },
+        { "192.0.0.5:512", l_internationale, 256, l_internationale_middle(512), 0, pattern_512 },
+        { "192.0.10.1", l_internationale, 1, l_internationale.size() / 2, 10, {} },
+        { "192.0.6.2:64", l_internationale, 64, l_internationale_middle(64), 6, pattern_64 },
+        { "192.0.5.3:128", l_internationale, 128, l_internationale_middle(128), 5, pattern_128 },
+        { "192.0.4.4:256", l_internationale, 256, l_internationale_middle(256), 4, pattern_128 },
+        { "192.0.3.5:512", l_internationale, 256, l_internationale_middle(512), 3, pattern_128 },
+    };
+
+    for (const StrTestCase& cur_case : test_cases)
+        simple_test(cur_case);
+}
+
+
+void bytes_forward_direction_test()
+{
+    const std::vector<std::uint8_t>& small = get_byte_array<1, 1>();
+    const std::vector<std::uint8_t>& average = get_byte_array<1024, 16>();
+    const std::vector<std::uint8_t>& big = get_byte_array<1024 * 1024, 256>();
+
+    const std::vector<std::uint8_t> pattern_64{ 50, 125, 150, 75, 0 };
+    const std::vector<std::uint8_t> pattern_128{ 175, 150, 125, 25, 50, 75, 0 };
+    const std::vector<std::uint8_t> pattern_256{ 25, 50, 75, 100, 125, 150, 175, 0 };
+    const std::vector<std::uint8_t> pattern_512{ 140, 100, 60, 0 };
+    const std::vector<std::uint8_t> pattern_1024{ 175, 150, 125, 100, 75, 50, 25, 0 };
+    const std::vector<std::uint8_t> pattern_4096{
+        50, 140, 150, 60, 80, 180, 160, 120, 70, 40, 130, 20, 90, 110, 0 };
+
+    std::vector<ByteTestCase> test_cases{
+        { "128.0.0.1", small, 1, 0, 0, {} },
+        { "128.0.0.2", average, 1, 0, 0, {} },
+        { "128.0.0.3:64", average, 64, 0, 0, pattern_64},
+        { "128.0.0.4:128", average, 128, 0, 0, pattern_128 },
+        { "128.0.0.5:256", average, 256, 0, 0, pattern_256 },
+        { "128.0.0.6:2048", average, 2048, 0, 0, {} },
+        { "128.0.0.7:512", big, 512, 0, 0, pattern_512 },
+        { "128.0.0.8:1024", big, 1024, 0, 0, pattern_1024 },
+        { "128.0.0.9:4096", big, 4096, 0, 0, pattern_4096 },
+        { "128.0.0.10", big, 1024 * 1024 + 1, 0, 0, {} },
+        { "128.0.10.2", average, 1, 0, 10, {} },
+        { "128.0.6.3:64", average, 64, 0, 8, pattern_64 },
+        { "128.0.5.4:128", average, 128, 0, 6, pattern_128 },
+        { "128.0.4.5:256", average, 256, 0, 4, pattern_256 },
+        { "128.0.3.6:512", big, 512, 0, 16, pattern_512 },
+        { "128.0.2.7:1024", big, 1024, 0, 8, pattern_1024 },
+        { "128.0.2.8:4096", big, 4096, 0, 4, pattern_4096 },
+    };
+
+    for (const ByteTestCase& cur_case : test_cases)
+        simple_test(cur_case);
+}
+
+
+void bytes_backward_direction_test()
+{
+    const std::vector<std::uint8_t>& small = get_byte_array<1, 1>();
+    const std::vector<std::uint8_t>& average = get_byte_array<1024, 16>();
+    const std::vector<std::uint8_t>& big = get_byte_array<1024 * 1024, 256>();
+
+    const std::vector<std::uint8_t> pattern_64{ 50, 125, 150, 75, 0 };
+    const std::vector<std::uint8_t> pattern_128{ 175, 150, 125, 25, 50, 75, 0 };
+    const std::vector<std::uint8_t> pattern_256{ 25, 50, 75, 100, 125, 150, 175, 0 };
+    const std::vector<std::uint8_t> pattern_512{ 140, 100, 60, 0 };
+    const std::vector<std::uint8_t> pattern_1024{ 175, 150, 125, 100, 75, 50, 25, 0 };
+    const std::vector<std::uint8_t> pattern_4096{
+        50, 140, 150, 60, 80, 180, 160, 120, 70, 40, 130, 20, 90, 110, 0 };
+
+    std::vector<ByteTestCase> test_cases{
+        { "172.0.0.1", small, 1, small.size(), 0, {}},
+        { "172.0.0.2", average, 1, average.size(), 0, {}},
+        { "172.0.0.3:64", average, 64, average.size(), 0, pattern_64},
+        { "172.0.0.4:128", average, 128, average.size(), 0, pattern_128 },
+        { "172.0.0.5:256", average, 256, average.size(), 0, pattern_256 },
+        { "172.0.0.6:2048", average, 2048, average.size(), 0, {} },
+        { "172.0.0.7:512", big, 512, 0, big.size(), pattern_512 },
+        { "172.0.0.8:1024", big, 1024, big.size(), 0, pattern_1024 },
+        { "172.0.0.9:4096", big, 4096, big.size(), 0, pattern_4096 },
+        { "172.0.0.10", big, 1024 * 1024 + 1, big.size(), 0, {} },
+        { "172.0.10.2", average, 1, average.size(), 10, {} },
+        { "172.0.6.3:64", average, 64, average.size(), 8, pattern_64 },
+        { "172.0.5.4:128", average, 128, average.size(), 6, pattern_128 },
+        { "172.0.4.5:256", average, 256, average.size(), 4, pattern_256 },
+        { "172.0.3.6:512", big, 512, big.size(), 16, pattern_512 },
+        { "172.0.2.7:1024", big, 1024, big.size(), 8, pattern_1024 },
+        { "172.0.2.8:4096", big, 4096, big.size(), 4, pattern_4096 },
+    };
+
+    for (const ByteTestCase& cur_case : test_cases)
+        simple_test(cur_case);
+}
+
+
+void bytes_random_direction_test()
+{
+    const std::vector<std::uint8_t>& average = get_byte_array<1024, 16>();
+    const std::vector<std::uint8_t>& big = get_byte_array<1024 * 1024, 256>();
+
+    const std::vector<std::uint8_t> pattern_64{ 50, 125, 150, 75, 0 };
+    const std::vector<std::uint8_t> pattern_128{ 175, 150, 125, 25, 50, 75, 0 };
+    const std::vector<std::uint8_t> pattern_256{ 25, 50, 75, 100, 125, 150, 175, 0 };
+    const std::vector<std::uint8_t> pattern_512{ 140, 100, 60, 0 };
+    const std::vector<std::uint8_t> pattern_1024{ 175, 150, 125, 100, 75, 50, 25, 0 };
+    const std::vector<std::uint8_t> pattern_4096{
+        50, 140, 150, 60, 80, 180, 160, 120, 70, 40, 130, 20, 90, 110, 0 };
+
+    auto middle = [](const std::vector<std::uint8_t> & arr, std::size_t sgm_size) -> std::size_t
+    {
+        return arr.size() / sgm_size;
+    };
+
+    std::vector<ByteTestCase> test_cases{
+        { "144.0.0.2", average, 1, average.size() / 2, 0, {}},
+        { "144.0.0.3:64", average, 64, middle(average, 64), 0, pattern_64},
+        { "144.0.0.4:128", average, 128, middle(average, 128), 0, pattern_128 },
+        { "144.0.0.5:256", average, 256, middle(average, 256), 0, pattern_256 },
+        { "144.0.0.7:512", big, 512, middle(big, 512), 0, pattern_512 },
+        { "144.0.0.8:1024", big, 1024, middle(big, 1024), 0, pattern_1024 },
+        { "144.0.0.9:4096", big, 4096, middle(big, 4096), 0, pattern_4096 },
+        { "144.0.10.2", average, 1, average.size() / 2, 10, {} },
+        { "144.0.6.3:64", average, 64, middle(average, 64), 8, pattern_64 },
+        { "144.0.5.4:128", average, 128, middle(average, 128), 6, pattern_128 },
+        { "144.0.4.5:256", average, 256, middle(average, 256), 4, pattern_256 },
+        { "144.0.3.6:512", big, 512, middle(big, 512), 16, pattern_512 },
+        { "144.0.2.7:1024", big, 1024, middle(big, 1024), 8, pattern_1024 },
+        { "144.0.2.8:4096", big, 4096, middle(big, 4096), 4, pattern_4096 },
+    };
+
+    for (const ByteTestCase& cur_case : test_cases)
+        simple_test(cur_case);
+}
+
+
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+    using namespace boost::ut;
+
+    "non-existent address"_test = [] {
+        expect(throws<std::runtime_error>([] {
+            SegmentReceiver recv{ "100.1.0.10", 1024 };
+        })) << "Ожидается std::runtime_error при попытке открыть несуществующий адрес";
+    };
+
+    "zero segment size"_test = [] {
+        expect(throws<std::runtime_error>([] {
+            StrTestCase test_case{ "127.0.0.1", l_internationale, 0, 0, 0 };
+            simple_test(test_case);
+        })) << "Ожидается std::runtime_error при попытке открыть несуществующий адрес";
+    };
+
+    "text forward direction"_test = [] {
+        text_forward_direction_test();
+    };
+
+    "text backward direction"_test = [] {
+        text_backward_direction_test();
+    };
+
+    "text random direction"_test = [] {
+        text_random_direction_test();
+    };
+
+    "bytes forward direction"_test = [] {
+        bytes_forward_direction_test();
+    };
+
+    "bytes backward direction"_test = [] {
+        bytes_backward_direction_test();
+    };
+
+    "bytes random direction"_test = [] {
+        bytes_random_direction_test();
+    };
+}
