@@ -25,7 +25,7 @@ true
 ```
 
 
-![Указатель на указатель](https://raw.githubusercontent.com/senjun-team/senjun-courses/cpp-chapter-15-5/illustrations/cpp/pointer_to_pointer.jpg) {.illustration}
+![Указатель на указатель](https://raw.githubusercontent.com/senjun-team/senjun-courses/main/illustrations/cpp/pointer_to_pointer.jpg) {.illustration}
 
 
 Указатель на указатель называют **двойным указателем.** Могут быть и указатели с любым другим уровнем косвенности. Например, указатель на указатель на указатель `T *** p`. Но на практике такие чудеса попадаются редко.

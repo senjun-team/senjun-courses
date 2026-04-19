@@ -115,7 +115,7 @@ char c = *it; // Ок
 При инкременте `reverse_iterator` смещается ближе к началу контейнера.
 
 
-![Обратные итераторы по строке](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-6/illustrations/cpp/reverse_iterators.jpg) {.illustration}
+![Обратные итераторы по строке](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/reverse_iterators.jpg) {.illustration}
 
 
 Так выглядит обратный проход по строке:

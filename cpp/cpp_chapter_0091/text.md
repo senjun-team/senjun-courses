@@ -24,7 +24,7 @@
 _Упрощенно_ представим виртуальное адресное пространство однопоточного процесса. Допустим, оно занимает 32 Кб. Код программы находится в начале адресного пространства. Это удобно, ведь его размер известен заранее и не меняется. Стек и куча, напротив, могут расти и уменьшаться. Поэтому они расположены в противоположных концах адресного пространства и растут друг навстречу другу. {#block-virtual-address}
 
 
-![Упрощенное представление памяти процесса](https://raw.githubusercontent.com/senjun-team/senjun-courses/cpp-chapter-9/illustrations/cpp/process_memory.jpg) {.illustration}
+![Упрощенное представление памяти процесса](https://raw.githubusercontent.com/senjun-team/senjun-courses/main/illustrations/cpp/process_memory.jpg) {.illustration}
 
 
 Если программа работает в несколько потоков, её адресное пространство организовано сложнее. Об этом будет рассказано в следующих главах.
@@ -153,7 +153,7 @@ int main()
 
 В этот момент стек вызовов будет содержать 4 фрейма:
 
-![Фреймы стека вызовов](https://raw.githubusercontent.com/senjun-team/senjun-courses/cpp-chapter-9/illustrations/cpp/call_stack.jpg) {.illustration}
+![Фреймы стека вызовов](https://raw.githubusercontent.com/senjun-team/senjun-courses/main/illustrations/cpp/call_stack.jpg) {.illustration}
 
 Указатель вершины стека всегда смотрит на последний добавленный фрейм. При завершении функции он смещается к предыдущему фрейму, таким образом уменьшая количество фреймов в стеке. 
 

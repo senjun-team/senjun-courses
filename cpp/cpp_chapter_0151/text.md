@@ -10,7 +10,7 @@ C++ — это высокоуровневый язык с низкоуровне
 - динамической.
 
 
-![Упрощённое представление памяти процесса](https://raw.githubusercontent.com/senjun-team/senjun-courses/cpp-chapter-9/illustrations/cpp/process_memory.jpg) {.illustration}
+![Упрощённое представление памяти процесса](https://raw.githubusercontent.com/senjun-team/senjun-courses/main/illustrations/cpp/process_memory.jpg) {.illustration}
 
 
 ### Статическая память
