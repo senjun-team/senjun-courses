@@ -6,7 +6,7 @@
 
 Указатель — это переменная, которая хранит адрес другой переменной. А указатель на указатель, получается, хранит адрес не просто какой-то переменной, а указателя.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_001}
 bool b = true;         // Переменная
 
 bool * ptr = &b;       // Указатель
@@ -14,25 +14,36 @@ bool * ptr = &b;       // Указатель
 bool ** pptr = &ptr;   // Указатель на указатель
 
 // Разыменовываем pptr и получаем адрес, хранящийся в ptr
-*pptr;
+std::println("{}", static_cast<void *>(*pptr));
 
 // Получаем значение b
-**pptr;
+std::println("{}", **pptr);
+```
+```
+0x7ffeeec961b7
+true
 ```
 
 
 ![Указатель на указатель](https://raw.githubusercontent.com/senjun-team/senjun-courses/cpp-chapter-15-5/illustrations/cpp/pointer_to_pointer.jpg) {.illustration}
 
 
-
 Указатель на указатель называют **двойным указателем.** Могут быть и указатели с любым другим уровнем косвенности. Например, указатель на указатель на указатель `T *** p`. Но на практике такие чудеса попадаются редко.
 
 Количество звездочек `*` в объявлении определяет уровень косвенности:
 
-```cpp
-int * a = nullptr;     // Указатель
-int ** b = nullptr;    // Двойной указатель
-int *** c = nullptr;   // Тройной
+```cpp  {.example_for_playground .example_for_playground_002}
+    int x = 8;
+    
+    int * a = &x;    // Указатель
+    int ** b = &a;   // Двойной указатель
+    int *** c = &b;  // Тройной
+
+    std::println("val: {}. x addr: {}", *a, static_cast<void *>(&x));
+    
+    std::println("a value (x addr): {}", static_cast<void *>(a));
+    std::println("b value (a addr): {}", static_cast<void *>(b));
+    std::println("c value (b addr): {}", static_cast<void *>(c));
 ```
 
 Основных сценариев применения указателей на указатели всего три:
@@ -48,7 +59,7 @@ int *** c = nullptr;   // Тройной
 
 Вот как это выглядит:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_003}
 std::size_t rows = 3;
 std::size_t cols = 4;
 
@@ -79,6 +90,11 @@ for (std::size_t i = 0; i < rows; ++i)
 // После этого освобождаем массив указателей
 delete[] matrix;
 ```
+```
+0 1 2 3 
+1 2 3 4 
+2 3 4 5
+```
 
 Применение двойных указателей для создания матриц отлично подходит для учебных задач. Но в реальной разработке так практически не делают.
 
@@ -96,7 +112,7 @@ std::vector<std::vector<int>> matrix(rows, std::vector<int>(cols));
 
 В случае ошибки компиляции напишите `err`. В случае неопределенного поведения напишите `ub`. {.task_text}
 
-```cpp {.example_for_playground}
+```cpp  {.example_for_playground .example_for_playground_004}
 std::size_t rows = 2;
 std::size_t cols = rows;
 
@@ -222,7 +238,7 @@ JaggedBuffer::JaggedBuffer(std::size_t row_count, const int * col_sizes)
 
 Имеется сишная библиотека для гарантированной доставки данных по сети. Она позволяет открыть канал и получать из него данные сегментами разной длины. Интерфейс библиотеки состоит из функций для инициализации получения данных, завершения получения, доступа к сегментам и определения, сколько сегментов осталось не полученными. {.task_text}
 
-Напишите класс — RAII-обертку над этой библиотекой. {.task_text}
+Напишите класс — RAII-обертку над этой библиотекой. Если потребуется, вы можете добавить в него приватные методы и поля, а также создавать свободные функции. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0156_task_0020}
 // Интерфейс сишной библиотеки
@@ -300,7 +316,172 @@ private:
 ```
 . {.task_hint}
 ```cpp {.task_answer}
+class SegmentReceiver {
+public:
+    SegmentReceiver(const std::string & address, std::size_t segment_size);
+    ~SegmentReceiver();
 
+    std::pair<std::size_t, std::size_t> receive_segment();
+    std::vector<std::uint8_t> merge_segments() const;
+
+private:
+    std::string address() const;
+    std::string unexpected_error(int err_code) const;
+    void allocate_segment(std::size_t index, std::size_t size);
+    std::size_t received_segment_count() const;
+    void clear();
+
+    // Дескриптор канала данных
+    recv_desc_t m_recv = nullptr;
+    // Массив сегментов
+    std::uint8_t ** m_segments = nullptr;
+    // Длины сегментов
+    std::size_t * m_sizes = nullptr;
+    // Количество сегментов
+    std::size_t m_total = 0;
+};
+
+
+recv_desc_t make_receiver(const std::string& address, std::size_t segment_size)
+{
+    recv_desc_t recv = nullptr;
+    int code = ::open_recv(address.c_str(), segment_size, &recv);
+
+    if (code == err_no_memory)
+    {
+        throw std::bad_alloc{};
+    }
+    else if (code < 0)
+    {
+        const std::string& msg = std::format(
+            "Failed to open channel by address {} with segment size {}. Error code: {}",
+            address, segment_size, code);
+
+        throw std::runtime_error{ msg };
+    }
+
+    return recv;
+}
+
+template <class I>
+I * make_array(std::size_t count)
+{
+    I* arr = new I[count];
+    std::fill(arr, arr + count, I{});
+    return arr;
+}
+
+SegmentReceiver::SegmentReceiver(const std::string& address, std::size_t segment_size)
+{
+    try
+    {
+        m_recv = make_receiver(address, segment_size);
+        m_total = ::sgm_left(m_recv);
+        m_segments = make_array<std::uint8_t*>(m_total);
+        m_sizes = make_array<std::size_t>(m_total);
+    }
+    catch (...)
+    {
+        clear();
+        throw;
+    }
+}
+
+SegmentReceiver::~SegmentReceiver()
+{
+    clear();
+}
+
+std::pair<std::size_t, std::size_t> SegmentReceiver::receive_segment()
+{
+    std::size_t index = 0;
+    std::size_t size = 0;
+    int code = 0;
+
+    do
+    {
+        code = ::recv_sgm(m_recv, &index, nullptr, &size);
+    } while (code == err_wait_for_data);
+
+    if (code != err_insufficient_buffer)
+        throw std::runtime_error{ unexpected_error(code) };
+
+    allocate_segment(index, size);
+    code = ::recv_sgm(m_recv, &index, m_segments[index], &size);
+
+    if (code < 0)
+        throw std::runtime_error{ unexpected_error(code) };
+
+    m_sizes[index] = size;
+    return { received_segment_count(), m_total };
+}
+
+std::vector<std::uint8_t> SegmentReceiver::merge_segments() const
+{
+    const std::size_t received_count = received_segment_count();
+    if (received_count != m_total)
+    {
+        const std::string& msg = std::format(
+            "Unable to compose data, not all segments were received. Received / total: {} / {}",
+            received_count, m_total);
+        throw std::runtime_error{ msg };
+    }
+
+    const std::size_t data_size = std::accumulate(m_sizes, m_sizes + m_total, 0ull);
+    std::vector<std::uint8_t> data(data_size);
+
+    std::size_t pos = 0;
+    for (std::size_t i = 0; i < m_total; ++i)
+    {
+        const std::uint8_t* segment = m_segments[i];
+        const std::size_t size = m_sizes[i];
+        std::copy(segment, segment + size, data.data() + pos);
+        pos += size;
+    }
+
+    return data;
+}
+
+std::string SegmentReceiver::address() const
+{
+    const char* addr = ::recv_addr(m_recv);
+    return addr != nullptr ? std::string{ addr } : std::string("unknown");
+}
+
+std::string SegmentReceiver::unexpected_error(int err_code) const
+{
+    return std::format(
+        "Can't receive data from '{}' due to unexpected error {}.", address(), err_code);
+}
+
+void SegmentReceiver::allocate_segment(std::size_t index, std::size_t size)
+{
+    if (m_sizes[index] < size)
+    {
+        delete[] m_segments[index];
+        m_segments[index] = new std::uint8_t[size];
+        m_sizes[index] = size;
+    }
+}
+
+std::size_t SegmentReceiver::received_segment_count() const
+{
+    return m_total - ::sgm_left(m_recv);
+}
+
+void SegmentReceiver::clear()
+{
+    if (m_segments != nullptr)
+    {
+        for (std::uint8_t** cur = m_segments, **end = cur + m_total; cur != end; ++cur)
+            delete[] * cur;
+
+        delete[] m_segments;
+    }
+
+    delete[] m_sizes;
+    ::close_recv(&m_recv);
+}
 ```
 
 ## Функция main() с аргументами командной строки
@@ -332,7 +513,7 @@ int main(int argc, char ** argv);
 
 Выведем содержимое `argc` и `argv`:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_005}
 int main(int argc, char ** argv)
 {
     std::println("Arg count: {}", argc);
@@ -433,7 +614,7 @@ Args parse_args(int argc, char * argv[])
 
 Допустим, мы хотим занулить указатель, вызвав для него `set_to_null()`:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_006}
 void set_to_null(int * p)
 {
     p = nullptr;
@@ -473,7 +654,7 @@ p_val == nullptr in main: false
 
 Давайте исправим предыдущий пример и передадим указатель по ссылке:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_007}
 void set_to_null(int *& p) // Поменяли тип `int *` на `int *&`
 {
     p = nullptr;
@@ -515,7 +696,7 @@ n
 
 А теперь опробуем передачу по указателю:
 
-```cpp
+```cpp    {.example_for_playground .example_for_playground_008}
 void set_to_null(int ** p) // Поменяли тип `int *` на `int **`
 {
     *p = nullptr;          // Разыменовываем двойной указатель
