@@ -314,7 +314,7 @@ private:
 // Ваш код: определение методов
 
 ```
-. {.task_hint}
+Не забудьте сделать конструктор безопасным. {.task_hint}
 ```cpp {.task_answer}
 class SegmentReceiver {
 public:
