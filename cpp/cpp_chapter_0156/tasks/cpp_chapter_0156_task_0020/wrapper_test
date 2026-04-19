@@ -1,0 +1,68 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+constexpr std::size_t non_existent_i = std::numeric_limits<std::size_t>::max();
+
+struct TestCase
+{
+    std::string str;
+    char ch = '\0';
+    std::size_t i = non_existent_i;
+};
+
+
+void check_case(const TestCase & c)
+{
+    const std::string prefix = std::format("Calling find_char() for string \"{}\" and char '{}'.", c.str, c.ch);
+    const char * p = find_char(c.str.c_str(), c.ch);
+
+    if (c.i == non_existent_i)
+    {
+        expect(p == nullptr) << std::format("{} Expected result: nullptr", prefix) << fatal;
+    }
+    else
+    {
+        expect(p - c.str.c_str() == c.i) << std::format("{} Expected result: pointer to char with index {}. Actual result: pointer to char with index {}",
+        prefix, c.i, p - c.str.c_str()) << fatal;
+    } 
+} 
+
+int main()
+{
+    "corner cases"_test = [] {
+        std::vector<TestCase> cases = {
+            {"", '\0', 0},
+            {"", 'a', non_existent_i},
+            {"a", '\0', 1},
+            {"a", 'a', 0},
+            {"a", 'b', non_existent_i},
+        };
+
+        for (const auto & c: cases)
+            check_case(c);
+    };
+
+    "different cases"_test = [] {
+        std::vector<TestCase> cases = {
+            {"abab", 'a', 0},
+            {"abab", 'b', 1},
+            {"abab", 'B', non_existent_i},
+            {"ABABA", 'a', non_existent_i},
+            {"abab", 'c', non_existent_i},
+            {"c-style string", '\0', 14},
+            {"c-style string", 's', 2},
+            {"Pointer Arithmetic", ' ', 7},
+            {"Pointer Arithmetic", 'A', 8},
+            {"Pointer Arithmetic", 'c', 17},
+        };
+
+        for (const auto & c: cases)
+            check_case(c);
+    };
+}

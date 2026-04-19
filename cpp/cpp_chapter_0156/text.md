@@ -398,9 +398,35 @@ Args parse_args(int argc, char * argv[])
 
 }
 ```
-В списке инициализации присвойте указателю `m_elements` значение, которое возвращает функция `make_array()`. {.task_hint}
+У строки `std::string` есть конструктор от `char *` и методы `starts_with()`, `find()` и `substr()`. {.task_hint}
 ```cpp {.task_answer}
+struct Args
+{
+    std::unordered_map<std::string, std::string> keyword;
+    std::vector<std::string> positional;
+};
 
+Args parse_args(int argc, char * argv[])
+{
+    Args args;
+    
+    for (std::size_t i = 1; i < argc; ++i) // Пропускаем имя программы
+    {
+        const std::string arg{argv[i]};
+
+        if (arg.starts_with("--")) // Именованный аргумент
+        {            
+            if (std::size_t pos = arg.find('='); pos != std::string::npos)
+                args.keyword[arg.substr(2, pos - 2)] = arg.substr(pos + 1);
+        }
+        else // Позиционный аргумент
+        {
+            args.positional.push_back(arg);
+        }
+    }
+    
+    return args;
+}
 ```
 
 ## Изменение указателя внутри функции
