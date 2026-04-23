@@ -287,7 +287,7 @@ public:
 
     // Получает очередной сегмент данных и сохраняет его во внутренний
     // буфер. Возвращает количество полученных сегментов и 
-    // обшее количество сегментов.
+    // общее количество сегментов.
     std::pair<std::size_t, std::size_t> receive_segment();
 
     // Объединяет сегменты и возвращает результат, если были получены
@@ -295,12 +295,6 @@ public:
     std::vector<std::uint8_t> merge_segments() const;
 
 private:
-    std::string address() const;
-    std::string unexpected_error(int err_code) const;
-    void allocate_segment(std::size_t index, std::size_t size);
-    std::size_t received_segment_count() const;
-    void clear();
-
     // Дескриптор канала данных
     recv_desc_t m_recv = nullptr;
 
