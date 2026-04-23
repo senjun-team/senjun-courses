@@ -263,45 +263,49 @@ size_t sgm_left(recv_desc_t desc);
 /* Возвращает сегмент данных. Возвращает 0 в случае успеха и отрицательный
 код ошибки в противном случае. Код ошибки err_wait_for_data означает, что
 следует вызвать функцию повторно. Код ошибки err_insufficient_buffer 
-сигнализирует, что размер переданного буффера недостаточен, а в size возвращается
+сигнализирует, что размер переданного буфера недостаточен, а в size возвращается
 ожидаемый размер.
     [in]     desc - валидный дескриптор канала данных,
     [out]    idx  - индекс сегмента,
-    [out]    buf  - буффер для сохранения сегмента,
-    [in/out] size - размер буффера на входе и реальный размер сегмента данных 
+    [out]    buf  - буфер для сохранения сегмента,
+    [in/out] size - размер буфера на входе и реальный размер сегмента данных 
                     на выходе. */
 int recv_sgm(recv_desc_t desc, size_t * idx, void * buf, size_t * size);
 
 
 // Объявление класса-обёртки
 
-template <class T = std::uint8_t>
 class SegmentReceiver {
 public:
     // Конструктор и методы выбрасывает std::bad_alloc при нехватке
     // памяти и std::runtime_error в других случаях.
 
-    // Инициализирует канал данных и буффер для хранения сегментов.
+    // Инициализирует канал данных и буфер для хранения сегментов.
     SegmentReceiver(const std::string & address, std::size_t segment_size);
-
     // Закрывает канал.
     ~SegmentReceiver();
 
     // Получает очередной сегмент данных и сохраняет его во внутренний
-    // буффер. Возвращает количество полученных сегментов и 
-    // общее количество сегментов.
+    // буфер. Возвращает количество полученных сегментов и 
+    // обшее количество сегментов.
     std::pair<std::size_t, std::size_t> receive_segment();
 
     // Объединяет сегменты и возвращает результат, если были получены
     // все сегменты, в противном случае бросает исключение.
-    std::vector<T> merge_segments() const;
+    std::vector<std::uint8_t> merge_segments() const;
 
 private:
+    std::string address() const;
+    std::string unexpected_error(int err_code) const;
+    void allocate_segment(std::size_t index, std::size_t size);
+    std::size_t received_segment_count() const;
+    void clear();
+
     // Дескриптор канала данных
     recv_desc_t m_recv = nullptr;
 
     // Массив сегментов
-    T ** m_segments = nullptr;
+    std::uint8_t ** m_segments = nullptr;
 
     // Длины сегментов
     std::size_t * m_sizes = nullptr;
@@ -331,13 +335,9 @@ private:
     std::size_t received_segment_count() const;
     void clear();
 
-    // Дескриптор канала данных
     recv_desc_t m_recv = nullptr;
-    // Массив сегментов
     std::uint8_t ** m_segments = nullptr;
-    // Длины сегментов
     std::size_t * m_sizes = nullptr;
-    // Количество сегментов
     std::size_t m_total = 0;
 };
 
@@ -542,10 +542,10 @@ Arg count: 5
 1: --from
 2: conf.json
 3: --to
-4: data/conf_backup.json
+4: ./useful data/conf_backup.json
 ```
 
-Популярна альтернативная форма записи типа `char ** argv` — `char * argv[]`:
+Популярна альтернативная форма записи второго аргумента: `char * argv[]` вместо `char ** argv`.
 
 ```cpp
 int main(int argc, char * argv[]);
