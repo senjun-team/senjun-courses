@@ -440,7 +440,7 @@ static bool make_pattern(byte_array_t pattern_def, size_t sgm_size, size_array_t
     size_t total = pattern_def.size * sgm_size;
     size_t sum = 0;
 
-    // паттерн не определен либо размер сегмента слишком мал либо размер сегмента и паттерна нечетные
+    // паттерн не определён либо размер сегмента слишком мал либо размер сегмента и паттерна нечётные
     if (pattern_def.array == NULL || pattern_def.size == 0 || base_size == 0 || total % 2 != 0)
         return true;
 
