@@ -33,7 +33,7 @@ public:
         // Вызывает delete ptr либо delete[] ptr
     }
 
-    T * get_raw_pointer()
+    T * get()
     {
         // Возвращает сырой указатель
     }
@@ -564,27 +564,13 @@ struct Texture
 class TextureCache
 {
 public:
-    std::shared_ptr<Texture> get_texture(const std::string & name)
-    {
-        auto it = cache.find(name);
-        
-        // Пытаемся получить shared_ptr из weak_ptr
-        if (it != cache.end())
-        {
-            if (auto shared = it->second.lock(); shared != nullptr)
-                return shared;   
-        }
-
-        // Текстуры нет или она уже удалена: создаем ее
-        auto texture = std::make_shared<Texture>(name);
-
-        cache[name] = texture; // Кешируем: сохраняем как weak_ptr
-        return texture;
-    }
+    std::shared_ptr<Texture> get_texture(const std::string & name);
 
 private:
     std::map<std::string, std::weak_ptr<Texture>> cache;
 };
+
+// Реализация метод get_texture()
 ```
 . {.task_hint}
 ```cpp {.task_answer}
@@ -595,9 +581,9 @@ public:
     {
         auto it = cache.find(name);
         
-        // Пытаемся получить shared_ptr из weak_ptr
         if (it != cache.end())
         {
+            // Пытаемся получить shared_ptr из weak_ptr
             if (auto shared = it->second.lock(); shared != nullptr)
                 return shared;   
         }
@@ -605,7 +591,8 @@ public:
         // Текстуры нет или она уже удалена: создаем ее
         auto texture = std::make_shared<Texture>(name);
 
-        cache[name] = texture; // Кешируем: сохраняем как weak_ptr
+        // Кешируем: сохраняем как weak_ptr
+        cache[name] = texture;
         return texture;
     }
     
