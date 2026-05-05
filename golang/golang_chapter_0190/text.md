@@ -36,7 +36,7 @@ wg.Wait()
 
 Метод `Add` должен быть вызван перед запуском горутин, а не внутри них! В противном случае мы не можем быть уверены, что вызвали его до метода `Wait`.
 
-Следующий пример демонстрирует использование `sync.WaitGroup`. Программа должна обработать матрицу оборудования размером *1 млн.* элементов. Каждый элемент представляет собой структуру из имени оборудования и признака того, что оно валидно. Допустимым именем оборудования является любая строка, в которой отсутствуют символы `"!@#$%^&*()"`. В противном случае имя является недопустимым. Необходимо проставить признак допустимости имени для каждого элемента. 
+Следующий пример демонстрирует использование `sync.WaitGroup`. Программа должна обработать матрицу оборудования размером *1 млн.* элементов. Каждый элемент представляет собой структуру из имени оборудования и признака того, что оно валидно. Допустимым именем оборудования является только строка, состоящая из букв, цифр и символа пробела. Необходимо проставить признак допустимости имени для каждого элемента. 
 
 Программа выполняется в двух режимах: последовательном и параллельном. В случае параллельного режима мы сначала запрашиваем число ядер через функцию `runtime.NumCPU()`. Число горутин определяется количеством ядер. Поделив матрицу на части, мы запускаем по горутине на каждую часть. Переменная `wg` типа `sync.WaitGroup` используется в качестве счетчика горутин. 
 
@@ -50,9 +50,9 @@ import (
 	"math"
 	"math/rand"
 	"runtime"
-	"slices"
 	"sync"
 	"time"
+	"unicode"
 )
 
 const elementsNumber = 1000000
@@ -63,6 +63,10 @@ const (
 	valid
 	invalid
 )
+const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const digits = "0123456789"
+const invalidSymbols = "!@#$%^&*()"
+const allSymbols = letters + digits + invalidSymbols
 
 type equipmentT struct {
 	name    string
@@ -71,10 +75,7 @@ type equipmentT struct {
 
 // Функция randName генерирует случайное имя оборудования
 func randName(r *rand.Rand, n int) string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	var invalidSymbols = []rune("!@#$%^&*()")
-	allSymbols := append(letters, invalidSymbols...)
-	b := make([]rune, n)
+	b := make([]byte, n)
 	for i := range b {
 		b[i] = allSymbols[r.Intn(len(allSymbols))]
 	}
@@ -82,19 +83,18 @@ func randName(r *rand.Rand, n int) string {
 }
 
 // Функция worker проверяет свою часть матрицы
-func worker(input *[elementsNumber]equipmentT, min int, max int) {
-	for i := min; i < max; i++ {
+func worker(input []equipmentT) {
+	for i := range input {
 		input[i].isValid = check(input[i].name)
 	}
 }
 
 // Функция check проверяет имя оборудования
 func check(name string) int {
-	var invalidSymbols = []rune("!@#$%^&*()")
 	for _, r := range name {
-		// slices.Contains проверяет вхождение
-		// элемента в срез
-		if slices.Contains(invalidSymbols, r) {
+		if !(unicode.IsLetter(r) ||
+			unicode.IsDigit(r) ||
+			r == ' ') {
 			return invalid
 		}
 	}
@@ -102,13 +102,13 @@ func check(name string) int {
 }
 
 /*
-Функция statisticPrintln печатает 
+Функция statisticPrintln печатает
 статистику по матрице:
 validNumber - число валидных имен
 invalidNumber - число невалидных имен
 unknownNumber - число непроверенных имен
 */
-func statisticPrintln(result *[elementsNumber]equipmentT) {
+func statisticPrintln(result []equipmentT) {
 	validNumber := 0
 	invalidNumber := 0
 	for _, equipment := range result {
@@ -122,6 +122,7 @@ func statisticPrintln(result *[elementsNumber]equipmentT) {
 	fmt.Printf("validNumber=%d, invalidNumber=%d, unknownNumber=%d\n",
 		validNumber, invalidNumber, elementsNumber-validNumber-invalidNumber)
 }
+
 func main() {
 	// Подготовка данных
 	// Матрица для последовательных вычислений
@@ -137,14 +138,13 @@ func main() {
 		workerEquipmentMatrix[i] = equipmentMatrix[i]
 	}
 	// Последовательная часть программы
-	t1 := time.Now()
-	for i := range len(equipmentMatrix) {
+	start := time.Now()
+	for i := range equipmentMatrix {
 		equipmentMatrix[i].isValid = check(equipmentMatrix[i].name)
 	}
-	t2 := time.Now()
-	resTime := t2.Sub(t1).Milliseconds()
+	resTime := time.Since(start).Milliseconds()
 	fmt.Println("equipmentMatrix:")
-	statisticPrintln(&equipmentMatrix)
+	statisticPrintln(equipmentMatrix[:])
 	fmt.Printf("time: %d milliseconds\n", resTime)
 	fmt.Println()
 	// Параллельная часть программы
@@ -154,39 +154,34 @@ func main() {
 	// ЗДЕСЬ работаем с sync.waitGroup
 	var wg sync.WaitGroup
 	wg.Add(workersNumber)
-	min := 0
-	max := min + chunk
-	if max > elementsNumber {
-		max = elementsNumber
-	}
-	t1 = time.Now()
+	minIdx := 0
+	maxIdx := minIdx + chunk
+	maxIdx = min(elementsNumber, maxIdx)
+	start = time.Now()
 	for range workersNumber {
-		go func(min int, max int) {
+		go func(minIdx int, maxIdx int) {
 			defer wg.Done()
-			worker(&workerEquipmentMatrix, min, max)
-		}(min, max)
-		min = max
-		max = min + chunk
-		if max > elementsNumber {
-			max = elementsNumber
-		}
+			worker(workerEquipmentMatrix[minIdx:maxIdx])
+		}(minIdx, maxIdx)
+		minIdx = maxIdx
+		maxIdx = minIdx + chunk
+		maxIdx = min(elementsNumber, maxIdx)
 	}
 	wg.Wait()
-	t2 = time.Now()
-	resTime = t2.Sub(t1).Milliseconds()
+	resTime = time.Since(start).Milliseconds()
 	fmt.Println("workerEquipmentMatrix:")
-	statisticPrintln(&workerEquipmentMatrix)
+	statisticPrintln(workerEquipmentMatrix[:])
 	fmt.Printf("time: %d milliseconds\n", resTime)
 }
 ```
 ```
 equipmentMatrix:
-validNumber=171790, invalidNumber=828210, unknownNumber=0
-time: 145 milliseconds
+validNumber=224424, invalidNumber=775576, unknownNumber=0
+time: 58 milliseconds
 
 workerEquipmentMatrix:
-validNumber=171790, invalidNumber=828210, unknownNumber=0
-time: 19 milliseconds
+validNumber=224424, invalidNumber=775576, unknownNumber=0
+time: 12 milliseconds
 ```
 
 Время выполнения будет немного варьироваться от запуска к запуску. 
