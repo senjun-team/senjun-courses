@@ -1,0 +1,20 @@
+import boost.ut;
+
+#INJECT-b585472fa
+
+namespace ut = boost::ut;
+
+int main()
+{
+    using namespace ut;
+
+  "promocode-independent cases"_test = [] {
+    expect(0.0_d == get_price_with_discount(0.0, true)) << "\nget_price_with_discount(0.0, true) must return 0.0\n" << fatal;
+    expect(0.0_d == get_price_with_discount(0.0, false)) << "\nget_price_with_discount(0.0, false) must return 0.0\n" << fatal;
+  };
+
+  "promocode-dependent cases"_test = [] {
+    expect(90.0_d == get_price_with_discount(100.0, true)) << "\nget_price_with_discount(100.0, true) must return 90.0\n" << fatal;
+    expect(100.0_d == get_price_with_discount(100.0, false)) << "\nget_price_with_discount(100.0, false) must return 100.0\n" << fatal;
+  };
+}

@@ -1,0 +1,99 @@
+import re
+import sys
+from io import StringIO
+
+code_text = """
+#INJECT-b585472fa
+"""
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+output = mystdout.getvalue()
+lines = output.strip().split("\n")
+
+if not output.strip():
+    print("No output detected. Make sure you print the results.")
+    exit(1)
+
+counter_line = None
+for line in lines:
+    if line.startswith("Counter:"):
+        counter_line = line
+        break
+
+if counter_line is None:
+    print("Missing 'Counter: X' line in output")
+    exit(1)
+
+counter_pattern = r"Counter:\s*(\d+)"
+match = re.match(counter_pattern, counter_line)
+if not match:
+    print(f"Counter line format is incorrect. Expected: 'Counter: X', Got: {counter_line}")
+    exit(1)
+
+counter_value = int(match.group(1))
+
+if counter_value != 500:
+    print(f"Counter value is {counter_value}, expected 500. This indicates a race condition. Make sure you use Lock to protect the counter.")
+    exit(1)
+
+code_checks = [
+    ("from threading import", 'Threading module not imported. Use "from threading import Thread, Lock"'),
+    ("Thread(", "Thread class not found. You must create Thread objects"),
+    ("Lock()", "Lock class not found. You must create a Lock object for synchronization"),
+    ("with lock:", 'Lock context manager not found. Use "with lock:" to protect critical section'),
+    ("counter +=", "Counter increment not found. Make sure you increment the counter"),
+    ("global counter", 'Global counter declaration not found. Use "global counter" inside the function'),
+    (".start()", "start() method not found. You must start the threads"),
+    (".join()", "join() method not found. You must wait for threads to complete"),
+    ("if __name__", 'Missing if __name__ == "__main__" guard. Required for threading safety'),
+]
+
+for check, error_msg in code_checks:
+    if check not in code_text:
+        print(error_msg)
+        exit(1)
+
+if "range(5)" not in code_text and "range( 5 )" not in code_text:
+    thread_count = code_text.count("Thread(")
+    if thread_count < 5:
+        print(f"Expected 5 threads, found {thread_count} Thread() calls. Make sure you create 5 threads.")
+        exit(1)
+
+if "range(100)" not in code_text and "range( 100 )" not in code_text:
+    print("Missing loop with 100 iterations in increment function. Each thread should increment counter 100 times.")
+    exit(1)
+
+if "with lock:" not in code_text:
+    print("Lock is not used with context manager. Use 'with lock:' to protect the counter increment.")
+    exit(1)
+
+lines_code = code_text.split("\n")
+in_lock_block = False
+counter_protected = False
+
+for line in lines_code:
+    stripped = line.strip()
+    if stripped.startswith("with lock:"):
+        in_lock_block = True
+    elif in_lock_block and "counter +=" in stripped:
+        counter_protected = True
+        break
+    elif (
+        in_lock_block
+        and stripped
+        and not stripped.startswith("#")
+        and not line.startswith(" ")
+        and not line.startswith("\t")
+    ):
+        in_lock_block = False
+
+if not counter_protected:
+    print("Counter increment is not protected by Lock. Make sure 'counter += 1' is inside 'with lock:' block.")
+    exit(1)
+
+print("All tests passed!")

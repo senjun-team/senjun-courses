@@ -1,0 +1,31 @@
+import std;
+
+#INJECT-b585472fa
+
+struct SimpleTest
+{
+    double a = 0.0;
+    double b = 0.0;
+    double eps = 0.0;
+    bool plan = false;
+};
+
+int main()
+{
+    const double inf = std::numeric_limits<double>::infinity();
+    const double nan = std::numeric_limits<double>::quiet_NaN();
+
+    std::vector<SimpleTest> cases = {
+        {.a = 5.001,  .b = 5.002,  .eps = 0.01, .plan = true},
+        {.a = -3.001,  .b = -3.002, .eps = 0.001, .plan = true},
+        {.a = nan, .b = 0.0,  .eps = 1e-4, .plan = false},
+        {.a = -0.02, .b = inf,  .eps = 1e-6, .plan = false},
+    };
+
+    for (auto test: cases)
+    {
+        const bool fact = is_eq(test.a, test.b, test.eps); 
+        std::println("is_eq({}, {}, {}) returns {}. {}",
+        test.a, test.b, test.eps, fact, fact == test.plan ? "OK" : "ERROR");
+    }
+}

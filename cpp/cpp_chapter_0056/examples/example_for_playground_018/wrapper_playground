@@ -1,0 +1,14 @@
+import std;
+
+template<class T>
+T max(T a, T b)
+{
+    return a < b ? b : a;
+}
+
+int main()
+{
+    std::println("{}", max<int>(5, 6));
+    std::println("{}", max<char>('z', 'a'));
+    std::println("{}", max<double>(1.01, 1.02));
+}

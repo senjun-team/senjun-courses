@@ -51,11 +51,11 @@ cache.get(8);      // "", false
 
 — Сборка должна быть релизной. Для этого задайте правильное значение переменной `CMAKE_BUILD_TYPE`.
 
-— Соберите единицу трансляции `lru_cache.cpp` в [динамическую библиотеку](/courses/cpp/chapters/cpp_chapter_0110/#block-dynamic-libs) и слинкуйте её с бинарниками `main` и `tests`.
+— Соберите единицу трансляции `lru_cache.cpp` в [динамическую библиотеку](/courses/cpp/chapters/cpp_chapter_0112/#block-dynamic-libs) и слинкуйте её с бинарниками `main` и `tests`.
 
 — В юнит-тестах используется библиотека GTest (GoogleTest). Она установлена по системным путям в докер-образе, внутри которого компилируется и запускается проект. Найдите её с помощью команды [find_package](https://cmake.org/cmake/help/latest/module/FindGTest.html) и слинкуйте с тестами `tests`. Цель для линковки - `GTest::gtest`.
 
-— В бенчмарках используется библиотека [benchmark](https://github.com/google/benchmark) от Google. Ее исходники расположены в директории `/third_party/google/benchmark/`. Вам нужно подключить её к проекту с помощью модуля [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) и слинковать с бенчмарками проекта. Цель для сборки `main` должна быть слинкована с файлом библиотеки `benchmark`. Библиотека хранится локально, а не в git-репозитории. Поэтому в команду [FetchContent_Declare](/courses/cpp/chapters/cpp_chapter_0120/#block-fetchcontent-example) вместо параметра `GIT_REPOSITORY` передайте параметр `SOURCE_DIR` с указанием полного пути.
+— В бенчмарках используется библиотека [benchmark](https://github.com/google/benchmark) от Google. Ее исходники расположены в директории `/third_party/google/benchmark/`. Вам нужно подключить её к проекту с помощью модуля [FetchContent](https://cmake.org/cmake/help/latest/module/FetchContent.html) и слинковать с бенчмарками проекта. Цель для сборки `main` должна быть слинкована с файлом библиотеки `benchmark`. Библиотека хранится локально, а не в git-репозитории. Поэтому в команду [FetchContent_Declare](/courses/cpp/chapters/cpp_chapter_0113/#block-fetchcontent-example) вместо параметра `GIT_REPOSITORY` передайте параметр `SOURCE_DIR` с указанием полного пути.
 
 ## Теория
 
@@ -63,10 +63,10 @@ cache.get(8);      // "", false
 
 — Двусвязный список хранит [пары](/courses/cpp/chapters/cpp_chapter_0073/#block-pair) ключ-значение, которые попадают в кеш. Добавляйте и удаляйте из списка элементы таким образом, чтобы они всегда были отсортированы в порядке убывания «новизны». В начале списка располагаются самые свежие записи, а в конце — те, к которым не было обращений дольше всех.
 
-— Хеш-таблица хранит пары из ключей и [итераторов,](/courses/cpp/chapters/cpp_chapter_0060/) указывающих на соответствующие этим ключам элементы списка.
+— Хеш-таблица хранит пары из ключей и [итераторов,](/courses/cpp/chapters/cpp_chapter_0061/) указывающих на соответствующие этим ключам элементы списка.
 
 
-![Организация LRU-кеша](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-practice-lru/illustrations/cpp/lru_cache.jpg) {.illustration}
+![Организация LRU-кеша](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/lru_cache.jpg) {.illustration}
 
 
 При обращении к элементу кеша не забывайте передвигать этот элемент в начало списка. В этом вам поможет метод [std::list::splice()](https://en.cppreference.com/w/cpp/container/list/splice). Чтобы переместить элемент списка `l`, на который указывает итератор `it`, в самое начало, `splice()` вызывается следующим образом:
@@ -75,7 +75,7 @@ cache.get(8);      // "", false
 l.splice(l.begin(), l, it);
 ```
 
-[Инвалидации итераторов](/courses/cpp/chapters/cpp_chapter_0060/#block-invalidation) на элементы списка опасаться [не стоит.](/courses/cpp/chapters/cpp_chapter_0072/#block-list-it)
+[Инвалидации итераторов](/courses/cpp/chapters/cpp_chapter_0062/#block-invalidation) на элементы списка опасаться [не стоит.](/courses/cpp/chapters/cpp_chapter_0072/#block-list-it)
 
 ## Тестирование
 

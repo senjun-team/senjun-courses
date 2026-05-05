@@ -1,42 +1,6 @@
 import std;
 
-class Error
-{
-public:
-    explicit Error(int code)
-    {
-        m_code = code;
-    }
-
-    int get_code() const
-    {
-        return m_code;
-    }
-
-private:
-    int m_code = 0;
-};
-
-// Форматтер для того чтобы выводить объект Error через println
-template<>
-struct std::formatter<Error> : public std::formatter<int>
-{
-  using Parent = std::formatter<int>;
-  auto format(const Error & e, std::format_context & ctx) const
-  {
-    return Parent::format(e.get_code(), ctx);
-  }
-};
-
-void handle_error(Error err, int retries_count)
-{
-    std::println("Handling error: {} Retries left: {}", err, retries_count);
-    // ...
-}
-
 int main()
 {
-    Error err(503);
-    int retries = 2;
-    handle_error(retries, retries); // Упс!
+    #INJECT-b585472fa
 }

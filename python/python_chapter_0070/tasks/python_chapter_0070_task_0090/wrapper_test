@@ -1,0 +1,58 @@
+from io import StringIO
+import sys
+from inspect import signature
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+
+if "create_calculator" not in globals():
+    print("Function create_calculator() doesn't exist")
+    exit(1)
+
+if not callable(create_calculator):
+    print("'create_calculator' is not a function")
+    exit(1)
+
+create_calculator_params = signature(create_calculator).parameters
+if len(create_calculator_params) != 0:
+    print("Please use function signature create_calculator()")
+    exit(1)
+
+# Test the returned function
+calculator = create_calculator()
+if not callable(calculator):
+    print("Function create_calculator should return a function")
+    exit(1)
+
+calculator_params = signature(calculator).parameters
+if len(calculator_params) != 3:
+    print("The returned function should accept 3 arguments: operation, a, b")
+    exit(1)
+
+# Test functionality
+tests = [
+    ("add", 5, 3, 8),
+    ("subtract", 10, 4, 6),
+    ("multiply", 4, 6, 24),
+    ("divide", 10, 2, 5.0),
+    ("add", -5, 3, -2),
+    ("divide", 7, 2, 3.5),
+]
+
+for operation, a, b, expected in tests:
+    result = calculator(operation, a, b)
+    if result != expected:
+        print(f"Invalid output for operation='{operation}', a={a}, b={b}. Expected: {expected}, got: {result}")
+        exit(1)
+
+# Test unknown operation
+result = calculator("mod", 5, 2)
+if result != "Unknown operation":
+    print(f"Invalid output for unknown operation. Expected: 'Unknown operation', got: {result}")
+    exit(1)
+
+print("All tests passed!")

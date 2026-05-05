@@ -1,0 +1,13 @@
+import TestHelpers;
+import std;
+
+int main()
+{
+    std::string user_input = hlp::remove_spaces(R"(#INJECT-b585472fa)");
+    if (user_input == "&")
+    {
+        std::println(std::cerr, "В этом коде есть неявное приведение типов: значение символьного типа '&' преобразуется к типу bool, принимающему значение true или false");
+        return 1;   
+    }
+    return user_input == "true" ? 0 : 1;
+}

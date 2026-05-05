@@ -1,0 +1,16 @@
+import std;
+
+#INJECT-b585472fa
+
+
+int main()
+{
+    const char text[] = "C-like string";
+
+    std::println("Searching for letter 'i' in string \"C-like string\"");
+    const char * p = find_char(text, 'i');
+    if (p == nullptr)
+        std::println("find_char() returned nullptr");
+    else
+        std::println("find_char() returned pointer to symbol with index {}", p-text);
+}

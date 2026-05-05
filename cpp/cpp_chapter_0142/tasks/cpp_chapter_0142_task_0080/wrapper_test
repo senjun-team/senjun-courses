@@ -1,47 +1,9 @@
-import boost.ut;
 import TestHelpers;
-
 import std;
-
-#INJECT-b585472fa
-
-using namespace boost::ut;
-
-struct SimpleTest
-{
-    std::vector<int> prices;
-    int plan = 0;
-};
-
-void check_case(SimpleTest t)
-{
-    const std::uint32_t fact = max_profit(t.prices);
-    expect(t.plan == fact) << std::format("max_profit({}) returns {}. But expected result is {}",
-                                           t.prices, fact, t.plan) << fatal;
-}
 
 int main()
 {
-    "Corner cases"_test = [] {
-        std::vector<SimpleTest> cases = {
-            {.prices = {1}, .plan = 0},
-            {.prices = {2, 1}, .plan = 0},
-            {.prices = {2, 2}, .plan = 0},
-        };
-
-        for (const auto & c: cases)
-            check_case(c);
-    };
-
-    "Simple cases"_test = [] {
-        std::vector<SimpleTest> cases = {
-            {.prices = {10, 20}, .plan = 10},
-            {.prices = {8, 7, 3, 3, 1, 1}, .plan = 0},
-            {.prices = {1, 2, 3, 5, 8}, .plan = 7},
-            {.prices = {1, 2, 3, 5, 8, 9, 8, 4, 2}, .plan = 8},
-        };
-
-        for (const auto & c: cases)
-            check_case(c);
-    };
+    std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
+    std::string plan = hlp::normalize("1cm2d");
+    return user_input == plan ? 0 : 1;
 }

@@ -149,6 +149,44 @@ B 1 2 3
 
 Имя метода дочернего класса перекроет имя родительского метода в области видимости. Поэтому при переопределении методов не помешает лишний раз проверить соответствие параметров.
 
+Вы работаете над системой обработки событий. Базовый класс `EventHandler` объявляет метод `handle()`, который принимают два аргумента: `event_type: str` и `payload: dict`. {.task_text}
+
+Ваша задача — реализовать класс-наследник `ValidatingHandler`, который переопределяет метод `handle()`, но при этом: {.task_text}
+- Сохраняет совместимую сигнатуру с родительским методом (те же параметры в том же порядке).
+- Добавляет валидацию: если `payload` не содержит ключа `"timestamp"`, метод должен генерировать `ValueError("Missing timestamp")`.
+- После валидации обязательно вызывает родительскую реализацию через `super().handle(...)`, чтобы логирование сработало корректно.
+- Возвращает результат работы родительского метода.
+
+```python {.task_source #python_chapter_0170_task_0060}
+from typing import Any
+
+class EventHandler:
+    def handle(self, event_type: str, payload: dict[str, Any]) -> bool:
+        """Базовая обработка события. Возвращает True, если событие обработано."""
+        print(f"[LOG] Handling {event_type} with payload: {payload}")
+        return True
+
+# Реализуйте класс ValidatingHandler ниже
+```
+Сигнатура переопределяемого метода должна быть совместима по замещению: дочерний метод может принимать те же или более общие аргументы, но не более узкие.
+В Python нет перегрузки методов по количеству параметров — последнее объявление «перекрывает» предыдущее в области видимости экземпляра. {.task_hint}
+```python {.task_answer}
+from typing import Any
+
+class EventHandler:
+    def handle(self, event_type: str, payload: dict[str, Any]) -> bool:
+        """Базовая обработка события. Возвращает True, если событие обработано."""
+        print(f"[LOG] Handling {event_type} with payload: {payload}")
+        return True
+
+
+class ValidatingHandler(EventHandler):
+    def handle(self, event_type: str, payload: dict[str, Any]) -> bool:
+        if "timestamp" not in payload:
+            raise ValueError("Missing timestamp")
+        return super().handle(event_type, payload)
+```
+
 ## Множественное наследование {#block-multiple-inheritance}
 В языке поддерживается множественное наследование, при котором потомок получает доступ к атрибутам всех родительских классов. Родительские классы перечисляются через запятую в объявлении класса-потомка:
 
@@ -157,9 +195,63 @@ class Child(Parent1, Parent2):
     ...
 ```
 
-Каким же образом решается [проблема ромбовидного наследования?](https://ru.wikipedia.org/wiki/%D0%A0%D0%BE%D0%BC%D0%B1%D0%BE%D0%B2%D0%B8%D0%B4%D0%BD%D0%BE%D0%B5_%D0%BD%D0%B0%D1%81%D0%BB%D0%B5%D0%B4%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)
+Рассмотрим простой пример. Создадим два независимых класса и унаследуемся от обоих:
 
-Допустим, есть базовый класс `A`. От него наследуются классы `B` и `C`. От которых наследуется `D`:
+```python  {.example_for_playground}
+class WorldEaters:
+    def khorn(self):
+        print("World Eaters за Кхорна!")
+
+class ThousandSons:
+    def tzeentch(self):
+        print("Thousand Sons за Тзинча!")
+
+class Legion(WorldEaters, ThousandSons):
+    pass
+
+legion = Legion()
+legion.khorn()    # Наследуется от WorldEaters
+legion.tzeentch()  # Наследуется от ThousandSons
+```
+
+```
+World Eaters за Кхорна!
+Thousand Sons за Тзинча!
+```
+
+Класс-потомок получает методы от обоих родителей. Это удобно, когда родительские классы отвечают за разные аспекты поведения и не пересекаются.
+
+Однако что будет, если у двух родительских классов есть общий предок? Рассмотрим пример:
+
+```python  {.example_for_playground}
+class Base:
+    def process(self):
+        print("Base.process")
+
+class Left(Base):
+    def process(self):
+        print("Left.process")
+
+class Right(Base):
+    def process(self):
+        print("Right.process")
+
+class Combined(Left, Right):
+    pass
+
+obj = Combined()
+obj.process()  # Какой метод будет вызван?
+```
+
+```
+Left.process
+```
+
+Метод `process()` определён в обоих родительских классах (`Left` и `Right`), которые наследуются от общего предка `Base`. Возникает неоднозначность: какой метод будет вызван?
+
+В данном случае интерпретатор выбрал метод из класса `Left`, потому что он указан первым в списке родителей. Но полагаться на это без понимания механизма не стоит.
+
+Теперь усложним пример. Допустим, есть базовый класс `A`. От него наследуются классы `B` и `C`. А от них наследуется `D`:
 
 ```
      A
@@ -173,8 +265,9 @@ class Child(Parent1, Parent2):
      D
 ```
 
-Возникает неоднозначность: если инстанс `D` вызывает метод, определенный в `A` и переопределенный в `B` и `C`, то чья реализация метода будет использована — `B` или `C`?
+Если класс `D` вызывает метод, который определён в `A` и переопределён в `B` и `C`, то чья реализация будет использована — `B` или `C`?
 
+Эта ситуация называется [ромбовидным наследованием]((https://ru.wikipedia.org/wiki/%D0%A0%D0%BE%D0%BC%D0%B1%D0%BE%D0%B2%D0%B8%D0%B4%D0%BD%D0%BE%D0%B5_%D0%BD%D0%B0%D1%81%D0%BB%D0%B5%D0%B4%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)) (diamond inheritance).
 
 ```python  {.example_for_playground}
 class A:
@@ -200,7 +293,7 @@ d.f()
 B
 ```
 
-Неоднозначность вызова метода устраняется с помощью зафиксированного в языке **порядка разрешения методов** (MRO, Method Resolution Order) под названием [C3-линеаризация.](https://ru.wikipedia.org/wiki/C3-%D0%BB%D0%B8%D0%BD%D0%B5%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F) 
+Каким же образом решается проблема ромбовидного наследования? Неоднозначность вызова метода устраняется с помощью зафиксированного в языке **порядка разрешения методов** (MRO, Method Resolution Order) под названием [C3-линеаризация.](https://ru.wikipedia.org/wiki/C3-%D0%BB%D0%B8%D0%BD%D0%B5%D0%B0%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F) 
 
 Это довольно сложный алгоритм определения последовательности, в которой должны наследоваться методы. В общих чертах он выглядит так:
 - Сначала интерпретатор ищет методы в текущем классе. В нашем случае это `D`. 
@@ -214,6 +307,14 @@ print(D.mro())
 ```
 ```
 [<class '__main__.D'>, <class '__main__.B'>, <class '__main__.C'>, <class '__main__.A'>, <class 'object'>]
+```
+
+Так же рассмотрим пример с классами Left и Right: 
+```python
+print(Combined.mro())
+```
+```
+[<class '__main__.Combined'>, <class '__main__.Left'>, <class '__main__.Right'>, <class '__main__.Base'>, <class 'object'>]
 ```
 
 Обратите внимание, что метод `mro()` был вызван именно от класса, а не от инстанса класса.
@@ -246,6 +347,47 @@ C.f(d)
 ```
 C
 ```
+
+Что выведет этот код?  {.task_text}
+
+```python  {.example_for_playground}
+class A:
+    def f(self):
+        print("A")
+
+class B(A):
+    def f(self):
+        print("B")
+        super().f()
+
+class C(B):
+    def f(self):
+        print("C")
+        super(B, self).f()
+
+C().f()
+```
+
+```consoleoutput {.task_source #python_chapter_0170_task_0050}
+```
+MRO (`C.mro()`) для класса `C`: `C -> B -> A -> object`. Вызов `C().f()`: Печатает `C`, затем вызывает `super(B, self).f()`. `super(B, self)` начинает поиск после класса `B` в MRO. {.task_hint}
+```python {.task_answer}
+CA
+```
+
+Почему так происходит? `super()` без аргументов эквивалентен `super(ТекущийКласс, self)` и движется по цепочке MRO. `super(Класс, self)` — это "ручное управление": поиск начинается после указанного класса, в данном случае *после* класса `B`, а это значит он сам в цепочке не участвует. Это бывает полезно для: вызова метода в обход родительского класса, решение проблем с ромбовидным наследованием или более точной настйроки работы миксинов, но в тоже время и опасно - можно легко упустить особую логику работы класса.
+
+Для проверки логики работы `super()` вы к задаче можете добавить код: 
+```python
+class C2(B):
+    def f(self):
+        print("C2", end=" ")
+        super().f()  # Обычный super(), то есть от текущего класса 
+
+C2().f()  # Вывод: C2 B A
+```
+
+Вывод у `C2` будет ожидаемым, потому что мы не обходили класс в цепочке MRO, как было в задаче с вызовом `super(B, self).f()`.
 
 Дана цепочка наследования `Tail -> Z -> Y -> X -> object`. Расширьте в классе `Tail` функцию `f()` таким образом, чтобы она вызывала функцию класса `X`. {.task_text}
 
@@ -286,7 +428,6 @@ class Z(Y):
 class Tail(Z):
     def f(self):
         super(Y, self).f()
-
 ```
 
 ## Абстрактные классы {#block-abstract-classes}

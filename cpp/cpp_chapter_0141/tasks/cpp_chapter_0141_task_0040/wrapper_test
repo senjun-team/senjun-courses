@@ -7,40 +7,106 @@ import std;
 
 using namespace boost::ut;
 
-namespace our_impl {
-unsigned long long naive_hash(std::string s)
+struct TestCase
 {
-    unsigned long long h = 15;
-    
-    for (char c : s)
-    {
-        h += h * 15'983 + c;
-    }
+    std::vector<std::vector<short>> m;
+    std::vector<std::vector<short>> plan;
+};
 
-    return h;
-}
-}
-
-void check(const std::string & s)
+void check(TestCase & t)
 {
-    const auto fact = naive_hash(s); 
-    const auto plan = our_impl::naive_hash(s);
+    const auto copy = t.m;
+    rotate_clockwise(t.m);
 
-    expect(plan == fact) << std::format("naive_hash(\"{}\") returns {}. But expected result is {}",
-                                           s, fact, plan) << fatal;
+    const bool eq = t.m == t.plan;
+    expect(eq) << std::format("rotate_clockwise({}) makes m = {}. But expected result is {}",
+                                           copy, t.m, t.plan) << fatal;
 }
 
 int main()
 {
-    "test cases"_test = [] {
-        std::vector<std::string> cases = {
-            "",
-            "*",
-            "short string",
-            std::string(1'000, 'x')
+    "matrix 1x1"_test = [] {
+        TestCase t = {
+            .m = {
+                {1}
+            },
+            .plan = {
+                {1}
+            }
         };
 
-        for (const auto & s: cases)
-            check(s);
+        check(t);
+    };
+
+    "matrix 2x2"_test = [] {
+        TestCase t = {
+            .m = {
+                {1, 2}, 
+                {3, 4}
+            },
+            .plan ={
+                {3, 1},
+                {4, 2}
+            }
+        };
+
+        check(t);
+    };
+
+    "matrix 3x3"_test = [] {
+        TestCase t = {
+            .m = {
+                {1, 2, 3}, 
+                {4, 5, 6},
+                {7, 8, 9}
+            },
+            .plan ={
+                {7, 4, 1},
+                {8, 5, 2},
+                {9, 6, 3}
+            }
+        };
+
+        check(t);
+    };
+
+    "matrix 4x4"_test = [] {
+        TestCase t = {
+            .m = {
+                {1, 2, 3, 4}, 
+                {5, 6, 7, 8},
+                {9, 8, 7, 6},
+                {5, 4, 3, 2}
+            },
+            .plan ={
+                {5, 9, 5, 1},
+                {4, 8, 6, 2},
+                {3, 7, 7, 3},
+                {2, 6, 8, 4}
+            }
+        };
+
+        check(t);
+    };
+
+    "matrix 5x5"_test = [] {
+        TestCase t = {
+            .m = {
+                {1, 2, 3, 4, 5}, 
+                {6, 7, 8, 9, 1},
+                {2, 3, 4, 5, 6},
+                {7, 8, 9, 1, 2},
+                {3, 4, 5, 6, 7}
+            },
+            .plan ={
+                {3, 7, 2, 6, 1},
+                {4, 8, 3, 7, 2},
+                {5, 9, 4, 8, 3},
+                {6, 1, 5, 9, 4},
+                {7, 2, 6, 1, 5}
+            }
+        };
+
+        check(t);
     };
 }

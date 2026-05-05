@@ -1,0 +1,58 @@
+{
+  "max-containers-amount": 12,
+  "thread-pool-size": 2,
+  "courses": {
+    "python": {
+      "image-name": "senjun_python",
+      "launched": 1
+    },
+    "rust": {
+      "image-name": "senjun_rust",
+      "launched": 1
+    },
+    "golang": {
+      "image-name": "senjun_golang",
+      "launched": 1
+    },
+    "haskell": {
+      "image-name": "senjun_haskell",
+      "launched": 1
+    },
+    "cpp": {
+      "image-name": "senjun_cpp",
+      "launched": 1
+    }
+  },
+  "playground": {
+    "python": {
+      "image-name": "senjun_python",
+      "launched": 1
+    },
+    "rust": {
+      "image-name": "senjun_rust",
+      "launched": 1
+    },
+    "golang": {
+      "image-name": "senjun_golang",
+      "launched": 1
+    },
+    "haskell": {
+      "image-name": "senjun_haskell",
+      "launched": 1
+    },
+    "cpp": {
+      "image-name": "senjun_cpp",
+      "launched": 1
+    }
+  },
+  "practice": {
+    "python": {
+      "image-name": "senjun_python",
+      "launched": 1
+    },
+    "cpp": {
+      "image-name": "senjun_cpp",
+      "launched": 1
+    }
+  }
+}

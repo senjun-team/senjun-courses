@@ -1,0 +1,35 @@
+import std;
+
+class Session
+{
+public:
+    Session() = default;
+    Session(bool active): m_is_active(active) { }
+
+    bool is_active() { return m_is_active; }
+
+private:
+    bool m_is_active = false;
+};
+
+std::vector<Session> get_sessions()
+{
+    std::vector<Session> sessions{};
+
+    for(std::size_t i = 0; i < 5; ++i)
+        sessions.push_back(Session(i < 3));
+
+    return sessions;
+}
+
+int main()
+{
+    std::vector<Session> sessions = get_sessions();
+
+    #INJECT-b585472fa
+
+    std::println("Session count after filtering: {}", sessions.size());
+    
+    for(auto s : sessions)
+        std::println("Session is active: {}", s.is_active());
+}

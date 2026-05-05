@@ -65,6 +65,125 @@ shutdown(wait=True, *, cancel_futures=False)
 
 Если `cancel_futures` равен `True`, то все запланированные, но не начавшие исполнятся в пуле задачи будут отменены.
 
+## Методы запуска процессов: fork, spawn, forkserver
+
+При создании дочернего процесса в Python используется один из трёх методов запуска. Выбор метода влияет на производительность и поведение программы.
+
+### fork (только Unix/Linux)
+
+Метод `fork` создаёт дочерний процесс путём копирования состояния родительского процесса. Все переменные, импорты и открытые файлы наследуются автоматически.
+
+**Преимущества:** быстрый запуск (просто копируется память процесса), функции и данные доступны в дочернем процессе без дополнительной сериализации, не требует `if __name__ == "__main__":` защиты.
+
+**Недостатки:** работает только на Unix-платформах (Linux, macOS), наследует всё состояние родителя, включая потенциально некорректные данные (например, состояние потоков), может вызывать проблемы с асинхронным кодом и некоторыми C-расширениями.
+
+```python
+from multiprocessing import get_context
+
+ctx = get_context('fork')
+with ProcessPoolExecutor(mp_context=ctx) as executor:
+    # ...
+```
+
+Проблемы с C-расширениями возникают из-за того, что после `fork` в дочернем процессе остаётся только копия памяти родительского процесса, но внутренние состояния библиотек могут оказаться некорректными:
+
+- [**NumPy**](https://numpy.org/devdocs/building/blas_lapack.html#default-behavior-for-blas-and-lapack-selection) — использует многопоточные вычисления через [BLAS](https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms)/[OpenMP](https://en.wikipedia.org/wiki/OpenMP). После `fork` внутренние блокировки могут остаться в заблокированном состоянии, что приведёт к зависанию дочернего процесса.
+- [**Pillow (PIL)**](https://python-pillow.github.io/) — хранит состояние инициализации и кэши изображений. После `fork` может работать некорректно, особенно если изображения открывались до форка.
+- [**psycopg2**](https://www.psycopg.org/docs/) — пул соединений с базой данных после `fork` наследуется, но сами соединения становятся невалидными. Это приводит к ошибкам при попытке выполнить запрос.
+- [**OpenCV**](https://en.wikipedia.org/wiki/OpenCV) — как и NumPy, использует многопоточность для ускорения вычислений. После `fork` возможны дедлоки и некорректная работа внутренних очередей задач.
+
+Общее правило: если библиотека инициализировала потоки, соединения или другие ресурсы до `fork`, использовать их в дочернем процессе небезопасно, будет лучше в таких случаях использовать `spawn`.
+
+### spawn (все платформы)
+
+Метод `spawn` запускает чистый интерпретатор Python и импортирует только необходимые объекты из главного модуля.
+
+**Преимущества:** работает на всех платформах (Windows, macOS, Linux), чистое состояние дочернего процесса (нет унаследованных проблем), безопасен для асинхронного кода.
+
+**Недостатки:** медленнее `fork` (требуется запуск нового интерпретатора), все передаваемые объекты должны быть сериализуемы через pickle, требует `if __name__ == "__main__":` для защиты от рекурсивного запуска, функции должны быть определены на верхнем уровне модуля (не внутри других функций).
+
+```python
+from multiprocessing import get_context
+
+ctx = get_context('spawn')
+if __name__ == "__main__":
+    with ProcessPoolExecutor(mp_context=ctx) as executor:
+        # ...
+```
+
+### forkserver (Unix/Linux, по умолчанию в Python 3.14+)
+
+Метод `forkserver` создаёт отдельный процесс-сервер, который порождает дочерние процессы по запросу.
+
+**Преимущества:** безопаснее `fork` (сервер не наследует состояние вашего кода), быстрее `spawn` после первоначального запуска сервера, решает проблемы `fork` с потоками и асинхронным кодом.
+
+**Недостатки:** работает только на Unix-платформах, функции должны быть импортируемы из модуля (как и с `spawn`), требует `if __name__ == "__main__":` в большинстве случаев.
+
+```python
+from multiprocessing import get_context
+
+ctx = get_context('forkserver')
+with ProcessPoolExecutor(mp_context=ctx) as executor:
+    # ...
+```
+
+### Изменения в Python 3.14
+
+**В Python 3.14 метод запуска по умолчанию изменён с `fork` на `forkserver`** на Unix-платформах (кроме macOS). На Windows и macOS по-прежнему используется `spawn`.
+
+| Платформа | Python 3.13 и раньше | Python 3.14+ |
+|-----------|---------------------|--------------|
+| Linux | `fork` | `forkserver` |
+| macOS | `spawn` | `spawn` |
+| Windows | `spawn` | `spawn` |
+
+Подробнее про методы запуска потоков вы можете ознакомится на странице официальной документации [Python.](https://docs.python.org/3/library/multiprocessing.html?spm=a2ty_o01.29997173.0.0.74c65171ca6ZQy#contexts-and-start-methods:~:text=the%20__main__%20module.-,Contexts%20and%20start%20methods,-%C2%B6)
+
+### Почему это важно
+
+Если ваш код использует `ProcessPoolExecutor` без явного указания контекста, он будет работать по-разному в разных версиях Python:
+
+```python
+# Может не работать в Python 3.14+ на Linux
+with ProcessPoolExecutor() as executor:
+    for result in executor.map(func, data):
+        print(result)
+```
+
+Для совместимости с Python 3.14+ и кроссплатформенной работы используйте:
+
+```python
+from multiprocessing import get_context
+
+# Пытаемся использовать fork (быстрее, работает с exec/inject)
+try:
+    ctx = get_context('fork')
+except ValueError:
+    # На Windows fork недоступен, используем spawn
+    ctx = get_context('spawn')
+
+with ProcessPoolExecutor(mp_context=ctx) as executor:
+    for result in executor.map(func, data):
+        print(result)
+```
+
+### Рекомендации
+
+1. **Для локальной разработки на Windows/macOS** всегда используйте `if __name__ == "__main__":` и определяйте функции на верхнем уровне модуля.
+2. **Для Linux-серверов с Python 3.14+** явно указывайте `mp_context=get_context('fork')`, если код выполняется через `exec()` или инджектится в файлы.
+3. **Для кроссплатформенных проектов** используйте динамическое определение контекста:
+
+```python
+try:
+    ctx = get_context('fork')
+except ValueError:
+    ctx = get_context('spawn')
+
+if __name__ == "__main__":
+    with ProcessPoolExecutor(mp_context=ctx) as executor:
+        # ...
+```
+
 
 Дан массив чисел `nums` и функция `is_prime()`, определяющая, является ли число простым. {.task_text}
 
@@ -104,6 +223,7 @@ def is_prime(n):
 import math
 
 from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
 
 nums = [
     112272535095293,
@@ -127,15 +247,136 @@ def is_prime(n):
             return False
     return True
 
+try:
+    ctx = get_context('fork')
+except ValueError:
+    ctx = get_context('spawn')
+
 if __name__ == "__main__":
-    with ProcessPoolExecutor() as executor:
+    with ProcessPoolExecutor(mp_context=ctx) as executor:
         for number, prime in zip(nums, executor.map(is_prime, nums)):
             print(f"{number} is prime: {prime}")
 ```
 
 На самом деле под капотом `ProcessPoolExecutor` работает с абстракциями над POSIX и Windows процессами из модуля `multiprocessing`.
 
+
+Дан список целых чисел `data` от 1 до 100. Необходимо параллельно вычислить куб каждого числа `x ** 3`, используя пул процессов и метод `submit()`.{.task_text}
+
+Для демонстрации преимущества параллелизма внутри функции `calc_cube()` добавлена искусственная задержка `time.sleep()`.{.task_text}
+
+Ваша цель — выполнить вызовы `calc_cube()` параллельно и замерить реальное время выполнения. {.task_text}
+
+Требования: {.task_text}
+
+Используйте `ProcessPoolExecutor.submit()`. {.task_text}
+
+Сохраняйте объекты `Future` в список. {.task_text}
+
+В том же порядке, в котором числа идут в `data`, получите результаты через `.result()` и выведите в консоль (каждый результат с новой строки). {.task_text}
+
+```python {.task_source #python_chapter_0300_task_0050}
+import time
+import math
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
+
+data = list(range(1, 101))
+
+def calc_cube(n):
+    time.sleep(0.05)  # Имитация тяжелой нагрузки
+    return n ** 3
+
+try:
+    ctx = get_context('fork')
+except ValueError:
+    ctx = get_context('spawn')
+
+if __name__ == "__main__":
+    start = time.perf_counter()
+
+    # Your code here
+
+    finish = time.perf_counter()
+    print(f"Finished in {finish - start:.2f} seconds")
+```
+
+Создайте пустой список `futures перед циклом`. В цикле по `data` вызывайте `futures.append(executor.submit(calc_cube, number))`. После цикла пройдитесь по `futures`, вызовите `f.result()` и распечатайте. Разница между `finish` и `start` покажет реальное время. Если оно меньше 1 секунды — вы все сделали правильно (параллелизм работает). {.task_hint}
+
+```python {.task_answer}
+import time
+import math
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
+
+data = list(range(1, 101))
+
+def calc_cube(n):
+    time.sleep(0.05)  # Имитация тяжелой нагрузки
+    return n ** 3
+
+try:
+    ctx = get_context('fork')
+except ValueError:
+    ctx = get_context('spawn')
+
+if __name__ == "__main__":
+    start = time.perf_counter()
+
+    futures = []
+
+    with ProcessPoolExecutor(mp_context=ctx) as executor:
+        for number in data:
+            future = executor.submit(calc_cube, number)
+            futures.append(future)
+
+        for future in futures:
+            print(future.result())
+
+    finish = time.perf_counter()
+    print(f"Finished in {finish - start:.2f} seconds")
+```
+
+Вы можете убедиться, что метод через `multiprocessing` гораздо эффективнее, чем был бы метод через цикл `for`, запустите этот код в песочнице и увидите разницу:
+
+Вы можете убедиться, что распараллеливание вызовов через `multiprocessing` эффективнее, чем последовательный запуск в цикле. Для этого откройте код в песочнице и сравните время выполнения с кодом из задачи:
+
+```python   {.example_for_playground}
+import time
+import math
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import get_context
+
+data = list(range(1, 101))
+
+def calc_cube(n):
+    time.sleep(0.05)  # Имитация тяжелой нагрузки
+    return n ** 3
+
+try:
+    ctx = get_context('fork')
+except ValueError:
+    ctx = get_context('spawn')
+
+if __name__ == "__main__":
+    start = time.perf_counter()
+    
+    results = []
+    
+    # Последовательное выполнение через цикл for
+    for number in data:
+        result = calc_cube(number)
+        results.append(result)
+    
+    for result in results:
+        print(result)
+    
+    finish = time.perf_counter()
+    print(f"Finished in {finish - start:.2f} seconds")
+```
+
 ### Модуль multiprocessing
+
 Модуль `multiprocessing` содержит [все необходимое](https://docs.python.org/3/library/multiprocessing.html) для управления процессами, создания пулов, синхронизации и передачи данных между процессами.
 
 Прежде чем переходить к примерам, обговорим, что в скриптах, порождающих новые процессы через `multiprocessing`, **должен присутствовать** блок `if __name__ == "__main__"`. Для чего в принципе нужен этот блок, мы [разбирали](/courses/python/chapters/python_chapter_0200#block-if-main) в главе про модули. 
@@ -290,6 +531,51 @@ if __name__ == '__main__':
     p = Process(target=g, args=(lock, ))
     p.start()
     p.join()
+```
+
+Реализуйте потокобезопасное увеличение глобальной переменной `counter`. {.task_text}
+
+Запустите 5 потоков. Каждый поток должен увеличить счетчик на 1 ровно 100 раз (итого должно быть 500). {.task_text}
+
+```python {.task_source #python_chapter_0300_task_0060}
+from threading import Thread, Lock
+
+counter = 0
+
+def increment():
+    global counter
+    # Your code here
+
+if __name__ == "__main__":
+    # and here
+    print(f"Counter: {counter}")
+```
+
+Внутри функции `increment` создайте цикл на 100 итераций. Вся операция чтения, изменения и записи переменной counter должна находиться внутри блока `with lock`. {.task_hint}
+
+```python {.task_answer}
+from threading import Thread, Lock
+
+counter = 0
+lock = Lock()
+
+def increment():
+    global counter
+    for _ in range(100):
+        with lock:
+            counter += 1
+
+if __name__ == "__main__":
+    threads = []
+    for _ in range(5):
+        t = Thread(target=increment)
+        threads.append(t)
+        t.start()
+
+    for t in threads:
+        t.join()
+
+    print(f"Counter: {counter}")
 ```
 
 Для обмена данными между процессами можно использовать разделяемую память (shared memory). Поверх нее в модуле `multiprocessing` реализованы классы `Value` и `Array`. Останавливаться на них мы не будем, потому что в промышленной разработке их почти не используют. Авторы библиотеки `multiprocessing` по этому поводу [дают рекомендации:](https://docs.python.org/3/library/multiprocessing.html#multiprocessing-programming)

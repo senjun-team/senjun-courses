@@ -1,0 +1,13 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+     // Поля инициализируются конструктором по умолчанию:
+    SessionInfo info1;
+
+    // Поля инициализируются конструктором с параметрами:
+    SessionInfo info2(3, 607);
+    SessionInfo info3{3, 607};
+}

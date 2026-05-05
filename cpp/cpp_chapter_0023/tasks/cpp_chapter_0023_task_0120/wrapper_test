@@ -1,0 +1,38 @@
+import boost.ut;
+
+#INJECT-b585472fa
+
+struct TestCase
+{
+    std::size_t x = 0;
+    std::size_t n = 0;
+    bool plan = false;
+};
+
+using namespace boost::ut;
+
+void check_case(const TestCase & c)
+{
+    const bool fact = is_on(c.x, c.n);
+    expect(fact == c.plan) << std::format("Expected output of is_on({}, {}): {}\n Actual output: {}", 
+    c.x, c.n, c.plan, fact) << fatal;
+}
+
+int main()
+{
+    "Simple cases"_test = [] {
+        const std::string text = "user={} group={} other={}";
+
+        std::vector<TestCase> cases = {
+            {.x=0b000, .n=0, .plan=false},
+            {.x=0b001, .n=0, .plan=true},
+            {.x=0b001, .n=1, .plan=false},
+            {.x=0b010, .n=1, .plan=true},
+            {.x=0b010, .n=2, .plan=false},
+            {.x=0b110, .n=2, .plan=true},
+        };
+
+        for(const auto & c: cases)
+            check_case(c);
+    };
+}

@@ -1,0 +1,29 @@
+import std;
+
+char normalize(char c)
+{
+    return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+}
+
+bool is_valid(char c)
+{
+    if (std::isalnum(static_cast<unsigned char>(c)))
+        return true;
+
+    static const std::string allowed_special_symbols = " !@#$%^&*()";
+
+    return allowed_special_symbols.find(c) != std::string::npos;
+}
+
+bool is_strong(const char * s)
+{
+    return std::strlen(s) > 7;
+}
+
+#INJECT-b585472fa
+
+int main()
+{
+    const char * pass = "qwerty";
+    std::println("checking if password \"qwerty\" is valid... {}", is_valid_pass(pass));
+}

@@ -1,0 +1,27 @@
+package main
+
+import (
+	"runtime"
+	"testing"
+	"time"
+)
+
+func TestLeaks(t *testing.T) {
+	const chanSize = 10
+	var notificationChan = make(chan string, chanSize)
+	// Number of goroutines in the begining
+	startingGs := runtime.NumGoroutine()
+	const messageNumber = 10
+	for i := 0; i < messageNumber; i++ {
+		go processTaskAsync("data", notificationChan)
+	}
+	time.Sleep(time.Second)
+	// Number of goroutines in the end
+	endingGs := runtime.NumGoroutine()
+	leakedNumber := endingGs - startingGs
+	if leakedNumber != 0 {
+		t.Fatalf("Number of messages: %d. Number of goroutines leaked: %d",
+			messageNumber,
+			leakedNumber)
+	}
+}

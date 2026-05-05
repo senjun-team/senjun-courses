@@ -225,6 +225,7 @@ print(x)
 print("Hello Monty Python's Flying Circus!")
 ```
 
+
 ![Летающий цирк Монти Пайтона](https://raw.githubusercontent.com/senjun-team/senjun-courses/main/illustrations/python/monty_python.jpg) {.illustration}
 
 

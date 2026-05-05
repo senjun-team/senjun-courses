@@ -1,0 +1,32 @@
+import boost.ut;
+
+#INJECT-b585472fa
+
+struct TestCase
+{
+    int user = 0;
+    int group = 0;
+    int other = 0;
+    int plan = 0;
+};
+
+using namespace boost::ut;
+
+void check_case(const TestCase & c)
+{
+    const int fact = set_rights(c.user, c.group, c.other);
+    expect(c.plan == fact) << std::format("set_rights({}, {}, {}) returned {}. Expected result: {}",
+                                          c.user, c.group, c.other, fact, c.plan) << fatal;
+}
+
+int main()
+{
+    "Simple cases"_test = [] {
+        std::vector<TestCase> cases = {
+            {.user=7, .group=6, .other=4, .plan=500},
+            {.user=0, .group=0, .other=0, .plan=0},
+            {.user=6, .group=4, .other=4, .plan=420},
+            {.user=1, .group=5, .other=1, .plan=105},
+        };
+    };
+}

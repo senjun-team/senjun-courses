@@ -5,7 +5,7 @@
 
 ![Адаптеры](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_adapters.jpg) {.illustration}
 
-## Класс queue
+## Класс queue {#block-queue}
 
 Класс [std::queue](https://en.cppreference.com/w/cpp/container/queue) реализует [АТД «Очередь»](https://ru.wikipedia.org/wiki/%D0%9E%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D1%8C_(%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5)), в котором элементы добавляются с одного конца, а удаляются с другого.
 
@@ -25,7 +25,7 @@ std::println("{} {}", orders.front(), orders.back());
 ```
 
 
-![Очередь](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/improve-chapters-cmake/illustrations/cpp/queue.jpg) {.illustration}
+![Очередь](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/queue.jpg) {.illustration}
 
 
 Очередь может быть организована поверх нескольких последовательных контейнеров. По умолчанию она использует `std::deque`, но через аргумент шаблона дек можно заменить на список:
@@ -49,7 +49,7 @@ std::priority_queue<int> heap;
 ```
 
 
-![Очередь с приоритетами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/improve-chapters-cmake/illustrations/cpp/priority_queue.jpg) {.illustration}
+![Очередь с приоритетами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/priority_queue.jpg) {.illustration}
 
 
 
@@ -119,7 +119,7 @@ int main()
 - `empty()` — проверка, пуст ли стек.
 
 
-![Стек](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/improve-chapters-cmake/illustrations/cpp/stack.jpg) {.illustration}
+![Стек](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/stack.jpg) {.illustration}
 
 
 Работу стека отлично иллюстрирует класс для хранения истории посещения страниц в браузере:
@@ -182,6 +182,55 @@ Going back from current page. Stack size: 1
 Current page: github.com
 ```
 
+Напишите функцию, которая проверяет сбалансированность (корректность расстановки) парных скобок в строке. Строка состоит только из символов `(`, `)`, `[`, `]`, `{`, `}`, `<`, `>`. {.task_text}
+
+Примеры строк, в которых скобки расставлены правильно: пустая строка, `()`, `[]()`, `<{}>`, `([{}])`. {.task_text}
+
+Примеры строк, в которых баланс скобок нарушен: `)(` `<>>`, `((()`, `{>`.  {.task_text}
+
+У этой задачи есть решение за `O(N)`. Оно описано в подсказке. {.task_text}
+
+```cpp {.task_source #cpp_chapter_0075_task_0050}
+bool is_balanced(std::string s)
+{
+
+}
+```
+Заведите стек для хранения символов. В цикле пройдитесь по строке. Если символ — открывающая скобка, добавьте его в стек. Если закрывающая — извлеките вершину стека. Она должна быть парной открывающей скобкой. Если это не так (например, стек пуст), то баланс скобок нарушен. Если после цикла стек пуст, то скобки сбалансированы. {.task_hint}
+```cpp {.task_answer}
+bool is_balanced(std::string s)
+{
+    std::stack<char> stack;
+
+    for (char c : s)
+    {
+        if (c == '(' || c == '[' || c == '{' || c == '<')
+        {
+            stack.push(c);
+            continue;
+        }
+
+        if (stack.empty())
+            return false;
+
+        char top = stack.top();
+
+        if ((c == ')' && top == '(') ||
+            (c == ']' && top == '[') ||
+            (c == '}' && top == '{') ||
+            (c == '>' && top == '<'))
+        {
+            stack.pop();
+            continue;
+        }
+
+        return false;
+    }
+
+    return stack.empty();
+}
+```
+
 ## flat-версии ассоциативных контейнеров {#block-flat}
 
 Упорядоченные ассоциативные контейнеры оптимизированы для смешанных операций вставки, поиска и удаления. Очередность операций произвольна: вслед за добавлением элемента может идти ещё одно добавление, удаление или поиск. Так работает кеширование.
@@ -230,7 +279,7 @@ std::priority_queue
 
 ## Резюме
 
-В качестве резюме этой главы отлично подходит таблица контейнеров, адаптеров и их алгоритмической сложности. Держите её под рукой, если будете готовиться к собеседованиям.
+В качестве резюме этой главы отлично подходит таблица контейнеров, адаптеров и их алгоритмической сложности. Держите её под рукой, если будете готовиться к собеседованиям. {#block-algo}
 
 
 ![Алгоритмическая сложность работы с контейнерами и адаптерами](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/containers_algo_complexity_senjun_ru.jpg) {.illustration}

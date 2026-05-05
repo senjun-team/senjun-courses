@@ -1,0 +1,18 @@
+{
+    "Servers": {
+        "1": {
+            "Group": "Servers",
+            "Name": "senjun",
+            "Port": 5432,
+            "Username": "senjun",
+            "Host": "postgres",
+            "MaintenanceDB": "postgres",
+            "ConnectionParameters": {
+                "sslmode": "prefer",
+                "connect_timeout": 10,
+                "sslcert": "<STORAGE_DIR>/.postgresql/postgresql.crt",
+                "sslkey": "<STORAGE_DIR>/.postgresql/postgresql.key"
+            }
+        }
+    }
+}

@@ -1,0 +1,86 @@
+import re
+import sys
+from io import StringIO
+
+code_text = """
+#INJECT-b585472fa
+"""
+
+old_stdout = sys.stdout
+sys.stdout = mystdout = StringIO()
+
+#INJECT-b585472fa
+
+sys.stdout = old_stdout
+output = mystdout.getvalue()
+lines = output.strip().split("\n")
+
+if not output.strip():
+    print("No output detected. Make sure you print the results.")
+    sys.exit(1)
+
+expected_first = ["1", "8", "27"]
+for i, expected in enumerate(expected_first):
+    if i >= len(lines):
+        print(f"Missing output line {i + 1}. Expected: {expected}")
+        sys.exit(1)
+    if lines[i].strip() != expected:
+        print(f"Line {i + 1} is incorrect. Expected: {expected}, Got: {lines[i].strip()}")
+        sys.exit(1)
+
+expected_last = ["941192", "970299", "1000000"]
+time_line_index = -1
+for i, line in enumerate(lines):
+    if line.startswith("Finished in"):
+        time_line_index = i
+        break
+
+if time_line_index == -1:
+    print("Missing 'Finished in X.XX seconds' line in output")
+    sys.exit(1)
+
+for i, expected in enumerate(expected_last):
+    line_index = time_line_index - 3 + i
+    if line_index < 0:
+        print(f"Missing output line before timing. Expected: {expected}")
+        sys.exit(1)
+    if lines[line_index].strip() != expected:
+        print(f"Line {line_index + 1} is incorrect. Expected: {expected}, Got: {lines[line_index].strip()}")
+        sys.exit(1)
+
+time_line = lines[time_line_index]
+time_pattern = r"Finished in (\d+\.\d{2}) seconds"
+match = re.match(time_pattern, time_line)
+if not match:
+    print(f"Time line format is incorrect. Expected: 'Finished in X.XX seconds', Got: {time_line}")
+    sys.exit(1)
+
+execution_time = float(match.group(1))
+
+MIN_EXECUTE_TIME = 2.0
+MAX_EXECUTE_TIME = 2.0
+if execution_time >= MIN_EXECUTE_TIME:
+    print(f"Execution time {execution_time:.2f}s is too slow. Expected parallel execution (< 2.0s). Make sure you use ProcessPoolExecutor with submit().")
+    sys.exit(1)
+
+if execution_time >= MAX_EXECUTE_TIME:
+    print(f"Execution time {execution_time:.2f}s indicates sequential execution. You must use ProcessPoolExecutor for parallel processing.")
+    sys.exit(1)
+
+code_checks = [
+    ("ProcessPoolExecutor", "ProcessPoolExecutor not found. Use ProcessPoolExecutor from concurrent.futures"),
+    ("submit(", "submit() method not found. You must use submit() to send tasks"),
+    (".result()", "result() method not found. You must call result() on Future objects"),
+    ("if __name__", 'Missing if __name__ == "__main__" guard. Required for multiprocessing'),
+]
+for check, error_msg in code_checks:
+    if check not in code_text:
+        print(error_msg)
+        sys.exit(1)
+
+number_lines = time_line_index
+if number_lines != 100:
+    print(f"Expected 100 cube values, got {number_lines}. Make sure you process all numbers from 1 to 100.")
+    sys.exit(1)
+
+print("All tests passed!")

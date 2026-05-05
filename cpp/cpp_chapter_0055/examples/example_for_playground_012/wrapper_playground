@@ -1,0 +1,37 @@
+import std;
+
+enum class State { TODO = 1, INPROGRESS = 2, DONE = 3 };
+
+class Task
+{
+public:
+    bool log_work_hours(std::size_t hours)
+    {
+        if (m_state == State::TODO)
+            m_state = State::INPROGRESS;
+
+        if (m_state == State::INPROGRESS)
+            m_workHours += hours;
+
+        return m_state == State::INPROGRESS;
+    }
+
+    bool update_state(State new_state)
+    {
+        if (new_state > m_state)
+            m_state = new_state;
+
+        return m_state == new_state;
+    }
+
+  void show_work_hours() { std::println("{}", m_workHours); }
+
+private:
+    State m_state = State::TODO;
+    std::size_t m_workHours = 0;
+};
+
+int main()
+{
+    #INJECT-b585472fa
+}

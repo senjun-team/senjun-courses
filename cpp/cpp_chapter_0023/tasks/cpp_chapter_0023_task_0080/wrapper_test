@@ -1,0 +1,48 @@
+import boost.ut;
+import TestHelpers;
+
+#INJECT-b585472fa
+
+struct TestCase
+{
+    std::string plan;
+    int rights = 0;
+};
+
+using namespace boost::ut;
+
+void check_case(const TestCase & c)
+{
+    std::string captured_text;
+    auto stdout_receiver = [&captured_text](std::string&& txt)
+    {
+        captured_text = std::move(txt);
+    };
+
+    {
+        hlp::stdout_capture_t capture(stdout_receiver);
+        print_rights(c.rights);
+    }
+
+    const std::string plan = hlp::remove_spaces(c.plan);
+    expect(hlp::remove_spaces(captured_text) == plan) << std::format("Expected output of print_rights({}): {}\n Actual output: {}", 
+    c.rights, c.plan,
+    captured_text) << fatal;
+}
+
+int main()
+{
+    "Simple cases"_test = [] {
+        constexpr std::string_view text = "user={} group={} other={}";
+        
+        std::vector<TestCase> cases = {
+            {.plan=std::format(text, 7, 6, 4), .rights=500},
+            {.plan=std::format(text, 0, 0, 0), .rights=0},
+            {.plan=std::format(text, 6, 4, 4), .rights=420},
+            {.plan=std::format(text, 1, 5, 1), .rights=105}
+        };
+
+        for(const auto & c: cases)
+            check_case(c);
+    };
+}

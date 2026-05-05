@@ -1,0 +1,42 @@
+import boost.ut;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+struct TestCase
+{
+    std::deque<std::size_t> numbers;
+    std::size_t n = 0;
+    std::size_t plan = 0;
+};
+
+void check(const TestCase & c)
+{
+    const std::size_t fact = get_missing(c.numbers, c.n);
+    expect(fact == c.plan) << std::format("get_missing({}, {}) returns wrong result. Plan: {}, Fact: {}",
+                                        c.numbers, c.n, c.plan, fact) << fatal;
+}
+
+int main()
+{
+    "Simple cases"_test = [] {
+        std::vector<TestCase> cases = {
+            {.numbers={2}, .n=2, .plan=1},
+            {.numbers={1}, .n=2, .plan=2},
+            {.numbers={1, 3}, .n=3, .plan=2},
+            {.numbers={3, 2}, .n=3, .plan=1},
+            {.numbers={4, 1, 2}, .n=4, .plan=3},
+            {.numbers={4, 1, 3, 5}, .n=5, .plan=2},
+            {.numbers={4, 1, 3, 5, 2, 6}, .n=7, .plan=7},
+            {.numbers={7, 6, 3, 5, 2, 1}, .n=7, .plan=4},
+            {.numbers={7, 6, 3, 5, 2, 1, 4}, .n=8, .plan=8},
+            {.numbers={1, 2, 3, 4, 5, 7, 8}, .n=8, .plan=6},
+        };
+
+        for(const auto & c: cases)
+            check(c);
+    };
+}

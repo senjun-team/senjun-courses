@@ -40,7 +40,7 @@ else
     std::println("Max temperature: {}", *it_max);
 ```
 
-Этот код делает то же самое, но выглядит короче и понятнее. Похожий пример мы [приводили,](/courses/cpp/chapters/cpp_chapter_0010/#block-zero-overhead) когда описывали одно из достоинств C++ — абстракции с нулевой стоимостью.
+Этот код делает то же самое, но выглядит короче и понятнее. Похожий пример мы [приводили,](/courses/cpp/chapters/cpp_chapter_0011/#block-zero-overhead) когда описывали одно из достоинств C++ — абстракции с нулевой стоимостью.
 
 Всегда предпочитайте стандартные алгоритмы и их комбинацию наивным самописным решениям. Вы получите преимущества:
 - Более выразительный и понятый код. Алгоритмы стандартной библиотеки можно сравнить со словарным запасом, которым должен владеть разработчик на C++.
@@ -51,7 +51,7 @@ else
 
 ## Обзор алгоритмов стандартной библиотеки
 
-Стандарт языка описывает [сотни алгоритмов.](https://en.cppreference.com/w/cpp/algorithm) В прошлых главах вы уже познакомились с [std::for_each()](/courses/cpp/chapters/cpp_chapter_0010/#block-for-each), [std::clamp()](/courses/cpp/chapters/cpp_chapter_0010/#block-clamp), [std::min(), std::max()](/courses/cpp/chapters/cpp_chapter_0030/#block-min-max), [std::reverse()](/courses/cpp/chapters/cpp_chapter_0060/#block-vector), [std::find(), std::find_if()](/courses/cpp/chapters/cpp_chapter_0060/#block-find-if) и [std::sort()](/courses/cpp/chapters/cpp_chapter_0073/#block-sort).
+Стандарт языка описывает [сотни алгоритмов.](https://en.cppreference.com/w/cpp/algorithm) В прошлых главах вы уже познакомились с [std::for_each()](/courses/cpp/chapters/cpp_chapter_0011/#block-for-each), [std::clamp()](/courses/cpp/chapters/cpp_chapter_0011/#block-clamp), [std::min(), std::max()](/courses/cpp/chapters/cpp_chapter_0031/#block-min-max), [std::reverse()](/courses/cpp/chapters/cpp_chapter_0061/#block-vector), [std::find(), std::find_if()](/courses/cpp/chapters/cpp_chapter_0061/#block-find-if) и [std::sort()](/courses/cpp/chapters/cpp_chapter_0073/#block-sort).
 
 Перечислим самые популярные классы задач, решаемые с помощью алгоритмов. Для каждого из них приведём в пример по паре функций.
 - Изменение элементов диапазона.
@@ -125,7 +125,7 @@ std::println("{}", raw_data);
 
 Чему равна переменная `i`? {.task_text}
 
-С функцией `std::distance()` вы [познакомились](/courses/cpp/chapters/cpp_chapter_0060/#block-distance) в главе про итераторы. {.task_text}
+С функцией `std::distance()` вы [познакомились](/courses/cpp/chapters/cpp_chapter_0061/#block-distance) в главе про итераторы. {.task_text}
 
 ```cpp {.example_for_playground}
 import std;
@@ -148,11 +148,11 @@ int main()
 3
 ```
 
-Функция [std::find_if()](https://en.cppreference.com/w/cpp/algorithm/find) вместо значения принимает [предикат](/courses/cpp/chapters/cpp_chapter_0050/#block-predicate) и применяет его к элементам диапазона. Она возвращает итератор на первый элемент, для которого предикат вернул `true`.
+Функция [std::find_if()](https://en.cppreference.com/w/cpp/algorithm/find) вместо значения принимает [предикат](/courses/cpp/chapters/cpp_chapter_0056/#block-predicate) и применяет его к элементам диапазона. Она возвращает итератор на первый элемент, для которого предикат вернул `true`.
 
 У функции [std::find_if_not()](https://en.cppreference.com/w/cpp/algorithm/find) единственное отличие от `std::find_if()`: она возвращает итератор на элемент, для которого предикат вернул `false`.
 
-Чтобы искать элементы начиная с конца диапазона, в алгоритм поиска передаются [обратные итераторы:](/courses/cpp/chapters/cpp_chapter_0060/#block-reverse-iterators)
+Чтобы искать элементы начиная с конца диапазона, в алгоритм поиска передаются [обратные итераторы:](/courses/cpp/chapters/cpp_chapter_0062/#block-reverse-iterators)
 
 ```cpp {.example_for_playground .example_for_playground_005}
 std::deque<int> d = {5, 6, 10, 10, 1};
@@ -180,7 +180,7 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 
 }
 ```
-Вам потребуется завести вспомогательную функцию-предикат, которая сравнивает поле `first` объекта `std::pair` с нужным заголовком. И в случае успеха ищет в поле `second` подстроку `"gzip"`. Вам пригодится метод строки `find()`, с которым вы [уже работали.](/courses/cpp/chapters/cpp_chapter_0030/#block-string-find) {.task_hint}
+Вам потребуется завести вспомогательную функцию-предикат, которая сравнивает поле `first` объекта `std::pair` с нужным заголовком. И в случае успеха ищет в поле `second` подстроку `"gzip"`. Вам пригодится метод строки `find()`, с которым вы [уже работали.](/courses/cpp/chapters/cpp_chapter_0031/#block-string-find) {.task_hint}
 ```cpp {.task_answer}
 bool accepts(std::pair<std::string, std::string> header)
 {
@@ -215,7 +215,7 @@ bool accepts_gzip(std::vector<std::pair<std::string, std::string>> headers)
 Так выглядит бинарный поиск на примере небольшого диапазона:
 
 
-![Бинарный поиск](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-chapter-8/illustrations/cpp/binary_search.jpg) {.illustration}
+![Бинарный поиск](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/binary_search.jpg) {.illustration}
 
 
 Понять алгоритм бинарного поиска просто, но совершить ошибку в его реализации — ещё проще. Чаще всего ошибаются при определении середины и границ диапазона. Это приводит к вечным циклам, пропуску элементов и выходу за границы диапазона. Поэтому реализация бинарного поиска — одна из классических задач на собеседованиях.
@@ -274,7 +274,7 @@ std::println("{}", std::binary_search(s.begin() + 2, s.end() - 1, 'e'));
 true
 ```
 
-Зато алгоритмы [std::lower_bound()](https://en.cppreference.com/w/cpp/algorithm/lower_bound) и [std::upper_bound()](https://en.cppreference.com/w/cpp/algorithm/upper_bound) возвращают итератор.
+Зато алгоритмы [std::lower_bound()](https://en.cppreference.com/w/cpp/algorithm/lower_bound) и [std::upper_bound()](https://en.cppreference.com/w/cpp/algorithm/upper_bound) возвращают итератор. {#block-bounds}
 
 Они принимают итераторы на упорядоченный диапазон и искомое значение `x`:
 - `std::lower_bound()` возвращает итератор на первое значение, _не меньшее_ `x`.
@@ -300,7 +300,7 @@ upper bound. index = 5. value = 8
 ```
 
 
-![Пример работы std::lower_bound() и std::upper_bound()](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-imrpove-chapter-8/illustrations/cpp/lower_upper_bound_found.jpg) {.illustration}
+![Пример работы std::lower_bound() и std::upper_bound()](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/lower_upper_bound_found.jpg) {.illustration}
 
 
 Если элемент отсутствует в диапазоне, `std::lower_bound()` и `std::upper_bound()` возвращают одинаковый результат:
@@ -322,7 +322,7 @@ upper bound. index = 2. value = 9
 ```
 
 
-![Пример работы std::lower_bound() и std::upper_bound() для отсутствующего элемента](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/cpp-imrpove-chapter-8/illustrations/cpp/lowr_upper_bound_not_found.jpg) {.illustration}
+![Пример работы std::lower_bound() и std::upper_bound() для отсутствующего элемента](https://raw.githubusercontent.com/senjun-team/senjun-courses/refs/heads/main/illustrations/cpp/lowr_upper_bound_not_found.jpg) {.illustration}
 
 
 Как видите, итераторы от `std::lower_bound()` и `std::upper_bound()` _ограничивают_ диапазон элементов, равных указанному значению. Чтобы получить этот диапазон, можно воспользоваться всего одной функцией. Она называется [std::equal_range()](https://en.cppreference.com/w/cpp/algorithm/equal_range) и возвращает пару итераторов.

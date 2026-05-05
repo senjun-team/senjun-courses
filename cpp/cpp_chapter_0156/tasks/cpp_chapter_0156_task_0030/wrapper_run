@@ -1,0 +1,12 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    const char* argv[] = {"test", "input.txt", "--output=out.txt"};
+    const Args args = parse_args(3, const_cast<char **>(argv));
+    std::println("Called parse_args() with argc: 3 and argv: \"test\", \"input.txt\", \"--output=out.txt\".\n"
+                 "Parsed {} keyword args and {} positional.\nKeyword: {}. Positional: {}",
+                 args.keyword.size(), args.positional.size(), args.keyword, args.positional);
+}

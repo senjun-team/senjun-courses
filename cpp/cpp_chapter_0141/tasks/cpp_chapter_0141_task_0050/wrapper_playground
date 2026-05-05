@@ -4,5 +4,10 @@ import std;
 
 int main()
 {
-    test_chartable();
+    double prev = 503.0;
+    double cur = 200.0;
+
+    std::println("calling swap(prev, cur) where prev={} and cur={}...", prev, cur);
+    swap(prev, cur);
+    std::println("After the call: prev={} and cur={}", prev, cur);
 }
