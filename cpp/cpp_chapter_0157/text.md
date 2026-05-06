@@ -152,13 +152,6 @@ std::unique_ptr<T>              Объект типа T
 Вы пишете библиотеку для сохранения скриншотов. У вас есть сырой массив пикселей, и вы обернули его в `std::unique_ptr`, чтобы гарантировать очистку памяти, выделенной через `new[]`. Но в объявлении умного указателя допущена ошибка. Исправьте ее. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0157_task_0010}
-struct Pixel
-{
-    unsigned char r = 0;
-    unsigned char g = 0;
-    unsigned char b = 0;
-};
-
 void capture_screenshot()
 {
     // Представьте что вместо вызова new здесь вызов функции
@@ -171,15 +164,8 @@ void capture_screenshot()
     // ...Код для сохранения скриншота
 }
 ```
-`pixels` — это массив. {.task_hint}
+Переменная `pixels` — это массив. {.task_hint}
 ```cpp {.task_answer}
-struct Pixel
-{
-    unsigned char r = 0;
-    unsigned char g = 0;
-    unsigned char b = 0;
-};
-
 void capture_screenshot()
 {
     Pixel * pixels = new Pixel[3]; 
@@ -249,31 +235,18 @@ const bool success = copy(std::unique_ptr<File>(new File("A")),
 Перепишите объявление указателя `pixels_ptr` с использованием `std::make_unique()`. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0157_task_0020}
-struct Pixel
-{
-    unsigned char r = 0;
-    unsigned char g = 0;
-    unsigned char b = 0;
-};
-
 void capture_screenshot()
 { 
     std::unique_ptr<Pixel[]> pixels_ptr(new Pixel[3]);
     // ...
 }
 ```
-`pixels` — это массив. {.task_hint}
+Синтаксис получения умного указателя `std::unique_ptr` на массив `T[]` из `n` элементов: `std::make_unique<T[]>(n)`. {.task_hint}
 ```cpp {.task_answer}
-struct Pixel
-{
-    unsigned char r = 0;
-    unsigned char g = 0;
-    unsigned char b = 0;
-};
-
 void capture_screenshot()
 {
     auto pixels_ptr = std::make_unique<Pixel[]>(3);
+    // ...
 }
 ```
 
@@ -404,7 +377,7 @@ p1 == nullptr ? true
 
 Вы пишете систему управления задачами. У вас есть структура `Task` и класс `TaskManager`. {.task_text}
 
-Метод класса `add_task()` добавляет указатель на задачу в очередь `tasks`, а метод `get_task()` возвращает первую задачу в очереди. Если очередь пуста, то возвращает нулевой указатель. {.task_text}
+Метод класса `add_task()` добавляет указатель на задачу в очередь `tasks`, а метод `get_task()` возвращает первую задачу в очереди. Если очередь пуста, то возвращается нулевой указатель. {.task_text}
 
 Реализуйте эти методы под объявлением класса. {.task_text}
 
@@ -428,9 +401,40 @@ class TaskManager
 
 // Ваш код
 ```
-Не забудьте использовать `std::move()`. {.task_hint}
+Не забудьте использовать `std::move()` для передачи владения умным указаелем. На cppreference вы можете посмотреть список методов [std::queue](https://en.cppreference.com/cpp/container/queue). {.task_hint}
 ```cpp {.task_answer}
+struct Task
+{
+    std::string title;
+    std::string description;
+    std::size_t id;
+};
 
+class TaskManager
+{
+    public:
+    void add_task(std::unique_ptr<Task> task);
+    std::unique_ptr<Task> get_task();
+
+    private:
+    std::queue<std::unique_ptr<Task>> tasks;
+};
+
+void TaskManager::add_task(std::unique_ptr<Task> task)
+{
+    if (task != nullptr)
+        tasks.push(std::move(task));
+}
+
+std::unique_ptr<Task> TaskManager::get_task()
+{
+    if (tasks.empty())
+        return nullptr;
+    
+    std::unique_ptr<Task> task = std::move(tasks.front());
+    tasks.pop();
+    return task;
+}
 ```
 
 ## Класс std::shared_ptr и функция std::make_shared()
@@ -564,9 +568,9 @@ else
     std::println("Object's data: {}", *p_shared);
 ```
 
-Вы пишете движок для игры. В ней есть тяжелые объекты: это текстуры `Texture`, которые загружаются по имени. Чтобы многократно не подгружать одну и ту же текстуру, вы завели кеш `TextureCache`. {.task_text}
+Вы пишете движок для игры. В ней есть тяжелые объекты: текстуры `Texture`, которые загружаются по имени. Чтобы многократно не подгружать одну и ту же текстуру, вы завели кеш `TextureCache`. {.task_text}
 
-Реализуйте метод класса `get_texture()`. Он работает с кешем, хранящим указатели `std::weak_ptr` на текстуры^
+Реализуйте метод класса `get_texture()`. Он работает с кешем, хранящим указатели `std::weak_ptr` на текстуры:
 - Если текстуры нет в кеше, метод создает `std::shared_ptr` на текстуру, кеширует слабый указатель на нее и возвращает `std::shared_ptr`.
 - Если текстура уже есть в кеше и ее `std::weak_ptr` не нулевой, метод возвращает `std::shared_ptr`, полученный из `std::weak_ptr`.
 
@@ -574,6 +578,7 @@ else
 struct Texture
 {
     std::string name;
+    // Другие поля
 };
 
 class TextureCache
@@ -582,38 +587,44 @@ public:
     std::shared_ptr<Texture> get_texture(const std::string & name);
 
 private:
-    std::map<std::string, std::weak_ptr<Texture>> cache;
+    std::unordered_map<std::string, std::weak_ptr<Texture>> cache;
 };
 
-// Реализация метод get_texture()
+// Реализация метода get_texture()
 ```
-. {.task_hint}
+Воспользуйтесь методом [find()](https://en.cppreference.com/cpp/container/unordered_map/find) класса `std::unordered_map`, чтобы определить, находится ли текстура в кеше. Если текстура найдена, получите из ее слабого указателя `std::shared_ptr` вызовом метода `lock()`. Если полученный указатель не нулевой, верните его. В остальных случаях тестуры либо вообще не было в кеше, либо она уже удалена. Нужно создать ее через `std::make_shared()`, положить в кеш и вернуть из метода. {.task_hint}
 ```cpp {.task_answer}
+struct Texture
+{
+    std::string name;
+    // Другие поля
+};
+
 class TextureCache
 {
 public:
-    std::shared_ptr<Texture> get_texture(const std::string & name)
-    {
-        auto it = cache.find(name);
-        
-        if (it != cache.end())
-        {
-            // Пытаемся получить shared_ptr из weak_ptr
-            if (auto shared = it->second.lock(); shared != nullptr)
-                return shared;   
-        }
-
-        // Текстуры нет или она уже удалена: создаем ее
-        auto texture = std::make_shared<Texture>(name);
-
-        // Кешируем: сохраняем как weak_ptr
-        cache[name] = texture;
-        return texture;
-    }
+    std::shared_ptr<Texture> get_texture(const std::string & name);
     
 private:
-    std::map<std::string, std::weak_ptr<Texture>> cache;
+    std::unordered_map<std::string, std::weak_ptr<Texture>> cache;
 };
+
+std::shared_ptr<Texture> TextureCache::get_texture(const std::string & name)
+{
+    if (auto it = cache.find(name); it != cache.end())
+    {
+        // Пытаемся получить shared_ptr из weak_ptr
+        if (auto shared = it->second.lock(); shared != nullptr)
+            return shared;   
+    }
+
+    // Текстуры нет или она уже удалена: создаем ее
+    auto texture = std::make_shared<Texture>(name);
+
+    // Кешируем: сохраняем как weak_ptr
+    cache[name] = texture;
+    return texture;
+}
 ```
 
 ## Советы по использованию умных указателей
