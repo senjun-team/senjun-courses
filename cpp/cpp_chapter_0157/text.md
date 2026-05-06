@@ -77,7 +77,7 @@ private:
 
 По умолчанию `std::unique_ptr` инициализируется значением `nullptr`:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_001}
 std::unique_ptr<int> p;
 
 std::println("{}", p == nullptr);
@@ -88,8 +88,8 @@ true
 
 Чтобы присвоить указатель адрес объекта, нужно выделить для него память через `new`:
 
-```cpp
-std::unique_ptr<int> p{ new int(16)};
+```cpp  {.example_for_playground .example_for_playground_002}
+std::unique_ptr<int> p{new int(16)};
 
 std::println("{}", *p);
 ```
@@ -107,15 +107,18 @@ std::unique_ptr<T> p{new T{}};
 
 А это — создание указателя на сишный массив:
 
-```cpp
-std::unique_ptr<int[]> p_arr(new int[100]);
+```cpp  {.example_for_playground .example_for_playground_003}
+std::unique_ptr<int[]> p_arr(new int[8]{});
+
+p_arr[1] = 5;
+std::println("{} {}", p_arr[0], p_arr[1]);
 ```
 
 Тип массива передается параметром шаблона класса `std::unique_ptr`. Поэтому при удалении объекта умный указатель корректно вызовет `delete[]`, а не `delete`.
 
 К главе про динамическое выделение памяти мы [написали](/courses/cpp/chapters/cpp_chapter_0154/#block-semver) простой класс `SemVer`. Создадим умный указатель на его объект. Заведем вложенный блок кода, чтобы убедиться, что объект разрушается при выходе из области видимости:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_004}
 int main()
 {
     {
@@ -201,7 +204,7 @@ auto p = std::make_unique<T>{}; // Тип p - std::unique_ptr<T>
 
 Перепишем создание указателя на объект `SemVer` с помощью `std::make_unique()`:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_005}
 // Было:
 // std::unique_ptr<SemVer> p_ver{new SemVer(5, 0, 11)};
 
@@ -211,8 +214,12 @@ auto  p_ver = std::make_unique<SemVer>(5, 0, 11);
 
 Так выглядит заведение умного указателя на сишный массив из 5-ти элементов:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_006}
 auto arr_ptr = std::make_unique<int[]>(5);
+
+arr_ptr[1] = 5;
+
+std::println("{} {}", arr_ptr[0], arr_ptr[1]);
 ```
 
 У вызова `std::make_unique<T>()` вместо `new T` есть еще одно достоинство: он гарантирует, что создание объекта и его передача во владение `std::unique_ptr` выполняются _как неделимая транзакция._ А значит, невозможна ситуация, при которой:
@@ -295,7 +302,7 @@ namespace std
 
 **Конструктор копирования** принимает параметр — константную ссылку на объект своего же типа. Попытка вызвать его для `std::unique_ptr` завершается ошибкой компиляции:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_007}
 std::unique_ptr<SemVer> p1 = std::make_unique<SemVer>(5, 0, 11);
 
 // Вызываем конструктор копирования
@@ -311,7 +318,7 @@ main.cpp:35:29: error: call to implicitly-deleted copy constructor of 'std::uniq
 
 Вызов функции, которая принимает параметр по значению, тоже приводит к вызову конструктора копирования. Убедитесь в этом, взглянув на ошибку компиляции:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_008}
 void read_version(std::unique_ptr<SemVer> p_ver)
 {
     p_ver->print();
@@ -331,7 +338,7 @@ main.cpp:41:14: error: call to implicitly-deleted copy constructor of 'std::uniq
 
 Присваивание _ранее созданному_ объекту значения через `=` приводит к вызову **оператора присваивания.** Вместо инициализации нового объекта значение присваивается уже существующему. Вызов оператора присваивания для `std::unique_ptr` приводит к соответствующей ошибке компиляции:
 
-```cpp
+```cpp   {.example_for_playground .example_for_playground_009}
 std::unique_ptr<SemVer> p1 = std::make_unique<SemVer>(5, 0, 11);
 
 std::unique_ptr<SemVer> p2 = nullptr;
@@ -347,11 +354,11 @@ main.cpp:37:4: error: object of type 'std::unique_ptr<SemVer>' cannot be assigne
 
 ### Перемещение std::unique_ptr
 
-Экземпляры класса `std::unique_ptr` нельзя копировать, зато можно перемещать! Это единственный способ передать владение объектом от одного `std::unique_ptr` другому. **Перемещение** сводится к копированию адреса объекта из одного указателя в другой и обнулению старого. Деструкторы при этом не вызываются, память не аллоцируется и не освобождается. Поэтому перемещение является дешевой операцией.
+Экземпляры класса `std::unique_ptr` нельзя копировать, зато можно перемещать! Это единственный способ передать владение объектом от одного `std::unique_ptr` другому. **Перемещение** сводится к копированию адреса объекта из одного указателя в другой и обнулению старого. Деструкторы при этом не вызываются, память не аллоцируется и не освобождается. Перемещение — дешевая операция.
 
 Для перемещения используется функция [std::move()](https://en.cppreference.com/w/cpp/utility/move.html):
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_010}
 std::unique_ptr<SemVer> p1 = std::make_unique<SemVer>(5, 0, 11);
 
 std::unique_ptr<SemVer> p2 = std::move(p1);
@@ -361,8 +368,10 @@ p2->print();
 std::println("p1 == nullptr ? {}", p1 == nullptr);
 ```
 ```
+...
 Version: 5.0.11
 p1 == nullptr ? true
+...
 ```
 
 Важно помнить, что `std::unique_ptr`, из которого был перемещен объект, обнуляется. Попытка его разыменования приводит к UB.
@@ -428,7 +437,7 @@ class TaskManager
 
 Если `std::unique_ptr` организует эксклюзивное владение объектом, то [std::shared_ptr](https://en.cppreference.com/w/cpp/memory/shared_ptr.html) — совместное. Несколько `std::shared_ptr` могут указывать на один и тот же объект. Для этого внутри класса ведется подсчет ссылок. Узнать значение счетчика можно вызовом метода `use_count()`:
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_011}
 std::shared_ptr<SemVer> p1(new SemVer(5, 0, 11));
 
 std::shared_ptr<SemVer> p2 = p1; // Копирование разрешено
@@ -436,7 +445,9 @@ std::shared_ptr<SemVer> p2 = p1; // Копирование разрешено
 std::println("Use count: {}", p1.use_count());
 ```
 ```
+...
 Use count: 2
+...
 ```
 
 Когда на объект начинает указывать новый `std::shared_ptr`, счетчик увеличивается. Это происходит при копировании. А когда у одного из владельцев ресурса вызывается деструктор, счетчик уменьшается. При обнулении счетчика объект уничтожается.
@@ -491,8 +502,10 @@ std::shared_ptr<T> p2          │            │
 
 Когда вы связываете `std::shared_ptr` с объектом с помощью вызова `new`, происходит две отдельные аллокации: под сам объект и под управляющий блок.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_012}
 std::shared_ptr<SemVer> p(new SemVer(5, 0, 11));
+
+p->print();
 ```
 
 Если `new` заменить на функцию `std::make_shared()`, то под объект и управляющий блок аллоцируется единая область памяти. Это работает быстрее, чем два выделения разных блоков памяти. Также это более выгодно с точки зрения локальности данных и дрюжелюбности к кешу процессора.
@@ -537,7 +550,7 @@ std::shared_ptr<SemVer> p(new SemVer(5, 0, 11));
 Класс `std::weak_ptr` не дает прямого доступа к объекту. К нему не применимы операторы разыменования `*` или обращения к члену класса `->`. 
 Вместо этого есть метод `lock()`, который проверяет, жив объект или уже удален. Если объект удален, метод возвращает обнуленный `std::shared_ptr`. Если объект еще существует, то метод возвращает указывающий на него `std::shared_ptr`.
 
-```cpp
+```cpp  {.example_for_playground .example_for_playground_013}
 auto p_owner = std::make_shared<int>(1024);
 
 // Вызываем конструктор weak_ptr от shared_ptr
