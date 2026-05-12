@@ -12,14 +12,14 @@ func hello(user string) {
     fmt.Printf("Hello %s!\n", user)
 }
 
-func goodbuy(user string) {
-    fmt.Printf("Goodbuy %s!\n", user)
+func goodbye(user string) {
+    fmt.Printf("Goodbye %s!\n", user)
 }
 
 func main() {
     userMessage := hello
     userMessage("gopher")
-    userMessage = goodbuy
+    userMessage = goodbye
     userMessage("gopher")
 }
 ```
@@ -38,8 +38,8 @@ func hello(user string) {
     fmt.Printf("Hello %s!\n", user)
 }
 
-func goodbuy(user string) {
-    fmt.Printf("Goodbuy %s!\n", user)
+func goodbye(user string) {
+    fmt.Printf("Goodbye %s!\n", user)
 }
 
 func valid(email string) bool {
@@ -50,7 +50,7 @@ func valid(email string) bool {
 func main() {
     userMessage := hello
     userMessage("gopher")
-    userMessage = goodbuy
+    userMessage = goodbye
     userMessage("gopher")
     // нельзя присвоить значение типа func(string) bool
     // переменной типа func(string)
