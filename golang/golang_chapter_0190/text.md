@@ -417,7 +417,7 @@ func monitorServer(server *serverT) {
 		if isDown {
 			server.alertCh <- alertT{
 				severity: "CRITICAL",
-				message:  fmt.Sprint("not responding"),
+				message:  "not responding",
 			}
 		} else if latency > 150 {
 			server.alertCh <- alertT{
@@ -515,7 +515,7 @@ func monitorServer(server *serverT) {
 		if isDown {
 			server.alertCh <- alertT{
 				severity: "CRITICAL",
-				message:  fmt.Sprint("not responding"),
+				message:  "not responding",
 			}
 		} else if latency > 150 {
 			server.alertCh <- alertT{
