@@ -1,0 +1,15 @@
+import std;
+
+struct Pixel
+{
+    unsigned char r = 0;
+    unsigned char g = 0;
+    unsigned char b = 0;
+};
+
+#INJECT-b585472fa
+
+int main()
+{
+    capture_screenshot();
+}

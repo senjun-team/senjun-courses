@@ -149,12 +149,12 @@ std::unique_ptr<T>              Объект типа T
 ```
 
 
-Вы пишете библиотеку для сохранения скриншотов. У вас есть сырой массив пикселей, и вы обернули его в `std::unique_ptr`, чтобы гарантировать очистку памяти, выделенной через `new[]`. Но в объявлении умного указателя допущена ошибка. Исправьте ее. {.task_text}
+Вы пишете библиотеку для сохранения скриншотов. У вас есть сырой массив пикселей. Вы обернули его в `std::unique_ptr`, чтобы гарантировать очистку памяти, выделенной через `new[]`. Но в объявлении умного указателя допущена ошибка. Исправьте ее. {.task_text}
 
 ```cpp {.task_source #cpp_chapter_0157_task_0010}
 void capture_screenshot()
 {
-    // Представьте что вместо вызова new здесь вызов функции
+    // Представьте, что вместо вызова new здесь вызов функции
     // для получения пикселей экрана
     Pixel * pixels = new Pixel[3]; 
 
@@ -169,6 +169,8 @@ void capture_screenshot()
 void capture_screenshot()
 {
     Pixel * pixels = new Pixel[3]; 
+
+    // Создаем умный указатель на массив []
     std::unique_ptr<Pixel[]> pixels_ptr(pixels);
 }
 ```
@@ -378,6 +380,7 @@ p1 == nullptr ? true
 Вы пишете систему управления задачами. У вас есть структура `Task` и класс `TaskManager`. Реализуйте его методы: {.task_text}
 - `add_task()` добавляет указатель на задачу в очередь `tasks`. Если указатель нулевой, то метод ничего не делает.
 - `get_task()` возвращает первую задачу в очереди. Если очередь пуста, то возвращается нулевой указатель.
+- `task_count()` возвращает количество задач в очереди.
 
 ```cpp {.task_source #cpp_chapter_0157_task_0030}
 struct Task
@@ -392,6 +395,7 @@ class TaskManager
     public:
     void add_task(std::unique_ptr<Task> task);
     std::unique_ptr<Task> get_task();
+    std::size_t task_count();
 
     private:
     std::queue<std::unique_ptr<Task>> tasks;
@@ -413,6 +417,7 @@ class TaskManager
     public:
     void add_task(std::unique_ptr<Task> task);
     std::unique_ptr<Task> get_task();
+    std::size_t task_count();
 
     private:
     std::queue<std::unique_ptr<Task>> tasks;
@@ -432,6 +437,11 @@ std::unique_ptr<Task> TaskManager::get_task()
     std::unique_ptr<Task> task = std::move(tasks.front());
     tasks.pop();
     return task;
+}
+
+std::size_t TaskManager::task_count()
+{
+    return tasks.size();
 }
 ```
 
@@ -568,7 +578,7 @@ else
 
 Вы пишете движок для игры. В ней есть тяжелые объекты: текстуры `Texture`, которые загружаются по имени. Чтобы многократно не подгружать одну и ту же текстуру, вы завели кеш `TextureCache`. {.task_text}
 
-Реализуйте метод класса `get_texture()`. Он работает с кешем, хранящим указатели `std::weak_ptr` на текстуры:
+Реализуйте метод класса `get_texture()`. Он работает с кешем, хранящим указатели `std::weak_ptr` на текстуры:  {.task_text}
 - Если текстуры нет в кеше, метод создает `std::shared_ptr` на текстуру, кеширует слабый указатель на нее и возвращает `std::shared_ptr`.
 - Если текстура уже есть в кеше и ее `std::weak_ptr` не нулевой, метод возвращает `std::shared_ptr`, полученный из `std::weak_ptr`.
 
