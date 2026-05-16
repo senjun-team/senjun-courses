@@ -359,19 +359,18 @@ select{
 Функция `statistics` должна писать в следующем формате. {.task_text}
 
 Для штатных сообщений: {.task_text}  
-```
-<имя сервера>:<сообщение>
-```  
+
+<имя сервера>:<сообщение> {.task_text}
+
 Для алертов: {.task_text}
-```  
-<имя сервера>:<уровень критичности>:<сообщение>  
-```
+
+<имя сервера>:<уровень критичности>:<сообщение>   {.task_text}  
 
 Например: {.task_text}
-```
-api-server-01:129ms
-db-server-01:CRITICAL:not responding
-```
+
+api-server-01:129ms  {.task_text}  
+
+db-server-01:CRITICAL:not responding  {.task_text}  
 
 Переноса строки в конце ставить не нужно. {.task_text}
 
