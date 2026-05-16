@@ -153,7 +153,7 @@ Pascal
 ```go {.example_for_playground .example_for_playground_006}
 rooms := [5]string{"Ivan", "Nikolay", "Anna", "Viacheslav", "Petr"}
 
-fmt.Println("Pepople with even room ids:")
+fmt.Println("People with even room ids:")
 for key := range rooms {
 	if key%2 == 0 {
 		fmt.Println(rooms[key])
@@ -161,7 +161,7 @@ for key := range rooms {
 }
 ```
 ```
-Pepople with even room ids:
+People with even room ids:
 Ivan
 Anna
 Petr

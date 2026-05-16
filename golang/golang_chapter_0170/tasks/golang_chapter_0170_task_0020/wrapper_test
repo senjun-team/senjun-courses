@@ -34,7 +34,7 @@ func TestModify(t *testing.T) {
 		}
 		got := memory.store["code"]
 		if got != want {
-			t.Fatalf("unexpected result after %d gooutines modified the value %s, got: %s, want: %s",
+			t.Fatalf("unexpected result after %d goroutines modified the value %s, got: %s, want: %s",
 				codeLength, val, got, want)
 		}
 	}
