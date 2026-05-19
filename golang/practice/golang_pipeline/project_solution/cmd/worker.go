@@ -35,7 +35,7 @@ func executePipeline(jobs ...job) {
 	wg.Wait()
 }
 
-func singleRes(in, out chan any) {
+func encryptAndCompress(in, out chan any) {
 	var wg sync.WaitGroup
 	for data := range in {
 		rle := compressorRLE(fmt.Sprintf("%v", data))
@@ -56,7 +56,7 @@ func singleRes(in, out chan any) {
 	wg.Wait()
 }
 
-func multiRes(in, out chan any) {
+func multiEncrypt(in, out chan any) {
 	var wg sync.WaitGroup
 	for data := range in {
 		wg.Add(1)
@@ -92,7 +92,7 @@ func multiRes(in, out chan any) {
 	wg.Wait()
 }
 
-func allResults(in, out chan any) {
+func generateResult(in, out chan any) {
 	var allData []string
 	for data := range in {
 		allData = append(allData, data.(string))

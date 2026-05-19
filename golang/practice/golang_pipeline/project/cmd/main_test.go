@@ -94,9 +94,9 @@ func TestWorker(t *testing.T) {
 				out <- data
 			}
 		}),
-		job(singleRes),
-		job(multiRes),
-		job(allResults),
+		job(encryptAndCompress),
+		job(multiEncrypt),
+		job(generateResult),
 		job(func(in, out chan any) {
 			dataRaw := <-in
 			data, ok := dataRaw.(string)
