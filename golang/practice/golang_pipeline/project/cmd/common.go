@@ -36,7 +36,7 @@ var timeUnlock = func() {
 	}
 }
 
-var compressorRLE = func(data string) string {
+var compress = func(data string) string {
 	timeLock()
 	defer timeUnlock()
 	compressed := compressor.CompressRLE(data)
@@ -44,7 +44,7 @@ var compressorRLE = func(data string) string {
 	return compressed
 }
 
-var encryptorXOR = func(data string) string {
+var encrypt = func(data string) string {
 	encrypted := encryptor.EncryptXOR(data)
 	time.Sleep(time.Second)
 	return encrypted

@@ -38,17 +38,17 @@ func executePipeline(jobs ...job) {
 func encryptAndCompress(in, out chan any) {
 	var wg sync.WaitGroup
 	for data := range in {
-		rle := compressorRLE(fmt.Sprintf("%v", data))
+		rle := compress(fmt.Sprintf("%v", data))
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			begin := make(chan string)
 			go func(b chan string) {
-				b <- encryptorXOR(fmt.Sprintf("%v", data))
+				b <- encrypt(fmt.Sprintf("%v", data))
 			}(begin)
 			end := make(chan string)
 			go func(e chan string) {
-				e <- encryptorXOR(rle)
+				e <- encrypt(rle)
 			}(end)
 			out <- fmt.Sprintf("%s~%s", <-begin, <-end)
 		}()
@@ -73,7 +73,7 @@ func multiEncrypt(in, out chan any) {
 					// After that we'll remove
 					// the number.
 					ch <- fmt.Sprintf("%d%s", th,
-						encryptorXOR(fmt.Sprintf("%d%s", th,
+						encrypt(fmt.Sprintf("%d%s", th,
 							data.(string))))
 				}(ch)
 			}
