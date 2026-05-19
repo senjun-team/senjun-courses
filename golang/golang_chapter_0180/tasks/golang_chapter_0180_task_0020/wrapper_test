@@ -9,7 +9,7 @@ import (
 func TestLeaks(t *testing.T) {
 	const chanSize = 10
 	var notificationChan = make(chan string, chanSize)
-	// Number of goroutines in the begining
+	// Number of goroutines in the beginning
 	startingGs := runtime.NumGoroutine()
 	const messageNumber = 10
 	for i := 0; i < messageNumber; i++ {
