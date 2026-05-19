@@ -129,7 +129,7 @@ func (c *cparser) factor() (cast.Ast, error) {
 		if err != nil {
 			return ast, err
 		}
-		err = c.match(lexemes.Token{T: lexemes.TokenParanthesis, Lex: ")"})
+		err = c.match(lexemes.Token{T: lexemes.TokenParentheses, Lex: ")"})
 		if err != nil {
 			return ast, err
 		}
