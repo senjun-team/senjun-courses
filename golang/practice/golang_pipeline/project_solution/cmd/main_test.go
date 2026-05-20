@@ -110,7 +110,7 @@ func TestWorker(t *testing.T) {
 	start := time.Now()
 	executePipeline(jobs...)
 
-	end := time.Since(start)
+	elapsedTime := time.Since(start)
 
 	expectedTime := 3 * time.Second
 
@@ -118,7 +118,7 @@ func TestWorker(t *testing.T) {
 		t.Errorf("results not match\ngot: %v\nwant: %v", testResult, testExpected)
 	}
 
-	if end > expectedTime {
-		t.Errorf("execution is too long\ngot: %s\nwant: <%s", end, expectedTime)
+	if elapsedTime > expectedTime {
+		t.Errorf("execution is too long\ngot: %s\nwant: <%s", elapsedTime, expectedTime)
 	}
 }
