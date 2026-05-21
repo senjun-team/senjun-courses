@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type job func(in, out chan any)
+type job func(in, out chan string)
 
 var (
 	timeLockVal uint32 = 0

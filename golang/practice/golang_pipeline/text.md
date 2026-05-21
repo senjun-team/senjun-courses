@@ -14,8 +14,8 @@
 
 Необходимо реализовать расчет со следующей цепочкой.
 1. На вход в канал `in` из теста воркеру `encryptAndCompress` последовательно подаются некоторые строки `data`.
-2. Функция `encryptAndCompress` считает значение `encrypt(data)+"~"+encrypt(compress(data))`. Это конкатенация двух строк через тильду `~`. Результат `middleData` пишется на выход в канал `out`. 
-3. Функция `multiEncrypt` считает значение `encrypt(th+middleData)`. Данные `middleData` приходят на вход из канала `in`. Этот же канал является `out` для `encryptAndCompress`. Здесь `th=0..5` — цифра в соответствующем диапазоне, приведенная к строке. На выходе `multiEncrypt` — конкатенация результатов в порядке расчета.
+2. Функция `encryptAndCompress` считает значение `encrypt(data)+"~"+encrypt(compress(data))`. Это конкатенация двух строк через тильду `~`. Результат `dataChunk` пишется на выход в канал `out`. 
+3. Функция `multiEncrypt` считает значение `encrypt(th+dataChunk)`. Данные `dataChunk` приходят на вход из канала `in`. Этот же канал является `out` для `encryptAndCompress`. Здесь `th=0..5` — цифра в соответствующем диапазоне, приведенная к строке. На выходе `multiEncrypt` — конкатенация результатов в порядке расчета.
 4. Функция `generateResult` получает строки из `multiEncrypt`, [сортирует](https://golang.org/pkg/sort/) по возрастанию, объединяет отсортированный результат через символ нижнего подчеркивания `_`  в одну строку. Результат пишется на выход в канал `out`.
 
 Ограничения:
@@ -36,13 +36,13 @@ encryptAndCompress encrypt(data) EAcVHhE=
 encryptAndCompress encrypt(compress(data)) EEYVQBhIFEY=
 encryptAndCompress result EAcVHhE=~EEYVQBhIFEY=
 
-multiEncrypt middleData EAcVHhE=~EEYVQBhIFEY=
-multiEncrypt encrypt(th+middleData) 0 QTIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
-multiEncrypt encrypt(th+middleData) 1 QDIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
-multiEncrypt encrypt(th+middleData) 2 QzIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
-multiEncrypt encrypt(th+middleData) 3 QjIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
-multiEncrypt encrypt(th+middleData) 4 RTIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
-multiEncrypt encrypt(th+middleData) 5 RDIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
+multiEncrypt dataChunk EAcVHhE=~EEYVQBhIFEY=
+multiEncrypt encrypt(th+dataChunk) 0 QTIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
+multiEncrypt encrypt(th+dataChunk) 1 QDIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
+multiEncrypt encrypt(th+dataChunk) 2 QzIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
+multiEncrypt encrypt(th+dataChunk) 3 QjIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
+multiEncrypt encrypt(th+dataChunk) 4 RTIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
+multiEncrypt encrypt(th+dataChunk) 5 RDIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
 multiEncrypt result QTIkESIxGTJYDDE8KCE0MBwwNzI8Tw==QDIkESIxGTJYDDE8KCE0MBwwNzI8Tw==QzIkESIxGTJYDDE8KCE0MBwwNzI8Tw==QjIkESIxGTJYDDE8KCE0MBwwNzI8Tw==RTIkESIxGTJYDDE8KCE0MBwwNzI8Tw==RDIkESIxGTJYDDE8KCE0MBwwNzI8Tw==
 
 encryptAndCompress data orange
@@ -51,13 +51,13 @@ encryptAndCompress encrypt(data) HgUEHBMc
 encryptAndCompress encrypt(compress(data)) HkYXQxVIH0YCQxFI
 encryptAndCompress result HgUEHBMc~HkYXQxVIH0YCQxFI
 
-multiEncrypt middleData HgUEHBMc~HkYXQxVIH0YCQxFI
-multiEncrypt encrypt(th+middleData) 0 QT8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
-multiEncrypt encrypt(th+middleData) 1 QD8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
-multiEncrypt encrypt(th+middleData) 2 Qz8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
-multiEncrypt encrypt(th+middleData) 3 Qj8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
-multiEncrypt encrypt(th+middleData) 4 RT8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
-multiEncrypt encrypt(th+middleData) 5 RD8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
+multiEncrypt dataChunk HgUEHBMc~HkYXQxVIH0YCQxFI
+multiEncrypt encrypt(th+dataChunk) 0 QT8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
+multiEncrypt encrypt(th+dataChunk) 1 QD8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
+multiEncrypt encrypt(th+dataChunk) 2 Qz8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
+multiEncrypt encrypt(th+dataChunk) 3 Qj8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
+multiEncrypt encrypt(th+dataChunk) 4 RT8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
+multiEncrypt encrypt(th+dataChunk) 5 RD8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
 multiEncrypt result QT8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=QD8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=Qz8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=Qj8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=RT8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=RD8CJzExMzoGDDwSKC80CiIwOUc8MSUBNz4=
 
 generateResult

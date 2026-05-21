@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"time"
 )
 
@@ -11,7 +10,7 @@ func main() {
 	inputData := []string{"apple", "orange"}
 
 	jobs := []job{
-		job(func(in, out chan any) {
+		job(func(in, out chan string) {
 			for _, data := range inputData {
 				out <- data
 			}
@@ -19,13 +18,8 @@ func main() {
 		job(encryptAndCompress),
 		job(multiEncrypt),
 		job(generateResult),
-		job(func(in, out chan any) {
-			dataRaw := <-in
-			data, ok := dataRaw.(string)
-			if !ok {
-				log.Fatal("failed to convert result data to string")
-			}
-			result = data
+		job(func(in, out chan string) {
+			result = <-in
 		}),
 	}
 	start := time.Now()

@@ -6,14 +6,14 @@ func executePipeline(jobs ...job) {
 	// ваш код здесь
 }
 
-func encryptAndCompress(in, out chan any) {
+func encryptAndCompress(in, out chan string) {
 	// ваш код здесь
 }
 
-func multiEncrypt(in, out chan any) {
+func multiEncrypt(in, out chan string) {
 	// ваш код здесь
 }
 
-func generateResult(in, out chan any) {
+func generateResult(in, out chan string) {
 	// ваш код здесь
 }

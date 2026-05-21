@@ -16,8 +16,8 @@ func TestPipeline(t *testing.T) {
 	var ok = true
 	var received uint32
 	freeFlowJobs := []job{
-		job(func(in, out chan any) {
-			out <- 0
+		job(func(in, out chan string) {
+			out <- "0"
 			time.Sleep(10 * time.Millisecond)
 			currReceived := atomic.LoadUint32(&received)
 			// Counter should increase in the next function
@@ -27,7 +27,7 @@ func TestPipeline(t *testing.T) {
 				ok = false
 			}
 		}),
-		job(func(in, out chan any) {
+		job(func(in, out chan string) {
 			for range in {
 				atomic.AddUint32(&received, 1)
 			}
@@ -89,7 +89,7 @@ func TestWorker(t *testing.T) {
 	inputData := []string{"apple", "orange"}
 
 	jobs := []job{
-		job(func(in, out chan any) {
+		job(func(in, out chan string) {
 			for _, data := range inputData {
 				out <- data
 			}
@@ -97,13 +97,8 @@ func TestWorker(t *testing.T) {
 		job(encryptAndCompress),
 		job(multiEncrypt),
 		job(generateResult),
-		job(func(in, out chan any) {
-			dataRaw := <-in
-			data, ok := dataRaw.(string)
-			if !ok {
-				t.Error("failed to convert result data to string")
-			}
-			testResult = data
+		job(func(in, out chan string) {
+			testResult = <-in
 		}),
 	}
 

@@ -11,31 +11,22 @@ func executePipeline(jobs ...job) {
 	if len(jobs) == 0 {
 		return
 	}
+	var curIn chan string
 	var wg sync.WaitGroup
-	wg.Add(len(jobs))
-	in := make(chan any)
-	var out chan any
-	for i, job := range jobs {
-		if i%2 == 0 {
-			out = make(chan any)
-			go func(in chan any, out chan any) {
-				defer wg.Done()
-				job(in, out)
-				close(out)
-			}(in, out)
-		} else {
-			in = make(chan any)
-			go func(in chan any, out chan any) {
-				defer wg.Done()
-				job(out, in)
-				close(in)
-			}(in, out)
-		}
+	for _, currentJob := range jobs {
+		curOut := make(chan string)
+		wg.Add(1)
+		go func(j job, in, out chan string) {
+			defer wg.Done()
+			defer close(out)
+			j(in, out)
+		}(currentJob, curIn, curOut)
+		curIn = curOut
 	}
 	wg.Wait()
 }
 
-func encryptAndCompress(in, out chan any) {
+func encryptAndCompress(in, out chan string) {
 	var wg sync.WaitGroup
 	for data := range in {
 		rle := compress(fmt.Sprintf("%v", data))
@@ -56,15 +47,14 @@ func encryptAndCompress(in, out chan any) {
 	wg.Wait()
 }
 
-func multiEncrypt(in, out chan any) {
+func multiEncrypt(in, out chan string) {
 	var wg sync.WaitGroup
 	for data := range in {
 		wg.Add(1)
-		go func(data any, out chan any) {
+		go func(data string, out chan string) {
 			defer wg.Done()
 			const thMax = 6
-			const resNumber = 5
-			ch := make(chan string, resNumber)
+			ch := make(chan string, thMax)
 			var xorStorage []string
 			for th := range thMax {
 				go func(ch chan string) {
@@ -74,7 +64,7 @@ func multiEncrypt(in, out chan any) {
 					// the number.
 					ch <- fmt.Sprintf("%d%s", th,
 						encrypt(fmt.Sprintf("%d%s", th,
-							data.(string))))
+							data)))
 				}(ch)
 			}
 			for range thMax {
@@ -92,10 +82,10 @@ func multiEncrypt(in, out chan any) {
 	wg.Wait()
 }
 
-func generateResult(in, out chan any) {
+func generateResult(in, out chan string) {
 	var allData []string
 	for data := range in {
-		allData = append(allData, data.(string))
+		allData = append(allData, data)
 	}
 	sort.Strings(allData)
 	var res strings.Builder
