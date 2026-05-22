@@ -1,0 +1,17 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    TextureCache cache;
+    std::println("Created cache...");
+
+    std::shared_ptr<Texture> terrain_ptr = cache.get_texture("terrain_56");
+
+    std::size_t count_plan = 10;
+    terrain_ptr->data = std::vector<unsigned char>(count_plan, 0);
+
+    const std::size_t count_fact = cache.get_texture("terrain_56")->data.size();
+    std::println("Cached and extracted texture. {}", count_plan == count_fact ? "OK": "ERR");
+}

@@ -1,0 +1,66 @@
+import boost.ut;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+
+std::shared_ptr<Texture> check_texture(Texture const & texture, TextureCache & cache, bool exists_plan)
+{
+    std::shared_ptr<Texture> ptr = cache.get_texture(texture.name);
+    const std::size_t count_fact = ptr->data.size();
+    const std::size_t count_plan = exists_plan ? texture.data.size() : 0;
+    
+    std::string message;
+
+    if (exists_plan)
+    {
+        message = std::format("Saved texture to cache but couldn't extract it. Texture name: {}, size: {}."
+                              "Instead extracted texture with name: {}, size: {}.",
+                              texture.name, texture.data.size(),
+                              ptr->name, ptr->data.size());    
+    }
+    else
+    {
+        message = "Tried to save new texture to cache. Method get_texture() didn't return new texture with empty data";
+    }
+    
+    expect(count_fact == count_plan) << message << fatal;
+
+    if(!exists_plan)
+        *ptr = texture;
+
+    return ptr;
+}
+
+int main()
+{
+    "Add texture and use its pointer"_test = [] {
+        TextureCache cache;
+
+        auto p = check_texture(Texture{"terrain_56", std::vector<unsigned char>(10, 1)}, cache, false);
+        check_texture(Texture{"terrain_56", std::vector<unsigned char>(10, 1)}, cache, true);
+    };
+
+    "Add texture but not its pointer"_test = [] {
+        TextureCache cache;
+
+        Texture t1{"terrain_56", std::vector<unsigned char>(10, 1)};
+        check_texture(t1, cache, false);
+        check_texture(t1, cache, false);
+    };
+
+    "Add texture and update it"_test = [] {
+        TextureCache cache;
+
+        Texture t1{"terrain_56", std::vector<unsigned char>(10, 1)};
+        auto p = check_texture(t1, cache, false);
+        check_texture(t1, cache, true);
+        
+        t1.data = std::vector<unsigned char>(11, 5);
+        p->data = t1.data;
+        check_texture(t1, cache, true);
+    };
+}
