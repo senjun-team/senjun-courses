@@ -4,9 +4,14 @@ import std;
 
 int main()
 {
-    const char* argv[] = {"test", "input.txt", "--output=out.txt"};
-    const Args args = parse_args(3, const_cast<char **>(argv));
-    std::println("Called parse_args() with argc: 3 and argv: \"test\", \"input.txt\", \"--output=out.txt\".\n"
-                 "Parsed {} keyword args and {} positional.\nKeyword: {}. Positional: {}",
-                 args.keyword.size(), args.positional.size(), args.keyword, args.positional);
+    TextureCache cache;
+    std::println("Created cache...");
+
+    std::shared_ptr<Texture> terrain_ptr = cache.get_texture("terrain_56");
+
+    std::size_t count_plan = 10;
+    terrain_ptr->data = std::vector<unsigned char>(count_plan, 0);
+
+    const std::size_t count_fact = cache.get_texture("terrain_56")->data.size();
+    std::println("Cached and extracted texture. {}", count_plan == count_fact ? "OK": "ERR");
 }
