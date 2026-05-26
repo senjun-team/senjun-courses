@@ -35,7 +35,7 @@ func TestPipeline(t *testing.T) {
 	}
 	executePipeline(freeFlowJobs...)
 	if !ok || received == 0 {
-		t.Error("no value free flow in the ExecutePipeline - " +
+		t.Error("no value free flow in the executePipeline - " +
 			"don't collect them before passing to the next function")
 	}
 }
