@@ -14,12 +14,12 @@ const (
 	TokenStart
 	TokenNumber
 	TokenOperator
-	TokenParanthesis
+	TokenParentheses
 	// class of the symbol
 	Digit
 	Point
 	Operator
-	Paranthesis
+	Parentheses
 	Other
 	// states of the state machine
 	NewToken

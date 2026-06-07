@@ -1,0 +1,45 @@
+import boost.ut;
+import TestHelpers;
+import std;
+
+
+struct Pixel
+{
+    Pixel()
+    {
+        ++created;
+    }
+
+    ~Pixel()
+    {
+        ++destroyed;
+    }
+
+    unsigned char r = 0;
+    unsigned char g = 0;
+    unsigned char b = 0;
+
+    static std::size_t created;
+    static std::size_t destroyed;
+};
+
+std::size_t Pixel::created = 0;
+std::size_t Pixel::destroyed = 0;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+int main()
+{
+    "check Pixel creation & destruction"_test = [] {
+        expect(Pixel::created == 0 && Pixel::destroyed == 0) << "Before calling capture_screenshot() no Pixel object must be allocated" << fatal;
+        capture_screenshot();
+        expect(Pixel::created == 3 && Pixel::destroyed == 3) << "After calling capture_screenshot() 3 Pixel object must be destroyed" << fatal;
+    };
+    
+    "check usage of std::make_unique()"_test = [] {
+        std::string user_input = hlp::normalize(R"(#INJECT-b585472fa)");
+        expect(user_input.find(hlp::normalize("std::make_unique<Pixel[]>(")) != std::string::npos) << "Please use std::make_unique() for array of pixels" << fatal;
+    };
+}

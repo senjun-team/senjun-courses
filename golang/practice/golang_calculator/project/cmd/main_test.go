@@ -18,7 +18,7 @@ func TestCalc(t *testing.T) {
 		testFloatingPointNumbers,
 		testOperators,
 		testOperatorsPriority,
-		testParanthesis,
+		testParentheses,
 		testSimpleInvalidExpressions,
 		testLongCorrectExpressions}
 
@@ -360,7 +360,7 @@ func testOperatorsPriority() []testCaseT {
 	}
 }
 
-func testParanthesis() []testCaseT {
+func testParentheses() []testCaseT {
 	return []testCaseT{
 		{
 			"()",

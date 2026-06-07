@@ -457,21 +457,21 @@ func hello(name string) {
 	fmt.Printf("Hello, %s!\n", name)
 }
 
-func goodbuy(name string) {
-	fmt.Printf("Goodbuy, %s!\n", name)
+func goodbye(name string) {
+	fmt.Printf("Goodbye, %s!\n", name)
 }
 
 func main() {
 	sep := "===================="
 	hello("gopher")
-	defer goodbuy("gopher")
+	defer goodbye("gopher")
 	fmt.Println(sep)
 	fmt.Println("Here we study defer")
 	fmt.Println(sep)
 }
 ```
 
-Вызов функции `goodbuy` откладывается до завершения функции `main` независимо от того, как эта функция завершится: с ошибкой или без нее. Допустимо откладывать любое количество вызов. Выполняются они в порядке, обратном тому, в котором были отложены:
+Вызов функции `goodbye` откладывается до завершения функции `main` независимо от того, как эта функция завершится: с ошибкой или без нее. Допустимо откладывать любое количество вызов. Выполняются они в порядке, обратном тому, в котором были отложены:
 
 ```go {.example_for_playground}
 package main

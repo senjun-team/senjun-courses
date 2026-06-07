@@ -40,12 +40,12 @@ func accumulateOperator(c *Command,
 	return newToken
 }
 
-func accumulateParanthesis(c *Command,
+func accumulateParentheses(c *Command,
 	char rune,
 	token *lexemes.Token) (newToken *lexemes.Token) {
 	c.saveToken(token)
 	newToken = &lexemes.Token{}
-	newToken.T = lexemes.TokenParanthesis
+	newToken.T = lexemes.TokenParentheses
 	newToken.Lex = lexemes.Lexeme(char)
 	return newToken
 }
@@ -65,7 +65,7 @@ func analyzeSymbol(c rune) int {
 	case c == '+' || c == '-' || c == '*' || c == '/':
 		return lexemes.Operator
 	case c == ')' || c == '(':
-		return lexemes.Paranthesis
+		return lexemes.Parentheses
 	}
 	return lexemes.Other
 }
@@ -116,18 +116,18 @@ func (c *Command) Tokenize() error {
 				accumulateOperator,
 			},
 		},
-		lexemes.Paranthesis: {
+		lexemes.Parentheses: {
 			lexemes.NewToken: {
 				lexemes.NewToken,
-				accumulateParanthesis,
+				accumulateParentheses,
 			},
 			lexemes.NumberIntegerPart: {
 				lexemes.NewToken,
-				accumulateParanthesis,
+				accumulateParentheses,
 			},
 			lexemes.NumberFractionalPart: {
 				lexemes.NewToken,
-				accumulateParanthesis,
+				accumulateParentheses,
 			},
 		},
 		lexemes.Other: {
