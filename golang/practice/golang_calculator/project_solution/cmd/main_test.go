@@ -19,7 +19,7 @@ func TestCalc(t *testing.T) {
 	cases = append(cases, testFloatingPointNumbers)
 	cases = append(cases, testOperators)
 	cases = append(cases, testOperatorsPriority)
-	cases = append(cases, testParanthesis)
+	cases = append(cases, testParentheses)
 	cases = append(cases, testSimpleInvalidExpressions)
 	cases = append(cases, testLongCorrectExpressions)
 
@@ -361,7 +361,7 @@ func testOperatorsPriority() []testCaseT {
 	}
 }
 
-func testParanthesis() []testCaseT {
+func testParentheses() []testCaseT {
 	return []testCaseT{
 		{
 			"()",

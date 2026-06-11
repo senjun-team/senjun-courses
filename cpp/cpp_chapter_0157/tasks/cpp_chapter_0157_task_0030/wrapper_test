@@ -1,0 +1,78 @@
+import boost.ut;
+import TestHelpers;
+
+import std;
+
+#INJECT-b585472fa
+
+using namespace boost::ut;
+
+std::string join_args(int argc, const char * const argv[])
+{
+    if (argc < 2)
+        return "";
+
+    std::vector<std::string_view> args(argv + 1, argv + argc);
+
+    return std::accumulate(
+        std::next(args.begin()),
+        args.end(), 
+        std::string(args[0]),
+        [](std::string a, std::string_view b) {
+            return std::move(a) + " " + std::string(b);
+        }
+    );
+}
+
+
+void check_case(int argc, char * argv[], const Args & plan)
+{
+    const Args fact = parse_args(argc, const_cast<char **>(argv));
+
+    
+    expect(plan.keyword == fact.keyword && plan.positional == fact.positional) << 
+    std::format("Invalid result for parse_args() with argc: {} and argv: {}\n"
+                 "Fact: {} keyword args and {} positional.\nKeyword: {}. Positional: {}\n"
+                 "Plan: {} keyword args and {} positional.\nKeyword: {}. Positional: {}\n",
+                 argc, join_args(argc, const_cast<char **>(argv)),
+                 fact.keyword.size(), fact.positional.size(), fact.keyword, fact.positional,
+                 plan.keyword.size(), plan.positional.size(), plan.keyword, plan.positional) << fatal;
+} 
+
+int main()
+{
+    "cornercase"_test = [] {
+        const Args plan{};
+        const char* argv[] = {"run"};
+        const int argc = 1;
+        check_case(argc, const_cast<char **>(argv), plan);
+    };
+
+    "case from playground"_test = [] {
+        const Args plan{.keyword={{"output", "out.txt"}}, .positional={"input.txt"}};
+        const char* argv[] = {"test", "input.txt", "--output=out.txt"};
+        const int argc = 3;
+        check_case(argc, const_cast<char **>(argv), plan);
+    };
+
+    "positional args only"_test = [] {
+        const Args plan{.keyword={}, .positional={"a", "bb", "ccc", "dddd", "eeeee"}};
+        const char* argv[] = {"x", "a", "bb", "ccc", "dddd", "eeeee"};
+        const int argc = 6;
+        check_case(argc, const_cast<char **>(argv), plan);
+    };
+
+    "keyword args only"_test = [] {
+        const Args plan{.keyword={{"a", "1"}, {"bb", "2"}, {"ccc", "33"}, {"dddd", "4444"}}, .positional={}};
+        const char* argv[] = {"xx", "--a=1", "--bb=2", "--ccc=33", "--dddd=4444"};
+        const int argc = 5;
+        check_case(argc, const_cast<char **>(argv), plan);
+    };
+
+    "keyword and positional args"_test = [] {
+        const Args plan{.keyword={{"a", "1"}, {"bb", "456"}, {"ccc", "101112"}}, .positional={"23", "789", "134"}};
+        const char* argv[] = {"run", "--a=1", "23", "--bb=456", "789", "--ccc=101112", "134"};
+        const int argc = 7;
+        check_case(argc, const_cast<char **>(argv), plan);
+    };
+}

@@ -1,0 +1,37 @@
+import std;
+
+#INJECT-b585472fa
+
+int main()
+{
+    std::println("Creating TaskManager...");
+    TaskManager m;
+
+    std::println("Adding 2 tasks to queue...");
+    m.add_task(std::make_unique<Task>("name1", "descr1", 1));
+    m.add_task(std::make_unique<Task>("name2", "descr2", 2));
+
+    std::println("Tasks in queue: {}. {}",
+                 m.task_count(), m.task_count() == 2 ? "OK" : "ERR");
+
+    auto t1 = m.get_task();
+    std::println("Getting task from queue. Id: {}. {}",
+                 t1 == nullptr ? "task doesn't extst" : std::to_string(t1->id),
+                 t1 != nullptr && t1->id == 1 ? "OK" : "ERR");
+
+    std::println("Tasks in queue: {}. {}",
+                m.task_count(), m.task_count() == 1 ? "OK" : "ERR");
+
+    auto t2 = m.get_task();
+    std::println("Getting task from queue. Id: {}. {}",
+                 t2 == nullptr ? "task doesn't extst" : std::to_string(t2->id),
+                 t2 != nullptr && t2->id == 2 ? "OK" : "ERR");
+    
+    std::println("Tasks in queue: {}. {}",
+            m.task_count(), m.task_count() == 0 ? "OK" : "ERR");
+
+    auto t0 = m.get_task();
+    std::println("Getting task from queue. task == nullptr: {}. {}",
+                 t0 == nullptr,
+                 t0 == nullptr ? "OK" : "ERR");
+}

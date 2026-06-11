@@ -1,0 +1,95 @@
+package main
+
+import (
+	"fmt"
+	"strings"
+	"sync"
+	"testing"
+)
+
+func TestStatistics(t *testing.T) {
+	cases := [][]*serverT{
+		{
+			newServer("api-server-01", "http://192.168.23.46:8080"),
+		},
+		{
+			newServer("api-server-01", "http://192.168.23.46:8080"),
+			newServer("db-server-01", "http://192.168.23.47:5432"),
+		},
+		{
+			newServer("api-server-01", "http://192.168.23.46:8080"),
+			newServer("db-server-01", "http://192.168.23.47:5432"),
+			newServer("cache-server-01", "http://192.168.23.48:6379"),
+		},
+	}
+
+	for _, c := range cases {
+		want := modelAnalyze(c, modelStatistics)
+		got := modelAnalyze(c, statistics)
+		if !slicesHaveSameElements(want, got) {
+
+			t.Fatalf("for %d servers elements of the result are not the same, model result: \n%v\n user result: \n%v\n",
+				len(c), want, got)
+		}
+	}
+}
+
+func modelAnalyze(servers []*serverT, stat func([]*serverT, chan<- string) []string) (res []string) {
+	const buffSize = 100
+	resultCh := make(chan string, buffSize)
+	// Запускаем мониторинг для каждого сервера
+	for _, server := range servers {
+		go monitorServer(server)
+	}
+	go stat(servers, resultCh)
+	for msg := range resultCh {
+		res = append(res, msg)
+	}
+	return
+}
+
+func modelStatistics(servers []*serverT, resultCh chan<- string) (res []string) {
+	var wg sync.WaitGroup
+	wg.Add(len(servers))
+	for _, server := range servers {
+		go func(server *serverT) {
+			defer wg.Done()
+		loop:
+			for {
+				select {
+				case health := <-server.healthCh:
+					resultCh <- fmt.Sprintf("%s:%s",
+						server.name,
+						health)
+				case alert := <-server.alertCh:
+					resultCh <- fmt.Sprintf("%s:%s:%s",
+						server.name,
+						alert.severity,
+						alert.message)
+				case <-server.monitorStopCh:
+					break loop
+				}
+			}
+		}(server)
+	}
+	wg.Wait()
+	close(resultCh)
+	return res
+}
+
+func slicesHaveSameElements(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	count := make(map[string]int)
+	for _, v := range a {
+		count[strings.TrimSpace(v)]++
+	}
+	for _, v := range b {
+		count[strings.TrimSpace(v)]--
+		if count[strings.TrimSpace(v)] < 0 {
+			return false
+		}
+	}
+	return true
+}

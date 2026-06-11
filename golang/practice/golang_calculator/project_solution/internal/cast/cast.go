@@ -113,7 +113,7 @@ func (n *Node) findNodeById(id int) (res *Node, err error) {
 /*
 The printInLevel prints the lexeme of the node to the terminal with format of the level in the ast.
 Returns branchLevels where ├─ or │ was printed.
-Wants prevBranchLevels which is the branchLevels from the previos call.
+Wants prevBranchLevels which is the branchLevels from the previous call.
 Set prevBranchLevels = map[int]struct{}{} if there was no previous call.
 */
 func (n *Node) printInLevel(level int, prevBranchLevels map[int]struct{}) (branchLevels map[int]struct{}) {
