@@ -2,5 +2,10 @@ text = """
 #INJECT-ESCAPED-b585472fa
 """
 
-if text.strip().lower() != "ca":
+
+def is_valid(text_in: str) -> bool:
+    return text_in.strip().lower() == "ca" or text_in.strip().lower() == "c\na"
+
+
+if not is_valid(text):
     exit(1)
