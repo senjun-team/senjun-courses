@@ -1,11 +1,12 @@
 # Глава 21. Работа с файлами
 
-- [ ] Работа с json и xml   
+- [ ] Работа с json  
 - [x] Базовые операции с файлами  
-- [ ] Логирование  
+- [x] Логирование  
 - [x] Задача на кастомный Split до точки с запятой
 - [x] Рассказать подробнее про `os.Rename`, когда файл перемещают. Чтобы переместить файл честно, `os.Rename` не подойдет.
 - [ ] Добавить введение.
+- [ ] Добавить 1-2 задачи.
 
 ## Основные пакеты для работы с файлами
 
@@ -675,4 +676,46 @@ func makeDir(dir string) (err error) {
 ```
 
 ## Логирование через log/slog
+
+Пакет `log/slog` позволяет делать структурированное логирование. Такой лог удобно, например, обрабатывать автоматическими средствами. Приятный бонус — возможность задать уровень логирования из коробки. 
+
+Уровни логирования:
+
+```
+1. slog.LevelDebug
+2. slog.LevelInfo
+3. slog.LevelWarn
+4. slog.LevelError
+```
+Сообщения в лог проходят только на данном уровне и на всех уровнях выше. Например, информационное сообщение, написанное в лог c уровнем `slog.LevelWarn`, не попадет в лог. Однако предупреждения и ошибки попадут в лог.
+
+```go {.example_for_playground}
+package main
+
+import (
+	"log/slog"
+	"os"
+)
+
+func main() {
+	opts := &slog.HandlerOptions{
+		// пишем в лог только предупреждения и ошибки
+		Level: slog.LevelWarn,
+	}
+
+	// пишем лог в stdout
+	handler := slog.NewTextHandler(os.Stdout, opts)
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
+	slog.Info("this message is not in the log")
+	slog.Error("database is not available, reconnecting...")
+}
+```
+```
+time=2026-10-12T13:15:54.871+03:00 level=ERROR msg="database is not available, reconnecting..."
+```
+
+Вместо `os.Stdout` задают файл, когда нужно записать лог именно в файл.
+
+## Работа с json 
 
