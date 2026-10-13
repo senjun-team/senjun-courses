@@ -1,6 +1,7 @@
 # Глава 1.5. Экстракторы
 
-Экстракторы - это типы, которые извлекают данные из HTTP-запроса и передают их в хендлер в качестве аргументов. Хендлер просто объявляет в сигнатуре, что ему нужно, а Axum сам разбирает запрос. Если извлечь данные не удалось, хендлер не вызывается, а клиент получает ошибку. 
+Экстракторы — это типы, которые извлекают данные из HTTP-запроса и передают их в хендлер в качестве аргументов. Хендлер просто объявляет в сигнатуре, что ему нужно, а Axum сам разбирает запрос. Если извлечь данные не удалось, хендлер не вызывается, а клиент получает ошибку.
+
 ## Встроенные экстракторы
 
 | Экстрактор        | Что извлекает                            |
@@ -14,10 +15,12 @@
 | `String`, `Bytes` | тело запроса как есть                    |
 | `State<T>`        | общее состояние приложения (глава 1.6)   |
 
-Помимо встроенных экстракторов, есть дополнительные в крейте `axum-extra`, например, для типизированных заголовков и cookies. 
+Помимо встроенных экстракторов, есть дополнительные в крейте `axum-extra`, например для типизированных заголовков и cookies.
+
 ## Параметры строки запроса
 
 `Query<T>` разбирает параметры после `?` в структуру. Например, так выглядит пагинация:
+
 ```rust
 use axum::extract::Query;
 use serde::Deserialize;
@@ -28,7 +31,9 @@ struct Pagination {
     limit: Option<u32>,
 }
 
-async fn list_users(Query(pagination): Query<Pagination>) -> String {
+async fn list_users(
+    Query(pagination): Query<Pagination>,
+) -> String {
     let page = pagination.page.unwrap_or(1);
     let limit = pagination.limit.unwrap_or(20);
     format!("page {page}, limit {limit}")
@@ -38,10 +43,12 @@ async fn list_users(Query(pagination): Query<Pagination>) -> String {
 // /users?page=abc     -> 400 Bad Request
 ```
 
-Если параметр необязательный, делайте поле `Option` или ставьте `#[serde(default)]`.
+Если параметр необязательный, сделайте поле типом `Option` или добавьте к нему атрибут `#[serde(default)]`.
+
 ## Заголовки
 
 `HeaderMap` даёт доступ ко всем заголовкам запроса:
+
 ```rust
 use axum::http::{header, HeaderMap};
 
@@ -54,10 +61,12 @@ async fn user_agent(headers: HeaderMap) -> String {
 }
 ```
 
-Значение заголовка - это `HeaderValue`, а не строка, потому что HTTP допускает в заголовках байты, которые не являются корректным UTF-8. Поэтому перед использованием его нужно преобразовать в строку.
+Значение заголовка — это `HeaderValue`, а не строка, потому что HTTP допускает в заголовках байты, которые не являются корректным UTF-8. Поэтому перед использованием его нужно преобразовать в строку.
+
 ## Несколько экстракторов
 
 Хендлер может принимать сразу несколько экстракторов:
+
 ```rust
 async fn update_user(
     Path(id): Path<u64>,
@@ -70,11 +79,14 @@ async fn update_user(
 ```
 
 Экстракторы делятся на два вида:
-1) `FromRequestParts` - читают только части запроса: метод, адрес, заголовки и состояние. Например, `Path`, `Query`, `HeaderMap`, `State`
-2) `FromRequest` - могут читать тело запроса. Например, `Json`, `Form`, `String`, `Bytes`
+
+1) `FromRequestParts` — читают только части запроса: метод, адрес, заголовки и состояние. Например, `Path`, `Query`, `HeaderMap`, `State`.
+2) `FromRequest` — могут читать тело запроса. Например, `Json`, `Form`, `String`, `Bytes`.
+
 ## Свой экстрактор
 
-Экстрактор - это любой тип, реализующий `FromRequestParts` или `FromRequest`. Например, экстрактор, который достаёт `User-Agent` и возвращает `400`, если заголовка нет:
+Экстрактор — это любой тип, реализующий `FromRequestParts` или `FromRequest`. Например, вот экстрактор, который достаёт заголовок `User-Agent` и возвращает `400`, если заголовка нет:
+
 ```rust
 use axum::{
     extract::FromRequestParts,
@@ -86,7 +98,10 @@ struct UserAgent(String);
 impl<S: Send + Sync> FromRequestParts<S> for UserAgent {
     type Rejection = (StatusCode, &'static str);
 
-    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+    async fn from_request_parts(
+        parts: &mut Parts,
+        _state: &S,
+    ) -> Result<Self, Self::Rejection> {
         parts
             .headers
             .get(header::USER_AGENT)
@@ -101,7 +116,7 @@ async fn handler(UserAgent(agent): UserAgent) -> String {
 }
 ```
 
-`Rejection` - это тип ошибки, которую получит клиент, поэтому он должен реализовывать `IntoResponse`.
+`Rejection` — это тип ошибки, которую получит клиент, поэтому он должен реализовывать `IntoResponse`.
 
 Свои экстракторы позволяют убрать повторяющийся код из хендлеров. Например, в модуле про аутентификацию мы напишем экстрактор `AuthUser`, который проверяет токен, и хендлер сможет получить текущего пользователя просто как аргумент.
 
