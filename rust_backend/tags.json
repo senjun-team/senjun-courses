@@ -1,0 +1,21 @@
+{
+    "title": "Rust: бекенд на Axum",
+    "version": "Axum 0.8",
+    "url": "https://github.com/tokio-rs/axum",
+    "chapters": "9 глав",
+    "projects": [
+        {
+            "name": "Discord — мессенджер",
+            "url": "https://habr.com/ru/articles/487116/"
+        },
+        {
+            "name": "Pingora — HTTP-прокси Cloudflare",
+            "url": "https://github.com/cloudflare/pingora"
+        },
+        {
+            "name": "Figma — графический редактор",
+            "url": "https://www.figma.com/blog/rust-in-production-at-figma/"
+        }
+    ],
+    "in_development": true
+}
