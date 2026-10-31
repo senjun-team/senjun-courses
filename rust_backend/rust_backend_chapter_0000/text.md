@@ -133,4 +133,4 @@ Rust быстрый: возможно, вы не раз видели это в �
 - Компилятор Rust, установленный по официальной [документации](https://rust-lang.org/tools/install/).
 - Редактор: VSCode, RustRover, Neovim, Zed или любой другой с поддержкой [rust-analyzer](https://rust-analyzer.github.io/).
 - curl или Postman для отправки HTTP-запросов.
-- Docker для запуска PostgreSQL во втором модуле. На Windows удобнее работать через WSL.
+- Docker и Docker Compose для запуска PostgreSQL, а позже и самого сервера. На Windows удобнее работать через WSL.

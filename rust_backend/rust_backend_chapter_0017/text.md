@@ -165,12 +165,20 @@ async fn create_user(
 Проверим:
 
 ```bash
-$ curl -i http://127.0.0.1:3000/users/0
+curl -i http://127.0.0.1:3000/users/0
+```
+
+```text
 HTTP/1.1 404 Not Found
 {"error":"пользователь не найден"}
+```
 
-$ curl -i -H 'content-type: application/json' \
+```bash
+curl -i -H 'content-type: application/json' \
     -d '{"name":"  "}' http://127.0.0.1:3000/users
+```
+
+```text
 HTTP/1.1 400 Bad Request
 {"error":"некорректные данные: имя не может быть пустым"}
 ```

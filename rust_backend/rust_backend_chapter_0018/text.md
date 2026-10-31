@@ -153,9 +153,12 @@ let router = Router::new()
 
 Слой разрешает запросы с адреса фронтенда, методы `GET` и `POST` и заголовок `content-type`. Адрес фронтенда берётся из настроек, потому что на компьютере разработчика и на боевом сервере он разный. Ответ на предварительный запрос выглядит так:
 
-```text
-$ curl -i -X OPTIONS -H 'Origin: http://localhost:5173' \
+```bash
+curl -i -X OPTIONS -H 'Origin: http://localhost:5173' \
     -H 'Access-Control-Request-Method: POST' http://127.0.0.1:3000/
+```
+
+```text
 HTTP/1.1 200 OK
 access-control-allow-methods: GET,POST
 access-control-allow-headers: content-type
