@@ -559,13 +559,6 @@ func mv(src string, dst string) (err error) {
 	if err != nil {
 		return err
 	}
-	defer func() {
-		e := srcFile.Close()
-		if e != nil {
-			// Объединяем две ошибки 
-			err = errors.Join(err, e)
-		}
-	}()
 	dstFile, err := os.Create(dst)
 	if err != nil {
 		return err
@@ -573,10 +566,15 @@ func mv(src string, dst string) (err error) {
 	defer func() {
 		e := dstFile.Close()
 		if e != nil {
+			// Объединяем две ошибки
 			err = errors.Join(err, e)
 		}
 	}()
 	_, err = io.Copy(dstFile, srcFile)
+	if err != nil {
+		return err
+	}
+	err = srcFile.Close()
 	if err != nil {
 		return err
 	}
