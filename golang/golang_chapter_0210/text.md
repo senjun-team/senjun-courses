@@ -644,7 +644,8 @@ func main() {
 	// Создать папку logs
 	err := makeDir("logs")
 	exitOnError(err)
-	file, err := os.OpenFile("logs/app.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile("logs/app.log",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	exitOnError(err)
 	defer func() {
 		err := file.Close()
@@ -666,11 +667,13 @@ func main() {
 		exitOnError(err)
 		err = makeDir("logs/archive")
 		exitOnError(err)
-		err = os.Rename("logs/app.log", fmt.Sprintf("logs/archive/app_%s.log",
-			time.Now().Format("2006-01-02T15-04-05")))
+		err = os.Rename("logs/app.log",
+			fmt.Sprintf("logs/archive/app_%s.log",
+				time.Now().Format("2006-01-02T15-04-05")))
 		exitOnError(err)
 		// Создаём новый файл
-		file, err = os.OpenFile("logs/app.log", os.O_CREATE|os.O_WRONLY, 0644)
+		file, err = os.OpenFile("logs/app.log",
+			os.O_CREATE|os.O_WRONLY, 0644)
 		exitOnError(err)
 		log.SetOutput(file)
 		log.Println("Log file rotated")
