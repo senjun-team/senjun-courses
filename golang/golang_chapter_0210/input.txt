@@ -1,0 +1,9 @@
+std::cout << "Calculating (a+b)*5;" << std::endl;
+int a;
+int b;
+std::cout << "Input a;" << std::endl;
+std::cin >> a;
+std::cout << "Input b;" << std::endl;
+std::cin >> b;
+int res = (a + b) * 5;
+std::cout << "Result: " << res <<  "; " << std::endl;
