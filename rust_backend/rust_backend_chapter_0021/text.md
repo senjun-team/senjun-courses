@@ -28,13 +28,13 @@
 Устанавливать PostgreSQL в систему не обязательно, проще запустить его в [Docker-контейнере](https://habr.com/ru/companies/ruvds/articles/438796/). Так база не засоряет систему, её легко удалить, а нужную версию можно запустить одной командой:
 
 ```bash
-docker run -d --name library-db \
-    -e POSTGRES_USER=library \
+docker run -d --name flags-db \
+    -e POSTGRES_USER=flags \
     -e POSTGRES_PASSWORD=pass \
-    -e POSTGRES_DB=library \
+    -e POSTGRES_DB=flags \
     -p 5432:5432 \
     -v pgdata:/var/lib/postgresql \
-    --health-cmd "pg_isready -U library" \
+    --health-cmd "pg_isready -U flags" \
     --health-interval 2s \
     postgres:18
 ```
@@ -52,15 +52,15 @@ services:
   db:
     image: postgres:18
     environment:
-      POSTGRES_USER: library
+      POSTGRES_USER: flags
       POSTGRES_PASSWORD: pass
-      POSTGRES_DB: library
+      POSTGRES_DB: flags
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U library"]
+      test: ["CMD-SHELL", "pg_isready -U flags"]
       interval: 2s
       timeout: 3s
       retries: 10
@@ -81,7 +81,7 @@ docker compose ps --format '{{.Name}}: {{.Status}}'
 Флаг `--wait` заставляет команду дождаться, пока проверка `healthcheck` пройдёт успешно. Подключиться к базе через консольный клиент `psql`, не устанавливая его в систему, можно прямо внутри контейнера:
 
 ```bash
-docker compose exec db psql -U library
+docker compose exec db psql -U flags
 ```
 
 Команда `docker compose stop` останавливает контейнер, сохраняя данные, а `docker compose down -v` удаляет контейнер вместе с томом и всеми данными.
@@ -102,7 +102,7 @@ cargo add sqlx --no-default-features \
 Адрес базы данных крейт получает в виде строки подключения. Положим её в файл `.env`:
 
 ```env
-DATABASE_URL=postgres://library:pass@localhost:5432/library
+DATABASE_URL=postgres://flags:pass@localhost:5432/flags
 ```
 
 Строка подключения состоит из протокола, имени пользователя, пароля, адреса сервера, порта и названия базы данных. Переменная называется именно `DATABASE_URL`, потому что так её ищут макросы sqlx и консольная утилита `sqlx-cli`.

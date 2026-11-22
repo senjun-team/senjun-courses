@@ -13,37 +13,38 @@ cargo install sqlx-cli --no-default-features \
     --features postgres,rustls
 ```
 
-Утилита читает адрес базы из переменной `DATABASE_URL`, в том числе из файла `.env`. Создадим первую миграцию с названием `create_books`:
+Утилита читает адрес базы из переменной `DATABASE_URL`, в том числе из файла `.env`. Создадим первую миграцию с названием `create_features`:
 
 ```bash
-cargo sqlx migrate add -r create_books
+cargo sqlx migrate add -r create_features
 ```
 
 ```text
-Creating migrations/20261025143231_create_books.up.sql
-Creating migrations/20261025143231_create_books.down.sql
+Creating migrations/20261025143231_create_features.up.sql
+Creating migrations/20261025143231_create_features.down.sql
 ```
 
 Команда создаёт каталог `migrations` и кладёт в него файлы миграции. Название миграции попадает в имена файлов и помогает понять, что она делает. Флаг `-r` создаёт обратимую миграцию из двух файлов. Файл `.up.sql` применяет изменения, а `.down.sql` откатывает их. Числа в начале имени — дата и время создания миграции: по ним sqlx определяет порядок применения миграций.
 
-Опишем таблицу книг в файле `.up.sql`:
+Опишем таблицу фиче-флагов в файле `.up.sql`:
 
 ```sql
-CREATE TABLE books (
-    id     SERIAL  PRIMARY KEY,
-    isbn   TEXT    NOT NULL UNIQUE,
-    title  TEXT    NOT NULL,
-    author TEXT,
-    pages  INTEGER NOT NULL CHECK (pages > 0)
+CREATE TABLE features (
+    id                 SERIAL  PRIMARY KEY,
+    key                TEXT    NOT NULL UNIQUE,
+    description        TEXT,
+    is_active          BOOLEAN NOT NULL DEFAULT TRUE,
+    rollout_percentage INTEGER NOT NULL DEFAULT 100
+        CHECK (rollout_percentage BETWEEN 0 AND 100)
 );
 ```
 
-Тип `SERIAL` означает, что база сама присвоит каждой новой строке очередной номер. Это 32-битное целое, которого хватит примерно на два миллиарда строк. Для таблиц, которые могут вырасти больше, используют `BIGSERIAL` — 64-битный вариант. Ограничение `UNIQUE` запрещает две книги с одинаковым ISBN, а `CHECK (pages > 0)` требует, чтобы число страниц было больше нуля. Колонка `author` может быть пустой, потому что у неё нет ограничения `NOT NULL`: например, у сборника народных сказок автора нет.
+Тип `SERIAL` означает, что база сама присвоит каждой новой строке очередной номер. Это 32-битное целое, которого хватит примерно на два миллиарда строк. Для таблиц, которые могут вырасти больше, используют `BIGSERIAL` — 64-битный вариант. Колонка `key` хранит ключ, по которому приложение спрашивает о фиче, а ограничение `UNIQUE` запрещает две фичи с одинаковым ключом. Колонка `is_active` выключает фичу сразу для всех, а `rollout_percentage` задаёт долю пользователей, для которых она включена. `CHECK` требует, чтобы процент был от 0 до 100, а `DEFAULT` подставляет значение, если при вставке колонку не указали. Колонка `description` может быть пустой, потому что у неё нет ограничения `NOT NULL`.
 
 В файле `.down.sql` опишем, как отменить эти изменения:
 
 ```sql
-DROP TABLE IF EXISTS books;
+DROP TABLE IF EXISTS features;
 ```
 
 Применяем миграцию:
@@ -89,15 +90,21 @@ sqlx::migrate!()
 Функция `query` подходит для запросов, которые изменяют данные. Метод `execute` выполняет запрос и сообщает, сколько строк он затронул:
 
 ```rust
-let result = sqlx::query("UPDATE books SET pages = $1 WHERE id = $2")
-    .bind(512)
-    .bind(id)
-    .execute(&pool)
-    .await?;
+let result = sqlx::query(
+    "UPDATE features SET is_active = $1 WHERE key = $2",
+)
+.bind(false)
+.bind("new-dashboard")
+.execute(&pool)
+.await?;
 println!("изменено строк: {}", result.rows_affected());
 ```
 
-`$1` и `$2` — это параметры запроса. Значения для них передаются отдельно, методом `bind`, в том порядке, в котором параметры пронумерованы.
+```text
+изменено строк: 1
+```
+
+Этот запрос выключает фичу `new-dashboard`. `$1` и `$2` — это параметры запроса. Значения для них передаются отдельно, методом `bind`, в том порядке, в котором параметры пронумерованы.
 
 Чтобы получить строки в виде структуры, используют `query_as`. Структура должна реализовывать трейт `FromRow`, который сопоставляет колонки результата с полями по именам:
 
@@ -105,30 +112,31 @@ println!("изменено строк: {}", result.rows_affected());
 use sqlx::FromRow;
 
 #[derive(Debug, FromRow)]
-struct Book {
+struct Feature {
     id: i32,
-    isbn: String,
-    title: String,
-    author: Option<String>,
-    pages: i32,
+    key: String,
+    description: Option<String>,
+    is_active: bool,
+    rollout_percentage: i32,
 }
 
-let book = sqlx::query_as::<_, Book>(
-    "SELECT id, isbn, title, author, pages
-     FROM books WHERE id = $1",
+let feature = sqlx::query_as::<_, Feature>(
+    "SELECT id, key, description, is_active, rollout_percentage
+     FROM features WHERE key = $1",
 )
-.bind(id)
+.bind("new-dashboard")
 .fetch_one(&pool)
 .await?;
-println!("{book:?}");
+println!("{feature:?}");
 ```
 
 ```text
-Book { id: 1, isbn: "978-5-17-118366-2", title: "Мастер и Маргарита",
-author: Some("Михаил Булгаков"), pages: 480 }
+Feature { id: 1, key: "new-dashboard",
+description: Some("Новый интерфейс личного кабинета"),
+is_active: false, rollout_percentage: 25 }
 ```
 
-Типы полей соответствуют типам колонок: `SERIAL` и `INTEGER` — это `i32`, а `TEXT` — `String`. Колонка `author` может содержать `NULL`, поэтому её поле имеет тип `Option<String>`.
+Поле `is_active` равно `false`, потому что предыдущий запрос выключил фичу. Типы полей соответствуют типам колонок: `SERIAL` и `INTEGER` — это `i32`, `TEXT` — `String`, а `BOOLEAN` — `bool`. Колонка `description` может содержать `NULL`, поэтому её поле имеет тип `Option<String>`.
 
 Метод, который выполняет запрос, определяет, сколько строк ожидается в результате:
 
@@ -140,30 +148,31 @@ author: Some("Михаил Булгаков"), pages: 480 }
 
 ```rust
 let id: i32 = sqlx::query_scalar(
-    "INSERT INTO books (isbn, title, author, pages)
-     VALUES ($1, $2, $3, $4) RETURNING id",
+    "INSERT INTO features (key, description, rollout_percentage)
+     VALUES ($1, $2, $3) RETURNING id",
 )
-.bind("978-5-17-118366-2")
-.bind("Мастер и Маргарита")
-.bind("Михаил Булгаков")
-.bind(480)
+.bind("new-dashboard")
+.bind("Новый интерфейс личного кабинета")
+.bind(25)
 .fetch_one(&pool)
 .await?;
 ```
+
+Колонку `is_active` запрос не указывает, поэтому она получит значение по умолчанию `TRUE`.
 
 ## Параметры и SQL-инъекции
 
 Подставлять значения в текст запроса через `format!` нельзя. Если значение пришло от пользователя, он может передать строку, которая изменит смысл запроса, например закроет кавычку и допишет свою команду. Такая атака называется [SQL-инъекцией](https://habr.com/ru/articles/860982/). Параметры `$1`, `$2` защищают от неё: база получает текст запроса и значения по отдельности и никогда не воспринимает значения как часть SQL.
 
-Крейт sqlx помогает не допустить такую ошибку. Функции `query`, `query_as` и `query_scalar` принимают только строковые литералы. Например, функция, которая подставляет имя автора прямо в текст запроса, не скомпилируется:
+Крейт sqlx помогает не допустить такую ошибку. Функции `query`, `query_as` и `query_scalar` принимают только строковые литералы. Например, функция поиска фич по описанию, которая подставляет искомый текст прямо в запрос, не скомпилируется:
 
 ```rust
-async fn titles_by(
+async fn search(
     pool: &PgPool,
-    author: &str,
+    text: &str,
 ) -> sqlx::Result<Vec<String>> {
     let sql = format!(
-        "SELECT title FROM books WHERE author = '{author}'"
+        "SELECT key FROM features WHERE description LIKE '%{text}%'"
     );
     sqlx::query_scalar(&sql).fetch_all(pool).await
 }
@@ -178,13 +187,16 @@ for possible injections
    |     ------------------ ^^^^ dynamic SQL string
 ```
 
-Правильно передать имя автора параметром:
+Правильно передать текст параметром, а символы `%` добавить в самом запросе. Оператор `||` склеивает строки:
 
 ```rust
-sqlx::query_scalar("SELECT title FROM books WHERE author = $1")
-    .bind(author)
-    .fetch_all(pool)
-    .await
+sqlx::query_scalar(
+    "SELECT key FROM features
+     WHERE description LIKE '%' || $1 || '%'",
+)
+.bind(text)
+.fetch_all(pool)
+.await
 ```
 
 Иногда собирать запрос динамически всё же нужно, например чтобы подставить название колонки для сортировки: его нельзя передать параметром. В таком случае строку оборачивают в `AssertSqlSafe` и тем самым явно подтверждают, что проверили её на безопасность:
@@ -192,42 +204,41 @@ sqlx::query_scalar("SELECT title FROM books WHERE author = $1")
 ```rust
 // column выбирается из фиксированного списка, а не берётся
 // из запроса пользователя напрямую
-let sql = format!("SELECT title FROM books ORDER BY {column}");
-let titles: Vec<String> = sqlx::query_scalar(sqlx::AssertSqlSafe(sql))
+let sql = format!("SELECT key FROM features ORDER BY {column}");
+let keys: Vec<String> = sqlx::query_scalar(sqlx::AssertSqlSafe(sql))
     .fetch_all(&pool)
     .await?;
 ```
 
 ## Ошибки базы данных
 
-Кроме `RowNotFound`, запрос может вернуть ошибку, если нарушает ограничения таблицы. Например, из-за ограничения `UNIQUE` база не даст добавить вторую книгу с тем же ISBN. Такие ошибки приходят как `sqlx::Error::Database`, и подробности о них можно получить методом `as_database_error`:
+Кроме `RowNotFound`, запрос может вернуть ошибку, если нарушает ограничения таблицы. Например, из-за ограничения `UNIQUE` база не даст добавить вторую фичу с тем же ключом. Такие ошибки приходят как `sqlx::Error::Database`, и подробности о них можно получить методом `as_database_error`:
 
 ```rust
-let err = sqlx::query(
-    "INSERT INTO books (isbn, title, pages) VALUES ($1, $2, $3)",
-)
-.bind("978-5-17-118366-2")
-.bind("Мастер и Маргарита")
-.bind(480)
-.execute(&pool)
-.await
-.unwrap_err();
+let err = sqlx::query("INSERT INTO features (key) VALUES ($1)")
+    .bind("new-dashboard")
+    .execute(&pool)
+    .await
+    .unwrap_err();
 
 if let Some(db_err) = err.as_database_error() {
-    // true
     println!("{}", db_err.is_unique_violation());
-    // Some("23505")
     println!("{:?}", db_err.code());
-    // Some("books_isbn_key")
     println!("{:?}", db_err.constraint());
 }
 ```
 
-Метод `is_unique_violation` проверяет нарушение уникальности, а `is_check_violation` — нарушение ограничения `CHECK`. Метод `code` возвращает код ошибки PostgreSQL, а `constraint` — название нарушенного ограничения. Эти данные пригодятся, чтобы ответить клиенту понятной ошибкой, например, кодом `409 Conflict`, если книга с таким ISBN уже есть.
+```text
+true
+Some("23505")
+Some("features_key_key")
+```
+
+Метод `is_unique_violation` проверяет нарушение уникальности, а `is_check_violation` — нарушение ограничения `CHECK`. Метод `code` возвращает код ошибки PostgreSQL, а `constraint` — название нарушенного ограничения. Эти данные пригодятся, чтобы ответить клиенту понятной ошибкой, например, кодом `409 Conflict`, если фича с таким ключом уже есть.
 
 ## Транзакции
 
-Иногда несколько запросов должны выполниться только вместе. Например, при оформлении заказа в книжном магазине нужно создать сам заказ и добавить в него книги. Если второй запрос завершится ошибкой, в базе останется пустой заказ. Чтобы этого не произошло, запросы объединяют в [транзакцию](https://habr.com/ru/articles/860982/): база применит либо все изменения, либо ни одного.
+Иногда несколько запросов должны выполниться только вместе. Например, при создании фичи сервис может записывать событие в журнал изменений, чтобы потом можно было узнать, кто и когда её создал. Если второй запрос завершится ошибкой, фича появится без записи в журнале. Чтобы этого не произошло, запросы объединяют в [транзакцию](https://habr.com/ru/articles/860982/): база применит либо все изменения, либо ни одного.
 
 Транзакцию открывает метод пула `begin`. Запросы внутри неё выполняются не через пул, а через саму транзакцию, а метод `commit` фиксирует изменения:
 
@@ -235,15 +246,14 @@ if let Some(db_err) = err.as_database_error() {
 let mut tx = pool.begin().await?;
 
 sqlx::query(
-    "INSERT INTO books (isbn, title, pages) VALUES ($1, $2, $3)",
+    "INSERT INTO features (key, description) VALUES ($1, $2)",
 )
-.bind("978-5-04-154301-9")
-.bind("Русские народные сказки")
-.bind(320)
+.bind("dark-theme")
+.bind("Тёмная тема оформления")
 .execute(&mut *tx)
 .await?;
 
-// другие запросы этой транзакции
+// запись в журнал изменений в той же транзакции
 
 tx.commit().await?;
 ```
@@ -252,6 +262,6 @@ tx.commit().await?;
 
 Если `commit` не вызван, например потому что один из запросов вернул ошибку и оператор `?` вышел из функции, транзакция откатывается автоматически, когда переменная `tx` выходит из области видимости. Благодаря этому забытая ошибка не оставит в базе половину изменений.
 
-Учтите, что ни откат транзакции, ни запрос, завершившийся ошибкой, не возвращают номера, которые выдал `SERIAL`. Если вставка книги не удалась, следующая книга получит не освободившийся номер, а следующий по порядку. Поэтому в идентификаторах могут быть пропуски, и это нормально.
+Учтите, что ни откат транзакции, ни запрос, завершившийся ошибкой, не возвращают номера, которые выдал `SERIAL`. Если вставка фичи не удалась, следующая фича получит не освободившийся номер, а следующий по порядку. Поэтому в идентификаторах могут быть пропуски, и это нормально.
 
 Мы научились выполнять запросы, но SQL в них проверяется только во время работы программы: опечатку в названии колонки мы увидим, лишь когда запрос выполнится. В следующей главе разберём макросы sqlx, которые проверяют запросы ещё на этапе компиляции.

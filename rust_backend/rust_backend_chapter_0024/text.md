@@ -1,6 +1,6 @@
 # Глава 2.4. База данных в Axum и слои приложения
 
-Мы умеем запускать базу данных, создавать таблицы и писать запросы, которые проверяются при компиляции. Осталось соединить это с сервером на Axum. В этой главе сделаем API для каталога книг и разберём, как разделить код на слои, чтобы он оставался понятным, когда приложение вырастет.
+Мы умеем запускать базу данных, создавать таблицы и писать запросы, которые проверяются при компиляции. Осталось соединить это с сервером на Axum. В этой главе сделаем API сервиса фиче-флагов и разберём, как разделить код на слои, чтобы он оставался понятным, когда приложение вырастет.
 
 ## Зачем делить код на слои
 
@@ -20,7 +20,7 @@ PostgreSQL
 
 Хендлер ничего не знает об SQL, а репозиторий — об HTTP. Если понадобится поменять запрос или структуру таблицы, изменения затронут только репозиторий, а хендлеры останутся прежними.
 
-В больших проектах между хендлером и репозиторием добавляют ещё один слой — сервис. В нём живут бизнес-правила, которые затрагивают несколько репозиториев, например проверка, что книга есть в наличии, перед добавлением её в заказ. Для учебного проекта такой слой избыточен, поэтому хендлеры будут обращаться к репозиторию напрямую.
+В больших проектах между хендлером и репозиторием добавляют ещё один слой — сервис. В нём живут бизнес-правила, например проверка, включена ли фича для конкретного пользователя: сначала проверить общий выключатель `is_active`, а затем решить, попадает ли пользователь в процент раскатки. Пока наше API только хранит фичи, поэтому такой слой избыточен, поэтому хендлеры будут обращаться к репозиторию напрямую.
 
 Разложим код по модулям:
 
@@ -33,7 +33,7 @@ src/
 └── handlers.rs     — HTTP-хендлеры
 ```
 
-Таблицу `books` мы уже создали, поэтому менять базу данных не придётся.
+Таблицу `features` мы уже создали, поэтому менять базу данных не придётся.
 
 ## Модели
 
@@ -46,44 +46,52 @@ use serde::{Deserialize, Serialize};
 use crate::error::AppError;
 
 #[derive(Debug, Serialize)]
-pub struct Book {
+pub struct Feature {
     pub id: i32,
-    pub isbn: String,
-    pub title: String,
+    pub key: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub author: Option<String>,
-    pub pages: i32,
+    pub description: Option<String>,
+    pub is_active: bool,
+    pub rollout_percentage: i32,
 }
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-pub struct NewBook {
-    pub isbn: String,
-    pub title: String,
-    pub author: Option<String>,
-    pub pages: i32,
+pub struct NewFeature {
+    pub key: String,
+    pub description: Option<String>,
+    pub rollout_percentage: i32,
 }
 
-impl NewBook {
+impl NewFeature {
     pub fn validate(&self) -> Result<(), AppError> {
-        if self.title.trim().is_empty() {
-            let reason = "название не может быть пустым";
+        let key_ok =
+            !self.key.is_empty() && self.key.chars().all(is_key_char);
+        if !key_ok {
+            let reason = "ключ может содержать только строчные \
+                          латинские буквы, цифры и дефис";
             return Err(AppError::Validation(reason.to_string()));
         }
-        if self.pages <= 0 {
-            let reason = "число страниц должно быть больше нуля";
+        if !(0..=100).contains(&self.rollout_percentage) {
+            let reason = "процент раскатки должен быть от 0 до 100";
             return Err(AppError::Validation(reason.to_string()));
         }
         Ok(())
     }
 }
+
+fn is_key_char(c: char) -> bool {
+    c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-'
+}
 ```
 
-Тип `Book` описывает книгу, которая уже есть в базе: репозиторий возвращает книги этого типа, а хендлеры отправляют их клиенту в ответе. Тип `NewBook` описывает данные для создания новой книги, которые приходят в теле запроса. В нём нет идентификатора: его присвоит база данных.
+Тип `Feature` описывает фичу, которая уже есть в базе: репозиторий возвращает фичи этого типа, а хендлеры отправляют их клиенту в ответе. Тип `NewFeature` описывает данные для создания новой фичи, которые приходят в теле запроса. В нём нет идентификатора, который присвоит база данных, и поля `is_active`: новая фича включена по умолчанию.
 
-Метод `validate` проверяет данные до того, как они попадут в базу. Число страниц проверяет и база данных через ограничение `CHECK`. Это не лишнее дублирование: ограничение в базе — последняя линия защиты, которая не даст записать некорректные данные, даже если в коде есть ошибка. А проверка в коде позволяет ответить клиенту понятным сообщением, а не внутренней ошибкой сервера.
+Метод `validate` проверяет данные до того, как они попадут в базу. Ключ используется в коде приложений, поэтому разрешены только строчные латинские буквы, цифры и дефис: так ключи выглядят одинаково и их легко искать. Функция `is_key_char` проверяет один символ, а метод `all` — что ей соответствуют все символы ключа. Обратная косая черта в конце строки продолжает строковый литерал на следующей строке и убирает пробелы в её начале.
 
-Сейчас один и тот же тип `Book` служит и для чтения из базы, и для ответа клиенту. Если позже в таблицу добавится служебная колонка, которую нельзя показывать клиенту, для ответа заводят отдельный тип или пропускают поле при сериализации.
+Процент раскатки проверяет и база данных через ограничение `CHECK`. Это не лишнее дублирование: ограничение в базе — последняя линия защиты, которая не даст записать некорректные данные, даже если в коде есть ошибка. А проверка в коде позволяет ответить клиенту понятным сообщением, а не внутренней ошибкой сервера.
+
+Сейчас один и тот же тип `Feature` служит и для чтения из базы, и для ответа клиенту. Если позже в таблицу добавится служебная колонка, которую нельзя показывать клиенту, для ответа заводят отдельный тип или пропускают поле при сериализации.
 
 ## Ошибки
 
@@ -93,7 +101,7 @@ impl NewBook {
 // src/error.rs
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
-    #[error("книга не найдена")]
+    #[error("фича не найдена")]
     NotFound,
     #[error("{0}")]
     Conflict(String),
@@ -121,74 +129,77 @@ impl From<sqlx::Error> for AppError {
 use sqlx::PgPool;
 
 use crate::error::AppError;
-use crate::models::{Book, NewBook};
+use crate::models::{Feature, NewFeature};
 
 #[derive(Clone)]
-pub struct BookRepository {
+pub struct FeatureRepository {
     pool: PgPool,
 }
 
-impl BookRepository {
+impl FeatureRepository {
     pub fn new(pool: PgPool) -> Self {
         Self { pool }
     }
 
-    pub async fn list(&self) -> Result<Vec<Book>, AppError> {
-        let books = sqlx::query_as!(
-            Book,
-            "SELECT id, isbn, title, author, pages
-             FROM books ORDER BY id"
+    pub async fn list(&self) -> Result<Vec<Feature>, AppError> {
+        let features = sqlx::query_as!(
+            Feature,
+            "SELECT id, key, description, is_active,
+                    rollout_percentage
+             FROM features ORDER BY id"
         )
         .fetch_all(&self.pool)
         .await?;
-        Ok(books)
+        Ok(features)
     }
 
     pub async fn find(
         &self,
-        id: i32,
-    ) -> Result<Option<Book>, AppError> {
-        let book = sqlx::query_as!(
-            Book,
-            "SELECT id, isbn, title, author, pages
-             FROM books WHERE id = $1",
-            id
+        key: &str,
+    ) -> Result<Option<Feature>, AppError> {
+        let feature = sqlx::query_as!(
+            Feature,
+            "SELECT id, key, description, is_active,
+                    rollout_percentage
+             FROM features WHERE key = $1",
+            key
         )
         .fetch_optional(&self.pool)
         .await?;
-        Ok(book)
+        Ok(feature)
     }
 
     pub async fn create(
         &self,
-        new: &NewBook,
-    ) -> Result<Book, AppError> {
+        new: &NewFeature,
+    ) -> Result<Feature, AppError> {
         sqlx::query_as!(
-            Book,
-            "INSERT INTO books (isbn, title, author, pages)
-             VALUES ($1, $2, $3, $4)
-             RETURNING id, isbn, title, author, pages",
-            new.isbn,
-            new.title,
-            new.author,
-            new.pages
+            Feature,
+            "INSERT INTO features
+                 (key, description, rollout_percentage)
+             VALUES ($1, $2, $3)
+             RETURNING id, key, description, is_active,
+                       rollout_percentage",
+            new.key,
+            new.description,
+            new.rollout_percentage
         )
         .fetch_one(&self.pool)
         .await
         .map_err(|err| match err.as_database_error() {
             Some(db) if db.is_unique_violation() => {
                 AppError::Conflict(format!(
-                    "книга с ISBN {} уже есть в каталоге",
-                    new.isbn
+                    "фича с ключом {} уже существует",
+                    new.key
                 ))
             }
             _ => AppError::from(err),
         })
     }
 
-    pub async fn delete(&self, id: i32) -> Result<bool, AppError> {
+    pub async fn delete(&self, key: &str) -> Result<bool, AppError> {
         let result =
-            sqlx::query!("DELETE FROM books WHERE id = $1", id)
+            sqlx::query!("DELETE FROM features WHERE key = $1", key)
                 .execute(&self.pool)
                 .await?;
         Ok(result.rows_affected() > 0)
@@ -196,11 +207,11 @@ impl BookRepository {
 }
 ```
 
-Метод `find` возвращает `Option`, а не ошибку, если книги нет: для репозитория отсутствие строки — обычный результат запроса. Метод `delete` сообщает, была ли удалена хотя бы одна строка. А решать, считать ли это ошибкой, будет хендлер.
+Метод `find` возвращает `Option`, а не ошибку, если фичи нет: для репозитория отсутствие строки — обычный результат запроса. Метод `delete` сообщает, была ли удалена хотя бы одна строка. А решать, считать ли это ошибкой, будет хендлер.
 
-В методе `create` нарушение уникальности ISBN превращается в `AppError::Conflict` с понятным сообщением. Только репозиторий знает, что за этой ошибкой стоит ограничение `UNIQUE` в базе данных, поэтому преобразование выполняется именно здесь. Остальные ошибки базы становятся внутренними.
+В методе `create` нарушение уникальности ключа превращается в `AppError::Conflict` с понятным сообщением. Только репозиторий знает, что за этой ошибкой стоит ограничение `UNIQUE` в базе данных, поэтому преобразование выполняется именно здесь. Остальные ошибки базы становятся внутренними.
 
-Обратите внимание на конструкцию `RETURNING`: она возвращает созданную строку целиком, поэтому не нужен второй запрос, чтобы получить книгу вместе с присвоенным идентификатором.
+Обратите внимание на конструкцию `RETURNING`: она возвращает созданную строку целиком, поэтому не нужен второй запрос, чтобы получить фичу вместе с присвоенным идентификатором и значениями по умолчанию.
 
 ## Хендлеры
 
@@ -215,37 +226,37 @@ use axum::{
 };
 
 use crate::error::AppError;
-use crate::models::{Book, NewBook};
-use crate::repository::BookRepository;
+use crate::models::{Feature, NewFeature};
+use crate::repository::FeatureRepository;
 
-pub async fn list_books(
-    State(repo): State<BookRepository>,
-) -> Result<Json<Vec<Book>>, AppError> {
+pub async fn list_features(
+    State(repo): State<FeatureRepository>,
+) -> Result<Json<Vec<Feature>>, AppError> {
     Ok(Json(repo.list().await?))
 }
 
-pub async fn get_book(
-    State(repo): State<BookRepository>,
-    Path(id): Path<i32>,
-) -> Result<Json<Book>, AppError> {
-    let book = repo.find(id).await?.ok_or(AppError::NotFound)?;
-    Ok(Json(book))
+pub async fn get_feature(
+    State(repo): State<FeatureRepository>,
+    Path(key): Path<String>,
+) -> Result<Json<Feature>, AppError> {
+    let feature = repo.find(&key).await?.ok_or(AppError::NotFound)?;
+    Ok(Json(feature))
 }
 
-pub async fn create_book(
-    State(repo): State<BookRepository>,
-    Json(new): Json<NewBook>,
-) -> Result<(StatusCode, Json<Book>), AppError> {
+pub async fn create_feature(
+    State(repo): State<FeatureRepository>,
+    Json(new): Json<NewFeature>,
+) -> Result<(StatusCode, Json<Feature>), AppError> {
     new.validate()?;
-    let book = repo.create(&new).await?;
-    Ok((StatusCode::CREATED, Json(book)))
+    let feature = repo.create(&new).await?;
+    Ok((StatusCode::CREATED, Json(feature)))
 }
 
-pub async fn delete_book(
-    State(repo): State<BookRepository>,
-    Path(id): Path<i32>,
+pub async fn delete_feature(
+    State(repo): State<FeatureRepository>,
+    Path(key): Path<String>,
 ) -> Result<StatusCode, AppError> {
-    if repo.delete(id).await? {
+    if repo.delete(&key).await? {
         Ok(StatusCode::NO_CONTENT)
     } else {
         Err(AppError::NotFound)
@@ -253,7 +264,7 @@ pub async fn delete_book(
 }
 ```
 
-Хендлер `get_book` превращает отсутствие книги в ошибку `AppError::NotFound` методом `ok_or`, а `delete_book` делает то же самое, если ни одна строка не была удалена. Каждый хендлер описывает только успешный путь, а ошибки уходят наружу через оператор `?`.
+Фичу хендлеры находят по ключу из пути, например `/features/new-dashboard`: клиентам удобнее обращаться к фиче по понятному ключу, чем по числовому идентификатору. Хендлер `get_feature` превращает отсутствие фичи в ошибку `AppError::NotFound` методом `ok_or`, а `delete_feature` делает то же самое, если ни одна строка не была удалена. Каждый хендлер описывает только успешный путь, а ошибки уходят наружу через оператор `?`.
 
 ## Сборка приложения
 
@@ -273,7 +284,7 @@ use axum::{routing::get, Router};
 use sqlx::postgres::PgPoolOptions;
 use tokio::net::TcpListener;
 
-use crate::repository::BookRepository;
+use crate::repository::FeatureRepository;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -293,16 +304,18 @@ async fn main() -> anyhow::Result<()> {
         .await
         .context("не удалось применить миграции")?;
 
-    let repo = BookRepository::new(pool);
+    let repo = FeatureRepository::new(pool);
 
     let router = Router::new()
         .route(
-            "/books",
-            get(handlers::list_books).post(handlers::create_book),
+            "/features",
+            get(handlers::list_features)
+                .post(handlers::create_feature),
         )
         .route(
-            "/books/{id}",
-            get(handlers::get_book).delete(handlers::delete_book),
+            "/features/{key}",
+            get(handlers::get_feature)
+                .delete(handlers::delete_feature),
         )
         .with_state(repo);
 
@@ -316,61 +329,62 @@ async fn main() -> anyhow::Result<()> {
 
 ## Проверка
 
-Запустим сервер и проверим API. Сначала добавим книгу:
+Запустим сервер и проверим API. Сначала добавим фичу:
 
 ```bash
 curl -i -H 'content-type: application/json' \
-    -d '{"isbn":"978-5-17-118366-2",
-         "title":"Мастер и Маргарита",
-         "author":"Михаил Булгаков","pages":480}' \
-    http://127.0.0.1:3000/books
+    -d '{"key":"new-dashboard",
+         "description":"Новый интерфейс личного кабинета",
+         "rollout_percentage":25}' \
+    http://127.0.0.1:3000/features
 ```
 
 ```text
 HTTP/1.1 201 Created
-{"id":1,"isbn":"978-5-17-118366-2","title":"Мастер и Маргарита",
-"author":"Михаил Булгаков","pages":480}
+{"id":1,"key":"new-dashboard",
+"description":"Новый интерфейс личного кабинета",
+"is_active":true,"rollout_percentage":25}
 ```
 
-Запросим книгу, которой нет в каталоге:
+Запросим фичу, которой нет:
 
 ```bash
-curl -i http://127.0.0.1:3000/books/42
+curl -i http://127.0.0.1:3000/features/dark-theme
 ```
 
 ```text
 HTTP/1.1 404 Not Found
-{"error":"книга не найдена"}
+{"error":"фича не найдена"}
 ```
 
-Попробуем добавить книгу с тем же ISBN ещё раз:
+Попробуем добавить фичу с тем же ключом ещё раз:
 
 ```bash
 curl -i -H 'content-type: application/json' \
-    -d '{"isbn":"978-5-17-118366-2",
-         "title":"Мастер и Маргарита","pages":480}' \
-    http://127.0.0.1:3000/books
+    -d '{"key":"new-dashboard","rollout_percentage":100}' \
+    http://127.0.0.1:3000/features
 ```
 
 ```text
 HTTP/1.1 409 Conflict
-{"error":"книга с ISBN 978-5-17-118366-2 уже есть в каталоге"}
+{"error":"фича с ключом new-dashboard уже существует"}
 ```
 
-И, наконец, книгу без страниц:
+И, наконец, фичу с некорректным процентом раскатки:
 
 ```bash
 curl -i -H 'content-type: application/json' \
-    -d '{"isbn":"978-0","title":"Пустая","pages":0}' \
-    http://127.0.0.1:3000/books
+    -d '{"key":"dark-theme","rollout_percentage":150}' \
+    http://127.0.0.1:3000/features
 ```
 
 ```text
 HTTP/1.1 400 Bad Request
-{"error":"некорректные данные: число страниц должно быть больше нуля"}
+{"error":"некорректные данные: процент раскатки должен быть
+от 0 до 100"}
 ```
 
-Каждая ошибка возникает в своём месте: `404` — в хендлере, когда репозиторий не нашёл книгу, `409` — в репозитории, когда база сообщила о нарушении уникальности, а `400` — при проверке данных в `NewBook::validate`.
+Каждая ошибка возникает в своём месте: `404` — в хендлере, когда репозиторий не нашёл фичу, `409` — в репозитории, когда база сообщила о нарушении уникальности, а `400` — при проверке данных в `NewFeature::validate`.
 
 Если остановить базу данных, клиент через три секунды получит ответ `500 Internal Server Error`, а подробности попадут в лог сервера:
 

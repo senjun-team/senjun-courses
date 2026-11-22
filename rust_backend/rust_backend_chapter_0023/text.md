@@ -10,23 +10,23 @@
 
 ```rust
 #[derive(Debug)]
-struct Book {
+struct Feature {
     id: i32,
-    isbn: String,
-    title: String,
-    author: Option<String>,
-    pages: i32,
+    key: String,
+    description: Option<String>,
+    is_active: bool,
+    rollout_percentage: i32,
 }
 
-async fn get_book(
+async fn get_feature(
     pool: &PgPool,
-    id: i32,
-) -> sqlx::Result<Option<Book>> {
+    key: &str,
+) -> sqlx::Result<Option<Feature>> {
     sqlx::query_as!(
-        Book,
-        "SELECT id, isbn, title, author, pages
-         FROM books WHERE id = $1",
-        id
+        Feature,
+        "SELECT id, key, description, is_active, rollout_percentage
+         FROM features WHERE key = $1",
+        key
     )
     .fetch_optional(pool)
     .await
@@ -40,16 +40,14 @@ async fn get_book(
 ```rust
 async fn create(
     pool: &PgPool,
-    isbn: &str,
-    title: &str,
-    pages: i32,
+    key: &str,
+    rollout_percentage: i32,
 ) -> sqlx::Result<i32> {
     let record = sqlx::query!(
-        "INSERT INTO books (isbn, title, pages)
-         VALUES ($1, $2, $3) RETURNING id",
-        isbn,
-        title,
-        pages
+        "INSERT INTO features (key, rollout_percentage)
+         VALUES ($1, $2) RETURNING id",
+        key,
+        rollout_percentage
     )
     .fetch_one(pool)
     .await?;
@@ -62,24 +60,25 @@ async fn create(
 Посмотрим, какие ошибки ловят макросы. Если ошибиться в названии колонки, сборка остановится с ошибкой от самой базы данных:
 
 ```text
-error: error returned from database: column "titel" does not exist
-  --> src/main.rs:14:5
+error: error returned from database:
+column "rollout_percentag" does not exist
+  --> src/main.rs:16:5
    |
-14 | /     sqlx::query_as!(
-15 | |         Book,
+16 | /     sqlx::query_as!(
+17 | |         Feature,
 ```
 
-Если передать аргумент не того типа, например название вместо числа страниц, компилятор укажет на конкретный аргумент:
+Если передать аргумент не того типа, например ключ вместо процента раскатки, компилятор укажет на конкретный аргумент:
 
 ```text
 error[E0308]: mismatched types
   --> src/main.rs:35:9
    |
-35 |         title
-   |         ^^^^^ expected `i32`, found `&str`
+35 |         key
+   |         ^^^ expected `i32`, found `&str`
 ```
 
-Если тип поля структуры не совпадает с колонкой, сборка тоже не пройдёт. Например, колонка `author` может содержать `NULL`, и макрос не позволит объявить поле как `String`:
+Если тип поля структуры не совпадает с колонкой, сборка тоже не пройдёт. Например, колонка `description` может содержать `NULL`, и макрос не позволит объявить поле как `String`:
 
 ```text
 error[E0277]: the trait bound `String: From<Option<String>>`
@@ -90,13 +89,13 @@ is not satisfied
 
 ## Обязательные и необязательные значения
 
-Чтобы выбрать тип поля, макрос определяет, может ли колонка содержать `NULL`. Для колонок таблицы это просто: у `title` есть ограничение `NOT NULL`, поэтому её тип `String`, а у `author` такого ограничения нет, поэтому её тип `Option<String>`.
+Чтобы выбрать тип поля, макрос определяет, может ли колонка содержать `NULL`. Для колонок таблицы это просто: у `key` есть ограничение `NOT NULL`, поэтому её тип `String`, а у `description` такого ограничения нет, поэтому её тип `Option<String>`.
 
 Для вычисляемых значений PostgreSQL не всегда может сказать, будет ли там `NULL`, и тогда макрос выбирает `Option`, чтобы не ошибиться. Например, `count(*)` никогда не возвращает `NULL`, но макрос всё равно получит `Option<i64>`:
 
 ```rust
 let count: Option<i64> =
-    sqlx::query_scalar!("SELECT count(*) FROM books")
+    sqlx::query_scalar!("SELECT count(*) FROM features")
         .fetch_one(pool)
         .await?;
 ```
@@ -105,13 +104,13 @@ let count: Option<i64> =
 
 ```rust
 let count: i64 = sqlx::query_scalar!(
-    r#"SELECT count(*) AS "count!" FROM books"#
+    r#"SELECT count(*) AS "count!" FROM features"#
 )
 .fetch_one(pool)
 .await?;
 ```
 
-Вопросительный знак, наоборот, делает значение необязательным: `AS "title?"`. Псевдоним записывается в двойных кавычках, поэтому сам запрос удобно оформить сырой строкой `r#"..."#`.
+Вопросительный знак, наоборот, делает значение необязательным: `AS "key?"`. Псевдоним записывается в двойных кавычках, поэтому сам запрос удобно оформить сырой строкой `r#"..."#`.
 
 ## Сборка без базы данных
 
@@ -157,4 +156,4 @@ you should re-run sqlx prepare
 
 Функции `query`, `query_as` и `query_scalar` нужны, когда текст запроса заранее неизвестен и собирается во время выполнения, например при фильтрации по разным наборам полей. Макрос может проверить только запрос, который целиком записан в коде.
 
-Теперь мы умеем писать запросы, которые проверяются при компиляции. Осталось подключить базу данных к серверу на Axum. В следующей главе сделаем API для каталога книг и разберёмся, как разделить код на слои, чтобы HTTP и SQL не смешивались в одном месте.
+Теперь мы умеем писать запросы, которые проверяются при компиляции. Осталось подключить базу данных к серверу на Axum. В следующей главе сделаем API сервиса фиче-флагов и разберёмся, как разделить код на слои, чтобы HTTP и SQL не смешивались в одном месте.
