@@ -110,9 +110,12 @@ async fn create_user(
 Проверим:
 
 ```bash
-$ curl -X POST -H 'content-type: application/json' \
+curl -X POST -H 'content-type: application/json' \
     -d '{"name":"Alice"}' http://127.0.0.1:3000/users
-$ curl http://127.0.0.1:3000/users
+curl http://127.0.0.1:3000/users
+```
+
+```text
 ["Alice"]
 ```
 

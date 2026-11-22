@@ -105,8 +105,10 @@ cargo run
 Проверяем:
 
 ```bash
-$ curl -i http://127.0.0.1:3000/
+curl -i http://127.0.0.1:3000/
+```
 
+```text
 HTTP/1.1 200 OK
 content-type: text/plain; charset=utf-8
 content-length: 13
