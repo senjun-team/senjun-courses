@@ -10,3 +10,4 @@
 - [Глава 1.6. Состояние приложения](/courses/rust_backend/chapters/rust_backend_chapter_0016/)
 - [Глава 1.7. Работа с ошибками](/courses/rust_backend/chapters/rust_backend_chapter_0017/)
 - [Глава 1.8. Настройка приложения](/courses/rust_backend/chapters/rust_backend_chapter_0018/)
+- [Глава 1.9. Практика. API пиццерии](/courses/rust_backend/chapters/rust_backend_chapter_0019/)

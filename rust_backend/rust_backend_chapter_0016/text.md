@@ -162,4 +162,50 @@ let router = Router::new()
 
 А хендлер `hello` при этом получает только `Config`. `FromRef` генерирует для каждого поля способ достать его из `AppState`, поэтому типы полей должны реализовывать `Clone`.
 
+## Практика
+
+Реализуем маршрут `GET /visits`, который считает обращения к нему и отвечает номером посетителя. Счётчик хранится в состоянии приложения и общий для всех запросов. Для простого счётчика мьютекс не нужен: тип [`AtomicU64`](https://doc.rust-lang.org/std/sync/atomic/struct.AtomicU64.html) умеет безопасно увеличивать значение из нескольких потоков.
+
+```rust
+use std::sync::{
+    atomic::{AtomicU64, Ordering},
+    Arc,
+};
+
+use axum::{extract::State, routing::get, Router};
+
+#[derive(Clone, Default)]
+struct AppState {
+    visits: Arc<AtomicU64>,
+}
+
+...
+    let router = Router::new()
+        .route("/", get(hello))
+        .route("/visits", get(visits))
+        .with_state(AppState::default());
+...
+
+async fn visits(State(state): State<AppState>) -> String {
+    // fetch_add возвращает значение до увеличения
+    let number = state.visits.fetch_add(1, Ordering::Relaxed) + 1;
+    format!("вы посетитель №{number}")
+}
+```
+
+И проверка. Первый запрос получит номер 1, а второй:
+
+```bash
+curl -i http://127.0.0.1:3000/visits
+```
+
+```text
+HTTP/1.1 200 OK
+content-type: text/plain; charset=utf-8
+content-length: 30
+date: Sun, 08 Nov 2026 16:17:15 GMT
+
+вы посетитель №2
+```
+
 В следующей главе разберём, как описать собственный тип ошибки и превращать его в понятные клиенту HTTP-ответы.

@@ -289,4 +289,52 @@ async fn get_user() -> Json<UserResponse> {
 // {"id":1,"name":"Alice"}
 ```
 
+## Практика
+
+Реализуем маршрут `GET /health`, который возвращает состояние сервера в формате JSON. Такой маршрут используют системы мониторинга, чтобы проверять, что сервер работает.
+
+```rust
+use axum::{routing::get, Json, Router};
+use serde_json::{json, Value};
+
+...
+    // запросы GET / будет обрабатывать функция hello
+    // запросы GET /health будет обрабатывать функция health
+    let router = Router::new()
+        .route("/", get(hello))
+        .route("/health", get(health));
+...
+
+async fn health() -> Json<Value> {
+    // количество выполняемых задач и рабочих потоков
+    let (tasks, workers) = count_tasks_and_workers();
+    // формирование результирующего статуса
+    let val = json!({
+        "status": "ok",
+        "workers": workers,
+        "tasks": tasks
+    });
+    Json(val)
+}
+```
+
+Функция `count_tasks_and_workers` та же, что в разделе про `json!`.
+
+Проверка:
+
+```bash
+curl -i http://127.0.0.1:3000/health
+```
+
+```text
+HTTP/1.1 200 OK
+content-type: application/json
+content-length: 38
+date: Sun, 08 Nov 2026 16:17:10 GMT
+
+{"status":"ok","tasks":1,"workers":12}
+```
+
+Число рабочих потоков зависит от числа ядер процессора, поэтому у вас оно может быть другим.
+
 Теперь мы умеем принимать и возвращать JSON. В следующей главе подробно разберём маршрутизацию: как описывать маршруты и как Axum выбирает хендлер для запроса.

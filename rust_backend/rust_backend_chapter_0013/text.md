@@ -142,4 +142,88 @@ GET /users/{id}
 
 Вложенный роутер не знает о своём префиксе, поэтому его можно смонтировать и в другое место, например под `/api/users`. Благодаря `merge` и `nest` маршруты удобно раскладывать по модулям: каждый модуль описывает свой роутер, а в `main` они собираются вместе.
 
+## Практика
+
+Опишем маршруты API блога в отдельном роутере и смонтируем его под префиксом `/api`. Маршрут `/api/posts/{id}` возвращает пост по идентификатору, а `/api/users/{user_id}/posts/{post_id}` — пост конкретного пользователя. На запросы к остальным путям сервер отвечает ошибкой в формате JSON.
+
+```rust
+use axum::{
+    extract::Path, http::StatusCode, response::IntoResponse,
+    routing::get, Json, Router,
+};
+use serde_json::json;
+
+...
+    let api = Router::new()
+        .route("/posts/{id}", get(post))
+        .route("/users/{user_id}/posts/{post_id}", get(user_post));
+
+    let router = Router::new()
+        .route("/", get(hello))
+        .nest("/api", api)
+        .fallback(not_found);
+...
+
+async fn post(Path(id): Path<u32>) -> String {
+    format!("пост {id}")
+}
+
+// несколько параметров пути извлекаются кортежем
+async fn user_post(
+    Path((user_id, post_id)): Path<(u32, u32)>,
+) -> String {
+    format!("пост {post_id} пользователя {user_id}")
+}
+
+async fn not_found() -> impl IntoResponse {
+    let body = Json(json!({ "error": "такой страницы нет" }));
+    (StatusCode::NOT_FOUND, body)
+}
+```
+
+И проверка:
+
+```bash
+curl -i http://127.0.0.1:3000/api/users/7/posts/42
+```
+
+```text
+HTTP/1.1 200 OK
+content-type: text/plain; charset=utf-8
+content-length: 38
+date: Wed, 25 Nov 2026 16:53:44 GMT
+
+пост 42 пользователя 7
+```
+
+Если идентификатор не число, Axum сам ответит ошибкой:
+
+```bash
+curl -i http://127.0.0.1:3000/api/posts/abc
+```
+
+```text
+HTTP/1.1 400 Bad Request
+content-type: text/plain; charset=utf-8
+content-length: 42
+date: Wed, 25 Nov 2026 16:53:44 GMT
+
+Invalid URL: Cannot parse `abc` to a `u32`
+```
+
+А запрос к несуществующему пути попадёт в `fallback`:
+
+```bash
+curl -i http://127.0.0.1:3000/feed
+```
+
+```text
+HTTP/1.1 404 Not Found
+content-type: application/json
+content-length: 46
+date: Wed, 25 Nov 2026 16:53:44 GMT
+
+{"error":"такой страницы нет"}
+```
+
 Теперь мы знаем, как запрос попадает в нужный хендлер. В следующей главе разберёмся, что хендлер может вернуть и как Axum превращает это в HTTP-ответ.

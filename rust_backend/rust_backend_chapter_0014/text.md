@@ -92,4 +92,47 @@ async fn create_user() -> Created<UserResponse> {
 
 Такой подход полезен, когда один и тот же формат ответа используется в нескольких хендлерах.
 
+## Практика
+
+Реализуем маршрут `POST /posts`, который имитирует публикацию поста в блоге. Хендлер отвечает статусом `201 Created`, текстом и заголовком `location`. По соглашению этот заголовок сообщает клиенту, где найти созданный ресурс.
+
+```rust
+use axum::{
+    http::{header, StatusCode},
+    response::IntoResponse,
+    routing::{get, post},
+    Router,
+};
+
+...
+    let router = Router::new()
+        .route("/", get(hello))
+        .route("/posts", post(create_post));
+...
+
+async fn create_post() -> impl IntoResponse {
+    (
+        StatusCode::CREATED,
+        [(header::LOCATION, "/posts/1")],
+        "пост опубликован",
+    )
+}
+```
+
+И проверка:
+
+```bash
+curl -i -X POST http://127.0.0.1:3000/posts
+```
+
+```text
+HTTP/1.1 201 Created
+content-type: text/plain; charset=utf-8
+location: /posts/1
+content-length: 31
+date: Wed, 25 Nov 2026 16:53:44 GMT
+
+пост опубликован
+```
+
 Мы разобрались, что хендлер может вернуть. В следующей главе посмотрим на другую сторону: как хендлер получает данные из запроса.
