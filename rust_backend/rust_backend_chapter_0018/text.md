@@ -194,4 +194,75 @@ the last argument to the handler function
 
 Атрибут нужен только для поиска ошибки: после исправления его можно убрать.
 
-На этом введение в Axum закончено: мы умеем описывать маршруты, принимать и возвращать данные, хранить состояние, обрабатывать ошибки и настраивать приложение. Пока все данные живут в памяти и пропадают при перезапуске. В следующем модуле подключим базу данных PostgreSQL.
+## Практика
+
+Вынесем в настройки порт сервера и приветствие, которым отвечает хендлер `hello`. Порт берётся из переменной `PORT`, а приветствие из `GREETING`. У обеих есть значения по умолчанию.
+
+```rust
+use anyhow::Context;
+use axum::{extract::State, routing::get, Router};
+use tokio::net::TcpListener;
+
+#[derive(Clone)]
+struct Config {
+    port: u16,
+    greeting: String,
+}
+
+impl Config {
+    fn from_env() -> anyhow::Result<Self> {
+        let port = std::env::var("PORT")
+            .unwrap_or_else(|_| "3000".to_string())
+            .parse()
+            .context("PORT должен быть числом от 0 до 65535")?;
+        let greeting = std::env::var("GREETING")
+            .unwrap_or_else(|_| "Привет".to_string());
+        Ok(Self { port, greeting })
+    }
+}
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    dotenvy::dotenv().ok();
+    let config = Config::from_env()?;
+    let addr = format!("127.0.0.1:{}", config.port);
+
+    let router = Router::new()
+        .route("/", get(hello))
+        .with_state(config);
+
+    let listener = TcpListener::bind(&addr).await?;
+    axum::serve(listener, router).await?;
+    Ok(())
+}
+
+async fn hello(State(config): State<Config>) -> String {
+    format!("{}!", config.greeting)
+}
+```
+
+Значения для разработки положим в файл `.env`:
+
+```text
+GREETING="Добро пожаловать на сервер"
+PORT=4000
+```
+
+Значение с пробелами нужно взять в кавычки. Без них `dotenvy` не сможет разобрать файл, вызов `ok()` молча проигнорирует ошибку, и сервер запустится с настройками по умолчанию.
+
+И проверка:
+
+```bash
+curl -i http://127.0.0.1:4000/
+```
+
+```text
+HTTP/1.1 200 OK
+content-type: text/plain; charset=utf-8
+content-length: 50
+date: Wed, 25 Nov 2026 16:54:01 GMT
+
+Добро пожаловать на сервер!
+```
+
+На этом введение в Axum закончено: мы умеем описывать маршруты, принимать и возвращать данные, хранить состояние, обрабатывать ошибки и настраивать приложение. Прежде чем подключать базу данных, закрепим всё это на практике: в следующей главе напишем первую версию API пиццерии.

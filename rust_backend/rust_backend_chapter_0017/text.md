@@ -185,4 +185,68 @@ HTTP/1.1 400 Bad Request
 
 Теперь хендлер корректно завершается в любом случае: при успехе он возвращает данные, а при ошибке клиент получает ответ с подходящим статусом и понятным сообщением вместо оборванного соединения. Во втором модуле в `AppError` добавятся ошибки базы данных, а хендлеры останутся такими же простыми.
 
+## Практика
+
+Реализуем маршрут `GET /divide`, который делит одно целое число на другое. Числа передаются в строке запроса, например `/divide?a=10&b=3`. Деление на ноль приводит к панике, поэтому хендлер проверяет делитель и возвращает `AppError::Validation`.
+
+```rust
+use axum::{extract::Query, routing::get, Json, Router};
+use serde::Deserialize;
+use serde_json::{json, Value};
+
+...
+    let router = Router::new()
+        .route("/", get(hello))
+        .route("/divide", get(divide));
+...
+
+#[derive(Deserialize)]
+struct DivideParams {
+    a: i64,
+    b: i64,
+}
+
+async fn divide(
+    Query(params): Query<DivideParams>,
+) -> Result<Json<Value>, AppError> {
+    // checked_div возвращает None при делении на ноль
+    let result = params.a.checked_div(params.b).ok_or_else(|| {
+        AppError::Validation("деление на ноль".to_string())
+    })?;
+    Ok(Json(json!({ "result": result })))
+}
+```
+
+Тип `AppError` и его реализация `IntoResponse` — те же, что в этой главе.
+
+И проверка:
+
+```bash
+curl -i 'http://127.0.0.1:3000/divide?a=10&b=3'
+```
+
+```text
+HTTP/1.1 200 OK
+content-type: application/json
+content-length: 12
+date: Sun, 08 Nov 2026 16:17:16 GMT
+
+{"result":3}
+```
+
+При делении на ноль:
+
+```bash
+curl -i 'http://127.0.0.1:3000/divide?a=10&b=0'
+```
+
+```text
+HTTP/1.1 400 Bad Request
+content-type: application/json
+content-length: 79
+date: Sun, 08 Nov 2026 16:17:16 GMT
+
+{"error":"некорректные данные: деление на ноль"}
+```
+
 В следующей главе займёмся настройкой приложения: вынесем параметры в переменные окружения, разрешим запросы из браузерного фронтенда через CORS и разберём, как понять, почему хендлер не компилируется.

@@ -120,4 +120,71 @@ async fn handler(UserAgent(agent): UserAgent) -> String {
 
 Свои экстракторы позволяют убрать повторяющийся код из хендлеров. Например, в модуле про аутентификацию мы напишем экстрактор `AuthUser`, который проверяет токен, и хендлер сможет получить текущего пользователя просто как аргумент.
 
+## Практика
+
+Реализуем маршрут `GET /movies`, который возвращает список фильмов с необязательными фильтрами в строке запроса. Параметр `genre` оставляет фильмы указанного жанра, а `max_duration` — фильмы не длиннее указанного числа минут. Без параметров маршрут возвращает все фильмы.
+
+```rust
+use axum::{extract::Query, routing::get, Json, Router};
+use serde::{Deserialize, Serialize};
+
+...
+    let router = Router::new()
+        .route("/", get(hello))
+        .route("/movies", get(movies));
+...
+
+#[derive(Serialize, Clone)]
+struct Movie {
+    title: &'static str,
+    genre: &'static str,
+    duration: u32,
+}
+
+const MOVIES: [Movie; 4] = [
+    Movie { title: "Интерстеллар", genre: "sci-fi", duration: 169 },
+    Movie { title: "Матрица", genre: "sci-fi", duration: 136 },
+    Movie { title: "Зелёная миля", genre: "drama", duration: 189 },
+    Movie { title: "1+1", genre: "drama", duration: 112 },
+];
+
+#[derive(Deserialize)]
+struct MovieFilter {
+    genre: Option<String>,
+    max_duration: Option<u32>,
+}
+
+async fn movies(
+    Query(filter): Query<MovieFilter>,
+) -> Json<Vec<Movie>> {
+    // is_none_or возвращает true, если фильтр не задан
+    let movies = MOVIES
+        .iter()
+        .filter(|m| {
+            filter.genre.as_ref().is_none_or(|g| m.genre == g)
+        })
+        .filter(|m| {
+            filter.max_duration.is_none_or(|max| m.duration <= max)
+        })
+        .cloned()
+        .collect();
+    Json(movies)
+}
+```
+
+И проверка:
+
+```bash
+curl -i 'http://127.0.0.1:3000/movies?genre=sci-fi&max_duration=150'
+```
+
+```text
+HTTP/1.1 200 OK
+content-type: application/json
+content-length: 60
+date: Wed, 25 Nov 2026 16:54:00 GMT
+
+[{"title":"Матрица","genre":"sci-fi","duration":136}]
+```
+
 Теперь у нас есть всё, чтобы принять запрос и вернуть ответ. В следующей главе разберём состояние приложения: как передать хендлерам общие данные, например подключение к базе данных.
